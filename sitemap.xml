@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- 메인 홈페이지 -->
+  <url>
+    <loc>https://iclarkgolf.com/</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://iclarkgolf.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://iclarkgolf.com/?lang=en"/>
+  </url>
+
+  <!-- 패키지 섹션 -->
+  <url>
+    <loc>https://iclarkgolf.com/#packages</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 골프장 안내 섹션 -->
+  <url>
+    <loc>https://iclarkgolf.com/#courses</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 갤러리 섹션 -->
+  <url>
+    <loc>https://iclarkgolf.com/#gallery</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- 후기 섹션 -->
+  <url>
+    <loc>https://iclarkgolf.com/#reviews</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- 문의 섹션 -->
+  <url>
+    <loc>https://iclarkgolf.com/#contact</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+</urlset>

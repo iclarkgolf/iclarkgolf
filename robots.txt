@@ -1,0 +1,31 @@
+# robots.txt - iClark Golf Academy
+# https://iclarkgolf.com
+
+# 모든 검색 로봇 허용
+User-agent: *
+Allow: /
+
+# 관리자 페이지는 검색 제외
+Disallow: /admin/
+Disallow: /admin-panel/
+
+# 구글봇
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# 네이버봇
+User-agent: Yeti
+Allow: /
+Crawl-delay: 1
+
+# 다음봇
+User-agent: Daumoa
+Allow: /
+Crawl-delay: 1
+
+# 사이트맵 위치 안내
+Sitemap: https://iclarkgolf.com/sitemap.xml
+
+# 다음(Daum) 웹마스터도구 소유권 인증
+#DaumWebMasterTool:eb470b66b01f087cfcf4680e75fb76e2ac6e636f3ec2217f694515e36b334ff2:zT5MXd5hNCLIV2Rd+LwLzg==

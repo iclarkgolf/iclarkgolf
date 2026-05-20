@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caddy Match — iClark Golf Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #1b4332;
+  --green-mid: #2d6a4f;
+  --lime: #74c69d;
+  --gold: #f4a261;
+  --gold-light: #fde8d3;
+  --white: #ffffff;
+  --cream: #f8f5f0;
+  --dark: #0d1f17;
+  --gray: #6c757d;
+  --card-bg: #ffffff;
+  --shadow: 0 4px 24px rgba(13,31,23,0.10);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Noto Sans KR',sans-serif; background:var(--cream); color:var(--dark); min-height:100vh; }
+
+/* ── NAV ── */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:14px 40px;
+  background:rgba(13,31,23,0.95);
+  backdrop-filter:blur(12px);
+}
+.nav-logo { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:3px; color:#fff; text-decoration:none; }
+.nav-logo span { color:var(--gold); }
+.nav-back { color:rgba(255,255,255,0.7); font-size:13px; font-family:'Barlow Condensed',sans-serif; font-weight:600; letter-spacing:1px; text-decoration:none; text-transform:uppercase; transition:color 0.2s; }
+.nav-back:hover { color:var(--gold); }
+
+/* ── LANG TOGGLE ── */
+.lang-toggle {
+  display:flex; border:1.5px solid rgba(255,255,255,0.3); border-radius:20px; overflow:hidden;
+}
+.lang-btn {
+  padding:5px 14px; font-size:12px; font-weight:600; letter-spacing:1px;
+  cursor:pointer; border:none; background:transparent; color:rgba(255,255,255,0.6);
+  font-family:'Barlow Condensed',sans-serif; transition:all 0.2s;
+}
+.lang-btn.active { background:var(--gold); color:var(--dark); }
+
+/* ── HERO ── */
+.hero {
+  padding-top:80px;
+  background: linear-gradient(135deg, var(--dark) 0%, var(--green) 60%, var(--green-mid) 100%);
+  padding-bottom:60px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.hero::before {
+  content:'';
+  position:absolute; inset:0;
+  background: radial-gradient(ellipse at 70% 50%, rgba(116,198,157,0.15) 0%, transparent 70%);
+}
+.hero-badge {
+  display:inline-block;
+  background:rgba(244,162,97,0.15);
+  border:1px solid rgba(244,162,97,0.4);
+  color:var(--gold);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:12px; font-weight:700; letter-spacing:3px;
+  padding:6px 18px; border-radius:20px;
+  margin-bottom:20px;
+}
+.hero h1 {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(48px,8vw,90px);
+  color:#fff; letter-spacing:4px;
+  line-height:1;
+  margin-bottom:16px;
+  position:relative;
+}
+.hero h1 span { color:var(--gold); }
+.hero p {
+  color:rgba(255,255,255,0.75);
+  font-size:16px; line-height:1.7;
+  max-width:500px; margin:0 auto 32px;
+}
+.hero-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+.btn-primary {
+  padding:14px 32px; background:var(--gold); color:var(--dark);
+  border:none; border-radius:4px; font-weight:700; font-size:14px;
+  cursor:pointer; font-family:'Noto Sans KR',sans-serif;
+  letter-spacing:0.5px; transition:all 0.2s;
+}
+.btn-primary:hover { background:#e8925a; transform:translateY(-1px); }
+.btn-outline {
+  padding:14px 32px; background:transparent; color:#fff;
+  border:1.5px solid rgba(255,255,255,0.4); border-radius:4px;
+  font-weight:600; font-size:14px; cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif; transition:all 0.2s;
+}
+.btn-outline:hover { border-color:#fff; background:rgba(255,255,255,0.05); }
+
+/* ── STATS ── */
+.stats {
+  display:flex; justify-content:center; gap:0;
+  background:var(--green); padding:20px 0;
+}
+.stat-item {
+  text-align:center; padding:0 40px;
+  border-right:1px solid rgba(255,255,255,0.15);
+}
+.stat-item:last-child { border-right:none; }
+.stat-num { font-family:'Bebas Neue',sans-serif; font-size:36px; color:var(--gold); letter-spacing:2px; }
+.stat-label { font-size:11px; color:rgba(255,255,255,0.6); letter-spacing:1px; text-transform:uppercase; }
+
+/* ── SECTION ── */
+.section { padding:60px 20px; max-width:1100px; margin:0 auto; }
+.section-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:36px; letter-spacing:2px; color:var(--green);
+  margin-bottom:8px;
+}
+.section-sub { color:var(--gray); font-size:14px; margin-bottom:36px; }
+
+/* ── FILTER ── */
+.filter-bar {
+  display:flex; gap:10px; flex-wrap:wrap; margin-bottom:32px;
+}
+.filter-btn {
+  padding:8px 20px; border-radius:20px;
+  border:1.5px solid #ddd; background:#fff;
+  font-size:13px; font-weight:500; cursor:pointer;
+  color:var(--gray); transition:all 0.2s;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.filter-btn.active, .filter-btn:hover {
+  border-color:var(--green); background:var(--green); color:#fff;
+}
+
+/* ── CADDY CARDS ── */
+.caddy-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap:24px;
+}
+.caddy-card {
+  background:var(--card-bg);
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  transition:transform 0.2s, box-shadow 0.2s;
+  cursor:pointer;
+  position:relative;
+}
+.caddy-card:hover { transform:translateY(-4px); box-shadow:0 12px 40px rgba(13,31,23,0.15); }
+
+.caddy-card-img {
+  width:100%; height:220px; object-fit:cover;
+  background: linear-gradient(135deg, var(--green-mid), var(--lime));
+  display:flex; align-items:center; justify-content:center;
+  font-size:60px; color:rgba(255,255,255,0.4);
+  position:relative;
+}
+.caddy-card-img img { width:100%; height:100%; object-fit:cover; }
+
+.caddy-badge-ko {
+  position:absolute; top:12px; left:12px;
+  background:var(--gold); color:var(--dark);
+  font-size:10px; font-weight:700; letter-spacing:1px;
+  padding:3px 10px; border-radius:12px;
+  font-family:'Barlow Condensed',sans-serif;
+}
+.caddy-likes {
+  position:absolute; top:12px; right:12px;
+  background:rgba(0,0,0,0.5); color:#fff;
+  font-size:12px; padding:4px 10px; border-radius:12px;
+  display:flex; align-items:center; gap:4px; cursor:pointer;
+  transition:background 0.2s;
+}
+.caddy-likes:hover, .caddy-likes.liked { background:rgba(244,162,97,0.9); color:var(--dark); }
+
+.caddy-info { padding:20px; }
+.caddy-name {
+  font-size:18px; font-weight:700; color:var(--dark);
+  margin-bottom:4px;
+}
+.caddy-course {
+  font-size:12px; color:var(--green-mid); font-weight:600;
+  letter-spacing:0.5px; margin-bottom:12px;
+  font-family:'Barlow Condensed',sans-serif;
+  text-transform:uppercase;
+}
+.caddy-tags { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+.tag {
+  font-size:11px; padding:3px 10px; border-radius:12px;
+  background:var(--cream); color:var(--gray);
+  font-weight:500;
+}
+.caddy-bio {
+  font-size:13px; color:var(--gray); line-height:1.6;
+  margin-bottom:16px;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.caddy-actions { display:flex; gap:8px; }
+.btn-msg {
+  flex:1; padding:10px; background:var(--green); color:#fff;
+  border:none; border-radius:6px; font-size:13px; font-weight:600;
+  cursor:pointer; font-family:'Noto Sans KR',sans-serif; transition:background 0.2s;
+}
+.btn-msg:hover { background:var(--green-mid); }
+.btn-trans {
+  padding:10px 14px; background:var(--cream); color:var(--green);
+  border:1.5px solid var(--lime); border-radius:6px; font-size:12px;
+  font-weight:700; cursor:pointer; font-family:'Barlow Condensed',sans-serif;
+  letter-spacing:1px; transition:all 0.2s;
+}
+.btn-trans:hover { background:var(--lime); color:var(--dark); }
+
+/* ── MODAL OVERLAY ── */
+.modal-overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.6); z-index:500;
+  align-items:center; justify-content:center;
+  padding:20px;
+}
+.modal-overlay.open { display:flex; }
+.modal {
+  background:#fff; border-radius:16px;
+  width:100%; max-width:520px;
+  max-height:90vh; overflow-y:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,0.3);
+  animation:modalIn 0.25s ease;
+}
+@keyframes modalIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+.modal-header {
+  padding:24px 24px 0;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.modal-title { font-size:18px; font-weight:700; color:var(--dark); }
+.modal-close {
+  width:32px; height:32px; border-radius:50%;
+  background:var(--cream); border:none; cursor:pointer;
+  font-size:18px; color:var(--gray); display:flex; align-items:center; justify-content:center;
+}
+.modal-body { padding:24px; }
+
+/* ── CADDY DETAIL MODAL ── */
+.detail-img {
+  width:100%; height:240px; border-radius:10px; overflow:hidden;
+  background:linear-gradient(135deg,var(--green-mid),var(--lime));
+  display:flex; align-items:center; justify-content:center;
+  font-size:80px; margin-bottom:20px;
+}
+.detail-img img { width:100%; height:100%; object-fit:cover; }
+.detail-name { font-size:22px; font-weight:700; margin-bottom:4px; }
+.detail-course { font-size:13px; color:var(--green-mid); font-weight:600; margin-bottom:16px; font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:1px; }
+.detail-meta { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
+.meta-item { background:var(--cream); border-radius:8px; padding:12px; }
+.meta-label { font-size:10px; color:var(--gray); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
+.meta-value { font-size:14px; font-weight:600; color:var(--dark); }
+.detail-bio { font-size:14px; line-height:1.7; color:#444; margin-bottom:20px; padding:16px; background:var(--cream); border-radius:8px; border-left:3px solid var(--lime); }
+.detail-trans-bar { display:flex; gap:8px; margin-bottom:16px; }
+.trans-pill {
+  padding:6px 16px; border-radius:20px; border:1.5px solid var(--lime);
+  background:#fff; font-size:12px; font-weight:700; cursor:pointer;
+  color:var(--green); font-family:'Barlow Condensed',sans-serif; letter-spacing:1px; transition:all 0.2s;
+}
+.trans-pill.active { background:var(--green); color:#fff; border-color:var(--green); }
+
+/* ── MESSAGE THREAD ── */
+.msg-section { border-top:1px solid #eee; padding-top:20px; margin-top:20px; }
+.msg-section-title { font-size:14px; font-weight:700; color:var(--dark); margin-bottom:16px; }
+.msg-thread { display:flex; flex-direction:column; gap:10px; margin-bottom:16px; min-height:80px; }
+.msg-bubble {
+  max-width:75%; padding:10px 14px; border-radius:14px;
+  font-size:13px; line-height:1.5; position:relative;
+}
+.msg-bubble.sent { align-self:flex-end; background:var(--green); color:#fff; border-bottom-right-radius:4px; }
+.msg-bubble.recv { align-self:flex-start; background:var(--cream); color:var(--dark); border-bottom-left-radius:4px; }
+.msg-bubble .msg-time { font-size:10px; opacity:0.6; margin-top:4px; }
+.msg-translate-btn {
+  font-size:10px; opacity:0.7; cursor:pointer; text-decoration:underline;
+  background:none; border:none; color:inherit; padding:0; margin-top:2px; display:block;
+}
+.msg-input-row { display:flex; gap:8px; }
+.msg-input {
+  flex:1; padding:10px 14px; border:1.5px solid #ddd; border-radius:8px;
+  font-size:14px; font-family:'Noto Sans KR',sans-serif;
+  outline:none; transition:border-color 0.2s;
+}
+.msg-input:focus { border-color:var(--green); }
+.msg-send {
+  padding:10px 18px; background:var(--green); color:#fff;
+  border:none; border-radius:8px; font-weight:700; cursor:pointer;
+  font-size:13px; transition:background 0.2s;
+}
+.msg-send:hover { background:var(--green-mid); }
+.msg-notice {
+  font-size:11px; color:var(--gray); text-align:center;
+  margin-top:10px; padding:8px; background:var(--cream); border-radius:6px;
+}
+
+/* ── AUTH MODAL ── */
+.auth-tabs { display:flex; border-bottom:2px solid #eee; margin-bottom:24px; }
+.auth-tab {
+  flex:1; padding:12px; text-align:center; font-weight:700;
+  font-size:14px; cursor:pointer; color:var(--gray);
+  border-bottom:2px solid transparent; margin-bottom:-2px; transition:all 0.2s;
+}
+.auth-tab.active { color:var(--green); border-bottom-color:var(--green); }
+.form-group { margin-bottom:16px; }
+.form-label { font-size:12px; font-weight:600; color:var(--gray); margin-bottom:6px; display:block; text-transform:uppercase; letter-spacing:0.5px; }
+.form-input {
+  width:100%; padding:11px 14px; border:1.5px solid #ddd; border-radius:8px;
+  font-size:14px; font-family:'Noto Sans KR',sans-serif;
+  outline:none; transition:border-color 0.2s;
+}
+.form-input:focus { border-color:var(--green); }
+.form-select {
+  width:100%; padding:11px 14px; border:1.5px solid #ddd; border-radius:8px;
+  font-size:14px; font-family:'Noto Sans KR',sans-serif;
+  outline:none; background:#fff; cursor:pointer;
+}
+.form-btn {
+  width:100%; padding:13px; background:var(--green); color:#fff;
+  border:none; border-radius:8px; font-size:15px; font-weight:700;
+  cursor:pointer; font-family:'Noto Sans KR',sans-serif;
+  margin-top:8px; transition:background 0.2s;
+}
+.form-btn:hover { background:var(--green-mid); }
+.role-select { display:flex; gap:10px; margin-bottom:16px; }
+.role-btn {
+  flex:1; padding:14px; border:2px solid #ddd; border-radius:10px;
+  text-align:center; cursor:pointer; transition:all 0.2s;
+}
+.role-btn.active { border-color:var(--green); background:rgba(27,67,50,0.05); }
+.role-icon { font-size:28px; margin-bottom:6px; }
+.role-label { font-size:12px; font-weight:700; color:var(--dark); }
+.role-sub { font-size:11px; color:var(--gray); }
+
+/* ── CADDY REGISTER ── */
+.register-section {
+  background:linear-gradient(135deg,var(--green),var(--green-mid));
+  padding:60px 20px; text-align:center; color:#fff;
+}
+.register-section h2 { font-family:'Bebas Neue',sans-serif; font-size:40px; letter-spacing:2px; margin-bottom:12px; }
+.register-section p { color:rgba(255,255,255,0.8); margin-bottom:28px; font-size:15px; }
+
+/* ── LOADING SPINNER ── */
+.spinner {
+  display:inline-block; width:20px; height:20px;
+  border:2px solid rgba(255,255,255,0.3);
+  border-top-color:#fff; border-radius:50%;
+  animation:spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* ── TOAST ── */
+.toast {
+  position:fixed; bottom:30px; left:50%; transform:translateX(-50%);
+  background:var(--dark); color:#fff; padding:12px 24px;
+  border-radius:30px; font-size:13px; font-weight:500;
+  opacity:0; transition:opacity 0.3s; z-index:999; white-space:nowrap;
+}
+.toast.show { opacity:1; }
+
+/* ── USER STATUS BAR ── */
+.user-bar {
+  background:rgba(27,67,50,0.08); border-bottom:1px solid rgba(27,67,50,0.1);
+  padding:8px 40px; display:flex; justify-content:flex-end; align-items:center; gap:12px;
+  margin-top:56px; font-size:13px;
+}
+.user-bar-name { color:var(--green); font-weight:600; }
+.user-bar-role {
+  background:var(--green); color:#fff;
+  font-size:10px; padding:2px 8px; border-radius:10px;
+  font-family:'Barlow Condensed',sans-serif; font-weight:700; letter-spacing:1px;
+}
+.user-bar-logout {
+  color:var(--gray); cursor:pointer; font-size:12px;
+  text-decoration:underline; background:none; border:none;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px) {
+  nav { padding:14px 20px; }
+  .stats { flex-wrap:wrap; }
+  .stat-item { border-right:none; padding:10px 20px; }
+  .section { padding:40px 16px; }
+  .caddy-grid { grid-template-columns:1fr; }
+  .user-bar { padding:8px 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="https://iclarkgolf.com" class="nav-logo">i<span>Clark</span></a>
+  <a href="https://iclarkgolf.com" class="nav-back">← Main Site</a>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setUILang('ko')">KR</button>
+      <button class="lang-btn" onclick="setUILang('en')">EN</button>
+    </div>
+    <button class="btn-primary" style="padding:8px 18px;font-size:13px;" onclick="openAuth()" id="loginBtn">
+      <span data-ko="로그인" data-en="Login">로그인</span>
+    </button>
+  </div>
+</nav>
+
+<!-- USER BAR -->
+<div class="user-bar" id="userBar" style="display:none;">
+  <span data-ko="안녕하세요," data-en="Hello,">안녕하세요,</span>
+  <span class="user-bar-name" id="userBarName"></span>
+  <span class="user-bar-role" id="userBarRole"></span>
+  <button class="user-bar-logout" onclick="logout()">
+    <span data-ko="로그아웃" data-en="Logout">로그아웃</span>
+  </button>
+</div>
+
+<!-- HERO -->
+<div class="hero" id="heroSection" style="margin-top:0;">
+  <div class="hero-badge">CLARK · PAMPANGA · PHILIPPINES</div>
+  <h1>CADDY<br><span>MATCH</span></h1>
+  <p>
+    <span data-ko="필리핀 클락 최고의 캐디를 직접 선택하세요. 프라데라, 베버리힐스 소속 캐디들의 프로필을 보고, 메시지를 나누고, 잊지 못할 라운드를 준비하세요." data-en="Choose your perfect caddy in Clark, Philippines. Browse profiles from Pradera Verde and Beverly Hills courses, exchange messages, and prepare for an unforgettable round.">필리핀 클락 최고의 캐디를 직접 선택하세요. 프라데라, 베버리힐스 소속 캐디들의 프로필을 보고, 메시지를 나누고, 잊지 못할 라운드를 준비하세요.</span>
+  </p>
+  <div class="hero-btns">
+    <button class="btn-primary" onclick="goCaddies()">
+      <span data-ko="캐디 둘러보기" data-en="Browse Caddies">캐디 둘러보기</span>
+    </button>
+    <button class="btn-outline" onclick="handleCaddyRegister()">
+      <span data-ko="캐디로 등록하기" data-en="Register as Caddy">캐디로 등록하기</span>
+    </button>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-item">
+    <div class="stat-num">24</div>
+    <div class="stat-label"><span data-ko="등록 캐디" data-en="Registered Caddies">등록 캐디</span></div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">2</div>
+    <div class="stat-label"><span data-ko="파트너 골프장" data-en="Partner Courses">파트너 골프장</span></div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">98%</div>
+    <div class="stat-label"><span data-ko="고객 만족도" data-en="Satisfaction">고객 만족도</span></div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">KO↔EN</div>
+    <div class="stat-label"><span data-ko="실시간 번역" data-en="Live Translation">실시간 번역</span></div>
+  </div>
+</div>
+
+<!-- CADDY LIST -->
+<div class="section" id="caddySection">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:8px;">
+    <div>
+      <div class="section-title" data-ko="캐디 목록" data-en="Our Caddies">캐디 목록</div>
+      <div class="section-sub" data-ko="원하는 캐디를 선택하고 메시지를 보내세요" data-en="Choose your caddy and send a message">원하는 캐디를 선택하고 메시지를 보내세요</div>
+    </div>
+  </div>
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-btn active" onclick="filterCaddies('all',this)" data-ko="전체" data-en="All">전체</button>
+    <button class="filter-btn" onclick="filterCaddies('pradera',this)" data-ko="프라데라 C.C." data-en="Pradera C.C.">프라데라 C.C.</button>
+    <button class="filter-btn" onclick="filterCaddies('beverly',this)" data-ko="베버리 C.C." data-en="Beverly C.C.">베버리 C.C.</button>
+    <button class="filter-btn" onclick="filterCaddies('mimosa',this)" data-ko="미모사 C.C." data-en="Mimosa C.C.">미모사 C.C.</button>
+    <button class="filter-btn" onclick="filterCaddies('luisita',this)" data-ko="루이시타 C.C." data-en="Luisita C.C.">루이시타 C.C.</button>
+    <button class="filter-btn" onclick="filterCaddies('royal',this)" data-ko="로얄센트럴 C.C." data-en="Royal Central C.C.">로얄센트럴 C.C.</button>
+    <button class="filter-btn" onclick="filterCaddies('subic',this)" data-ko="수빅 C.C." data-en="Subic C.C.">수빅 C.C.</button>
+    <button class="filter-btn" onclick="filterCaddies('korean',this)" data-ko="한국어 가능" data-en="Korean Speaking">한국어 가능</button>
+    <button class="filter-btn" onclick="filterCaddies('top',this)" data-ko="인기 캐디" data-en="Top Rated">인기 캐디</button>
+  </div>
+  <div class="caddy-grid" id="caddyGrid"></div>
+</div>
+
+<!-- CADDY REGISTER CTA -->
+<div class="register-section">
+  <h2 data-ko="캐디로 등록하세요" data-en="Register as a Caddy">캐디로 등록하세요</h2>
+  <p data-ko="프라데라·베버리힐스 캐디라면 지금 바로 프로필을 등록하고 한국 골퍼들을 만나보세요." data-en="If you're a caddy at Pradera or Beverly Hills, register your profile now and connect with Korean golfers.">프라데라·베버리힐스 캐디라면 지금 바로 프로필을 등록하고 한국 골퍼들을 만나보세요.</p>
+  <button class="btn-primary" onclick="openAuth('caddy')">
+    <span data-ko="무료 등록하기" data-en="Register for Free">무료 등록하기</span>
+  </button>
+</div>
+
+<!-- ── CADDY DETAIL MODAL ── -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="detailModalTitle">캐디 프로필</div>
+      <button class="modal-close" onclick="closeModal('detailModal')">✕</button>
+    </div>
+    <div class="modal-body" id="detailModalBody"></div>
+  </div>
+</div>
+
+<!-- ── AUTH MODAL ── -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="authTitle">로그인 / 회원가입</div>
+      <button class="modal-close" onclick="closeModal('authModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="auth-tabs">
+        <div class="auth-tab active" onclick="switchAuthTab('login')" id="tab-login" data-ko="로그인" data-en="Login">로그인</div>
+        <div class="auth-tab" onclick="switchAuthTab('register')" id="tab-register" data-ko="회원가입" data-en="Sign Up">회원가입</div>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="loginForm">
+        <p style="font-size:13px;color:var(--gray);margin-bottom:24px;text-align:center;line-height:1.6;">
+          <span data-ko="가입하신 이메일과 비밀번호로 로그인하세요.&#10;골퍼·캐디 모두 동일합니다." data-en="Login with your registered email and password.&#10;Same for both golfers and caddies.">가입하신 이메일과 비밀번호로 로그인하세요.<br>골퍼·캐디 모두 동일합니다.</span>
+        </p>
+        <div class="form-group">
+          <label class="form-label" data-ko="이메일" data-en="Email">이메일</label>
+          <input type="email" class="form-input" id="loginEmail" placeholder="example@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-ko="비밀번호" data-en="Password">비밀번호</label>
+          <input type="password" class="form-input" id="loginPw" placeholder="••••••••">
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+          <input type="checkbox" id="saveLogin" style="width:16px;height:16px;accent-color:var(--green);cursor:pointer;">
+          <label for="saveLogin" style="font-size:13px;color:var(--gray);cursor:pointer;" data-ko="아이디 · 비밀번호 저장" data-en="Save email & password">아이디 · 비밀번호 저장</label>
+        </div>
+        <button class="form-btn" onclick="doLogin()">
+          <span data-ko="로그인" data-en="Login">로그인</span>
+        </button>
+        <p style="text-align:center;margin-top:14px;font-size:13px;color:var(--gray);">
+          <span data-ko="계정이 없으신가요?" data-en="No account?">계정이 없으신가요?</span>
+          <a href="#" onclick="switchAuthTab('register')" style="color:var(--green);font-weight:600;">
+            <span data-ko=" 회원가입" data-en=" Sign Up"> 회원가입</span>
+          </a>
+        </p>
+      </div>
+
+      <!-- REGISTER -->
+      <div id="registerForm" style="display:none;">
+
+        <!-- 가입 유형 선택 -->
+        <div style="margin-bottom:20px;">
+          <div class="form-label" data-ko="가입 유형 선택" data-en="Select Account Type">가입 유형 선택</div>
+          <div class="role-select">
+            <div class="role-btn active" id="roleGuest" onclick="selectRole('guest')">
+              <div class="role-icon">⛳</div>
+              <div class="role-label" data-ko="골퍼" data-en="Golfer">골퍼</div>
+              <div class="role-sub" data-ko="캐디를 찾는 고객" data-en="Looking for a caddy">캐디를 찾는 고객</div>
+            </div>
+            <div class="role-btn" id="roleCaddy" onclick="selectRole('caddy')">
+              <div class="role-icon">🏌️</div>
+              <div class="role-label" data-ko="캐디" data-en="Caddy">캐디</div>
+              <div class="role-sub" data-ko="프로필 등록" data-en="Register profile">프로필 등록</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 골퍼 회원가입 필드 -->
+        <div id="guestFields">
+          <div style="background:#f4f9f6;border-left:3px solid var(--lime);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--green-mid);">
+            <span data-ko="골퍼 가입은 이름과 이메일만 입력하시면 됩니다." data-en="Golfers only need name and email to sign up.">골퍼 가입은 이름과 이메일만 입력하시면 됩니다.</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-ko="이름 (영문) *필수" data-en="Name (English) *Required">이름 (영문) *필수</label>
+            <input type="text" class="form-input" id="regName" placeholder="Hong Gil-dong">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-ko="이메일 *필수" data-en="Email *Required">이메일 *필수</label>
+            <input type="email" class="form-input" id="regEmail" placeholder="example@email.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-ko="비밀번호 *필수" data-en="Password *Required">비밀번호 *필수</label>
+            <input type="password" class="form-input" id="regPw" placeholder="••••••••">
+          </div>
+        </div>
+
+        <!-- 캐디 회원가입 필드 -->
+        <div id="caddyFields" style="display:none;">
+          <div style="background:#fff8f0;border:1.5px solid var(--gold);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#b85c00;">
+            <strong data-ko="⚠ 캐디 필수 인증 항목" data-en="⚠ Caddy Required Information">⚠ 캐디 필수 인증 항목</strong><br>
+            <span data-ko="사건 발생 시 책임 추적을 위해 모든 정보를 정확히 입력해야 합니다." data-en="All information must be accurate for accountability purposes.">사건 발생 시 책임 추적을 위해 모든 정보를 정확히 입력해야 합니다.</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-ko="캐디 ID 번호 (골프장 발급) *필수" data-en="Caddy ID Number (Course Issued) *Required">캐디 ID 번호 (골프장 발급) *필수</label>
+            <input type="text" class="form-input" id="regCaddyId" placeholder="PV-2024-001 / BV-2024-001">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-ko="풀네임 (영문 정확히) *필수" data-en="Full Name (English, Exact) *Required">풀네임 (영문 정확히) *필수</label>
+            <input type="text" class="form-input" id="regFullName" placeholder="Maria Santos Cruz">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-ko="휴대폰 번호 *필수" data-en="Cell Phone *Required">휴대폰 번호 *필수</label>
+            <input type="tel" class="form-input" id="regPhone" placeholder="+63-917-000-0000">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-ko="이메일 *필수" data-en="Email *Required">이메일 *필수</label>
+            <input type="email" class="form-input" id="regEmailCaddy" placeholder="example@email.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-ko="비밀번호 *필수" data-en="Password *Required">비밀번호 *필수</label>
+            <input type="password" class="form-input" id="regPwCaddy" placeholder="••••••••">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-ko="프로필 사진 *필수" data-en="Profile Photo *Required">프로필 사진 *필수</label>
+            <div id="photoUploadArea" onclick="document.getElementById('regPhoto').click()" style="border:2px dashed #ccc;border-radius:8px;padding:20px;text-align:center;cursor:pointer;background:#f9f9f9;transition:border-color 0.2s;">
+              <div id="photoPreview" style="display:none;margin-bottom:8px;">
+                <img id="photoPreviewImg" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--green);">
+              </div>
+              <div id="photoPlaceholder">
+                <div style="font-size:32px;margin-bottom:6px;">📷</div>
+                <div style="font-size:13px;color:#888;" data-ko="사진을 클릭해서 선택하세요" data-en="Click to select photo">사진을 클릭해서 선택하세요</div>
+                <div style="font-size:11px;color:#aaa;margin-top:4px;" data-ko="JPG, PNG (최대 2MB)" data-en="JPG, PNG (Max 2MB)">JPG, PNG (최대 2MB)</div>
+              </div>
+            </div>
+            <input type="file" id="regPhoto" accept="image/*" style="display:none;" onchange="previewPhoto(this)">
+          </div>
+
+          <hr style="border:none;border-top:1px solid #eee;margin:16px 0;">
+          <div style="font-size:11px;color:var(--gray);margin-bottom:12px;" data-ko="아래는 프로필용 추가 정보입니다 (선택사항)" data-en="Below is optional profile information">아래는 프로필용 추가 정보입니다 (선택사항)</div>
+
+          <div class="form-group">
+            <label class="form-label" data-ko="소속 골프장" data-en="Home Course">소속 골프장</label>
+            <select class="form-select" id="regCourse">
+              <option value="pradera">Pradera C.C.</option>
+              <option value="beverly">Beverly C.C.</option>
+              <option value="mimosa">Mimosa C.C.</option>
+              <option value="luisita">Luisita C.C.</option>
+              <option value="royal">Royal Central C.C.</option>
+              <option value="subic">Subic C.C.</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-ko="경력 (년)" data-en="Experience (years)">경력 (년)</label>
+            <input type="number" class="form-input" id="regExp" placeholder="5" min="1" max="30">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-ko="한국어 실력" data-en="Korean Level">한국어 실력</label>
+            <select class="form-select" id="regKo">
+              <option value="native">원어민 수준</option>
+              <option value="advanced">고급</option>
+              <option value="intermediate">중급</option>
+              <option value="basic">초급</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-ko="자기소개" data-en="Bio">자기소개</label>
+            <textarea class="form-input" id="regBio" rows="3" placeholder="Hi! I'm a professional caddy..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-ko="카카오톡 ID" data-en="KakaoTalk ID">카카오톡 ID</label>
+            <input type="text" class="form-input" id="regKakao" placeholder="kakao_id">
+          </div>
+        </div>
+
+        <button class="form-btn" onclick="doRegister()">
+          <span data-ko="가입하기" data-en="Sign Up">가입하기</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── 언어 ──
+var uiLang = 'ko';
+function setUILang(lang) {
+  uiLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.lang-btn').forEach(b => { if(b.textContent.trim() === (lang==='ko'?'KR':'EN')) b.classList.add('active'); });
+  document.querySelectorAll('[data-ko]').forEach(el => {
+    var t = el.getAttribute('data-'+lang);
+    if(t) el.textContent = t;
+  });
+  renderCaddies(currentFilter);
+}
+
+// ── 더미 캐디 데이터 ──
+var caddies = [
+  {
+    id:1, name:'Maria Santos', nameKo:'마리아 산토스',
+    course:'pradera', courseName:'Pradera C.C.', courseNameKo:'프라데라 C.C.',
+    exp:9, korean:'advanced', koreanLabel:'한국어 고급',
+    age:28,
+    bio:'Hi! I have 9 years of experience at Pradera Verde. I specialize in helping Korean golfers feel comfortable on the course. I love making every round enjoyable!',
+    bioKo:'안녕하세요! 프라데라에서 9년 경력의 캐디입니다. 한국 골퍼분들이 편안하게 라운드를 즐길 수 있도록 최선을 다합니다.',
+    tags:['한국어 가능','초보자 환영','라운드 전략'],
+    tagsEn:['Korean Speaker','Beginner Friendly','Course Strategy'],
+    kakao:'maria_caddy', likes:47, emoji:'👩'
+  },
+  {
+    id:2, name:'Jun Dela Cruz', nameKo:'준 델라 크루즈',
+    course:'pradera', courseName:'Pradera C.C.', courseNameKo:'프라데라 C.C.',
+    exp:12, korean:'intermediate', koreanLabel:'한국어 중급',
+    age:34,
+    bio:'12 years caddy experience at Pradera Verde. I know every inch of the 36-hole championship course. I can help you with distance control and course management.',
+    bioKo:'프라데라 베르데 36홀을 손바닥처럼 아는 12년 경력 캐디입니다. 거리 조절과 코스 공략을 도와드립니다.',
+    tags:['코스 전문가','거리 조절','싱글 대상'],
+    tagsEn:['Course Expert','Distance Control','Single Digit Golfers'],
+    kakao:'jun_caddy', likes:63, emoji:'👨'
+  },
+  {
+    id:3, name:'Ana Reyes', nameKo:'아나 레예스',
+    course:'beverly', courseName:'Beverly C.C.', courseNameKo:'베버리 C.C.',
+    exp:6, korean:'advanced', koreanLabel:'한국어 고급',
+    age:25,
+    bio:'Young and energetic caddy at Beverly Hills Golf Club! I studied Korean for 3 years and love helping Korean golfers. Beginners are very welcome!',
+    bioKo:'베버리힐스 소속 활기찬 캐디입니다! 한국어를 3년간 공부했어요. 초보 골퍼분들도 편하게 오세요!',
+    tags:['한국어 능통','주니어 환영','밝은 분위기'],
+    tagsEn:['Korean Fluent','Junior Welcome','Positive Energy'],
+    kakao:'ana_beverly', likes:38, emoji:'👩'
+  },
+  {
+    id:4, name:'Rico Manalo', nameKo:'리코 마날로',
+    course:'beverly', courseName:'Beverly C.C.', courseNameKo:'베버리 C.C.',
+    exp:15, korean:'basic', koreanLabel:'한국어 기초',
+    age:40,
+    bio:'15 years of professional caddy experience. I have caddied for many professional tournaments. Serious golfers who want to improve their game — I am your caddy.',
+    bioKo:'15년 프로 캐디 경력. 다수의 프로 토너먼트 경험. 실력 향상을 원하는 진지한 골퍼를 환영합니다.',
+    tags:['베테랑','프로 토너먼트 경험','멘탈 관리'],
+    tagsEn:['Veteran','Tournament Experience','Mental Game'],
+    kakao:'rico_pro', likes:81, emoji:'👨'
+  },
+  {
+    id:5, name:'Grace Tan', nameKo:'그레이스 탄',
+    course:'pradera', courseName:'Pradera C.C.', courseNameKo:'프라데라 C.C.',
+    exp:7, korean:'advanced', koreanLabel:'한국어 고급',
+    age:29,
+    bio:'I am passionate about helping golfers of all levels. I know Pradera Verde inside out and can help you navigate every water hazard and tricky green.',
+    bioKo:'모든 레벨의 골퍼를 도울 수 있어 행복합니다. 프라데라 워터 해저드와 까다로운 그린 공략을 도와드립니다.',
+    tags:['한국어 가능','여성 캐디','워터홀 전략'],
+    tagsEn:['Korean Speaker','Female Caddy','Water Hole Strategy'],
+    kakao:'grace_pradera', likes:52, emoji:'👩'
+  },
+  {
+    id:6, name:'Carlo Bautista', nameKo:'카를로 바우티스타',
+    course:'pradera', courseName:'Pradera C.C.', courseNameKo:'프라데라 C.C.',
+    exp:10, korean:'intermediate', koreanLabel:'한국어 중급',
+    age:32,
+    bio:'10 years at Pradera Verde. I specialize in helping mid-handicap golfers break 90. My caddy advice has helped dozens of Korean golfers improve their scores.',
+    bioKo:'10년 경력. 90타 돌파를 목표로 하는 중급 골퍼 전문. 많은 한국 골퍼들의 스코어 향상을 도왔습니다.',
+    tags:['90타 돌파','중급자 전문','스코어 향상'],
+    tagsEn:['Break 90','Mid Handicap','Score Improvement'],
+    kakao:'carlo_caddy', likes:44, emoji:'👨'
+  }
+];
+
+var currentFilter = 'all';
+var currentUser = null;
+var selectedRole = 'guest';
+var likedCaddies = JSON.parse(localStorage.getItem('likedCaddies')||'[]');
+var messages = JSON.parse(localStorage.getItem('caddyMessages')||'{}');
+
+// ── 캐디 렌더링 ──
+function renderCaddies(filter) {
+  currentFilter = filter;
+  var grid = document.getElementById('caddyGrid');
+  var filtered = caddies.filter(function(c) {
+    if(filter==='all') return true;
+    if(filter==='pradera') return c.course==='pradera';
+    if(filter==='beverly') return c.course==='beverly';
+    if(filter==='mimosa') return c.course==='mimosa';
+    if(filter==='luisita') return c.course==='luisita';
+    if(filter==='royal') return c.course==='royal';
+    if(filter==='subic') return c.course==='subic';
+    if(filter==='korean') return c.korean==='advanced'||c.korean==='native';
+    if(filter==='top') return c.likes>=50;
+    return true;
+  });
+  grid.innerHTML = filtered.map(function(c) {
+    var isLiked = likedCaddies.indexOf(c.id)>-1;
+    var name = uiLang==='ko' ? c.nameKo : c.name;
+    var course = uiLang==='ko' ? c.courseNameKo : c.courseName;
+    var tags = uiLang==='ko' ? c.tags : c.tagsEn;
+    return '<div class="caddy-card" onclick="openDetail('+c.id+')">' +
+      '<div class="caddy-card-img">' +
+        '<span style="font-size:80px;">'+c.emoji+'</span>' +
+        (c.korean==='advanced'||c.korean==='native' ? '<div class="caddy-badge-ko">'+(uiLang==='ko'?'한국어 가능':'Korean OK')+'</div>' : '') +
+        '<div class="caddy-likes '+(isLiked?'liked':'')+'" onclick="toggleLike(event,'+c.id+')">' +
+          '♥ <span id="likes-'+c.id+'">'+c.likes+'</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="caddy-info">' +
+        '<div class="caddy-name">'+name+', '+c.age+'</div>' +
+        '<div class="caddy-course">'+course+' · '+c.exp+(uiLang==='ko'?'년 경력':' yrs exp')+'</div>' +
+        '<div class="caddy-tags">'+tags.slice(0,2).map(function(t){return '<span class="tag">'+t+'</span>';}).join('')+'</div>' +
+        '<div class="caddy-bio">'+(uiLang==='ko'?c.bioKo:c.bio)+'</div>' +
+        '<div class="caddy-actions">' +
+          '<button class="btn-msg" onclick="event.stopPropagation();openDetail('+c.id+',true)">'+(uiLang==='ko'?'메시지 보내기':'Send Message')+'</button>' +
+          '<button class="btn-trans" onclick="event.stopPropagation();translateCard('+c.id+',this)">'+(uiLang==='ko'?'EN':'KR')+'</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ── 필터 ──
+function filterCaddies(filter, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCaddies(filter);
+}
+
+// ── 좋아요 ──
+function toggleLike(e, id) {
+  e.stopPropagation();
+  var idx = likedCaddies.indexOf(id);
+  var caddy = caddies.find(function(c){return c.id===id;});
+  if(idx>-1) {
+    likedCaddies.splice(idx,1);
+    caddy.likes--;
+  } else {
+    likedCaddies.push(id);
+    caddy.likes++;
+  }
+  localStorage.setItem('likedCaddies', JSON.stringify(likedCaddies));
+  renderCaddies(currentFilter);
+}
+
+// ── 카드 번역 ──
+function translateCard(id, btn) {
+  var caddy = caddies.find(function(c){return c.id===id;});
+  var card = btn.closest('.caddy-card');
+  var bioEl = card.querySelector('.caddy-bio');
+  if(btn.textContent==='EN') {
+    bioEl.textContent = caddy.bio;
+    btn.textContent = 'KR';
+  } else {
+    bioEl.textContent = caddy.bioKo;
+    btn.textContent = 'EN';
+  }
+}
+
+// ── 상세 모달 ──
+function openDetail(id, focusMsg) {
+  var c = caddies.find(function(x){return x.id===id;});
+  var msgs = messages[id] || [];
+  var isLiked = likedCaddies.indexOf(id)>-1;
+  var bio = uiLang==='ko' ? c.bioKo : c.bio;
+  var bioOther = uiLang==='ko' ? c.bio : c.bioKo;
+  var bioShowing = 'main';
+
+  document.getElementById('detailModalTitle').textContent = uiLang==='ko' ? '캐디 프로필' : 'Caddy Profile';
+
+  var msgThread = msgs.map(function(m) {
+    return '<div class="msg-bubble '+m.type+'">' +
+      '<div>'+m.text+'</div>' +
+      '<div class="msg-time">'+m.time+'</div>' +
+      '<button class="msg-translate-btn" onclick="translateMsg(this,\''+encodeURIComponent(m.text)+'\',\''+m.type+'\')">'+
+        (uiLang==='ko'?'번역 보기':'View Translation')+'</button>' +
+    '</div>';
+  }).join('');
+
+  var msgCount = msgs.filter(function(m){return m.type==='sent';}).length;
+  var maxFree = 5;
+  var remaining = maxFree - msgCount;
+
+  document.getElementById('detailModalBody').innerHTML =
+    '<div class="detail-img"><span style="font-size:100px;">'+c.emoji+'</span></div>' +
+    '<div class="detail-name">'+(uiLang==='ko'?c.nameKo:c.name)+', '+c.age+'</div>' +
+    '<div class="detail-course">'+(uiLang==='ko'?c.courseNameKo:c.courseName)+' · '+c.exp+(uiLang==='ko'?' 년 경력':' yrs experience')+'</div>' +
+    '<div class="detail-meta">' +
+      '<div class="meta-item"><div class="meta-label">'+(uiLang==='ko'?'한국어 실력':'Korean Level')+'</div><div class="meta-value">'+c.koreanLabel+'</div></div>' +
+      '<div class="meta-item"><div class="meta-label">'+(uiLang==='ko'?'카카오톡':'KakaoTalk')+'</div><div class="meta-value">'+c.kakao+'</div></div>' +
+      '<div class="meta-item"><div class="meta-label">'+(uiLang==='ko'?'좋아요':'Likes')+'</div><div class="meta-value">♥ '+c.likes+'</div></div>' +
+      '<div class="meta-item"><div class="meta-label">'+(uiLang==='ko'?'골프장':'Course')+'</div><div class="meta-value">'+(uiLang==='ko'?c.courseNameKo:c.courseName)+'</div></div>' +
+    '</div>' +
+    '<div class="detail-trans-bar">' +
+      '<button class="trans-pill active" id="bioKoBtn" onclick="switchBio(\'ko\',this,'+id+')">'+(uiLang==='ko'?'한국어':'한국어')+'</button>' +
+      '<button class="trans-pill" id="bioEnBtn" onclick="switchBio(\'en\',this,'+id+')">English</button>' +
+    '</div>' +
+    '<div class="detail-bio" id="detailBio">'+bio+'</div>' +
+    '<div class="caddy-tags" style="margin-bottom:20px;">'+(uiLang==='ko'?c.tags:c.tagsEn).map(function(t){return '<span class="tag">'+t+'</span>';}).join('')+'</div>' +
+    '<div class="msg-section">' +
+      '<div class="msg-section-title">'+(uiLang==='ko'?'메시지':'Messages')+'</div>' +
+      '<div class="msg-thread" id="msgThread-'+id+'">' +
+        (msgs.length===0 ? '<div style="text-align:center;color:var(--gray);font-size:13px;padding:20px;">'+(uiLang==='ko'?'첫 메시지를 보내보세요!':'Send your first message!')+'</div>' : msgThread) +
+      '</div>' +
+      '<div class="msg-input-row">' +
+        '<input class="msg-input" id="msgInput-'+id+'" placeholder="'+(uiLang==='ko'?'메시지를 입력하세요... (한국어 또는 영어)':'Type a message... (Korean or English)')+'">' +
+        '<button class="msg-send" onclick="sendMsg('+id+')">'+(uiLang==='ko'?'전송':'Send')+'</button>' +
+      '</div>' +
+      '<div class="msg-notice">' +
+        (uiLang==='ko' ?
+          '사이트 내 메시지 <strong>'+(maxFree - msgCount)+'회</strong> 남았습니다. 이후 카카오톡으로 연결됩니다.' :
+          '<strong>'+(maxFree - msgCount)+'</strong> free messages remaining. Connect via KakaoTalk afterwards.') +
+      '</div>' +
+    '</div>';
+
+  openModal('detailModal');
+  if(focusMsg) setTimeout(function(){ var el=document.getElementById('msgInput-'+id); if(el) el.focus(); },300);
+}
+
+function switchBio(lang, btn, id) {
+  var c = caddies.find(function(x){return x.id===id;});
+  document.querySelectorAll('.trans-pill').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('detailBio').textContent = lang==='ko' ? c.bioKo : c.bio;
+}
+
+// ── 메시지 전송 ──
+function sendMsg(caddyId) {
+  if(!currentUser) { closeModal('detailModal'); openAuth(); showToast(uiLang==='ko'?'로그인 후 메시지를 보낼 수 있습니다.':'Please login to send messages.'); return; }
+  var input = document.getElementById('msgInput-'+caddyId);
+  var text = input.value.trim();
+  if(!text) return;
+
+  if(!messages[caddyId]) messages[caddyId] = [];
+  var sentCount = messages[caddyId].filter(function(m){return m.type==='sent';}).length;
+  if(sentCount >= 5) {
+    showToast(uiLang==='ko'?'무료 메시지 5회를 모두 사용했습니다. 카카오톡으로 연락해 주세요!':'Free messages used. Please contact via KakaoTalk!');
+    return;
+  }
+
+  var now = new Date();
+  var time = now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();
+  messages[caddyId].push({type:'sent', text:text, time:time});
+  input.value = '';
+
+  // 자동 캐디 답장 (데모)
+  setTimeout(function() {
+    var replies = [
+      {ko:'안녕하세요! 메시지 감사합니다 😊 언제 라운드를 계획하고 계신가요?', en:'Hello! Thank you for your message 😊 When are you planning your round?'},
+      {ko:'네, 기꺼이 도와드리겠습니다! 더 자세한 내용을 알려주세요.', en:'Yes, I would be happy to help! Please tell me more details.'},
+      {ko:'좋습니다! 라운드 날짜와 인원을 알려주시면 준비하겠습니다.', en:'Great! Please let me know the date and number of players.'}
+    ];
+    var r = replies[Math.floor(Math.random()*replies.length)];
+    var replyText = uiLang==='ko' ? r.ko : r.en;
+    messages[caddyId].push({type:'recv', text:replyText, time:time});
+    localStorage.setItem('caddyMessages', JSON.stringify(messages));
+    refreshMsgThread(caddyId);
+  }, 1200);
+
+  localStorage.setItem('caddyMessages', JSON.stringify(messages));
+  refreshMsgThread(caddyId);
+}
+
+function refreshMsgThread(caddyId) {
+  var thread = document.getElementById('msgThread-'+caddyId);
+  if(!thread) return;
+  var msgs = messages[caddyId] || [];
+  thread.innerHTML = msgs.map(function(m) {
+    return '<div class="msg-bubble '+m.type+'">' +
+      '<div>'+m.text+'</div>' +
+      '<div class="msg-time">'+m.time+'</div>' +
+      '<button class="msg-translate-btn" onclick="translateMsg(this,\''+encodeURIComponent(m.text)+'\',\''+m.type+'\')">'+(uiLang==='ko'?'번역 보기':'View Translation')+'</button>' +
+    '</div>';
+  }).join('');
+  thread.scrollTop = thread.scrollHeight;
+}
+
+function translateMsg(btn, encodedText, type) {
+  var text = decodeURIComponent(encodedText);
+  var isKo = /[가-힣]/.test(text);
+  var translated = isKo ?
+    '[EN] ' + text.replace(/안녕하세요/g,'Hello').replace(/감사합니다/g,'Thank you').replace(/라운드/g,'round').replace(/캐디/g,'caddy') :
+    '[KR] ' + text.replace(/Hello/g,'안녕하세요').replace(/Thank you/g,'감사합니다').replace(/round/g,'라운드').replace(/caddy/g,'캐디');
+  var bubble = btn.closest('.msg-bubble');
+  var textEl = bubble.querySelector('div');
+  if(btn.dataset.showing==='trans') {
+    textEl.textContent = text;
+    btn.textContent = uiLang==='ko'?'번역 보기':'View Translation';
+    btn.dataset.showing = '';
+  } else {
+    textEl.textContent = translated;
+    btn.textContent = uiLang==='ko'?'원문 보기':'View Original';
+    btn.dataset.showing = 'trans';
+  }
+}
+
+// ── AUTH ──
+var users = JSON.parse(localStorage.getItem('caddyUsers')||'[]');
+
+// 관리자 계정 (없으면 자동 추가)
+var adminExists = users.find(function(u){ return u.email==='tourjang@gmail.com' && u.role==='admin'; });
+if(!adminExists) {
+  users.push({
+    name:'PJ', email:'tourjang@gmail.com', pw:'Ygdp0115',
+    role:'admin', phone:'01081972504'
+  });
+  localStorage.setItem('caddyUsers', JSON.stringify(users));
+}
+
+function previewPhoto(input) {
+  if(!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  if(file.size > 2*1024*1024) {
+    showToast(uiLang==='ko'?'사진 크기는 2MB 이하여야 합니다.':'Photo must be under 2MB.');
+    input.value=''; return;
+  }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    window._photoBase64 = e.target.result;
+    document.getElementById('photoPreviewImg').src = e.target.result;
+    document.getElementById('photoPreview').style.display = 'block';
+    document.getElementById('photoPlaceholder').style.display = 'none';
+    document.getElementById('photoUploadArea').style.borderColor = 'var(--green)';
+  };
+  reader.readAsDataURL(file);
+}
+
+function openAuth(role) {
+  openModal('authModal');
+  // 저장된 로그인 정보 자동 입력
+  var savedEmail = localStorage.getItem('savedEmail');
+  var savedPw = localStorage.getItem('savedPw');
+  var saveChecked = localStorage.getItem('saveLoginChecked');
+  setTimeout(function(){
+    if(savedEmail) {
+      var emailEl = document.getElementById('loginEmail');
+      var pwEl = document.getElementById('loginPw');
+      var saveEl = document.getElementById('saveLogin');
+      if(emailEl) emailEl.value = savedEmail;
+      if(pwEl) pwEl.value = savedPw || '';
+      if(saveEl && saveChecked==='true') saveEl.checked = true;
+    }
+    if(role==='caddy') {
+      switchAuthTab('register');
+      selectRole('caddy');
+    } else {
+      switchAuthTab('login');
+    }
+  }, 50);
+}
+
+function switchAuthTab(tab) {
+  document.getElementById('loginForm').style.display = tab==='login'?'block':'none';
+  document.getElementById('registerForm').style.display = tab==='register'?'block':'none';
+  document.getElementById('tab-login').classList.toggle('active', tab==='login');
+  document.getElementById('tab-register').classList.toggle('active', tab==='register');
+}
+
+function selectRole(role) {
+  selectedRole = role;
+  document.getElementById('roleGuest').classList.toggle('active', role==='guest');
+  document.getElementById('roleCaddy').classList.toggle('active', role==='caddy');
+  document.getElementById('guestFields').style.display = role==='guest' ? 'block' : 'none';
+  document.getElementById('caddyFields').style.display = role==='caddy' ? 'block' : 'none';
+}
+
+var loginRole = 'guest';
+function selectLoginRole(role) {
+  loginRole = role;
+  document.getElementById('loginRoleGuest').classList.toggle('active', role==='guest');
+  document.getElementById('loginRoleCaddy').classList.toggle('active', role==='caddy');
+  document.getElementById('loginCaddyFields').style.display = role==='caddy'?'block':'none';
+}
+
+function doLogin() {
+  var email = document.getElementById('loginEmail').value.trim();
+  var pw = document.getElementById('loginPw').value;
+  if(!email || !pw) { showToast(uiLang==='ko'?'이메일과 비밀번호를 입력해 주세요.':'Please enter email and password.'); return; }
+  var user = users.find(function(u){ return u.email===email && u.pw===pw; });
+  if(!user) { showToast(uiLang==='ko'?'이메일 또는 비밀번호가 올바르지 않습니다.':'Invalid email or password.'); return; }
+
+  // 저장 체크박스 확인
+  var saveLogin = document.getElementById('saveLogin');
+  if(saveLogin && saveLogin.checked) {
+    localStorage.setItem('savedEmail', email);
+    localStorage.setItem('savedPw', pw);
+    localStorage.setItem('saveLoginChecked', 'true');
+    showToast(uiLang==='ko'?'로그인 정보가 저장되었습니다.':'Login info saved.');
+  } else {
+    localStorage.removeItem('savedEmail');
+    localStorage.removeItem('savedPw');
+    localStorage.removeItem('saveLoginChecked');
+  }
+
+  setCurrentUser(user);
+  closeModal('authModal');
+  if(user.role==='admin') {
+    showToast('관리자로 로그인되었습니다, PJ님!');
+  } else {
+    showToast((uiLang==='ko'?'환영합니다, ':'Welcome, ')+user.name+'!');
+  }
+}
+
+
+
+function doRegister() {
+  if(selectedRole === 'guest') {
+    // 골퍼: 이름 + 이메일 + 비밀번호
+    var name = document.getElementById('regName').value.trim();
+    var email = document.getElementById('regEmail').value.trim();
+    var pw = document.getElementById('regPw').value;
+    if(!name) { showToast(uiLang==='ko'?'이름을 입력해 주세요.':'Please enter your name.'); return; }
+    if(!email) { showToast(uiLang==='ko'?'이메일을 입력해 주세요.':'Please enter your email.'); return; }
+    if(!pw) { showToast(uiLang==='ko'?'비밀번호를 입력해 주세요.':'Please enter a password.'); return; }
+    if(users.find(function(u){return u.email===email;})) { showToast(uiLang==='ko'?'이미 등록된 이메일입니다.':'Email already registered.'); return; }
+    var user = {name:name, email:email, pw:pw, role:'guest'};
+    users.push(user);
+    localStorage.setItem('caddyUsers', JSON.stringify(users));
+    setCurrentUser(user);
+    closeModal('authModal');
+    showToast((uiLang==='ko'?'환영합니다, ':'Welcome, ')+name+'!');
+
+  } else {
+    // 캐디: ID + 풀네임 + 휴대폰 + 이메일 + 비밀번호 (필수)
+    var caddyId = document.getElementById('regCaddyId').value.trim();
+    var fullName = document.getElementById('regFullName').value.trim();
+    var phone = document.getElementById('regPhone').value.trim();
+    var email = document.getElementById('regEmailCaddy').value.trim();
+    var pw = document.getElementById('regPwCaddy').value;
+    if(!caddyId) { showToast(uiLang==='ko'?'캐디 ID 번호를 입력해 주세요.':'Please enter your Caddy ID.'); return; }
+    if(!fullName) { showToast(uiLang==='ko'?'풀네임을 영문으로 입력해 주세요.':'Please enter your full name in English.'); return; }
+    if(!phone) { showToast(uiLang==='ko'?'휴대폰 번호를 입력해 주세요.':'Please enter your phone number.'); return; }
+    if(!email) { showToast(uiLang==='ko'?'이메일을 입력해 주세요.':'Please enter your email.'); return; }
+    if(!pw) { showToast(uiLang==='ko'?'비밀번호를 입력해 주세요.':'Please enter a password.'); return; }
+    if(users.find(function(u){return u.email===email;})) { showToast(uiLang==='ko'?'이미 등록된 이메일입니다.':'Email already registered.'); return; }
+    var photoData = document.getElementById('regPhoto').files[0] ? window._photoBase64 || '' : '';
+    var user = {
+      name: fullName, email: email, pw: pw, role: 'caddy',
+      caddyId: caddyId, fullName: fullName, phone: phone,
+      course: document.getElementById('regCourse').value,
+      exp: document.getElementById('regExp').value,
+      korean: document.getElementById('regKo').value,
+      bio: document.getElementById('regBio').value,
+      kakao: document.getElementById('regKakao').value,
+      photo: photoData
+    };
+    users.push(user);
+    localStorage.setItem('caddyUsers', JSON.stringify(users));
+    setCurrentUser(user);
+    closeModal('authModal');
+    showToast((uiLang==='ko'?'가입 완료! 관리자 승인 후 프로필이 공개됩니다, ':'Registered! Profile visible after admin approval, ')+fullName+'!');
+  }
+}
+
+function setCurrentUser(user) {
+  currentUser = user;
+  document.getElementById('userBar').style.display = 'flex';
+  document.getElementById('userBarName').textContent = user.name;
+  document.getElementById('userBarRole').textContent = user.role==='admin'?'ADMIN':user.role==='caddy'?(uiLang==='ko'?'캐디':'CADDY'):(uiLang==='ko'?'골퍼':'GOLFER');
+  document.getElementById('loginBtn').style.display = 'none';
+}
+
+function logout() {
+  currentUser = null;
+  document.getElementById('userBar').style.display = 'none';
+  document.getElementById('loginBtn').style.display = 'block';
+  showToast(uiLang==='ko'?'로그아웃 되었습니다.':'Logged out.');
+}
+
+// ── MODAL ──
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(function(el) {
+  el.addEventListener('click', function(e) { if(e.target===el) el.classList.remove('open'); });
+});
+
+// ── TOAST ──
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+
+// ── SCROLL ──
+function goCaddies() {
+  var el = document.getElementById('caddySection');
+  if(!el) return;
+  var offset = el.getBoundingClientRect().top + window.pageYOffset - 80;
+  window.scrollTo({top: offset, behavior: 'smooth'});
+}
+
+function scrollToCaddies() { goCaddies(); }
+
+function handleCaddyRegister() {
+  if(currentUser) {
+    showToast(uiLang==='ko'?'이미 로그인되어 있습니다. 캐디 목록을 둘러보세요!':'You are already logged in. Browse our caddies!');
+    goCaddies();
+  } else {
+    openAuth('caddy');
+  }
+}
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', function() {
+  renderCaddies('all');
+
+  // 1. 자동 로그인 (저장된 정보)
+  var saveChecked = localStorage.getItem('saveLoginChecked');
+  if(saveChecked === 'true') {
+    var savedEmail = localStorage.getItem('savedEmail');
+    var savedPw = localStorage.getItem('savedPw');
+    if(savedEmail && savedPw) {
+      var autoUser = users.find(function(u){ return u.email===savedEmail && u.pw===savedPw; });
+      if(autoUser) { setCurrentUser(autoUser); return; }
+    }
+  }
+
+  // 2. 세션 유지 (새로고침 시)
+  var savedUser = localStorage.getItem('caddyCurrentUser');
+  if(savedUser) {
+    try { setCurrentUser(JSON.parse(savedUser)); } catch(e) {}
+  }
+});
+</script>
+</body>
+</html>
