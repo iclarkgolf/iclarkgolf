@@ -1131,6 +1131,24 @@ function doRegister() {
     setCurrentUser(user);
     closeModal('authModal');
     showToast((uiLang==='ko'?'가입 완료! 관리자 승인 후 프로필이 공개됩니다, ':'Registered! Profile visible after admin approval, ')+fullName+'!');
+
+    // Google Sheets에 캐디 정보 저장
+    fetch('https://script.google.com/macros/s/AKfycbzqKEb-lnHfCO32Q1_w1pS6rv1hn0l5M2vTC3UGoNOvJIAB0VZe-XcH9O6biKZHktaE/exec', {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        caddyId: user.caddyId,
+        course: user.course,
+        exp: user.exp,
+        korean: user.korean,
+        bio: user.bio,
+        kakao: user.kakao
+      })
+    }).catch(function(err){ console.log('Sheet 저장 오류:', err); });
   }
 }
 
