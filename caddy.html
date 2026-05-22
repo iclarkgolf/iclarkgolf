@@ -1133,7 +1133,7 @@ function doRegister() {
     showToast((uiLang==='ko'?'가입 완료! 관리자 승인 후 프로필이 공개됩니다, ':'Registered! Profile visible after admin approval, ')+fullName+'!');
 
     // Google Sheets에 캐디 정보 저장
-    fetch('https://script.google.com/macros/s/AKfycbzqKEb-lnHfCO32Q1_w1pS6rv1hn0l5M2vTC3UGoNOvJIAB0VZe-XcH9O6biKZHktaE/exec', {
+    fetch('https://script.google.com/macros/s/AKfycbz7JLSat2vrPEagEYDnqz0zpaG_Ph482fPsC4fTe9-HVvUnYEe_azr59A9SOoU-_BU/exec', {
       method: 'POST',
       mode: 'no-cors',
       headers: {'Content-Type': 'application/json'},
@@ -1200,9 +1200,52 @@ function handleCaddyRegister() {
   }
 }
 
+// ── Google Sheets 승인 캐디 불러오기 ──
+function loadApprovedCaddiesFromSheet() {
+  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz7JLSat2vrPEagEYDnqz0zpaG_Ph482fPsC4fTe9-HVvUnYEe_azr59A9SOoU-_BU/exec';
+  var script = document.createElement('script');
+  window._sheetCallback = function(data) {
+    if(!data || !data.data || data.data.length < 2) return;
+    var rows = data.data;
+    var newCaddies = [];
+    for(var i = 1; i < rows.length; i++) {
+      var row = rows[i];
+      if(!row || row.length < 11) continue;
+      var status = row[10] || '';
+      if(status !== '승인') continue;
+      newCaddies.push({
+        id: 100 + i,
+        name: row[1] || '',
+        nameKo: row[1] || '',
+        course: 'pradera',
+        courseName: row[5] || 'Pradera C.C.',
+        courseNameKo: row[5] || '프라데라 C.C.',
+        exp: parseInt(row[6]) || 0,
+        korean: row[7] || 'basic',
+        koreanLabel: row[7] || '한국어 기초',
+        age: 25,
+        bio: row[8] || '',
+        bioKo: row[8] || '',
+        tags: ['신규 캐디'],
+        tagsEn: ['New Caddy'],
+        kakao: row[9] || '',
+        likes: 0,
+        emoji: '🏌️'
+      });
+    }
+    if(newCaddies.length > 0) {
+      caddies = caddies.concat(newCaddies);
+      renderCaddies(currentFilter || 'all');
+    }
+  };
+  script.src = SCRIPT_URL + '?callback=_sheetCallback';
+  document.head.appendChild(script);
+}
+
 // ── INIT ──
 document.addEventListener('DOMContentLoaded', function() {
   renderCaddies('all');
+  loadApprovedCaddiesFromSheet();
 
   // 1. 자동 로그인 (저장된 정보)
   var saveChecked = localStorage.getItem('saveLoginChecked');
