@@ -300,7 +300,8 @@ function goPost(p) {
     'p1': 'blog-p1.html',
     'p2': 'blog-p2.html',
     'p3': 'blog-p3.html',
-    'p4': 'blog-p4.html'
+    'p4': 'blog-p4.html',
+    'p5': 'blog-p5.html'
   };
   if (urlMap[id]) {
     window.location.href = urlMap[id];
@@ -345,6 +346,18 @@ renderFilters();renderPosts();
 // 기본 글 — localStorage 초기화 후 DEFAULT_POSTS로 덮어쓰기
 (function(){
   var DEFAULT_POSTS = [
+    {
+      id: "p5",
+      title: "골퍼의 한(恨)을 풀어드립니다 — 프라데라에서 7일, 당신의 골프가 달라집니다",
+      category: "골프 팁",
+      author: "투어장",
+      thumbnail: "https://iclarkgolf.com/images/pradera-golf-06.jpg",
+      content: "레슨을 받아도 안 잡히는 스윙, 필드만 나가면 무너지는 멘탈, 내기 골프가 두려운 백돌이. 골퍼라면 누구나 한(恨) 하나씩 있습니다. 프라데라 용광로 속에서 7일, 그 한을 시원하게 풀어드립니다.",
+      status: "approved",
+      createdAt: "2026-05-22T15:00:00",
+      approvedAt: "2026-05-22T15:00:00",
+      views: 0
+    },
     {
       id: "p1",
       title: "7·8월 여름 휴가, 골프 전지훈련으로 바꿔보세요 — 필리핀 클락 프라데라 완벽 가이드",
