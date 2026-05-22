@@ -396,13 +396,8 @@ renderFilters();renderPosts();
   ];
 
   // localStorage 완전 초기화 후 DEFAULT_POSTS로 설정
-  var saved = [];
-  try { saved = JSON.parse(localStorage.getItem("blog_posts") || "[]"); } catch(e) { saved = []; }
-  var defaultIds = DEFAULT_POSTS.map(function(p){ return p.id; });
-  // 관리자가 추가한 글만 유지 (기본 글 제외)
-  var extraPosts = saved.filter(function(p){ return defaultIds.indexOf(p.id) === -1; });
-  var merged = DEFAULT_POSTS.concat(extraPosts);
-  localStorage.setItem("blog_posts", JSON.stringify(merged));
+  localStorage.removeItem("blog_posts");
+  localStorage.setItem("blog_posts", JSON.stringify(DEFAULT_POSTS));
   renderPosts();
 })();
 </script>
