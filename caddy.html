@@ -500,7 +500,7 @@ nav {
 <div class="modal-overlay" id="authModal">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title" id="authTitle">로그인 / 회원가입</div>
+      <div class="modal-title" id="authTitle">Login / Sign Up</div>
       <button class="modal-close" onclick="closeModal('authModal')">✕</button>
     </div>
     <div class="modal-body">
@@ -513,7 +513,7 @@ nav {
             onmouseover="this.style.borderColor='var(--green)';this.style.background='#f4faf7'"
             onmouseout="this.style.borderColor='#ddd';this.style.background='#fff'">
             <div style="font-size:32px;margin-bottom:8px;">⛳</div>
-            <div style="font-size:15px;font-weight:700;color:#1b4332;">골퍼</div>
+            <div style="font-size:15px;font-weight:700;color:#1b4332;">Golfer</div>
             <div style="font-size:11px;color:#999;margin-top:4px;">캐디를 찾는 고객</div>
           </button>
           <button onclick="selectAuthType('caddy')" style="flex:1;padding:24px 10px;border:2px solid #ddd;border-radius:14px;background:#fff;cursor:pointer;transition:all 0.2s;"
@@ -533,46 +533,46 @@ nav {
           <div style="font-size:15px;font-weight:700;color:#1b4332;">⛳ 골퍼 로그인 / 회원가입</div>
         </div>
         <div class="auth-tabs">
-          <div class="auth-tab active" onclick="switchGolferTab('login')" id="golfer-tab-login">로그인</div>
+          <div class="auth-tab active" onclick="switchGolferTab('login')" id="golfer-tab-login">Login</div>
           <div class="auth-tab" onclick="switchGolferTab('register')" id="golfer-tab-register">회원가입</div>
         </div>
         <div id="golferLoginForm">
           <div class="form-group">
-            <label class="form-label">이메일</label>
+            <label class="form-label">Email</label>
             <input type="email" class="form-input" id="loginEmail" placeholder="example@email.com">
           </div>
           <div class="form-group">
-            <label class="form-label">비밀번호</label>
+            <label class="form-label">Password</label>
             <input type="password" class="form-input" id="loginPw" placeholder="••••••••">
           </div>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
             <input type="checkbox" id="saveLogin" style="width:16px;height:16px;accent-color:var(--green);cursor:pointer;">
-            <label for="saveLogin" style="font-size:13px;color:#888;cursor:pointer;">아이디 · 비밀번호 저장</label>
+            <label for="saveLogin" style="font-size:13px;color:#888;cursor:pointer;">Save login info</label>
           </div>
-          <button class="form-btn" onclick="doLogin()" style="background:var(--green);">로그인</button>
+          <button class="form-btn" onclick="doLogin()" style="background:var(--green);">Login</button>
           <p style="text-align:center;margin-top:14px;font-size:13px;color:#888;">
             계정이 없으신가요? <a href="#" onclick="switchGolferTab('register')" style="color:var(--green);font-weight:600;">회원가입</a>
           </p>
         </div>
         <div id="golferRegisterForm" style="display:none;">
           <div style="background:#f4f9f6;border-left:3px solid var(--green);padding:10px 14px;margin-bottom:16px;font-size:12px;color:#2d6a4f;">
-            이름과 이메일만 입력하시면 바로 이용 가능합니다! 😊
+            Just enter your name and email to get started! 😊
           </div>
           <div class="form-group">
             <label class="form-label">이름 *필수</label>
             <input type="text" class="form-input" id="regName" placeholder="홍길동">
           </div>
           <div class="form-group">
-            <label class="form-label">이메일 *필수</label>
+            <label class="form-label">Email *Required</label>
             <input type="email" class="form-input" id="regEmail" placeholder="example@email.com">
           </div>
           <div class="form-group">
-            <label class="form-label">비밀번호 *필수</label>
+            <label class="form-label">Password *Required</label>
             <input type="password" class="form-input" id="regPw" placeholder="••••••••">
           </div>
           <button class="form-btn" onclick="doRegisterGolfer()" style="background:var(--green);">가입하기</button>
           <p style="text-align:center;margin-top:14px;font-size:13px;color:#888;">
-            이미 계정이 있으신가요? <a href="#" onclick="switchGolferTab('login')" style="color:var(--green);font-weight:600;">로그인</a>
+            Already have an account? <a href="#" onclick="switchGolferTab('login')" style="color:var(--green);font-weight:600;">Login</a>
           </p>
         </div>
       </div>
@@ -581,22 +581,22 @@ nav {
       <div id="caddyAuthArea" style="display:none;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
           <button onclick="backToTypeSelect()" style="background:none;border:none;cursor:pointer;font-size:20px;color:#888;">←</button>
-          <div style="font-size:15px;font-weight:700;color:#1b4332;">🏌️ 캐디 로그인 / 등록</div>
+          <div style="font-size:15px;font-weight:700;color:#1b4332;">🏌️ Caddy Login / Register</div>
         </div>
         <div class="auth-tabs">
-          <div class="auth-tab active" onclick="switchCaddyTab('login')" id="caddy-tab-login">로그인</div>
-          <div class="auth-tab" onclick="switchCaddyTab('register')" id="caddy-tab-register">신규 등록</div>
+          <div class="auth-tab active" onclick="switchCaddyTab('login')" id="caddy-tab-login">Login</div>
+          <div class="auth-tab" onclick="switchCaddyTab('register')" id="caddy-tab-register">New Registration</div>
         </div>
         <div id="caddyLoginForm">
           <div class="form-group">
-            <label class="form-label">이메일</label>
+            <label class="form-label">Email</label>
             <input type="email" class="form-input" id="caddyLoginEmail" placeholder="example@email.com">
           </div>
           <div class="form-group">
-            <label class="form-label">비밀번호</label>
+            <label class="form-label">Password</label>
             <input type="password" class="form-input" id="caddyLoginPw" placeholder="••••••••">
           </div>
-          <button class="form-btn" onclick="doCaddyLogin()" style="background:var(--gold);color:#1b4332;">로그인</button>
+          <button class="form-btn" onclick="doCaddyLogin()" style="background:var(--gold);color:#1b4332;">Login</button>
           <p style="text-align:center;margin-top:14px;font-size:13px;color:#888;">
             New caddy? <a href="#" onclick="switchCaddyTab('register')" style="color:#b85c00;font-weight:600;">Register here</a>
           </p>
@@ -1080,7 +1080,7 @@ function selectAuthType(type) {
     document.getElementById('authTitle').textContent = '골퍼 로그인';
   } else {
     document.getElementById('caddyAuthArea').style.display = 'block';
-    document.getElementById('authTitle').textContent = '캐디 로그인';
+    document.getElementById('authTitle').textContent = 'Caddy Login';
   }
 }
 
@@ -1088,7 +1088,7 @@ function backToTypeSelect() {
   document.getElementById('authTypeSelect').style.display = 'block';
   document.getElementById('golferAuthArea').style.display = 'none';
   document.getElementById('caddyAuthArea').style.display = 'none';
-  document.getElementById('authTitle').textContent = '로그인 / 회원가입';
+  document.getElementById('authTitle').textContent = 'Login / Sign Up';
 }
 
 function switchGolferTab(tab) {
@@ -1132,7 +1132,7 @@ function doRegisterGolfer() {
   users.push(user);
   localStorage.setItem('caddyUsers', JSON.stringify(users));
   var loginLogs = JSON.parse(localStorage.getItem('loginLogs')||'[]');
-  loginLogs.unshift({name:name, email:email, role:'골퍼(신규)', time:new Date().toLocaleString('ko-KR')});
+  loginLogs.unshift({name:name, email:email, role:'Golfer(New)', time:new Date().toLocaleString('ko-KR')});
   localStorage.setItem('loginLogs', JSON.stringify(loginLogs.slice(0,100)));
   setCurrentUser(user);
   closeModal('authModal');
@@ -1223,7 +1223,7 @@ function doRegister() {
     users.push(user);
     localStorage.setItem('caddyUsers', JSON.stringify(users));
     var loginLogs = JSON.parse(localStorage.getItem('loginLogs')||'[]');
-    loginLogs.unshift({name:name, email:email, role:'골퍼(신규)', time:new Date().toLocaleString('ko-KR')});
+    loginLogs.unshift({name:name, email:email, role:'Golfer(New)', time:new Date().toLocaleString('ko-KR')});
     localStorage.setItem('loginLogs', JSON.stringify(loginLogs.slice(0,100)));
     setCurrentUser(user);
     closeModal('authModal');
@@ -1315,7 +1315,7 @@ function openAdminPanel() {
       </div>
       <div style="display:flex;gap:0;border-bottom:2px solid #eee;margin-bottom:16px;">
         <button onclick="switchAdminTab('photo',this)" id="adminTab-photo" style="flex:1;padding:10px;background:var(--green);color:#fff;border:none;font-weight:700;font-size:13px;cursor:pointer;border-radius:0;">📸 사진 업로드</button>
-        <button onclick="switchAdminTab('logs',this)" id="adminTab-logs" style="flex:1;padding:10px;background:#eee;color:#333;border:none;font-weight:700;font-size:13px;cursor:pointer;border-radius:0;">👤 로그인 기록</button>
+        <button onclick="switchAdminTab('logs',this)" id="adminTab-logs" style="flex:1;padding:10px;background:#eee;color:#333;border:none;font-weight:700;font-size:13px;cursor:pointer;border-radius:0;">👤 Login Logs</button>
         <button onclick="switchAdminTab('reset',this)" id="adminTab-reset" style="flex:1;padding:10px;background:#eee;color:#333;border:none;font-weight:700;font-size:13px;cursor:pointer;border-radius:0;">🗑 초기화</button>
       </div>
       <div id="adminTabPhoto" style="padding:0 0 20px 0;">
