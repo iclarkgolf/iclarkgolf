@@ -430,11 +430,8 @@ nav {
     <span data-ko="필리핀 클락 최고의 캐디를 직접 선택하세요. 프라데라, 베버리힐스 소속 캐디들의 프로필을 보고, 메시지를 나누고, 잊지 못할 라운드를 준비하세요." data-en="Choose your perfect caddy in Clark, Philippines. Browse profiles from Pradera Verde and Beverly Hills courses, exchange messages, and prepare for an unforgettable round.">필리핀 클락 최고의 캐디를 직접 선택하세요. 프라데라, 베버리힐스 소속 캐디들의 프로필을 보고, 메시지를 나누고, 잊지 못할 라운드를 준비하세요.</span>
   </p>
   <div class="hero-btns">
-    <button class="btn-primary" onclick="goCaddies()">
+    <button class="btn-primary" onclick="goCaddiesAndLogin()">
       <span data-ko="캐디 둘러보기" data-en="Browse Caddies">캐디 둘러보기</span>
-    </button>
-    <button class="btn-outline" onclick="handleCaddyRegister()">
-      <span data-ko="캐디로 등록하기" data-en="Register as Caddy">캐디로 등록하기</span>
     </button>
   </div>
 </div>
@@ -1368,6 +1365,15 @@ function goCaddies() {
   if(!el) return;
   var offset = el.getBoundingClientRect().top + window.pageYOffset - 80;
   window.scrollTo({top: offset, behavior: 'smooth'});
+}
+
+function goCaddiesAndLogin() {
+  goCaddies();
+  if(!currentUser) {
+    setTimeout(function(){
+      openAuth('guest');
+    }, 600);
+  }
 }
 
 function scrollToCaddies() { goCaddies(); }
