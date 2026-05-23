@@ -1162,6 +1162,9 @@ function setCurrentUser(user) {
   document.getElementById('userBarName').textContent = user.name;
   document.getElementById('userBarRole').textContent = user.role==='admin'?'ADMIN':user.role==='caddy'?(uiLang==='ko'?'캐디':'CADDY'):(uiLang==='ko'?'골퍼':'GOLFER');
   document.getElementById('loginBtn').style.display = 'none';
+  // 관리자 버튼 표시 (자동로그인 포함)
+  var adminBtn = document.getElementById('adminPhotoBtn');
+  if(adminBtn) adminBtn.style.display = user.role==='admin' ? 'inline-block' : 'none';
 }
 
 // ── 관리자 사진 업로드 패널 ──
