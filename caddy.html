@@ -1350,7 +1350,7 @@ function loadApprovedCaddiesFromSheet() {
       });
     }
     if(newCaddies.length > 0) {
-      caddies = caddies.concat(newCaddies);
+      caddies = newCaddies.concat(caddies);
       renderCaddies(currentFilter || 'all');
     }
   };
