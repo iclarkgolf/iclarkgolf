@@ -506,10 +506,65 @@ footer p { color:rgba(255,255,255,0.35); font-size:12px; letter-spacing:1px; }
   to { opacity:1; transform:translateY(0); }
 }
 
+/* 햄버거 버튼 */
+.hamburger {
+  display:none;
+  flex-direction:column;
+  gap:5px;
+  cursor:pointer;
+  background:none;
+  border:none;
+  padding:6px;
+  z-index:200;
+}
+.hamburger span {
+  display:block;
+  width:24px;
+  height:2px;
+  background:#fff;
+  border-radius:2px;
+  transition:all 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform:rotate(45deg) translate(5px,5px); }
+.hamburger.open span:nth-child(2) { opacity:0; }
+.hamburger.open span:nth-child(3) { transform:rotate(-45deg) translate(5px,-5px); }
+
+/* 모바일 풀스크린 메뉴 */
+.mobile-menu {
+  display:none;
+  position:fixed;
+  top:0; left:0; right:0; bottom:0;
+  background:rgba(13,31,23,0.98);
+  z-index:150;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:32px;
+}
+.mobile-menu.open { display:flex; }
+.mobile-menu a {
+  color:#fff;
+  text-decoration:none;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:28px;
+  letter-spacing:3px;
+  transition:color 0.2s;
+}
+.mobile-menu a:hover { color:var(--gold); }
+.mobile-menu a.gold { color:var(--gold); }
+.mobile-menu-close {
+  position:absolute;
+  top:20px; right:20px;
+  background:none; border:none;
+  color:#fff; font-size:32px;
+  cursor:pointer;
+}
+
 /* MOBILE */
 @media(max-width:768px) {
   nav { padding:14px 20px; }
   .nav-links { display:none; }
+  .hamburger { display:flex; }
   .stats-bar { grid-template-columns:repeat(2,1fr); gap:16px; padding:24px 20px; }
   .stat-item { border-right:none; }
   .section { padding:60px 20px; }
@@ -1233,7 +1288,6 @@ body.lang-en span.kr { display:none !important; }
   <div class="nav-logo">i<span>Clark</span> Golf</div>
   <div class="nav-links">
     <a href="#instructor"><span class="kr">인스트럭터</span><span class="en">Instructor</span></a>
-    <a href="#why"><span class="kr">왜 우리인가</span><span class="en">Why Us</span></a>
     <a href="#packages"><span class="kr">패키지</span><span class="en">Packages</span></a>
     <a href="caddy.html" style="color:var(--gold);font-weight:700;letter-spacing:1px;"><span class="kr">🏌️ 캐디 매칭</span><span class="en">🏌️ Caddy Match</span></a>
     <a href="#gallery"><span class="kr">갤러리</span><span class="en">Gallery</span></a>
@@ -1245,6 +1299,9 @@ body.lang-en span.kr { display:none !important; }
       <span class="kr">예약하기</span><span class="en">Book Now</span>
     </a>
   </div>
+  <button class="hamburger" id="hamburgerBtn" onclick="toggleMobileMenu()">
+    <span></span><span></span><span></span>
+  </button>
   <div class="lang-toggle">
     <button class="lang-btn active" onclick="setLang('kr')">KOR</button>
     <button class="lang-btn" onclick="setLang('en')">ENG</button>
@@ -1267,6 +1324,20 @@ body.lang-en span.kr { display:none !important; }
   onmouseout="this.style.background='rgba(244,162,97,0.15)'"
   title="관리자">⚙ ADMIN</button>
 </nav>
+
+<!-- 모바일 메뉴 -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-menu-close" onclick="closeMobileMenu()">✕</button>
+  <a href="#instructor" onclick="closeMobileMenu()"><span class="kr">인스트럭터</span><span class="en">Instructor</span></a>
+  <a href="#packages" onclick="closeMobileMenu()"><span class="kr">패키지</span><span class="en">Packages</span></a>
+  <a href="caddy.html" class="gold"><span class="kr">🏌️ 캐디 매칭</span><span class="en">🏌️ Caddy Match</span></a>
+  <a href="#gallery" onclick="closeMobileMenu()"><span class="kr">갤러리</span><span class="en">Gallery</span></a>
+  <a href="#location" onclick="closeMobileMenu()"><span class="kr">위치</span><span class="en">Location</span></a>
+  <a href="#contact" onclick="closeMobileMenu()"><span class="kr">문의</span><span class="en">Contact</span></a>
+  <a href="#community" onclick="closeMobileMenu();renderCommunityReviews()"><span class="kr">커뮤니티</span><span class="en">Community</span></a>
+  <a href="blog.html"><span class="kr">블로그</span><span class="en">Blog</span></a>
+  <a href="#" onclick="openBooking();closeMobileMenu();return false;" style="background:var(--gold);color:var(--dark);padding:14px 40px;border-radius:4px;font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:700;letter-spacing:0;"><span class="kr">예약하기</span><span class="en">Book Now</span></a>
+</div>
 
 <!-- HERO -->
 <section class="hero">
@@ -2211,6 +2282,19 @@ body.lang-en span.kr { display:none !important; }
 </footer>
 
 <script>
+// ── 햄버거 메뉴 ──
+function toggleMobileMenu() {
+  var menu = document.getElementById('mobileMenu');
+  var btn = document.getElementById('hamburgerBtn');
+  menu.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+function closeMobileMenu() {
+  var menu = document.getElementById('mobileMenu');
+  var btn = document.getElementById('hamburgerBtn');
+  menu.classList.remove('open');
+  btn.classList.remove('open');
+}
 
 // Embed image as base64
 const img1 = "images/hero.jpg";
