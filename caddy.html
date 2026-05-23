@@ -879,9 +879,6 @@ function openDetail(id, focusMsg) {
     '</div>';
   }).join('');
 
-  var msgCount = msgs.filter(function(m){return m.type==='sent';}).length;
-  var maxFree = 5;
-  var remaining = maxFree - msgCount;
 
   document.getElementById('detailModalBody').innerHTML =
     '<div class="detail-img">'+(c.photo ? '<img src="'+c.photo+'" style="width:160px;height:160px;object-fit:cover;border-radius:50%;border:4px solid var(--gold);">' : '<span style="font-size:100px;">'+c.emoji+'</span>')+'</div>' +
@@ -910,8 +907,8 @@ function openDetail(id, focusMsg) {
       '</div>' +
       '<div class="msg-notice">' +
         (uiLang==='ko' ?
-          '사이트 내 메시지 <strong>'+(maxFree - msgCount)+'회</strong> 남았습니다. 이후 카카오톡으로 연결됩니다.' :
-          '<strong>'+(maxFree - msgCount)+'</strong> free messages remaining. Connect via KakaoTalk afterwards.') +
+          '캐디와 자유롭게 대화하세요. 예약은 카카오톡으로도 가능합니다.' :
+          'Chat freely with your caddy. Booking is also available via KakaoTalk.') +
       '</div>' +
     '</div>';
 
@@ -934,12 +931,6 @@ async function sendMsg(caddyId) {
   if(!text) return;
 
   if(!messages[caddyId]) messages[caddyId] = [];
-  var sentCount = messages[caddyId].filter(function(m){return m.type==='sent';}).length;
-  if(sentCount >= 5) {
-    showToast(uiLang==='ko'?'무료 메시지 5회를 모두 사용했습니다. 카카오톡으로 연락해 주세요!':'Free messages used. Please contact via KakaoTalk!');
-    return;
-  }
-
   var now = new Date();
   var time = now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();
   messages[caddyId].push({type:'sent', text:text, time:time});
