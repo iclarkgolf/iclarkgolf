@@ -395,6 +395,7 @@ nav {
   .user-bar { padding:8px 16px; }
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -659,6 +660,22 @@ nav {
             <label class="form-label">KakaoTalk ID</label>
             <input type="text" class="form-input" id="regKakao" placeholder="kakao_id">
           </div>
+          <!-- 사진 안내 -->
+          <div style="background:#fff8f0;border:1.5px solid #f4a261;border-radius:10px;padding:14px 16px;margin-bottom:16px;">
+            <div style="font-size:13px;font-weight:700;color:#b85c00;margin-bottom:10px;">📸 Profile Photo</div>
+            <div style="display:flex;gap:14px;align-items:flex-start;">
+              <div style="flex:1;font-size:12px;color:#7a4500;line-height:1.8;">
+                Please send your profile photo to us via KakaoTalk.<br>
+                Channel: <strong>@iclarkgolf</strong><br>
+                <a href="http://pf.kakao.com/_nbHKX/chat" target="_blank" style="color:#b85c00;font-weight:700;">pf.kakao.com/_nbHKX/chat</a><br>
+                <span style="color:#aaa;font-size:11px;">* Photo added after admin approval.</span>
+              </div>
+              <div style="flex-shrink:0;text-align:center;">
+                <div id="regPhotoQR" style="width:80px;height:80px;background:#fff;border-radius:8px;border:2px solid #f9e000;padding:4px;display:flex;align-items:center;justify-content:center;"></div>
+                <div style="font-size:10px;color:#b85c00;margin-top:4px;font-weight:700;">Scan to chat</div>
+              </div>
+            </div>
+          </div>
           <button class="form-btn" onclick="doRegisterCaddy()" style="background:var(--gold);color:#1b4332;">Register as Caddy</button>
           <p style="text-align:center;margin-top:10px;font-size:11px;color:#aaa;">Your profile will be visible after admin approval</p>
         </div>
@@ -698,87 +715,8 @@ function setUILang(lang) {
   renderCaddies(currentFilter);
 }
 
-// ── 더미 캐디 데이터 ──
-var caddies = [
-  {
-    id:1, name:'Maria Santos', nameKo:'마리아 산토스',
-    course:'pradera', courseName:'Pradera C.C.', courseNameKo:'프라데라 C.C.',
-    exp:9, korean:'advanced', koreanLabel:'한국어 고급',
-    age:28,
-    bio:'Hi! I have 9 years of experience at Pradera Verde. I specialize in helping Korean golfers feel comfortable on the course. I love making every round enjoyable!',
-    bioKo:'안녕하세요! 프라데라에서 9년 경력의 캐디입니다. 한국 골퍼분들이 편안하게 라운드를 즐길 수 있도록 최선을 다합니다.',
-    tags:['한국어 가능','초보자 환영','라운드 전략'],
-    tagsEn:['Korean Speaker','Beginner Friendly','Course Strategy'],
-    kakao:'maria_caddy', likes:47, emoji:'👩'
-  },
-  {
-    id:2, name:'Jun Dela Cruz', nameKo:'준 델라 크루즈',
-    course:'pradera', courseName:'Pradera C.C.', courseNameKo:'프라데라 C.C.',
-    exp:12, korean:'intermediate', koreanLabel:'한국어 중급',
-    age:34,
-    bio:'12 years caddy experience at Pradera Verde. I know every inch of the 36-hole championship course. I can help you with distance control and course management.',
-    bioKo:'프라데라 베르데 36홀을 손바닥처럼 아는 12년 경력 캐디입니다. 거리 조절과 코스 공략을 도와드립니다.',
-    tags:['코스 전문가','거리 조절','싱글 대상'],
-    tagsEn:['Course Expert','Distance Control','Single Digit Golfers'],
-    kakao:'jun_caddy', likes:63, emoji:'👨'
-  },
-  {
-    id:3, name:'Ana Reyes', nameKo:'아나 레예스',
-    course:'beverly', courseName:'Beverly C.C.', courseNameKo:'베버리 C.C.',
-    exp:6, korean:'advanced', koreanLabel:'한국어 고급',
-    age:25,
-    bio:'Young and energetic caddy at Beverly Hills Golf Club! I studied Korean for 3 years and love helping Korean golfers. Beginners are very welcome!',
-    bioKo:'베버리힐스 소속 활기찬 캐디입니다! 한국어를 3년간 공부했어요. 초보 골퍼분들도 편하게 오세요!',
-    tags:['한국어 능통','주니어 환영','밝은 분위기'],
-    tagsEn:['Korean Fluent','Junior Welcome','Positive Energy'],
-    kakao:'ana_beverly', likes:38, emoji:'👩'
-  },
-  {
-    id:4, name:'Rico Manalo', nameKo:'리코 마날로',
-    course:'beverly', courseName:'Beverly C.C.', courseNameKo:'베버리 C.C.',
-    exp:15, korean:'basic', koreanLabel:'한국어 기초',
-    age:40,
-    bio:'15 years of professional caddy experience. I have caddied for many professional tournaments. Serious golfers who want to improve their game — I am your caddy.',
-    bioKo:'15년 프로 캐디 경력. 다수의 프로 토너먼트 경험. 실력 향상을 원하는 진지한 골퍼를 환영합니다.',
-    tags:['베테랑','프로 토너먼트 경험','멘탈 관리'],
-    tagsEn:['Veteran','Tournament Experience','Mental Game'],
-    kakao:'rico_pro', likes:81, emoji:'👨'
-  },
-  {
-    id:5, name:'Grace Tan', nameKo:'그레이스 탄',
-    course:'pradera', courseName:'Pradera C.C.', courseNameKo:'프라데라 C.C.',
-    exp:7, korean:'advanced', koreanLabel:'한국어 고급',
-    age:29,
-    bio:'I am passionate about helping golfers of all levels. I know Pradera Verde inside out and can help you navigate every water hazard and tricky green.',
-    bioKo:'모든 레벨의 골퍼를 도울 수 있어 행복합니다. 프라데라 워터 해저드와 까다로운 그린 공략을 도와드립니다.',
-    tags:['한국어 가능','여성 캐디','워터홀 전략'],
-    tagsEn:['Korean Speaker','Female Caddy','Water Hole Strategy'],
-    kakao:'grace_pradera', likes:52, emoji:'👩'
-  },
-  {
-    id:6, name:'Carlo Bautista', nameKo:'카를로 바우티스타',
-    course:'pradera', courseName:'Pradera C.C.', courseNameKo:'프라데라 C.C.',
-    exp:10, korean:'intermediate', koreanLabel:'한국어 중급',
-    age:32,
-    bio:'10 years at Pradera Verde. I specialize in helping mid-handicap golfers break 90. My caddy advice has helped dozens of Korean golfers improve their scores.',
-    bioKo:'10년 경력. 90타 돌파를 목표로 하는 중급 골퍼 전문. 많은 한국 골퍼들의 스코어 향상을 도왔습니다.',
-    tags:['90타 돌파','중급자 전문','스코어 향상'],
-    tagsEn:['Break 90','Mid Handicap','Score Improvement'],
-    kakao:'carlo_caddy', likes:44, emoji:'👨'
-  },
-  {
-    id:7, name:'Rhia Carlos', nameKo:'리아 카를로스',
-    course:'beverly', courseName:'Beverly C.C.', courseNameKo:'베버리 C.C.',
-    exp:5, korean:'native', koreanLabel:'한국어 원어민',
-    age:28,
-    bio:'Hi! I am Rhia, a professional caddy at Beverly Hills Golf Club with 5 years of experience. I love helping golfers enjoy every round. Feel free to contact me anytime!',
-    bioKo:'안녕하세요! 베버리힐스 골프장 소속 5년 경력 캐디 Rhia입니다. 골퍼분들이 즐거운 라운드를 할 수 있도록 최선을 다합니다. 언제든지 연락 주세요!',
-    tags:['한국어 원어민','친절한 캐디','베버리 전문'],
-    tagsEn:['Korean Native','Friendly Caddy','Beverly Specialist'],
-    photo:'images/caddy-beverly-01.jpg',
-    kakao:'rhia_carlos', likes:0, emoji:'👩'
-  }
-];
+// ── 캐디 데이터 (Google Sheets에서 자동 로드) ──
+var caddies = [];
 
 var currentFilter = 'all';
 var currentUser = null;
@@ -1566,31 +1504,44 @@ function loadApprovedCaddiesFromSheet() {
         var m = photoUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
         if(m) photoUrl = 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w400';
       }
+      // 골프장 코스 ID 매핑
+      var courseName = row[5] || '';
+      var courseId = 'beverly';
+      if(courseName.toLowerCase().indexOf('pradera') !== -1) courseId = 'pradera';
+      else if(courseName.toLowerCase().indexOf('mimosa') !== -1) courseId = 'mimosa';
+      else if(courseName.toLowerCase().indexOf('luisita') !== -1) courseId = 'luisita';
+      else if(courseName.toLowerCase().indexOf('royal') !== -1) courseId = 'royal';
+
+      // 한국어 수준 매핑
+      var korean = (row[7] || 'basic').toLowerCase();
+      var koreanLabel = 'Basic Korean';
+      if(korean === 'native') koreanLabel = 'Korean Native';
+      else if(korean === 'advanced') koreanLabel = 'Korean Advanced';
+      else if(korean === 'intermediate') koreanLabel = 'Korean Intermediate';
+
       newCaddies.push({
         id: 100 + i,
         name: row[1] || '',
         nameKo: row[1] || '',
-        course: 'pradera',
-        courseName: row[5] || 'Pradera C.C.',
-        courseNameKo: row[5] || '프라데라 C.C.',
+        course: courseId,
+        courseName: courseName,
+        courseNameKo: courseName,
         exp: parseInt(row[6]) || 0,
-        korean: row[7] || 'basic',
-        koreanLabel: row[7] || '한국어 기초',
+        korean: korean,
+        koreanLabel: koreanLabel,
         age: 25,
-        bio: row[8] || '',
-        bioKo: row[8] || '',
-        tags: ['신규 캐디'],
-        tagsEn: ['New Caddy'],
+        bio: row[8] || 'Professional caddy at ' + courseName,
+        bioKo: row[8] || courseName + ' 소속 전문 캐디',
+        tags: [koreanLabel, courseName],
+        tagsEn: [koreanLabel, courseName],
         kakao: row[9] || '',
         likes: 0,
         emoji: '🏌️',
         photo: photoUrl
       });
     }
-    if(newCaddies.length > 0) {
-      caddies = newCaddies.concat(caddies);
-      renderCaddies(currentFilter || 'all');
-    }
+    caddies = newCaddies;
+    renderCaddies(currentFilter || 'all');
   };
   script.src = SCRIPT_URL + '?callback=_sheetCallback';
   document.head.appendChild(script);
@@ -1600,6 +1551,19 @@ function loadApprovedCaddiesFromSheet() {
 document.addEventListener('DOMContentLoaded', function() {
   renderCaddies('all');
   loadApprovedCaddiesFromSheet();
+
+  // 가입 폼 카카오 QR 생성
+  setTimeout(function() {
+    var qrEl = document.getElementById('regPhotoQR');
+    if(qrEl && typeof QRCode !== 'undefined') {
+      new QRCode(qrEl, {
+        text: 'http://pf.kakao.com/_nbHKX/chat',
+        width: 72, height: 72,
+        colorDark: '#3c1e1e', colorLight: '#f9e000',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }
+  }, 500);
 
   // 1. 자동 로그인 (저장된 정보)
   var saveChecked = localStorage.getItem('saveLoginChecked');
