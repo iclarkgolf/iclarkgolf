@@ -770,7 +770,8 @@ var currentFilter = 'all';
 var currentUser = null;
 var selectedRole = 'guest';
 var likedCaddies = JSON.parse(localStorage.getItem('likedCaddies')||'[]');
-var messages = JSON.parse(localStorage.getItem('caddyMessages')||'{}');
+var CHAT_API = 'https://script.google.com/macros/s/AKfycbzBjSj2XLAlYYNQOtSoKPLHlDj65DVjPPHiFGs41HRBpTdxtRRXrbVEAgyfeM1BqLsh/exec';
+var messages = {}; // Google Sheets에서 로드
 
 // ── 캐디 렌더링 ──
 function renderCaddies(filter) {
@@ -913,6 +914,7 @@ function openDetail(id, focusMsg) {
     '</div>';
 
   openModal('detailModal');
+  loadMessages(id); // Google Sheets에서 메시지 불러오기
   if(focusMsg) setTimeout(function(){ var el=document.getElementById('msgInput-'+id); if(el) el.focus(); },300);
 }
 
@@ -929,91 +931,70 @@ async function sendMsg(caddyId) {
   var input = document.getElementById('msgInput-'+caddyId);
   var text = input.value.trim();
   if(!text) return;
+  input.value = '';
 
+  // Google Sheets에 메시지 저장
+  var golferId = currentUser.email;
+  var golferName = currentUser.name;
+  var role = currentUser.role || 'golfer';
+
+  // 즉시 화면에 표시
   if(!messages[caddyId]) messages[caddyId] = [];
   var now = new Date();
   var time = now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();
-  messages[caddyId].push({type:'sent', text:text, time:time});
-  input.value = '';
-  localStorage.setItem('caddyMessages', JSON.stringify(messages));
+  var msgType = (role === 'caddy') ? 'recv' : 'sent';
+  messages[caddyId].push({type: msgType, text: text, time: time, senderName: golferName, senderRole: role});
   refreshMsgThread(caddyId);
 
-  // 캐디 정보 가져오기
-  var caddy = (typeof caddyData !== 'undefined') ? caddyData.find(function(c){ return c.id === caddyId; }) : null;
-  var caddyName = caddy && caddy.name ? caddy.name : 'Caddy';
-  var caddyCourse = caddy && caddy.course ? caddy.course : 'Clark Philippines';
-  var caddyExp = caddy && caddy.exp ? caddy.exp : '';
+  // Google Sheets에 저장
+  var url = CHAT_API + '?action=sendMessage&caddyId=' + encodeURIComponent(caddyId) +
+    '&golferId=' + encodeURIComponent(golferId) +
+    '&senderName=' + encodeURIComponent(golferName) +
+    '&senderRole=' + encodeURIComponent(role) +
+    '&text=' + encodeURIComponent(text);
 
-  // 대화 히스토리 구성 (최근 10개)
-  var history = messages[caddyId].slice(-10);
-  var apiMessages = history.map(function(m) {
-    return { role: m.type === 'sent' ? 'user' : 'assistant', content: m.text };
+  fetch(url).catch(function(e) {
+    showToast(uiLang==='ko'?'메시지 저장 실패. 인터넷을 확인해주세요.':'Failed to save message.');
   });
-
-  // 답장 중 말풍선 표시
-  var thinkingId = 'thinking-' + caddyId;
-  var thread = document.getElementById('msgThread-' + caddyId);
-  if(thread) {
-    var thinkingEl = document.createElement('div');
-    thinkingEl.id = thinkingId;
-    thinkingEl.className = 'msg-bubble recv';
-    thinkingEl.innerHTML = '<div style="color:var(--gray);font-size:13px;font-style:italic;">typing...</div>';
-    thread.appendChild(thinkingEl);
-    thread.scrollTop = thread.scrollHeight;
-  }
-
-  try {
-    var systemPrompt =
-      'You are ' + caddyName + ', a professional golf caddy at ' + caddyCourse + ' golf course in Clark, Philippines. ' +
-      (caddyExp ? 'Experience: ' + caddyExp + '. ' : '') +
-      'You are chatting with a Korean golfer who wants to book you as their caddy. ' +
-      'Always respond in English only (short, warm, 1-3 sentences). ' +
-      'Help with: booking date, number of players, course info, your availability, caddy fees. ' +
-      'Be friendly and professional. Never say you are an AI.';
-
-    var response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 200,
-        system: systemPrompt,
-        messages: apiMessages
-      })
-    });
-    var data = await response.json();
-    var replyText = data.content && data.content[0] && data.content[0].text
-      ? data.content[0].text.trim()
-      : 'Sorry, I could not respond right now. Please try again!';
-
-    var thinkingElDone = document.getElementById(thinkingId);
-    if(thinkingElDone) thinkingElDone.remove();
-
-    var replyTime = (function(){ var n=new Date(); return n.getHours()+':'+(n.getMinutes()<10?'0':'')+n.getMinutes(); })();
-    messages[caddyId].push({type:'recv', text:replyText, time:replyTime});
-    localStorage.setItem('caddyMessages', JSON.stringify(messages));
-    refreshMsgThread(caddyId);
-
-  } catch(e) {
-    var thinkingElErr = document.getElementById(thinkingId);
-    if(thinkingElErr) thinkingElErr.remove();
-    showToast(uiLang==='ko'?'답장을 받지 못했습니다. 다시 시도해 주세요.':'Could not get a reply. Please try again.');
-    refreshMsgThread(caddyId);
-  }
 }
 
 function refreshMsgThread(caddyId) {
   var thread = document.getElementById('msgThread-'+caddyId);
   if(!thread) return;
   var msgs = messages[caddyId] || [];
-  thread.innerHTML = msgs.map(function(m) {
-    return '<div class="msg-bubble '+m.type+'">' +
-      '<div>'+m.text+'</div>' +
-      '<div class="msg-time">'+m.time+'</div>' +
-      '<button class="msg-translate-btn" onclick="translateMsg(this,\''+encodeURIComponent(m.text)+'\',\''+m.type+'\')">'+(uiLang==='ko'?'번역 보기':'View Translation')+'</button>' +
-    '</div>';
-  }).join('');
+  if(msgs.length === 0) {
+    thread.innerHTML = '<div style="text-align:center;color:var(--gray);font-size:13px;padding:20px;">'+(uiLang==='ko'?'첫 메시지를 보내보세요!':'Send your first message!')+'</div>';
+  } else {
+    thread.innerHTML = msgs.map(function(m) {
+      var bubbleType = m.senderRole === 'caddy' ? 'recv' : 'sent';
+      if(m.type) bubbleType = m.type;
+      return '<div class="msg-bubble '+bubbleType+'">' +
+        (m.senderName ? '<div style="font-size:10px;opacity:0.6;margin-bottom:2px;">'+m.senderName+'</div>' : '') +
+        '<div>'+m.text+'</div>' +
+        '<div class="msg-time">'+m.time+'</div>' +
+        '<button class="msg-translate-btn" onclick="translateMsg(this,\''+encodeURIComponent(m.text)+'\',\''+bubbleType+'\')">'+(uiLang==='ko'?'번역 보기':'View Translation')+'</button>' +
+      '</div>';
+    }).join('');
+  }
   thread.scrollTop = thread.scrollHeight;
+}
+
+// Google Sheets에서 메시지 불러오기
+async function loadMessages(caddyId) {
+  if(!currentUser) return;
+  var golferId = currentUser.role === 'caddy' ? '' : currentUser.email;
+  var url = CHAT_API + '?action=getMessages&caddyId=' + encodeURIComponent(caddyId) +
+    '&golferId=' + encodeURIComponent(golferId);
+  try {
+    var res = await fetch(url);
+    var data = await res.json();
+    if(data.status === 'ok' && data.data) {
+      messages[caddyId] = data.data.map(function(m) {
+        return { type: m.senderRole === 'caddy' ? 'recv' : 'sent', text: m.text, time: m.time, senderName: m.senderName, senderRole: m.senderRole };
+      });
+      refreshMsgThread(caddyId);
+    }
+  } catch(e) { console.log('메시지 로드 실패:', e); }
 }
 
 function translateMsg(btn, encodedText, type) {
@@ -1335,12 +1316,21 @@ function openAdminPanel() {
       <div style="display:flex;gap:0;border-bottom:2px solid #eee;margin-bottom:16px;">
         <button onclick="switchAdminTab('photo',this)" id="adminTab-photo" style="flex:1;padding:10px;background:var(--green);color:#fff;border:none;font-weight:700;font-size:13px;cursor:pointer;border-radius:0;">📸 사진 업로드</button>
         <button onclick="switchAdminTab('logs',this)" id="adminTab-logs" style="flex:1;padding:10px;background:#eee;color:#333;border:none;font-weight:700;font-size:13px;cursor:pointer;border-radius:0;">👤 로그인 기록</button>
+        <button onclick="switchAdminTab('reset',this)" id="adminTab-reset" style="flex:1;padding:10px;background:#eee;color:#333;border:none;font-weight:700;font-size:13px;cursor:pointer;border-radius:0;">🗑 초기화</button>
       </div>
       <div id="adminTabPhoto" style="padding:0 0 20px 0;">
         <div id="adminCaddyList"></div>
       </div>
       <div id="adminTabLogs" style="display:none;padding:0 16px 20px;">
         <div id="adminLoginLogs"></div>
+      </div>
+      <div id="adminTabReset" style="display:none;padding:20px 16px;">
+        <div style="text-align:center;padding:20px 0;">
+          <div style="font-size:40px;margin-bottom:12px;">🗑</div>
+          <div style="font-weight:700;font-size:16px;margin-bottom:8px;">메시지 초기화</div>
+          <div style="color:#888;font-size:13px;margin-bottom:24px;">저장된 모든 대화 내용을 삭제합니다.<br>삭제 후 복구는 불가능합니다.</div>
+          <button onclick="resetAllMessages()" style="background:#dc3545;color:#fff;border:none;padding:12px 32px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;">대화 내용 전체 삭제</button>
+        </div>
       </div>
     </div>`;
   document.body.appendChild(overlay);
@@ -1351,10 +1341,11 @@ function openAdminPanel() {
 function switchAdminTab(tab, btn) {
   document.getElementById('adminTabPhoto').style.display = tab==='photo' ? 'block' : 'none';
   document.getElementById('adminTabLogs').style.display = tab==='logs' ? 'block' : 'none';
-  document.getElementById('adminTab-photo').style.background = tab==='photo' ? 'var(--green)' : '#eee';
-  document.getElementById('adminTab-photo').style.color = tab==='photo' ? '#fff' : '#333';
-  document.getElementById('adminTab-logs').style.background = tab==='logs' ? 'var(--green)' : '#eee';
-  document.getElementById('adminTab-logs').style.color = tab==='logs' ? '#fff' : '#333';
+  document.getElementById('adminTabReset').style.display = tab==='reset' ? 'block' : 'none';
+  ['photo','logs','reset'].forEach(function(t) {
+    var el = document.getElementById('adminTab-'+t);
+    if(el) { el.style.background = tab===t ? 'var(--green)' : '#eee'; el.style.color = tab===t ? '#fff' : '#333'; }
+  });
   if(tab==='logs') renderLoginLogs();
 }
 
@@ -1453,6 +1444,13 @@ function adminUploadPhoto(caddyId, input) {
   reader.readAsDataURL(file);
 }
 
+
+function resetAllMessages() {
+  if(!confirm('저장된 모든 메시지를 초기화할까요?\n(이전 대화 내용이 전부 삭제됩니다)')) return;
+  localStorage.removeItem('caddyMessages');
+  messages = {};
+  showToast('✅ 메시지가 초기화되었습니다.');
+}
 
 function logout() {
   currentUser = null;
