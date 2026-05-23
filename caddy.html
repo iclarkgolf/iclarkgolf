@@ -417,6 +417,7 @@ nav {
   <span class="user-bar-name" id="userBarName"></span>
   <span class="user-bar-role" id="userBarRole"></span>
   <button class="user-bar-logout" onclick="logout()">
+      <button id="adminPhotoBtn" onclick="openAdminPanel()" style="display:none;margin-left:8px;background:var(--gold);color:var(--dark);border:none;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;">📸 ADMIN PHOTOS</button>
     <span data-ko="로그아웃" data-en="Logout">로그아웃</span>
   </button>
 </div>
@@ -782,7 +783,7 @@ function renderCaddies(filter) {
     var tags = uiLang==='ko' ? c.tags : c.tagsEn;
     return '<div class="caddy-card" onclick="openDetail('+c.id+')">' +
       '<div class="caddy-card-img">' +
-        '<span style="font-size:80px;">'+c.emoji+'</span>' +
+        (c.photo ? '<img src="'+c.photo+'" style="width:100%;height:100%;object-fit:cover;border-radius:16px 16px 0 0;">' : '<span style="font-size:80px;">'+c.emoji+'</span>') +
         (c.korean==='advanced'||c.korean==='native' ? '<div class="caddy-badge-ko">'+(uiLang==='ko'?'한국어 가능':'Korean OK')+'</div>' : '') +
         '<div class="caddy-likes '+(isLiked?'liked':'')+'" onclick="toggleLike(event,'+c.id+')">' +
           '♥ <span id="likes-'+c.id+'">'+c.likes+'</span>' +
@@ -864,7 +865,7 @@ function openDetail(id, focusMsg) {
   var remaining = maxFree - msgCount;
 
   document.getElementById('detailModalBody').innerHTML =
-    '<div class="detail-img"><span style="font-size:100px;">'+c.emoji+'</span></div>' +
+    '<div class="detail-img">'+(c.photo ? '<img src="'+c.photo+'" style="width:160px;height:160px;object-fit:cover;border-radius:50%;border:4px solid var(--gold);">' : '<span style="font-size:100px;">'+c.emoji+'</span>')+'</div>' +
     '<div class="detail-name">'+(uiLang==='ko'?c.nameKo:c.name)+', '+c.age+'</div>' +
     '<div class="detail-course">'+(uiLang==='ko'?c.courseNameKo:c.courseName)+' · '+c.exp+(uiLang==='ko'?' 년 경력':' yrs experience')+'</div>' +
     '<div class="detail-meta">' +
@@ -1078,6 +1079,9 @@ function doLogin() {
   closeModal('authModal');
   if(user.role==='admin') {
     showToast('관리자로 로그인되었습니다, PJ님!');
+    // 관리자 버튼 표시
+    var adminBtn = document.getElementById('adminPhotoBtn');
+    if(adminBtn) adminBtn.style.display='inline-block';
   } else {
     showToast((uiLang==='ko'?'환영합니다, ':'Welcome, ')+user.name+'!');
   }
@@ -1160,10 +1164,81 @@ function setCurrentUser(user) {
   document.getElementById('loginBtn').style.display = 'none';
 }
 
+// ── 관리자 사진 업로드 패널 ──
+function openAdminPanel() {
+  if(!currentUser || currentUser.role !== 'admin') {
+    showToast(uiLang==='ko'?'관리자만 접근 가능합니다.':'Admin access only.');
+    return;
+  }
+  var panel = document.getElementById('adminPhotoPanel');
+  if(panel) { panel.classList.add('open'); renderAdminCaddyList(); return; }
+
+  // 패널 HTML 동적 생성
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay open';
+  overlay.id = 'adminPhotoPanel';
+  overlay.style.cssText = 'z-index:1100;';
+  overlay.innerHTML = `
+    <div class="modal-box" style="max-width:600px;max-height:80vh;overflow-y:auto;">
+      <div class="modal-header">
+        <div class="modal-title">📸 Admin — Caddy Photo Upload</div>
+        <button class="modal-close" onclick="document.getElementById('adminPhotoPanel').classList.remove('open')">✕</button>
+      </div>
+      <div id="adminCaddyList" style="padding:0 0 20px 0;"></div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.classList.remove('open'); });
+  renderAdminCaddyList();
+}
+
+function renderAdminCaddyList() {
+  var list = document.getElementById('adminCaddyList');
+  if(!list) return;
+  list.innerHTML = caddies.map(function(c) {
+    return '<div style="display:flex;align-items:center;gap:16px;padding:16px;border-bottom:1px solid #eee;">' +
+      '<div style="width:64px;height:64px;border-radius:50%;overflow:hidden;border:2px solid var(--gold);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f8f5f0;">' +
+        (c.photo ? '<img src="'+c.photo+'" style="width:100%;height:100%;object-fit:cover;">' : '<span style="font-size:36px;">'+c.emoji+'</span>') +
+      '</div>' +
+      '<div style="flex:1;">' +
+        '<div style="font-weight:700;font-size:15px;">'+c.name+', '+c.age+'</div>' +
+        '<div style="font-size:12px;color:var(--gray);">'+c.courseName+'</div>' +
+        (c.photo ? '<div style="font-size:11px;color:var(--lime);margin-top:2px;">✓ Photo uploaded</div>' : '<div style="font-size:11px;color:#e76f51;margin-top:2px;">No photo yet</div>') +
+      '</div>' +
+      '<label style="cursor:pointer;background:var(--green);color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;">' +
+        (c.photo ? 'Change Photo' : 'Upload Photo') +
+        '<input type="file" accept="image/*" style="display:none;" onchange="adminUploadPhoto('+c.id+',this)">' +
+      '</label>' +
+    '</div>';
+  }).join('');
+}
+
+function adminUploadPhoto(caddyId, input) {
+  if(!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  if(file.size > 2*1024*1024) {
+    showToast('Photo must be under 2MB.');
+    input.value=''; return;
+  }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var caddy = caddies.find(function(c){ return c.id===caddyId; });
+    if(caddy) {
+      caddy.photo = e.target.result;
+      showToast('✅ Photo uploaded for '+caddy.name+'!');
+      renderCaddies(currentFilter);
+      renderAdminCaddyList();
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+
 function logout() {
   currentUser = null;
   document.getElementById('userBar').style.display = 'none';
   document.getElementById('loginBtn').style.display = 'block';
+  var adminBtn = document.getElementById('adminPhotoBtn');
+  if(adminBtn) adminBtn.style.display='none';
   showToast(uiLang==='ko'?'로그아웃 되었습니다.':'Logged out.');
 }
 
