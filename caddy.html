@@ -927,7 +927,7 @@ function switchBio(lang, btn, id) {
 }
 
 // ── 메시지 전송 ──
-function sendMsg(caddyId) {
+async function sendMsg(caddyId) {
   if(!currentUser) { closeModal('detailModal'); openAuth(); showToast(uiLang==='ko'?'로그인 후 메시지를 보낼 수 있습니다.':'Please login to send messages.'); return; }
   var input = document.getElementById('msgInput-'+caddyId);
   var text = input.value.trim();
@@ -944,23 +944,71 @@ function sendMsg(caddyId) {
   var time = now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();
   messages[caddyId].push({type:'sent', text:text, time:time});
   input.value = '';
-
-  // 자동 캐디 답장 (데모)
-  setTimeout(function() {
-    var replies = [
-      {ko:'안녕하세요! 메시지 감사합니다 😊 언제 라운드를 계획하고 계신가요?', en:'Hello! Thank you for your message 😊 When are you planning your round?'},
-      {ko:'네, 기꺼이 도와드리겠습니다! 더 자세한 내용을 알려주세요.', en:'Yes, I would be happy to help! Please tell me more details.'},
-      {ko:'좋습니다! 라운드 날짜와 인원을 알려주시면 준비하겠습니다.', en:'Great! Please let me know the date and number of players.'}
-    ];
-    var r = replies[Math.floor(Math.random()*replies.length)];
-    var replyText = uiLang==='ko' ? r.ko : r.en;
-    messages[caddyId].push({type:'recv', text:replyText, time:time});
-    localStorage.setItem('caddyMessages', JSON.stringify(messages));
-    refreshMsgThread(caddyId);
-  }, 1200);
-
   localStorage.setItem('caddyMessages', JSON.stringify(messages));
   refreshMsgThread(caddyId);
+
+  // 캐디 정보 가져오기
+  var caddy = (typeof caddyData !== 'undefined') ? caddyData.find(function(c){ return c.id === caddyId; }) : null;
+  var caddyName = caddy && caddy.name ? caddy.name : 'Caddy';
+  var caddyCourse = caddy && caddy.course ? caddy.course : 'Clark Philippines';
+  var caddyExp = caddy && caddy.exp ? caddy.exp : '';
+
+  // 대화 히스토리 구성 (최근 10개)
+  var history = messages[caddyId].slice(-10);
+  var apiMessages = history.map(function(m) {
+    return { role: m.type === 'sent' ? 'user' : 'assistant', content: m.text };
+  });
+
+  // 답장 중 말풍선 표시
+  var thinkingId = 'thinking-' + caddyId;
+  var thread = document.getElementById('msgThread-' + caddyId);
+  if(thread) {
+    var thinkingEl = document.createElement('div');
+    thinkingEl.id = thinkingId;
+    thinkingEl.className = 'msg-bubble recv';
+    thinkingEl.innerHTML = '<div style="color:var(--gray);font-size:13px;font-style:italic;">typing...</div>';
+    thread.appendChild(thinkingEl);
+    thread.scrollTop = thread.scrollHeight;
+  }
+
+  try {
+    var systemPrompt =
+      'You are ' + caddyName + ', a professional golf caddy at ' + caddyCourse + ' golf course in Clark, Philippines. ' +
+      (caddyExp ? 'Experience: ' + caddyExp + '. ' : '') +
+      'You are chatting with a Korean golfer who wants to book you as their caddy. ' +
+      'Always respond in English only (short, warm, 1-3 sentences). ' +
+      'Help with: booking date, number of players, course info, your availability, caddy fees. ' +
+      'Be friendly and professional. Never say you are an AI.';
+
+    var response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 200,
+        system: systemPrompt,
+        messages: apiMessages
+      })
+    });
+    var data = await response.json();
+    var replyText = data.content && data.content[0] && data.content[0].text
+      ? data.content[0].text.trim()
+      : 'Sorry, I could not respond right now. Please try again!';
+
+    var thinkingElDone = document.getElementById(thinkingId);
+    if(thinkingElDone) thinkingElDone.remove();
+
+    var replyTime = (function(){ var n=new Date(); return n.getHours()+':'+(n.getMinutes()<10?'0':'')+n.getMinutes(); })();
+    messages[caddyId].push({type:'recv', text:replyText, time:replyTime});
+    localStorage.setItem('caddyMessages', JSON.stringify(messages));
+    refreshMsgThread(caddyId);
+
+  } catch(e) {
+    var thinkingElErr = document.getElementById(thinkingId);
+    if(thinkingElErr) thinkingElErr.remove();
+    showToast(uiLang==='ko'?'답장을 받지 못했습니다. 다시 시도해 주세요.':'Could not get a reply. Please try again.');
+    refreshMsgThread(caddyId);
+  }
 }
 
 function refreshMsgThread(caddyId) {
@@ -977,63 +1025,23 @@ function refreshMsgThread(caddyId) {
   thread.scrollTop = thread.scrollHeight;
 }
 
-// ── Claude AI 번역 캐시 (API 절약) ──
-var translationCache = {};
-
-async function translateMsg(btn, encodedText, type) {
+function translateMsg(btn, encodedText, type) {
   var text = decodeURIComponent(encodedText);
+  var isKo = /[가-힣]/.test(text);
+  var translated = isKo ?
+    '[EN] ' + text.replace(/안녕하세요/g,'Hello').replace(/감사합니다/g,'Thank you').replace(/라운드/g,'round').replace(/캐디/g,'caddy') :
+    '[KR] ' + text.replace(/Hello/g,'안녕하세요').replace(/Thank you/g,'감사합니다').replace(/round/g,'라운드').replace(/caddy/g,'캐디');
   var bubble = btn.closest('.msg-bubble');
   var textEl = bubble.querySelector('div');
-
-  // 원문으로 돌아가기
-  if (btn.dataset.showing === 'trans') {
+  if(btn.dataset.showing==='trans') {
     textEl.textContent = text;
-    btn.textContent = uiLang === 'ko' ? '번역 보기' : 'View Translation';
+    btn.textContent = uiLang==='ko'?'번역 보기':'View Translation';
     btn.dataset.showing = '';
-    return;
-  }
-
-  // 캐시에 번역이 있으면 재사용
-  if (translationCache[text]) {
-    textEl.textContent = translationCache[text];
-    btn.textContent = uiLang === 'ko' ? '원문 보기' : 'View Original';
-    btn.dataset.showing = 'trans';
-    return;
-  }
-
-  // 번역 중 표시
-  btn.textContent = uiLang === 'ko' ? '번역 중...' : 'Translating...';
-  btn.disabled = true;
-
-  var isKo = /[가-힣]/.test(text);
-  var prompt = isKo
-    ? '다음 한국어 문장을 자연스러운 영어로 번역해주세요. 번역문만 출력하고 설명은 하지 마세요:\n\n' + text
-    : '다음 영어 문장을 자연스러운 한국어로 번역해주세요. 번역문만 출력하고 설명은 하지 마세요:\n\n' + text;
-
-  try {
-    var response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 300,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-    var data = await response.json();
-    var translated = data.content && data.content[0] && data.content[0].text
-      ? data.content[0].text.trim()
-      : (isKo ? '[Translation failed]' : '[번역 실패]');
-
-    translationCache[text] = translated;
+  } else {
     textEl.textContent = translated;
-    btn.textContent = uiLang === 'ko' ? '원문 보기' : 'View Original';
+    btn.textContent = uiLang==='ko'?'원문 보기':'View Original';
     btn.dataset.showing = 'trans';
-  } catch (e) {
-    btn.textContent = uiLang === 'ko' ? '번역 보기' : 'View Translation';
-    showToast(uiLang === 'ko' ? '번역 중 오류가 발생했습니다.' : 'Translation error.');
   }
-  btn.disabled = false;
 }
 
 // ── AUTH ──
