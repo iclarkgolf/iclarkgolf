@@ -842,6 +842,13 @@ function translateCard(id, btn) {
 
 // ── 상세 모달 ──
 function openDetail(id, focusMsg) {
+  if(!currentUser) {
+    window._pendingDetailId = id;
+    window._pendingFocusMsg = focusMsg;
+    openAuth('guest');
+    showToast(uiLang==='ko'?'로그인 후 캐디 프로필을 확인하세요 😊':'Please login to view caddy profile 😊');
+    return;
+  }
   var c = caddies.find(function(x){return x.id===id;});
   var msgs = messages[id] || [];
   var isLiked = likedCaddies.indexOf(id)>-1;
@@ -1075,15 +1082,32 @@ function doLogin() {
     localStorage.removeItem('saveLoginChecked');
   }
 
+  // 로그인 기록 저장
+  var loginLogs = JSON.parse(localStorage.getItem('loginLogs')||'[]');
+  loginLogs.unshift({
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    time: new Date().toLocaleString('ko-KR')
+  });
+  localStorage.setItem('loginLogs', JSON.stringify(loginLogs.slice(0,100)));
+
   setCurrentUser(user);
   closeModal('authModal');
   if(user.role==='admin') {
     showToast('관리자로 로그인되었습니다, PJ님!');
-    // 관리자 버튼 표시
     var adminBtn = document.getElementById('adminPhotoBtn');
     if(adminBtn) adminBtn.style.display='inline-block';
   } else {
     showToast((uiLang==='ko'?'환영합니다, ':'Welcome, ')+user.name+'!');
+  }
+  // 로그인 전 클릭했던 카드 자동 오픈
+  if(window._pendingDetailId) {
+    var pid = window._pendingDetailId;
+    var pfocus = window._pendingFocusMsg;
+    window._pendingDetailId = null;
+    window._pendingFocusMsg = null;
+    setTimeout(function(){ openDetail(pid, pfocus); }, 300);
   }
 }
 
@@ -1102,9 +1126,16 @@ function doRegister() {
     var user = {name:name, email:email, pw:pw, role:'guest'};
     users.push(user);
     localStorage.setItem('caddyUsers', JSON.stringify(users));
+    var loginLogs = JSON.parse(localStorage.getItem('loginLogs')||'[]');
+    loginLogs.unshift({name:name, email:email, role:'골퍼(신규)', time:new Date().toLocaleString('ko-KR')});
+    localStorage.setItem('loginLogs', JSON.stringify(loginLogs.slice(0,100)));
     setCurrentUser(user);
     closeModal('authModal');
     showToast((uiLang==='ko'?'환영합니다, ':'Welcome, ')+name+'!');
+    if(window._pendingDetailId) {
+      var pid=window._pendingDetailId; window._pendingDetailId=null;
+      setTimeout(function(){ openDetail(pid); }, 300);
+    }
 
   } else {
     // 캐디: ID + 풀네임 + 휴대폰 + 이메일 + 비밀번호 (필수)
@@ -1176,22 +1207,65 @@ function openAdminPanel() {
   var panel = document.getElementById('adminPhotoPanel');
   if(panel) { panel.classList.add('open'); renderAdminCaddyList(); return; }
 
-  // 패널 HTML 동적 생성
   var overlay = document.createElement('div');
   overlay.className = 'modal-overlay open';
   overlay.id = 'adminPhotoPanel';
   overlay.style.cssText = 'z-index:1100;';
   overlay.innerHTML = `
-    <div class="modal-box" style="max-width:600px;max-height:80vh;overflow-y:auto;">
+    <div class="modal-box" style="max-width:640px;max-height:85vh;overflow-y:auto;">
       <div class="modal-header">
-        <div class="modal-title">📸 Admin — Caddy Photo Upload</div>
+        <div class="modal-title">⚙️ Admin Panel</div>
         <button class="modal-close" onclick="document.getElementById('adminPhotoPanel').classList.remove('open')">✕</button>
       </div>
-      <div id="adminCaddyList" style="padding:0 0 20px 0;"></div>
+      <div style="display:flex;gap:0;border-bottom:2px solid #eee;margin-bottom:16px;">
+        <button onclick="switchAdminTab('photo',this)" id="adminTab-photo" style="flex:1;padding:10px;background:var(--green);color:#fff;border:none;font-weight:700;font-size:13px;cursor:pointer;border-radius:0;">📸 사진 업로드</button>
+        <button onclick="switchAdminTab('logs',this)" id="adminTab-logs" style="flex:1;padding:10px;background:#eee;color:#333;border:none;font-weight:700;font-size:13px;cursor:pointer;border-radius:0;">👤 로그인 기록</button>
+      </div>
+      <div id="adminTabPhoto" style="padding:0 0 20px 0;">
+        <div id="adminCaddyList"></div>
+      </div>
+      <div id="adminTabLogs" style="display:none;padding:0 16px 20px;">
+        <div id="adminLoginLogs"></div>
+      </div>
     </div>`;
   document.body.appendChild(overlay);
   overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.classList.remove('open'); });
   renderAdminCaddyList();
+}
+
+function switchAdminTab(tab, btn) {
+  document.getElementById('adminTabPhoto').style.display = tab==='photo' ? 'block' : 'none';
+  document.getElementById('adminTabLogs').style.display = tab==='logs' ? 'block' : 'none';
+  document.getElementById('adminTab-photo').style.background = tab==='photo' ? 'var(--green)' : '#eee';
+  document.getElementById('adminTab-photo').style.color = tab==='photo' ? '#fff' : '#333';
+  document.getElementById('adminTab-logs').style.background = tab==='logs' ? 'var(--green)' : '#eee';
+  document.getElementById('adminTab-logs').style.color = tab==='logs' ? '#fff' : '#333';
+  if(tab==='logs') renderLoginLogs();
+}
+
+function renderLoginLogs() {
+  var el = document.getElementById('adminLoginLogs');
+  var logs = JSON.parse(localStorage.getItem('loginLogs')||'[]');
+  if(logs.length===0) {
+    el.innerHTML = '<div style="text-align:center;color:#aaa;padding:30px;">로그인 기록이 없습니다.</div>';
+    return;
+  }
+  el.innerHTML = '<div style="font-size:12px;color:#888;margin-bottom:12px;">총 '+logs.length+'건</div>' +
+    logs.map(function(l) {
+      var roleColor = l.role==='admin' ? '#e76f51' : l.role==='caddy' ? '#2d6a9f' : '#2d6a4f';
+      return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0f0;">' +
+        '<div style="font-size:22px;">'+(l.role==='caddy'?'🏌️':'⛳')+'</div>' +
+        '<div style="flex:1;">' +
+          '<div style="font-weight:700;font-size:14px;">'+l.name+'</div>' +
+          '<div style="font-size:12px;color:#888;">'+l.email+'</div>' +
+        '</div>' +
+        '<div style="text-align:right;">' +
+          '<div style="font-size:11px;font-weight:700;color:'+roleColor+';background:'+roleColor+'22;padding:2px 8px;border-radius:10px;margin-bottom:4px;">'+l.role+'</div>' +
+          '<div style="font-size:11px;color:#aaa;">'+l.time+'</div>' +
+        '</div>' +
+      '</div>';
+    }).join('') +
+    '<div style="margin-top:12px;text-align:right;"><button onclick="if(confirm(\'기록을 모두 삭제할까요?\')){{localStorage.removeItem(\'loginLogs\');renderLoginLogs();}}" style="font-size:11px;color:#e76f51;background:none;border:1px solid #e76f51;padding:4px 10px;border-radius:6px;cursor:pointer;">기록 초기화</button></div>';
 }
 
 function renderAdminCaddyList() {
