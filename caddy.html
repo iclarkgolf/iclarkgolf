@@ -55,6 +55,10 @@ nav {
   text-align:center;
   position:relative;
   overflow:hidden;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
 }
 .hero::before {
   content:'';
@@ -1363,8 +1367,7 @@ function showToast(msg) {
 function goCaddies() {
   var el = document.getElementById('caddySection');
   if(!el) return;
-  var offset = el.getBoundingClientRect().top + window.pageYOffset - 80;
-  window.scrollTo({top: offset, behavior: 'smooth'});
+  el.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 function goCaddiesAndLogin() {
@@ -1372,7 +1375,7 @@ function goCaddiesAndLogin() {
   if(!currentUser) {
     setTimeout(function(){
       openAuth('guest');
-    }, 600);
+    }, 800);
   }
 }
 
