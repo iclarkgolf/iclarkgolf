@@ -1194,22 +1194,51 @@ function openAdminPanel() {
 function renderAdminCaddyList() {
   var list = document.getElementById('adminCaddyList');
   if(!list) return;
-  list.innerHTML = caddies.map(function(c) {
-    return '<div style="display:flex;align-items:center;gap:16px;padding:16px;border-bottom:1px solid #eee;">' +
-      '<div style="width:64px;height:64px;border-radius:50%;overflow:hidden;border:2px solid var(--gold);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f8f5f0;">' +
-        (c.photo ? '<img src="'+c.photo+'" style="width:100%;height:100%;object-fit:cover;">' : '<span style="font-size:36px;">'+c.emoji+'</span>') +
+  // 안내문구
+  list.innerHTML = '<div style="padding:12px 16px;background:#fffbf0;border-bottom:1px solid #eee;font-size:12px;color:#888;line-height:1.6;">' +
+    '📌 <strong>How to add photos:</strong><br>' +
+    '1. Upload caddy photo to <strong>Google Drive</strong> → right-click → "Get link" → set to Anyone with link<br>' +
+    '2. Copy the link, paste below and click ✓<br>' +
+    '3. Convert Drive link format: <code>drive.google.com/file/d/<b>FILE_ID</b>/view</code> → use FILE_ID below' +
+  '</div>' +
+  caddies.map(function(c) {
+    return '<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #eee;">' +
+      '<div style="width:56px;height:56px;border-radius:50%;overflow:hidden;border:2px solid var(--gold);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f8f5f0;">' +
+        (c.photo ? '<img src="'+c.photo+'" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentNode.innerHTML='🏌️'">' : '<span style="font-size:30px;">'+c.emoji+'</span>') +
       '</div>' +
-      '<div style="flex:1;">' +
-        '<div style="font-weight:700;font-size:15px;">'+c.name+', '+c.age+'</div>' +
-        '<div style="font-size:12px;color:var(--gray);">'+c.courseName+'</div>' +
-        (c.photo ? '<div style="font-size:11px;color:var(--lime);margin-top:2px;">✓ Photo uploaded</div>' : '<div style="font-size:11px;color:#e76f51;margin-top:2px;">No photo yet</div>') +
+      '<div style="flex:1;min-width:0;">' +
+        '<div style="font-weight:700;font-size:14px;">'+c.name+', '+c.age+'</div>' +
+        '<div style="font-size:11px;color:var(--gray);">'+c.courseName+'</div>' +
+        (c.photo ? '<div style="font-size:11px;color:#2d6a4f;margin-top:2px;">✓ Photo set</div>' : '<div style="font-size:11px;color:#e76f51;margin-top:2px;">No photo yet</div>') +
+        '<div style="display:flex;gap:6px;margin-top:6px;">' +
+          '<input id="photoUrl-'+c.id+'" placeholder="Paste Google Drive FILE_ID or image URL" style="flex:1;padding:5px 8px;border:1px solid #ddd;border-radius:6px;font-size:11px;" value="'+(c.photo||'')+'">' +
+          '<button onclick="adminSetPhotoUrl('+c.id+')" style="background:var(--green);color:#fff;border:none;padding:5px 10px;border-radius:6px;font-size:12px;cursor:pointer;font-weight:700;">✓</button>' +
+          '<label style="cursor:pointer;background:var(--gold);color:var(--dark);border:none;padding:5px 10px;border-radius:6px;font-size:12px;font-weight:700;">📁<input type="file" accept="image/*" style="display:none;" onchange="adminUploadPhoto('+c.id+',this)"></label>' +
+        '</div>' +
       '</div>' +
-      '<label style="cursor:pointer;background:var(--green);color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;">' +
-        (c.photo ? 'Change Photo' : 'Upload Photo') +
-        '<input type="file" accept="image/*" style="display:none;" onchange="adminUploadPhoto('+c.id+',this)">' +
-      '</label>' +
     '</div>';
   }).join('');
+}
+
+function adminSetPhotoUrl(caddyId) {
+  var input = document.getElementById('photoUrl-'+caddyId);
+  var val = input.value.trim();
+  if(!val) return;
+  // Google Drive FILE_ID 자동 변환
+  var url = val;
+  if(val.includes('drive.google.com/file/d/')) {
+    var match = val.match(/\/file\/d\/([^\/\?]+)/);
+    if(match) url = 'https://drive.google.com/thumbnail?id='+match[1]+'&sz=w400';
+  } else if(!val.startsWith('http') && val.length > 10) {
+    url = 'https://drive.google.com/thumbnail?id='+val+'&sz=w400';
+  }
+  var caddy = caddies.find(function(c){ return c.id===caddyId; });
+  if(caddy) {
+    caddy.photo = url;
+    showToast('✅ Photo set for '+caddy.name+'!');
+    renderCaddies(currentFilter);
+    renderAdminCaddyList();
+  }
 }
 
 function adminUploadPhoto(caddyId, input) {
@@ -1288,6 +1317,7 @@ function loadApprovedCaddiesFromSheet() {
       if(!row || row.length < 11) continue;
       var status = row[10] || '';
       if(status !== '승인') continue;
+      var photoUrl = row[11] || '';
       newCaddies.push({
         id: 100 + i,
         name: row[1] || '',
@@ -1305,7 +1335,8 @@ function loadApprovedCaddiesFromSheet() {
         tagsEn: ['New Caddy'],
         kakao: row[9] || '',
         likes: 0,
-        emoji: '🏌️'
+        emoji: '🏌️',
+        photo: photoUrl
       });
     }
     if(newCaddies.length > 0) {
