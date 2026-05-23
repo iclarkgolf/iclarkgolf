@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" translate="no">
 <head>
 <meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta http-equiv="Content-Language" content="en">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Caddy Match — iClark Golf Academy</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
@@ -559,8 +561,8 @@ nav {
             Just enter your name and email to get started! 😊
           </div>
           <div class="form-group">
-            <label class="form-label">이름 *필수</label>
-            <input type="text" class="form-input" id="regName" placeholder="홍길동">
+            <label class="form-label">Name *Required</label>
+            <input type="text" class="form-input" id="regName" placeholder="Your Name">
           </div>
           <div class="form-group">
             <label class="form-label">Email *Required</label>
@@ -570,7 +572,7 @@ nav {
             <label class="form-label">Password *Required</label>
             <input type="password" class="form-input" id="regPw" placeholder="••••••••">
           </div>
-          <button class="form-btn" onclick="doRegisterGolfer()" style="background:var(--green);">가입하기</button>
+          <button class="form-btn" onclick="doRegisterGolfer()" style="background:var(--green);">Sign Up</button>
           <p style="text-align:center;margin-top:14px;font-size:13px;color:#888;">
             Already have an account? <a href="#" onclick="switchGolferTab('login')" style="color:var(--green);font-weight:600;">Login</a>
           </p>
@@ -657,7 +659,7 @@ nav {
             <label class="form-label">KakaoTalk ID</label>
             <input type="text" class="form-input" id="regKakao" placeholder="kakao_id">
           </div>
-          <button class="form-btn" onclick="doRegister()" style="background:var(--gold);color:#1b4332;">Register as Caddy</button>
+          <button class="form-btn" onclick="doRegisterCaddy()" style="background:var(--gold);color:#1b4332;">Register as Caddy</button>
           <p style="text-align:center;margin-top:10px;font-size:11px;color:#aaa;">Your profile will be visible after admin approval</p>
         </div>
       </div>
@@ -1208,6 +1210,35 @@ function doLogin() {
 }
 
 
+
+function doRegisterCaddy() {
+  var caddyId = document.getElementById('regCaddyId').value.trim();
+  var fullName = document.getElementById('regFullName').value.trim();
+  var phone = document.getElementById('regPhone').value.trim();
+  var email = document.getElementById('regEmailCaddy').value.trim();
+  var pw = document.getElementById('regPwCaddy').value;
+  if(!caddyId) { showToast('Please enter your Caddy ID.'); return; }
+  if(!fullName) { showToast('Please enter your full name in English.'); return; }
+  if(!phone) { showToast('Please enter your phone number.'); return; }
+  if(!email) { showToast('Please enter your email.'); return; }
+  if(!pw) { showToast('Please enter a password.'); return; }
+  if(users.find(function(u){return u.email===email;})) { showToast('Email already registered.'); return; }
+  var user = {
+    name: fullName, email: email, pw: pw, role: 'caddy',
+    caddyId: caddyId, fullName: fullName, phone: phone,
+    course: document.getElementById('regCourse').value,
+    exp: document.getElementById('regExp').value,
+    korean: document.getElementById('regKo').value,
+    bio: document.getElementById('regBio').value,
+    kakao: document.getElementById('regKakao').value,
+    photo: ''
+  };
+  users.push(user);
+  localStorage.setItem('caddyUsers', JSON.stringify(users));
+  setCurrentUser(user);
+  closeModal('authModal');
+  showToast('Welcome, '+fullName+'! Your profile will be visible after admin approval.');
+}
 
 function doRegister() {
   if(selectedRole === 'guest') {
