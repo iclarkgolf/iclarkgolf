@@ -1321,6 +1321,13 @@ function loadApprovedCaddiesFromSheet() {
       var status = row[10] || '';
       if(status !== '승인') continue;
       var photoUrl = row[11] || '';
+      // Google Drive FILE_ID → thumbnail URL 변환
+      if(photoUrl && !photoUrl.startsWith('http')) {
+        photoUrl = 'https://drive.google.com/thumbnail?id=' + photoUrl.trim() + '&sz=w400';
+      } else if(photoUrl && photoUrl.includes('drive.google.com/file/d/')) {
+        var m = photoUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+        if(m) photoUrl = 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w400';
+      }
       newCaddies.push({
         id: 100 + i,
         name: row[1] || '',
