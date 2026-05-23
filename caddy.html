@@ -598,35 +598,35 @@ nav {
           </div>
           <button class="form-btn" onclick="doCaddyLogin()" style="background:var(--gold);color:#1b4332;">로그인</button>
           <p style="text-align:center;margin-top:14px;font-size:13px;color:#888;">
-            처음이신가요? <a href="#" onclick="switchCaddyTab('register')" style="color:#b85c00;font-weight:600;">캐디 등록하기</a>
+            New caddy? <a href="#" onclick="switchCaddyTab('register')" style="color:#b85c00;font-weight:600;">Register here</a>
           </p>
         </div>
         <div id="caddyRegisterForm" style="display:none;">
           <div style="background:#fff8f0;border-left:3px solid var(--gold);padding:10px 14px;margin-bottom:16px;font-size:12px;color:#b85c00;">
-            <strong>⚠ 캐디 필수 인증 항목</strong><br>모든 정보를 정확히 입력해야 합니다.
+            <strong>⚠ Required Caddy Information</strong><br>Please fill in all fields accurately.
           </div>
           <div class="form-group">
-            <label class="form-label">캐디 ID 번호 (골프장 발급) *필수</label>
+            <label class="form-label">Caddy ID Number (issued by golf course) *Required</label>
             <input type="text" class="form-input" id="regCaddyId" placeholder="PV-2024-001">
           </div>
           <div class="form-group">
-            <label class="form-label">풀네임 (영문) *필수</label>
+            <label class="form-label">Full Name (English) *Required</label>
             <input type="text" class="form-input" id="regFullName" placeholder="Maria Santos Cruz">
           </div>
           <div class="form-group">
-            <label class="form-label">휴대폰 번호 *필수</label>
+            <label class="form-label">Mobile Number *Required</label>
             <input type="tel" class="form-input" id="regPhone" placeholder="+63-917-000-0000">
           </div>
           <div class="form-group">
-            <label class="form-label">이메일 *필수</label>
+            <label class="form-label">Email *Required</label>
             <input type="email" class="form-input" id="regEmailCaddy" placeholder="example@email.com">
           </div>
           <div class="form-group">
-            <label class="form-label">비밀번호 *필수</label>
+            <label class="form-label">Password *Required</label>
             <input type="password" class="form-input" id="regPwCaddy" placeholder="••••••••">
           </div>
           <div class="form-group">
-            <label class="form-label">소속 골프장</label>
+            <label class="form-label">Golf Course</label>
             <select class="form-select" id="regCourse">
               <option value="pradera">Pradera C.C.</option>
               <option value="beverly">Beverly C.C.</option>
@@ -637,28 +637,28 @@ nav {
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">경력 (년)</label>
+            <label class="form-label">Years of Experience</label>
             <input type="number" class="form-input" id="regExp" placeholder="5" min="1" max="30">
           </div>
           <div class="form-group">
-            <label class="form-label">한국어 실력</label>
+            <label class="form-label">Korean Language Level</label>
             <select class="form-select" id="regKo">
-              <option value="native">원어민 수준</option>
-              <option value="advanced">고급</option>
-              <option value="intermediate">중급</option>
-              <option value="basic">초급</option>
+              <option value="native">Native</option>
+              <option value="advanced">Advanced</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="basic">Basic</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">자기소개</label>
-            <textarea class="form-input" id="regBio" rows="3" placeholder="골퍼분들께 한마디..."></textarea>
+            <label class="form-label">About Me</label>
+            <textarea class="form-input" id="regBio" rows="3" placeholder="Tell golfers about yourself..."></textarea>
           </div>
           <div class="form-group">
-            <label class="form-label">카카오톡 ID</label>
+            <label class="form-label">KakaoTalk ID</label>
             <input type="text" class="form-input" id="regKakao" placeholder="kakao_id">
           </div>
-          <button class="form-btn" onclick="doRegister()" style="background:var(--gold);color:#1b4332;">등록 신청하기</button>
-          <p style="text-align:center;margin-top:10px;font-size:11px;color:#aaa;">등록 후 관리자 승인 시 프로필이 공개됩니다</p>
+          <button class="form-btn" onclick="doRegister()" style="background:var(--gold);color:#1b4332;">Register as Caddy</button>
+          <p style="text-align:center;margin-top:10px;font-size:11px;color:#aaa;">Your profile will be visible after admin approval</p>
         </div>
       </div>
 
@@ -1108,26 +1108,26 @@ function switchCaddyTab(tab) {
 function doCaddyLogin() {
   var email = document.getElementById('caddyLoginEmail').value.trim();
   var pw = document.getElementById('caddyLoginPw').value;
-  if(!email || !pw) { showToast('이메일과 비밀번호를 입력해 주세요.'); return; }
+  if(!email || !pw) { showToast('Please enter your email and password.'); return; }
   var user = users.find(function(u){ return u.email===email && u.pw===pw; });
-  if(!user) { showToast('이메일 또는 비밀번호가 올바르지 않습니다.'); return; }
-  if(user.role!=='caddy' && user.role!=='admin') { showToast('캐디 계정이 아닙니다. 골퍼 로그인을 이용하세요.'); return; }
+  if(!user) { showToast('Incorrect email or password.'); return; }
+  if(user.role!=='caddy' && user.role!=='admin') { showToast('This is not a caddy account. Please use Golfer Login.'); return; }
   var loginLogs = JSON.parse(localStorage.getItem('loginLogs')||'[]');
   loginLogs.unshift({name:user.name, email:user.email, role:'캐디', time:new Date().toLocaleString('ko-KR')});
   localStorage.setItem('loginLogs', JSON.stringify(loginLogs.slice(0,100)));
   setCurrentUser(user);
   closeModal('authModal');
-  showToast('환영합니다, '+user.name+'!');
+  showToast('Welcome, '+user.name+'!');
 }
 
 function doRegisterGolfer() {
   var name = document.getElementById('regName').value.trim();
   var email = document.getElementById('regEmail').value.trim();
   var pw = document.getElementById('regPw').value;
-  if(!name) { showToast('이름을 입력해 주세요.'); return; }
-  if(!email) { showToast('이메일을 입력해 주세요.'); return; }
-  if(!pw) { showToast('비밀번호를 입력해 주세요.'); return; }
-  if(users.find(function(u){return u.email===email;})) { showToast('이미 등록된 이메일입니다.'); return; }
+  if(!name) { showToast('Please enter your name.'); return; }
+  if(!email) { showToast('Please enter your email.'); return; }
+  if(!pw) { showToast('Please enter your password.'); return; }
+  if(users.find(function(u){return u.email===email;})) { showToast('Email already registered.'); return; }
   var user = {name:name, email:email, pw:pw, role:'guest'};
   users.push(user);
   localStorage.setItem('caddyUsers', JSON.stringify(users));
@@ -1136,7 +1136,7 @@ function doRegisterGolfer() {
   localStorage.setItem('loginLogs', JSON.stringify(loginLogs.slice(0,100)));
   setCurrentUser(user);
   closeModal('authModal');
-  showToast('환영합니다, '+name+'! 🎉');
+  showToast('Welcome, '+name+'! 🎉');
   if(window._pendingDetailId) {
     var pid=window._pendingDetailId; window._pendingDetailId=null;
     setTimeout(function(){ openDetail(pid); }, 300);
@@ -1191,7 +1191,7 @@ function doLogin() {
   setCurrentUser(user);
   closeModal('authModal');
   if(user.role==='admin') {
-    showToast('관리자로 로그인되었습니다, PJ님!');
+    showToast('Welcome back, PJ! (Admin)');
     var adminBtn = document.getElementById('adminPhotoBtn');
     if(adminBtn) adminBtn.style.display='inline-block';
   } else {
