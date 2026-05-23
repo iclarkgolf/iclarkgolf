@@ -977,23 +977,63 @@ function refreshMsgThread(caddyId) {
   thread.scrollTop = thread.scrollHeight;
 }
 
-function translateMsg(btn, encodedText, type) {
+// ── Claude AI 번역 캐시 (API 절약) ──
+var translationCache = {};
+
+async function translateMsg(btn, encodedText, type) {
   var text = decodeURIComponent(encodedText);
-  var isKo = /[가-힣]/.test(text);
-  var translated = isKo ?
-    '[EN] ' + text.replace(/안녕하세요/g,'Hello').replace(/감사합니다/g,'Thank you').replace(/라운드/g,'round').replace(/캐디/g,'caddy') :
-    '[KR] ' + text.replace(/Hello/g,'안녕하세요').replace(/Thank you/g,'감사합니다').replace(/round/g,'라운드').replace(/caddy/g,'캐디');
   var bubble = btn.closest('.msg-bubble');
   var textEl = bubble.querySelector('div');
-  if(btn.dataset.showing==='trans') {
+
+  // 원문으로 돌아가기
+  if (btn.dataset.showing === 'trans') {
     textEl.textContent = text;
-    btn.textContent = uiLang==='ko'?'번역 보기':'View Translation';
+    btn.textContent = uiLang === 'ko' ? '번역 보기' : 'View Translation';
     btn.dataset.showing = '';
-  } else {
-    textEl.textContent = translated;
-    btn.textContent = uiLang==='ko'?'원문 보기':'View Original';
-    btn.dataset.showing = 'trans';
+    return;
   }
+
+  // 캐시에 번역이 있으면 재사용
+  if (translationCache[text]) {
+    textEl.textContent = translationCache[text];
+    btn.textContent = uiLang === 'ko' ? '원문 보기' : 'View Original';
+    btn.dataset.showing = 'trans';
+    return;
+  }
+
+  // 번역 중 표시
+  btn.textContent = uiLang === 'ko' ? '번역 중...' : 'Translating...';
+  btn.disabled = true;
+
+  var isKo = /[가-힣]/.test(text);
+  var prompt = isKo
+    ? '다음 한국어 문장을 자연스러운 영어로 번역해주세요. 번역문만 출력하고 설명은 하지 마세요:\n\n' + text
+    : '다음 영어 문장을 자연스러운 한국어로 번역해주세요. 번역문만 출력하고 설명은 하지 마세요:\n\n' + text;
+
+  try {
+    var response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    var data = await response.json();
+    var translated = data.content && data.content[0] && data.content[0].text
+      ? data.content[0].text.trim()
+      : (isKo ? '[Translation failed]' : '[번역 실패]');
+
+    translationCache[text] = translated;
+    textEl.textContent = translated;
+    btn.textContent = uiLang === 'ko' ? '원문 보기' : 'View Original';
+    btn.dataset.showing = 'trans';
+  } catch (e) {
+    btn.textContent = uiLang === 'ko' ? '번역 보기' : 'View Translation';
+    showToast(uiLang === 'ko' ? '번역 중 오류가 발생했습니다.' : 'Translation error.');
+  }
+  btn.disabled = false;
 }
 
 // ── AUTH ──
