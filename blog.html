@@ -301,7 +301,8 @@ function goPost(p) {
     'p2': 'blog-p2.html',
     'p3': 'blog-p3.html',
     'p4': 'blog-p4.html',
-    'p5': 'blog-p5.html'
+    'p5': 'blog-p5.html',
+    'p6': 'blog-p6.html'
   };
   if (urlMap[id]) {
     window.location.href = urlMap[id];
@@ -346,6 +347,18 @@ renderFilters();renderPosts();
 // 기본 글 — localStorage 초기화 후 DEFAULT_POSTS로 덮어쓰기
 (function(){
   var DEFAULT_POSTS = [
+    {
+      id: "p6",
+      title: "필리핀 클락 골프장 완전 비교 가이드 — 어디서 칠 것인가?",
+      category: "골프장 가이드",
+      author: "투어장",
+      thumbnail: "https://iclarkgolf.com/images/pradera-golf-06.jpg",
+      content: "링크스부터 산악 코스까지 — 프라데라, 베버리, 미모사, 코리아CC, 썬벨리, 루이시타, 수빅, 뉴아시아까지 클락 인근 8개 골프장의 특징과 추천 대상을 한 번에 비교했습니다.",
+      status: "approved",
+      createdAt: "2026-05-24T10:00:00",
+      approvedAt: "2026-05-24T10:00:00",
+      views: 0
+    },
     {
       id: "p5",
       title: "골퍼의 한(恨)을 풀어드립니다 — 프라데라에서 7일, 당신의 골프가 달라집니다",
