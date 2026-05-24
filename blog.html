@@ -302,7 +302,8 @@ function goPost(p) {
     'p3': 'blog-p3.html',
     'p4': 'blog-p4.html',
     'p5': 'blog-p5.html',
-    'p6': 'blog-p6.html'
+    'p6': 'blog-p6.html',
+    'p7': 'blog-p7.html'
   };
   if (urlMap[id]) {
     window.location.href = urlMap[id];
@@ -347,6 +348,18 @@ renderFilters();renderPosts();
 // 기본 글 — localStorage 초기화 후 DEFAULT_POSTS로 덮어쓰기
 (function(){
   var DEFAULT_POSTS = [
+    {
+      id: "p7",
+      title: "한국 vs 필리핀 클락 골프 비용 완전 비교 — 같은 돈으로 클락에서 며칠을 칠 수 있나?",
+      category: "비용 분석",
+      author: "투어장",
+      thumbnail: "https://iclarkgolf.com/images/blog-p7-hero.jpg",
+      content: "한국 주말 라운드 한 번 비용으로 클락에서 3라운드를 칩니다. 그린피·캐디피·카트비·숙박·항공까지 항목별 완전 분석. 7일 전지훈련 총비용 비교표 포함.",
+      status: "approved",
+      createdAt: "2026-05-24T11:00:00",
+      approvedAt: "2026-05-24T11:00:00",
+      views: 0
+    },
     {
       id: "p6",
       title: "필리핀 클락 골프장 완전 비교 가이드 — 어디서 칠 것인가?",
