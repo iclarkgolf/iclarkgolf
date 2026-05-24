@@ -109,7 +109,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .mcontent{font-size:15px;line-height:1.9;color:#2c3e2d;white-space:pre-wrap;}
 .share-row{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;}
 .sbtn{padding:8px 16px;border-radius:20px;border:none;cursor:pointer;font-size:13px;font-weight:600;font-family:'Noto Sans KR',sans-serif;}
-.s-kakao{background:#FEE500;color:#000;}
 .s-copy{background:var(--light);color:var(--dark);}
 .mclose{display:block;margin:20px auto 0;padding:12px 36px;background:var(--green);color:#fff;border:none;border-radius:30px;cursor:pointer;font-size:14px;font-family:'Noto Sans KR',sans-serif;font-weight:700;}
 /* FAB */
@@ -185,11 +184,7 @@ footer{background:var(--dark);color:rgba(255,255,255,0.6);text-align:center;padd
       <h3>🗂 카테고리</h3>
       <ul class="cat-list" id="catList"></ul>
     </div>
-    <div class="sidebar-card" style="background:linear-gradient(135deg,var(--dark),var(--green));color:#fff;">
-      <h3 style="color:var(--gold);border-color:rgba(255,255,255,0.2);">🏌️ iClark Academy</h3>
-      <p style="font-size:13px;line-height:1.7;color:rgba(255,255,255,0.8);margin-bottom:14px;">필리핀 팜팡가 프라데라 골프장 소속 클럽 프로가 직접 지도합니다.</p>
-      <a href="http://pf.kakao.com/_nbHKX/chat" target="_blank" style="display:block;background:var(--gold);color:var(--dark);text-align:center;padding:10px;border-radius:20px;font-weight:700;font-size:13px;text-decoration:none;">💬 카카오로 문의</a>
-    </div>
+
   </aside>
 </div>
 
@@ -206,7 +201,6 @@ footer{background:var(--dark);color:rgba(255,255,255,0.6);text-align:center;padd
       <div class="mcontent" id="mContent"></div>
       <div class="modal-ad" style="margin-top:20px;"><span>글 하단 광고 영역</span></div>
       <div class="share-row">
-        <button class="sbtn s-kakao" onclick="shareKakao()">💬 카카오 공유</button>
         <button class="sbtn s-copy" onclick="copyLink()">🔗 링크 복사</button>
       </div>
       <button class="mclose" onclick="closeReadModal()">닫기</button>
@@ -339,7 +333,7 @@ function openPost(id){
 function closeModal(e){if(e.target===document.getElementById("readModal"))closeReadModal();}
 function closeReadModal(){document.getElementById("readModal").classList.remove("open");document.body.style.overflow="";renderPosts();}
 function copyLink(){navigator.clipboard.writeText(window.location.href).then(function(){alert("링크가 복사되었습니다!");});}
-function shareKakao(){alert("카카오톡 SDK 연동 후 공유 기능이 활성화됩니다.");}
+
 
 // 쿠키 배너
 (function(){if(!localStorage.getItem("cookie_consent"))document.getElementById("cookieBanner").style.display="flex";})();
