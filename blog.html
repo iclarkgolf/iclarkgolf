@@ -304,7 +304,8 @@ function goPost(p) {
     'p5': 'blog-p5.html',
     'p6': 'blog-p6.html',
     'p7': 'blog-p7.html',
-    'p8': 'blog-p8.html'
+    'p8': 'blog-p8.html',
+    'p9': 'blog-p9.html'
   };
   if (urlMap[id]) {
     window.location.href = urlMap[id];
@@ -349,6 +350,18 @@ renderFilters();renderPosts();
 // 기본 글 — localStorage 초기화 후 DEFAULT_POSTS로 덮어쓰기
 (function(){
   var DEFAULT_POSTS = [
+    {
+      id: "p9",
+      title: "필리핀 클락 완전 여행 가이드 2026 — 맛집·카지노·피나투보·앙겔레스·수빅 총정리",
+      category: "여행 가이드",
+      author: "투어장",
+      thumbnail: "https://iclarkgolf.com/images/blog-p9-hero.jpg",
+      content: "골프 말고도 넘치는 클락. 맛집, 한 카지노, 피나투보 트래킹, 푸닝 온천, 앙겔레스 밤문화와 로컬 맛집, 수빅 호핑까지 2026년 최신 정보 완전 총정리.",
+      status: "approved",
+      createdAt: "2026-05-24T15:00:00",
+      approvedAt: "2026-05-24T15:00:00",
+      views: 0
+    },
     {
       id: "p8",
       title: "전지훈련 준비, 짐 싸기가 아닙니다 — 티칭 프로가 말하는 5가지 원칙",
