@@ -4995,15 +4995,18 @@ function uploadToImgur() {
         var items = ld('galleryItems');
         items.unshift({ id: Date.now(), type: 'photo', tag: tag, title: title, data: imgUrl, source: 'imgur', date: new Date().toISOString().slice(0,10) });
         sv('galleryItems', items);
-        renderGalleryManage();
+        if (typeof renderGalleryManage === 'function') renderGalleryManage();
         gFilter = 'all';
-        renderGallery();
-        updateStats();
+        if (typeof renderGallery === 'function' && document.getElementById('galleryGrid')) renderGallery();
+        if (typeof updateStats === 'function') updateStats();
         var st = document.getElementById('imgurStatus');
-        if (st) { st.style.background='#e8f4ee'; st.style.color='#1b4332'; st.innerHTML='✅ 업로드 완료! <a href="'+imgUrl+'" target="_blank" style="color:#2d6a4f;">이미지 확인</a>'; }
-        document.getElementById('imgurTitle').value = '';
-        document.getElementById('imgurFile').value  = '';
-        document.getElementById('imgurPreview').innerHTML = '';
+        if (st) { st.style.display='block'; st.style.background='#e8f4ee'; st.style.color='#1b4332'; st.innerHTML='✅ 업로드 완료! <a href="'+imgUrl+'" target="_blank" style="color:#2d6a4f;">이미지 확인</a>'; }
+        var titleEl = document.getElementById('imgurTitle');
+        var fileEl = document.getElementById('imgurFile');
+        var prevEl = document.getElementById('imgurPreview');
+        if (titleEl) titleEl.value = '';
+        if (fileEl) fileEl.value = '';
+        if (prevEl) prevEl.innerHTML = '';
         _imgurFileObj = null; _imgurFileData = null;
       } else {
         var errMsg = (data.data && data.data.error && data.data.error.message)
@@ -5014,7 +5017,7 @@ function uploadToImgur() {
     })
     .catch(function(err) {
       var st = document.getElementById('imgurStatus');
-      if (st) { st.style.background='#fde8e8'; st.style.color='#c0392b'; st.textContent='❌ 업로드 실패: ' + err.message; }
+      if (st) { st.style.display='block'; st.style.background='#fde8e8'; st.style.color='#c0392b'; st.textContent='❌ 업로드 실패: ' + err.message; }
       else { alert('업로드 실패: ' + err.message); }
     })
     .finally(function() {
