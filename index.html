@@ -3804,8 +3804,16 @@ body{font-family:"Noto Sans KR",sans-serif;background:#f0f2f5;color:var(--dark);
 }
 .media-manage-item{
   background:#f8f5f0;border-radius:8px;overflow:hidden;
-  position:relative;
+  position:relative;cursor:grab;transition:transform 0.15s,box-shadow 0.15s,opacity 0.15s;
 }
+.media-manage-item:active{cursor:grabbing;}
+.media-manage-item.dragging{opacity:0.4;transform:scale(0.96);}
+.media-manage-item.drag-over{box-shadow:0 0 0 3px var(--gold);transform:scale(1.03);}
+.drag-handle{position:absolute;top:6px;left:6px;width:22px;height:22px;border-radius:4px;
+  background:rgba(0,0,0,0.45);color:#fff;font-size:12px;display:flex;align-items:center;
+  justify-content:center;cursor:grab;z-index:2;line-height:1;}
+.drag-order-badge{position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,0.5);
+  color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;z-index:2;}
 .media-manage-item img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;}
 .media-manage-ph{
   width:100%;aspect-ratio:4/3;background:linear-gradient(135deg,#e8f4ee,#c8e6d4);
@@ -5248,13 +5256,15 @@ function uploadGallery() {
 function renderGalleryManage() {
   var items = ld("galleryItems");
   var list = document.getElementById("galleryManageList");
+  if (!list) return;
   if (!items.length) {
     list.innerHTML = "<div class='empty-msg' style='grid-column:1/-1;'>📷 갤러리가 비어있습니다.</div>";
     return;
   }
   var out = "";
   items.forEach(function(item, idx) {
-    out += "<div class='media-manage-item'>";
+    out += "<div class='media-manage-item' draggable='true' data-idx='" + idx + "'>";
+    out += "<div class='drag-handle' title='드래그로 순서 변경'>⠿</div>";
     if (item.data) {
       if (item.type === "photo") {
         if (item.source === "gdrive") {
@@ -5269,10 +5279,59 @@ function renderGalleryManage() {
       out += "<div class='media-manage-ph'>" + (item.emoji || "📷") + "</div>";
     }
     out += "<button class='media-del-btn' onclick='delGallery(" + idx + ")'>✕</button>";
+    out += "<div class='drag-order-badge'>" + (idx + 1) + "</div>";
     out += "<div class='media-manage-info'><div class='media-manage-title'>" + item.title + "</div></div>";
     out += "</div>";
   });
   list.innerHTML = out;
+  initGalleryDragDrop();
+}
+
+function initGalleryDragDrop() {
+  var list = document.getElementById("galleryManageList");
+  if (!list) return;
+  var items = list.querySelectorAll(".media-manage-item");
+  var dragSrcIdx = null;
+
+  items.forEach(function(item) {
+    item.addEventListener("dragstart", function(e) {
+      dragSrcIdx = parseInt(this.getAttribute("data-idx"));
+      this.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "move";
+    });
+    item.addEventListener("dragend", function() {
+      this.classList.remove("dragging");
+      list.querySelectorAll(".media-manage-item").forEach(function(el) {
+        el.classList.remove("drag-over");
+      });
+    });
+    item.addEventListener("dragover", function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      list.querySelectorAll(".media-manage-item").forEach(function(el) {
+        el.classList.remove("drag-over");
+      });
+      this.classList.add("drag-over");
+    });
+    item.addEventListener("dragleave", function() {
+      this.classList.remove("drag-over");
+    });
+    item.addEventListener("drop", function(e) {
+      e.preventDefault();
+      var dropIdx = parseInt(this.getAttribute("data-idx"));
+      if (dragSrcIdx === null || dragSrcIdx === dropIdx) return;
+      var galleryItems = ld("galleryItems");
+      var moved = galleryItems.splice(dragSrcIdx, 1)[0];
+      galleryItems.splice(dropIdx, 0, moved);
+      sv("galleryItems", galleryItems);
+      renderGalleryManage();
+      if (typeof renderGallery === "function" && document.getElementById("galleryGrid")) {
+        gFilter = "all";
+        renderGallery();
+      }
+      dragSrcIdx = null;
+    });
+  });
 }
 function delGallery(idx) {
   if (!confirm("삭제할까요?")) return;
