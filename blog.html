@@ -25,7 +25,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Blog","name":"iClark Golf Academy 블로그","url":"https://iclarkgolf.com/blog.html","description":"필리핀 팜팡가 골프 아카데미의 공식 블로그","inLanguage":"ko","publisher":{"@type":"Organization","name":"iClark Golf Academy","url":"https://iclarkgolf.com","logo":{"@type":"ImageObject","url":"https://iclarkgolf.com/og-image.jpg"}}}</script>
 
 <!-- ✅ 애드센스 승인 후 주석 해제 & YOUR_ADSENSE_ID 교체 -->
-
+<!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ADSENSE_ID" crossorigin="anonymous"></script> -->
 
 <!-- ✅ GA4 애널리틱스 — YOUR_GA4_ID 교체 -->
 <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_GA4_ID"></script>
@@ -130,8 +130,6 @@ footer{background:var(--dark);color:rgba(255,255,255,0.6);text-align:center;padd
 .ck-no{background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);}
 @media(max-width:600px){nav{padding:14px 20px;}.blog-hero h1{font-size:38px;}.mhead{padding:22px;}.mbody{padding:20px;}.cookie{padding:14px 20px;}}
 </style>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6049416941276065"
-     crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -302,7 +300,8 @@ function goPost(p) {
     'p7': 'blog-p7.html',
     'p8': 'blog-p8.html',
     'p9': 'blog-p9.html',
-    'p10': 'blog-p10.html'
+    'p10': 'blog-p10.html',
+    'p11': 'blog-p11.html'
   };
   if (urlMap[id]) {
     window.location.href = urlMap[id];
@@ -347,6 +346,18 @@ renderFilters();renderPosts();
 // 기본 글 — localStorage 초기화 후 DEFAULT_POSTS로 덮어쓰기
 (function(){
   var DEFAULT_POSTS = [
+    {
+      id: "p11",
+      title: "필리핀 비자 완전 가이드 2026 — 관광·학생·취업·사업·은퇴 비자 종류·비용·주의사항 총정리",
+      category: "필리핀 생활",
+      author: "투어장",
+      thumbnail: "https://iclarkgolf.com/images/blog-11-hero.jpg",
+      content: "2026년 최신 기준 필리핀 비자 종류와 비용, 입국 절차, 장기 체류 주의사항까지 완벽 정리. 관광·학생·취업·사업·은퇴 비자별 차이점과 재입국 거절·비자 연장 지연 등 실제 주의사항을 한눈에 확인하세요.",
+      status: "approved",
+      createdAt: "2026-05-26T09:00:00",
+      approvedAt: "2026-05-26T09:00:00",
+      views: 0
+    },
     {
       id: "p10",
       title: "골프 입문자가 가장 빨리 느는 방법 — 스크린 말고 실전으로",
