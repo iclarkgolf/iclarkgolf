@@ -301,7 +301,8 @@ function goPost(p) {
     'p8': 'blog-p8.html',
     'p9': 'blog-p9.html',
     'p10': 'blog-p10.html',
-    'p11': 'blog-p11.html'
+    'p11': 'blog-p11.html',
+    'p12': 'blog-p12.html'
   };
   if (urlMap[id]) {
     window.location.href = urlMap[id];
@@ -346,6 +347,18 @@ renderFilters();renderPosts();
 // 기본 글 — localStorage 초기화 후 DEFAULT_POSTS로 덮어쓰기
 (function(){
   var DEFAULT_POSTS = [
+    {
+      id: "p12",
+      title: "골프 100타 벽 깨는 법 — 연습장·스크린의 한계와 실전 훈련이 답인 이유",
+      category: "골프 실전 가이드",
+      author: "투어장",
+      thumbnail: "https://iclarkgolf.com/images/blog-12-hero.jpg",
+      content: "레슨도 받고, 연습장도 다니고, 스크린도 하는데 — 필드만 나가면 원점으로 돌아갑니다. 100타 벽이 안 깨지는 진짜 이유와 보기 플레이까지 가장 빠르게 도달하는 현실적인 방법을 정리했습니다.",
+      status: "approved",
+      createdAt: "2026-05-26T11:00:00",
+      approvedAt: "2026-05-26T11:00:00",
+      views: 0
+    },
     {
       id: "p11",
       title: "필리핀 비자 완전 가이드 2026 — 관광·학생·취업·사업·은퇴 비자 종류·비용·주의사항 총정리",
