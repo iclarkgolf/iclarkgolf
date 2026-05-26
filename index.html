@@ -4106,7 +4106,23 @@ body{font-family:"Noto Sans KR",sans-serif;background:#f0f2f5;color:var(--dark);
       <label class="lbl-field">태그 (쉼표로 구분)</label>
       <input type="text" id="bhEditTags" class="field" placeholder="챔피언십, 리조트형" style="margin-bottom:10px;">
       <label class="lbl-field">예약 링크 URL</label>
-      <input type="url" id="bhEditUrl" class="field" placeholder="https://..." style="margin-bottom:16px;">
+      <input type="url" id="bhEditUrl" class="field" placeholder="https://..." style="margin-bottom:10px;">
+      <label class="lbl-field">운영 기간 (예: 4월1일~10월31일 2026)</label>
+      <input type="text" id="bhEditSchedule" class="field" placeholder="4월1일~10월31일 2026" style="margin-bottom:10px;">
+      <label class="lbl-field">그린피 — 워크인 주중 (페소)</label>
+      <input type="number" id="bhEditWdWalkin" class="field" placeholder="3000" style="margin-bottom:10px;">
+      <label class="lbl-field">그린피 — 워크인 주말 (페소)</label>
+      <input type="number" id="bhEditWeWalkin" class="field" placeholder="3500" style="margin-bottom:10px;">
+      <label class="lbl-field">그린피 — 판매가 주중 (페소)</label>
+      <input type="number" id="bhEditWdSell" class="field" placeholder="2900" style="margin-bottom:10px;">
+      <label class="lbl-field">그린피 — 판매가 주말 (페소)</label>
+      <input type="number" id="bhEditWeSell" class="field" placeholder="3400" style="margin-bottom:10px;">
+      <label class="lbl-field">카트 (페소, 없으면 0)</label>
+      <input type="number" id="bhEditCart" class="field" placeholder="1500" style="margin-bottom:10px;">
+      <label class="lbl-field">캐디 (페소, 없으면 0)</label>
+      <input type="number" id="bhEditCaddie" class="field" placeholder="700" style="margin-bottom:10px;">
+      <label class="lbl-field">비고 (예: 7일 옵션 데이트)</label>
+      <input type="text" id="bhEditRemark" class="field" placeholder="7일 옵션 데이트" style="margin-bottom:16px;">
       <label style="display:flex;align-items:center;gap:8px;margin-bottom:20px;font-size:14px;cursor:pointer;">
         <input type="checkbox" id="bhEditActive" checked style="width:16px;height:16px;"> 활성화 (홈페이지에 표시)
       </label>
@@ -5910,6 +5926,14 @@ function bhEditCourse(idx) {
   document.getElementById("bhEditEmoji").value = c.emoji || "⛳";
   document.getElementById("bhEditTags").value = (c.tags||[]).join(", ");
   document.getElementById("bhEditUrl").value = c.url || "";
+  document.getElementById("bhEditSchedule").value = c.schedule || "";
+  document.getElementById("bhEditWdWalkin").value = c.weekday_walkin || "";
+  document.getElementById("bhEditWeWalkin").value = c.weekend_walkin || "";
+  document.getElementById("bhEditWdSell").value = c.weekday_sell || "";
+  document.getElementById("bhEditWeSell").value = c.weekend_sell || "";
+  document.getElementById("bhEditCart").value = c.cart || "";
+  document.getElementById("bhEditCaddie").value = c.caddie || "";
+  document.getElementById("bhEditRemark").value = c.remark || "";
   document.getElementById("bhEditActive").checked = c.active !== false;
   document.getElementById("bhEditModalTitle").textContent = idx === -1 ? "골프장 추가" : "골프장 편집";
   document.getElementById("bhCourseEditModal").style.display = "flex";
@@ -5934,6 +5958,14 @@ function bhSaveCourse() {
     emoji: document.getElementById("bhEditEmoji").value.trim() || "⛳",
     tags: tagsRaw ? tagsRaw.split(",").map(function(t){ return t.trim(); }).filter(Boolean) : [],
     url: document.getElementById("bhEditUrl").value.trim(),
+    schedule: document.getElementById("bhEditSchedule").value.trim(),
+    weekday_walkin: parseInt(document.getElementById("bhEditWdWalkin").value) || null,
+    weekend_walkin: parseInt(document.getElementById("bhEditWeWalkin").value) || null,
+    weekday_sell: parseInt(document.getElementById("bhEditWdSell").value) || null,
+    weekend_sell: parseInt(document.getElementById("bhEditWeSell").value) || null,
+    cart: parseInt(document.getElementById("bhEditCart").value) || null,
+    caddie: parseInt(document.getElementById("bhEditCaddie").value) || null,
+    remark: document.getElementById("bhEditRemark").value.trim(),
     active: document.getElementById("bhEditActive").checked
   };
   if (idx === -1) { courses.push(newCourse); }
@@ -5941,6 +5973,8 @@ function bhSaveCourse() {
   bhSaveGolfData(courses);
   bhRenderAdminList();
   bhCloseEditModal();
+  // 실제 카드에도 즉시 반영
+  if (typeof renderBhGolf === "function") renderBhGolf();
 }
 
 function bhDeleteCourse(idx) {
@@ -5949,6 +5983,7 @@ function bhDeleteCourse(idx) {
   courses.splice(idx, 1);
   bhSaveGolfData(courses);
   bhRenderAdminList();
+  if (typeof renderBhGolf === "function") renderBhGolf();
 }
 
 function bhSaveAgoda() {
