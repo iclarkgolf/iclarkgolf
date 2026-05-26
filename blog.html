@@ -302,7 +302,8 @@ function goPost(p) {
     'p9': 'blog-p9.html',
     'p10': 'blog-p10.html',
     'p11': 'blog-p11.html',
-    'p12': 'blog-p12.html'
+    'p12': 'blog-p12.html',
+    'p13': 'blog-p13.html'
   };
   if (urlMap[id]) {
     window.location.href = urlMap[id];
@@ -347,6 +348,18 @@ renderFilters();renderPosts();
 // 기본 글 — localStorage 초기화 후 DEFAULT_POSTS로 덮어쓰기
 (function(){
   var DEFAULT_POSTS = [
+    {
+      id: "p13",
+      title: "클락 vs 세부 vs 다낭 — 골프 여행지 3파전, 2026년 기준 완벽 비교",
+      category: "골프 여행 비교",
+      author: "투어장",
+      thumbnail: "https://iclarkgolf.com/images/blog-p13-hero.jpg",
+      content: "그린피, 코스 수, 기후, 접근성, 숙박비, 전지훈련 적합성까지 7개 항목 심층 비교. 클락·세부·다낭 중 당신에게 맞는 해외 골프 여행지는 어디인지 수치로 확인하세요.",
+      status: "approved",
+      createdAt: "2026-05-26T13:00:00",
+      approvedAt: "2026-05-26T13:00:00",
+      views: 0
+    },
     {
       id: "p12",
       title: "골프 100타 벽 깨는 법 — 연습장·스크린의 한계와 실전 훈련이 답인 이유",
