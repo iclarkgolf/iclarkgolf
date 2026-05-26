@@ -3994,57 +3994,6 @@ body{font-family:"Noto Sans KR",sans-serif;background:#f0f2f5;color:var(--dark);
 
 
     <!-- 골프·호텔 예약 관리 패널 -->
-<div class="db-panel" id="panel-bookinghub" style="display:none;">
-  <div class="db-card">
-    <div class="db-card-title">⛳ 클락 골프장 관리</div>
-    <div style="font-size:12px;color:var(--gray);margin-bottom:16px;">골프장 카드를 추가·수정·삭제하고 예약 링크를 설정하세요</div>
-    <div id="bhAdminGolfList" style="margin-bottom:20px;"></div>
-    <button class="btn-primary" onclick="bhAddCourse()" style="width:100%;padding:12px;">
-      ➕ 골프장 추가
-    </button>
-  </div>
-
-  <div class="db-card" style="margin-top:16px;">
-    <div class="db-card-title">🏨 아고다 호텔 링크 설정</div>
-    <div style="font-size:12px;color:var(--gray);margin-bottom:12px;">아고다 검색 링크 또는 제휴 링크를 입력하세요</div>
-    <label class="lbl-field">아고다 링크 URL</label>
-    <input type="url" id="bhAgodaUrlInput" class="field" placeholder="https://www.agoda.com/search?city=17270..." style="margin-bottom:10px;" />
-    <div style="font-size:11px;color:var(--gray);margin-bottom:14px;">
-      💡 아고다 제휴 링크가 있으면 입력하세요. 없으면 기본 클락 지역 검색 링크가 사용됩니다.
-    </div>
-    <button class="btn-primary" onclick="bhSaveAgoda()" style="width:100%;padding:12px;">💾 저장</button>
-    <div id="bhAgodaSaveMsg" style="display:none;text-align:center;margin-top:10px;padding:8px;background:#e8f4ee;border-radius:6px;color:var(--green);font-size:13px;">✅ 저장 완료!</div>
-  </div>
-
-  <!-- 골프장 편집 모달 -->
-  <div id="bhCourseEditModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99999;align-items:center;justify-content:center;">
-    <div style="background:#fff;border-radius:14px;padding:28px;max-width:480px;width:90%;max-height:85vh;overflow-y:auto;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--green);margin-bottom:20px;" id="bhEditModalTitle">골프장 편집</div>
-      <input type="hidden" id="bhEditIdx" value="-1">
-      <label class="lbl-field">골프장 이름 (한국어)</label>
-      <input type="text" id="bhEditName" class="field" placeholder="미모사 골프 & CC" style="margin-bottom:10px;">
-      <label class="lbl-field">골프장 이름 (영어)</label>
-      <input type="text" id="bhEditNameEn" class="field" placeholder="Mimosa Golf & CC" style="margin-bottom:10px;">
-      <label class="lbl-field">위치</label>
-      <input type="text" id="bhEditLoc" class="field" placeholder="Clark, Pampanga" style="margin-bottom:10px;">
-      <label class="lbl-field">홀 수</label>
-      <input type="text" id="bhEditHoles" class="field" placeholder="18홀" style="margin-bottom:10px;">
-      <label class="lbl-field">이모지</label>
-      <input type="text" id="bhEditEmoji" class="field" placeholder="⛳" style="margin-bottom:10px;">
-      <label class="lbl-field">태그 (쉼표로 구분)</label>
-      <input type="text" id="bhEditTags" class="field" placeholder="챔피언십, 리조트형" style="margin-bottom:10px;">
-      <label class="lbl-field">예약 링크 URL</label>
-      <input type="url" id="bhEditUrl" class="field" placeholder="https://..." style="margin-bottom:16px;">
-      <label style="display:flex;align-items:center;gap:8px;margin-bottom:20px;font-size:14px;cursor:pointer;">
-        <input type="checkbox" id="bhEditActive" checked style="width:16px;height:16px;"> 활성화 (홈페이지에 표시)
-      </label>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-        <button class="btn-primary" onclick="bhSaveCourse()">💾 저장</button>
-        <button class="btn-primary" onclick="bhCloseEditModal()" style="background:var(--gray);">취소</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- 예약 페이지 편집 패널 -->
     <div class="db-panel" id="panel-booking">
@@ -4116,7 +4065,60 @@ body{font-family:"Noto Sans KR",sans-serif;background:#f0f2f5;color:var(--dark);
     </div>
 
     <!-- 방문·클릭 통계 패널 -->
-    <div class="db-panel" id="panel-analytics">
+    
+<div class="db-panel" id="panel-bookinghub">
+  <div class="db-card">
+    <div class="db-card-title">⛳ 클락 골프장 관리</div>
+    <div style="font-size:12px;color:var(--gray);margin-bottom:16px;">골프장 카드를 추가·수정·삭제하고 예약 링크를 설정하세요</div>
+    <div id="bhAdminGolfList" style="margin-bottom:20px;"></div>
+    <button class="btn-primary" onclick="bhAddCourse()" style="width:100%;padding:12px;">
+      ➕ 골프장 추가
+    </button>
+  </div>
+
+  <div class="db-card" style="margin-top:16px;">
+    <div class="db-card-title">🏨 아고다 호텔 링크 설정</div>
+    <div style="font-size:12px;color:var(--gray);margin-bottom:12px;">아고다 검색 링크 또는 제휴 링크를 입력하세요</div>
+    <label class="lbl-field">아고다 링크 URL</label>
+    <input type="url" id="bhAgodaUrlInput" class="field" placeholder="https://www.agoda.com/search?city=17270..." style="margin-bottom:10px;" />
+    <div style="font-size:11px;color:var(--gray);margin-bottom:14px;">
+      💡 아고다 제휴 링크가 있으면 입력하세요. 없으면 기본 클락 지역 검색 링크가 사용됩니다.
+    </div>
+    <button class="btn-primary" onclick="bhSaveAgoda()" style="width:100%;padding:12px;">💾 저장</button>
+    <div id="bhAgodaSaveMsg" style="display:none;text-align:center;margin-top:10px;padding:8px;background:#e8f4ee;border-radius:6px;color:var(--green);font-size:13px;">✅ 저장 완료!</div>
+  </div>
+
+  <!-- 골프장 편집 모달 -->
+  <div id="bhCourseEditModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99999;align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:14px;padding:28px;max-width:480px;width:90%;max-height:85vh;overflow-y:auto;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--green);margin-bottom:20px;" id="bhEditModalTitle">골프장 편집</div>
+      <input type="hidden" id="bhEditIdx" value="-1">
+      <label class="lbl-field">골프장 이름 (한국어)</label>
+      <input type="text" id="bhEditName" class="field" placeholder="미모사 골프 & CC" style="margin-bottom:10px;">
+      <label class="lbl-field">골프장 이름 (영어)</label>
+      <input type="text" id="bhEditNameEn" class="field" placeholder="Mimosa Golf & CC" style="margin-bottom:10px;">
+      <label class="lbl-field">위치</label>
+      <input type="text" id="bhEditLoc" class="field" placeholder="Clark, Pampanga" style="margin-bottom:10px;">
+      <label class="lbl-field">홀 수</label>
+      <input type="text" id="bhEditHoles" class="field" placeholder="18홀" style="margin-bottom:10px;">
+      <label class="lbl-field">이모지</label>
+      <input type="text" id="bhEditEmoji" class="field" placeholder="⛳" style="margin-bottom:10px;">
+      <label class="lbl-field">태그 (쉼표로 구분)</label>
+      <input type="text" id="bhEditTags" class="field" placeholder="챔피언십, 리조트형" style="margin-bottom:10px;">
+      <label class="lbl-field">예약 링크 URL</label>
+      <input type="url" id="bhEditUrl" class="field" placeholder="https://..." style="margin-bottom:16px;">
+      <label style="display:flex;align-items:center;gap:8px;margin-bottom:20px;font-size:14px;cursor:pointer;">
+        <input type="checkbox" id="bhEditActive" checked style="width:16px;height:16px;"> 활성화 (홈페이지에 표시)
+      </label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <button class="btn-primary" onclick="bhSaveCourse()">💾 저장</button>
+        <button class="btn-primary" onclick="bhCloseEditModal()" style="background:var(--gray);">취소</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="db-panel" id="panel-analytics">
       <div class="db-card">
         <div class="db-card-title">📊 방문 & 클릭 통계</div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px;">
