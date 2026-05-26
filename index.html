@@ -1218,13 +1218,21 @@ body.lang-en span.kr { display:none !important; }
   function subscribeReservations() {
     var q = query(collection(db, "reservations"), orderBy("date", "desc"));
     onSnapshot(q, function(snapshot) {
+      var items = snapshot.docs.map(function(d) {
+        return Object.assign({ _fbId: d.id }, d.data());
+      });
+      window._cachedReservations = items;
       if (typeof window.renderReservationsFromFB === 'function') {
-        window.renderReservationsFromFB(snapshot.docs.map(function(d) {
-          return Object.assign({ _fbId: d.id }, d.data());
-        }));
+        window.renderReservationsFromFB(items);
       }
     });
   }
+  // refreshReservations 이벤트 수신 시 캐시된 데이터로 즉시 렌더
+  window.addEventListener("refreshReservations", function() {
+    if (window._cachedReservations && typeof window.renderReservationsFromFB === "function") {
+      window.renderReservationsFromFB(window._cachedReservations);
+    }
+  });
 
   // ── Firebase 후기 승인 ──
   window.fbApproveReview = async function(docId) {
@@ -4880,7 +4888,7 @@ function switchTab(id, btn) {
     }, 50);
   }
   if (id === "analytics") renderAnalytics();
-  if (id === "reservations") renderReservations();
+  if (id === "reservations") { if(window._fbResUnsub){ } else { renderReservations(); } window.dispatchEvent(new Event("refreshReservations")); }
   if (id === "pkgedit") loadPkgEditTab();
   if (id === "booking") initBkEditor();
   if (id === "bookinghub") initBhAdmin();
@@ -4896,7 +4904,12 @@ function switchTab(id, btn) {
 function initDashboard() {
   updateStats();
   loadImgSettings();
-  renderReservations();
+  // Firebase에서 예약 불러오기 (없으면 localStorage fallback)
+  if (typeof window.renderReservationsFromFB === "function") {
+    window.dispatchEvent(new Event("refreshReservations"));
+  } else {
+    renderReservations();
+  }
 }
 
 function updateStats() {
