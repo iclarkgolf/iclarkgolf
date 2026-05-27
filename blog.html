@@ -303,7 +303,8 @@ function goPost(p) {
     'p10': 'blog-p10.html',
     'p11': 'blog-p11.html',
     'p12': 'blog-p12.html',
-    'p13': 'blog-p13.html'
+    'p13': 'blog-p13.html',
+    'p14': 'blog-p14.html'
   };
   if (urlMap[id]) {
     window.location.href = urlMap[id];
@@ -348,6 +349,18 @@ renderFilters();renderPosts();
 // 기본 글 — localStorage 초기화 후 DEFAULT_POSTS로 덮어쓰기
 (function(){
   var DEFAULT_POSTS = [
+    {
+      id: "p14",
+      title: "클락 골프 여행, 이제는 풀빌라다 — 2026 클락 풀빌라 완전 가이드 (골프·카지노·밤문화)",
+      category: "클락 여행 트렌드",
+      author: "투어장",
+      thumbnail: "https://iclarkgolf.com/images/blog-p14-hero.jpg",
+      content: "호텔 시대는 끝났다. 4~6인 단독 프라이빗 풀빌라로 클락 골프 여행의 새 트렌드를 완전 정복. 가격대별 풀빌라 옵션, 위치별 특징, 카지노 정보, 밤문화까지 2026년 최신 정보 총정리.",
+      status: "approved",
+      createdAt: "2026-05-27T09:00:00",
+      approvedAt: "2026-05-27T09:00:00",
+      views: 0
+    },
     {
       id: "p13",
       title: "클락 vs 세부 vs 다낭 — 골프 여행지 3파전, 2026년 기준 완벽 비교",
