@@ -307,7 +307,9 @@ function goPost(p) {
     'p17': 'blog-p17.html',
     'p18': 'blog-p18.html',
     'p13': 'blog-p13.html',
-    'p14': 'blog-p14.html'
+    'p14': 'blog-p14.html',
+    'p19': 'blog-p19.html',
+    'p20': 'blog-p20.html'
   };
   if (urlMap[id]) {
     window.location.href = urlMap[id];
@@ -352,6 +354,30 @@ renderFilters();renderPosts();
 // 기본 글 — localStorage 초기화 후 DEFAULT_POSTS로 덮어쓰기
 (function(){
   var DEFAULT_POSTS = [
+    {
+      id: "p20",
+      title: "시니어 골퍼의 천국 — 필리핀 클락이 50·60대에게 맞는 이유",
+      category: "시니어 골퍼",
+      author: "투어장",
+      thumbnail: "https://iclarkgolf.com/images/blog-p20-hero.jpg",
+      content: "50·60대 시니어 골퍼가 클락을 반복해서 찾는 이유. 따뜻한 기후, 친절한 하우스메이드, 진행 압박 없는 라운드, 한국 대비 1/3 비용까지 — 시니어 몸과 지갑 모두에 맞는 골프 여행지 클락 완전 가이드.",
+      status: "approved",
+      createdAt: "2026-06-01T10:00:00",
+      approvedAt: "2026-06-01T10:00:00",
+      views: 0
+    },
+    {
+      id: "p19",
+      title: "여성 골퍼 나 홀로 전지훈련 — 필리핀 클락이 정답인 이유",
+      category: "여성 골퍼",
+      author: "투어장",
+      thumbnail: "https://iclarkgolf.com/images/blog-p19-hero.jpg",
+      content: "여성 골퍼 혼자서도 충분히 가능한 클락 전지훈련. 안전한 리조트 환경, 비수기 금요일 여성 그린피 면제, 1인 라운드 방법, 5박 7일 실제 비용까지 현장 정보 총정리.",
+      status: "approved",
+      createdAt: "2026-06-01T09:00:00",
+      approvedAt: "2026-06-01T09:00:00",
+      views: 0
+    },
     {
       id: "p18",
       title: "주니어 골프 전지훈련, 태국 말고 클락으로 — 프라데라 베르데 완전 가이드",
