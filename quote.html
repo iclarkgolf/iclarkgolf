@@ -548,11 +548,11 @@ footer a { color: rgba(255,255,255,.8); text-decoration: none; }
     <div class="sec-head">
       <div class="step-num">3</div>
       <span class="sec-title">호텔 선택</span>
-      <span class="sec-sub">아고다 링크로 요금 확인 후 선택</span>
+      <span class="sec-sub">아고다 기준 참고 요금 · 날짜마다 변동됨</span>
     </div>
     <div class="pick-grid" id="hotel-grid"></div>
     <div class="custom-price-row" id="custom-price-row" style="display:none">
-      <label>아고다 확인 요금 (1박 1인 $)</label>
+      <label>아고다에서 확인한 요금 입력 (1박 1인 $)</label>
       <input type="number" id="custom-hotel-price" placeholder="예: 65" min="0" oninput="renderCart()">
     </div>
   </div>
@@ -614,8 +614,17 @@ footer a { color: rgba(255,255,255,.8); text-decoration: none; }
       <ellipse cx="12" cy="11.5" rx="10" ry="8" fill="#FEE500"/>
       <path d="M8 10.5c0 2 1.8 3.5 4 3.5.6 0 1.1-.1 1.6-.3l2 1.3-.7-2.1c.7-.7 1.1-1.5 1.1-2.4 0-2-1.8-3.5-4-3.5S8 8.5 8 10.5z" fill="#3C1E1E"/>
     </svg>
-    카카오톡으로 문의하기
+    카카오 채널로 문의하기
   </button>
+
+  <div style="text-align:center;margin:14px 0 10px;padding:14px;background:#fffde7;border-radius:10px;border:1px solid #f4e040">
+    <div style="font-size:11px;font-weight:700;color:#5c4a00;margin-bottom:8px;letter-spacing:.03em">카카오 채널 QR코드</div>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://pf.kakao.com/_nbHKX/chat&color=3C1E1E&bgcolor=FEE500&margin=6"
+         alt="카카오 채널 QR코드"
+         style="width:110px;height:110px;border-radius:8px;display:block;margin:0 auto">
+    <div style="font-size:10px;color:#856a00;margin-top:8px">스캔하면 바로 채널 연결</div>
+  </div>
+
   <div class="cta-note">
     견적은 참고용이며 최종 금액은<br>협의 후 확정됩니다
   </div>
@@ -628,9 +637,9 @@ footer a { color: rgba(255,255,255,.8); text-decoration: none; }
 
 <script>
 const HOTELS = [
-  { id:'h1', icon:'🏨', name:'마제스틱 호텔 클락', note:'클락 시내 중심 · 수영장 포함 · 골프장 30분', price:55, agoda:'https://www.agoda.com/ko-kr/majestic-hotel-clark/hotel/clark-ph.html' },
-  { id:'h2', icon:'🏨', name:'퀄리티 호텔 앤 카지노 클락', note:'가성비 · 클락 중심가', price:45, agoda:'https://www.agoda.com/ko-kr/search?city=18875' },
-  { id:'h3', icon:'🏨', name:'버지니아 호텔', note:'프라데라 골프장 인근 · 조용한 위치', price:40, agoda:'https://www.agoda.com/ko-kr/search?city=18875' },
+  { id:'h1', icon:'🏨', name:'망고 스위트 (Mango Suites)', note:'앙헬레스 시티 센터 · 평점 8.7 · 위치 9.4', price:25, agoda:'https://www.agoda.com/ko-kr/mango-suites-angeles/hotel/angeles-ph.html' },
+  { id:'h2', icon:'🏨', name:'클락턴 호텔 (Clarkton Hotel)', note:'앙헬레스 도심 · 수영장 · 평점 8.3 · 2025년 수상', price:40, agoda:'https://www.agoda.com/ko-kr/clarkton-hotel/hotel/angeles-ph.html' },
+  { id:'h3', icon:'🏨', name:'오아시스 호텔 (Oasis Hotel)', note:'앙헬레스 도심 · 수영장 · 최고 평점 3성급 · 평점 8.6', price:55, agoda:'https://www.agoda.com/ko-kr/oasis-hotel-angeles/hotel/angeles-ph.html' },
   { id:'h4', icon:'🔍', name:'아고다에서 직접 선택', note:'날짜 확인 후 요금 직접 입력', price:0, agoda:'', custom:true },
 ];
 
@@ -732,7 +741,7 @@ function renderHotels() {
         <div class="pick-info">
           <div class="pick-name">${h.name}</div>
           <div class="pick-note">${h.note}</div>
-          ${!h.custom ? `<div class="pick-price">$${h.price} / 1박 1인 기준</div>` : ''}
+          ${!h.custom ? `<div class="pick-price">참고 $${h.price} ~ / 1박 1인 <span style="font-size:10px;color:#888;font-weight:400">(아고다 기준·변동됨)</span></div>` : ''}
           <a class="ext-link" href="${agodaUrl}" target="_blank" onclick="event.stopPropagation()">
             <svg viewBox="0 0 12 12"><path d="M7 1h4v4M11 1L5 7M2 3H1v8h8V9"/></svg>
             아고다에서 요금 확인
