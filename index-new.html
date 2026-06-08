@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ClarkGo — 필리핀 클락의 모든 것</title>
+<meta name="description" content="필리핀 클락 여행의 모든 것 — 골프 패키지, 호텔, 캐디 매칭, 맞춤 견적까지 한 곳에서">
+<meta name="keywords" content="필리핀 골프, 클락 골프, 팜팡가 골프, 골프 전지훈련, 캐디 매칭, 클락 호텔">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="ClarkGo — 필리핀 클락의 모든 것">
+<meta property="og:description" content="골프 · 호텔 · 캐디 · 레슨 · 맞춤 견적 — 클락 여행 포털">
+<meta property="og:url" content="https://iclarkgolf.com">
+<link rel="canonical" href="https://iclarkgolf.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+
+<style>
+/* ── 리셋 & 기본 ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: #f9f0f5;
+  color: #1a1a2e;
+  min-height: 100vh;
+  padding-bottom: 80px; /* 하단 고정 버튼 공간 */
+}
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; }
+
+/* ── CSS 변수 ── */
+:root {
+  --pink: #e8498a;
+  --pink2: #f472b6;
+  --pink-pale: #fdf2f8;
+  --pink-border: #fbcfe8;
+  --purple: #9333ea;
+  --white: #ffffff;
+  --gray-50: #fafafa;
+  --gray-100: #f4f4f5;
+  --gray-200: #e4e4e7;
+  --gray-400: #a1a1aa;
+  --gray-600: #52525b;
+  --gray-900: #18181b;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-full: 100px;
+  --shadow: 0 2px 12px rgba(232,73,138,0.10);
+  --shadow-lg: 0 8px 32px rgba(232,73,138,0.15);
+}
+
+/* ── 네비 (모바일 우선) ── */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: var(--white);
+  border-bottom: 1px solid var(--pink-border);
+  padding: 0 16px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, var(--pink), var(--purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  flex-shrink: 0;
+}
+.nav-search {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--gray-100);
+  border-radius: var(--radius-full);
+  padding: 8px 14px;
+  min-width: 0;
+}
+.nav-search svg { width: 15px; height: 15px; stroke: var(--gray-400); flex-shrink: 0; fill: none; stroke-width: 2; }
+.nav-search input {
+  border: none; background: transparent;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px; color: var(--gray-900);
+  outline: none; width: 100%; min-width: 0;
+}
+.nav-search input::placeholder { color: var(--gray-400); }
+.nav-lang {
+  display: flex; gap: 4px; flex-shrink: 0;
+}
+.lang-btn {
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px; font-weight: 700;
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--gray-200);
+  background: transparent; color: var(--gray-400);
+  cursor: pointer; transition: all .2s;
+  -webkit-appearance: none;
+}
+.lang-btn.on {
+  border-color: var(--pink);
+  background: var(--pink-pale);
+  color: var(--pink);
+}
+
+/* ── 히어로 ── */
+.hero {
+  background: linear-gradient(160deg, #fff0f9 0%, #fdf4ff 50%, #f0f4ff 100%);
+  padding: 28px 20px 24px;
+  text-align: center;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--white);
+  border: 1.5px solid var(--pink-border);
+  border-radius: var(--radius-full);
+  padding: 5px 14px;
+  font-size: 11px; font-weight: 700; color: var(--pink);
+  margin-bottom: 14px;
+}
+.hero h1 {
+  font-size: 28px; font-weight: 800; line-height: 1.25;
+  color: var(--gray-900); margin-bottom: 8px;
+}
+.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--pink), var(--purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: 13px; color: var(--gray-400);
+  font-weight: 600; margin-bottom: 20px;
+}
+.hero-searchbar {
+  display: flex; align-items: center; gap: 0;
+  background: var(--white);
+  border: 2px solid var(--pink-border);
+  border-radius: var(--radius-full);
+  padding: 5px 5px 5px 18px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+}
+.hero-searchbar:focus-within { border-color: var(--pink); }
+.hero-searchbar input {
+  flex: 1; min-width: 0; border: none; background: transparent;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px; font-weight: 600; color: var(--gray-900);
+  outline: none;
+}
+.hero-searchbar input::placeholder { color: var(--gray-400); font-weight: 400; }
+.hero-searchbar button {
+  background: linear-gradient(135deg, var(--pink), var(--purple));
+  color: var(--white); border: none;
+  border-radius: var(--radius-full);
+  padding: 10px 20px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer; white-space: nowrap;
+  min-height: 44px; /* 모바일 탭 최소 크기 */
+}
+.hero-tags {
+  display: flex; gap: 7px;
+  flex-wrap: wrap; justify-content: center;
+}
+.hero-tag {
+  background: var(--white);
+  border: 1.5px solid var(--pink-border);
+  color: var(--pink);
+  font-size: 12px; font-weight: 700;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  cursor: pointer; transition: all .2s;
+  min-height: 36px; display: flex; align-items: center;
+}
+.hero-tag:active { background: var(--pink); color: var(--white); }
+
+/* ── 빠른 메뉴 ── */
+.quick-wrap {
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  padding: 14px 16px;
+}
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.quick-item {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  padding: 12px 8px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid transparent;
+  cursor: pointer; text-decoration: none;
+  transition: all .2s; -webkit-tap-highlight-color: transparent;
+  min-height: 80px; justify-content: center;
+}
+.quick-item:active {
+  background: var(--pink-pale);
+  border-color: var(--pink-border);
+  transform: scale(0.97);
+}
+.quick-item.disabled { opacity: .4; }
+.quick-icon {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+.quick-label { font-size: 12px; font-weight: 700; color: var(--gray-900); text-align: center; }
+.quick-sub { font-size: 10px; color: var(--gray-400); text-align: center; }
+.soon-badge {
+  font-size: 9px; font-weight: 700;
+  background: var(--gray-100); color: var(--gray-400);
+  padding: 2px 8px; border-radius: var(--radius-full);
+}
+
+/* ── 공통 섹션 ── */
+.section { padding: 20px 16px 0; }
+.sec-head {
+  display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 12px;
+}
+.sec-title {
+  font-size: 17px; font-weight: 800; color: var(--gray-900);
+  display: flex; align-items: center; gap: 7px;
+}
+.sec-more {
+  font-size: 12px; font-weight: 700; color: var(--pink);
+  display: flex; align-items: center; gap: 3px;
+}
+.sec-more svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+
+/* ── 메인 배너 ── */
+.banner-main {
+  margin: 20px 16px 0;
+  background: linear-gradient(135deg, #ff6bac 0%, #9333ea 100%);
+  border-radius: var(--radius);
+  padding: 22px 22px 20px;
+  position: relative; overflow: hidden;
+  display: block; text-decoration: none;
+  min-height: 140px;
+  box-shadow: var(--shadow-lg);
+}
+.banner-main:active { opacity: .92; transform: scale(0.99); }
+.banner-deco {
+  position: absolute; right: -10px; bottom: -10px;
+  font-size: 80px; opacity: .18; line-height: 1;
+}
+.banner-badge {
+  display: inline-block;
+  background: rgba(255,255,255,.25);
+  border-radius: var(--radius-full);
+  padding: 3px 12px;
+  font-size: 11px; font-weight: 700; color: var(--white);
+  margin-bottom: 8px;
+}
+.banner-main h2 {
+  font-size: 22px; font-weight: 800; color: var(--white);
+  line-height: 1.3; margin-bottom: 6px;
+}
+.banner-main p {
+  font-size: 12px; color: rgba(255,255,255,.85);
+  margin-bottom: 14px; font-weight: 600;
+}
+.banner-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,.25);
+  border: 1.5px solid rgba(255,255,255,.5);
+  border-radius: var(--radius-full);
+  padding: 9px 20px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px; font-weight: 700; color: var(--white);
+  min-height: 44px;
+}
+.banner-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+
+/* 서브 배너 2열 */
+.banner-sub-row {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin: 10px 16px 0;
+}
+.banner-sub {
+  border-radius: var(--radius);
+  padding: 18px 16px;
+  display: block; text-decoration: none;
+  min-height: 110px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  transition: opacity .2s;
+}
+.banner-sub:active { opacity: .88; }
+.banner-sub-caddy { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+.banner-sub-blog { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
+.banner-sub h3 {
+  font-size: 15px; font-weight: 800; color: var(--white);
+  margin-bottom: 3px; line-height: 1.3;
+}
+.banner-sub p { font-size: 10px; color: rgba(255,255,255,.8); font-weight: 600; }
+.banner-sub-arrow {
+  align-self: flex-end;
+  width: 28px; height: 28px;
+  background: rgba(255,255,255,.25);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 8px;
+}
+.banner-sub-arrow svg { width: 13px; height: 13px; stroke: #fff; fill: none; stroke-width: 2.5; }
+
+/* ── 패키지 카드 (가로 스크롤) ── */
+.hscroll-wrap {
+  overflow-x: auto; overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 4px 16px 12px;
+  margin: 0 -16px;
+}
+.hscroll-wrap::-webkit-scrollbar { display: none; }
+.hscroll-inner {
+  display: flex; gap: 10px;
+  width: max-content; padding: 0 16px;
+}
+.pkg-card {
+  background: var(--white);
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius);
+  overflow: hidden;
+  width: 200px; flex-shrink: 0;
+  display: block; text-decoration: none;
+  transition: all .2s;
+  box-shadow: var(--shadow);
+}
+.pkg-card:active { transform: scale(0.97); border-color: var(--pink-border); }
+.pkg-card.featured { border-color: var(--pink); }
+.pkg-thumb {
+  height: 90px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 38px; position: relative;
+}
+.pkg-thumb-pink { background: linear-gradient(135deg, #fdf2f8, #fce7f3); }
+.pkg-thumb-purple { background: linear-gradient(135deg, #faf5ff, #f3e8ff); }
+.pkg-thumb-blue { background: linear-gradient(135deg, #eff6ff, #dbeafe); }
+.pkg-hot {
+  position: absolute; top: 8px; right: 8px;
+  background: var(--pink); color: var(--white);
+  font-size: 9px; font-weight: 700;
+  padding: 3px 9px; border-radius: var(--radius-full);
+}
+.pkg-body { padding: 12px 14px; }
+.pkg-tag {
+  font-size: 10px; font-weight: 700;
+  padding: 3px 9px; border-radius: var(--radius-full);
+  display: inline-block; margin-bottom: 5px;
+}
+.tag-green { background: #dcfce7; color: #15803d; }
+.tag-pink { background: var(--pink-pale); color: var(--pink); }
+.tag-blue { background: #dbeafe; color: #1d4ed8; }
+.pkg-name { font-size: 13px; font-weight: 800; color: var(--gray-900); margin-bottom: 3px; }
+.pkg-desc { font-size: 11px; color: var(--gray-400); line-height: 1.5; margin-bottom: 8px; }
+.pkg-price { font-size: 17px; font-weight: 800; color: var(--pink); }
+.pkg-price span { font-size: 10px; font-weight: 500; color: var(--gray-400); }
+
+/* ── 골프장 카드 ── */
+.golf-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.golf-card {
+  background: var(--white);
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius); padding: 14px;
+  display: block; text-decoration: none;
+  transition: all .2s;
+}
+.golf-card:active { border-color: var(--pink-border); transform: scale(0.98); }
+.golf-icon {
+  width: 42px; height: 42px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; margin-bottom: 8px;
+}
+.golf-name { font-size: 13px; font-weight: 800; color: var(--gray-900); margin-bottom: 3px; }
+.golf-info { font-size: 11px; color: var(--gray-400); margin-bottom: 6px; line-height: 1.4; }
+.golf-price { font-size: 14px; font-weight: 800; color: var(--pink); }
+.golf-price span { font-size: 10px; font-weight: 500; color: var(--gray-400); }
+
+/* ── CTA 밴드 ── */
+.cta-band {
+  margin: 20px 16px 0;
+  background: linear-gradient(135deg, #ff6bac, #9333ea);
+  border-radius: var(--radius); padding: 22px 20px;
+  text-align: center;
+}
+.cta-band h3 { font-size: 18px; font-weight: 800; color: var(--white); margin-bottom: 6px; }
+.cta-band p { font-size: 12px; color: rgba(255,255,255,.85); font-weight: 600; margin-bottom: 16px; }
+.cta-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.cta-btn-w {
+  background: var(--white); color: var(--pink);
+  border: none; border-radius: var(--radius-full);
+  padding: 12px 24px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px; font-weight: 800;
+  cursor: pointer; text-decoration: none;
+  min-height: 46px; display: flex; align-items: center;
+}
+.cta-btn-o {
+  background: rgba(255,255,255,.2); color: var(--white);
+  border: 1.5px solid rgba(255,255,255,.5);
+  border-radius: var(--radius-full);
+  padding: 12px 24px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px; font-weight: 800;
+  cursor: pointer; text-decoration: none;
+  min-height: 46px; display: flex; align-items: center;
+}
+
+/* ── 캐디 카드 (가로 스크롤) ── */
+.caddy-card {
+  background: var(--white);
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius); padding: 14px;
+  text-align: center;
+  width: 140px; flex-shrink: 0;
+  display: block; text-decoration: none;
+}
+.caddy-card:active { border-color: var(--pink-border); transform: scale(0.97); }
+.caddy-avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin: 0 auto 8px;
+}
+.caddy-name { font-size: 13px; font-weight: 800; color: var(--gray-900); margin-bottom: 2px; }
+.caddy-info { font-size: 11px; color: var(--gray-400); margin-bottom: 7px; }
+.caddy-badges { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
+.c-badge {
+  font-size: 9px; font-weight: 700;
+  padding: 2px 8px; border-radius: var(--radius-full);
+}
+
+/* ── 카카오 밴드 ── */
+.kakao-band {
+  margin: 20px 16px 0;
+  background: var(--white);
+  border: 1.5px solid #fbbf24;
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  display: flex; align-items: center; gap: 14px;
+}
+.kakao-icon {
+  width: 46px; height: 46px; border-radius: 50%;
+  background: #FEE500;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+}
+.kakao-text { flex: 1; min-width: 0; }
+.kakao-text h4 { font-size: 14px; font-weight: 800; color: var(--gray-900); margin-bottom: 2px; }
+.kakao-text p { font-size: 11px; color: var(--gray-400); }
+.kakao-btn {
+  background: #FEE500; color: #1b1b1b;
+  border: none; border-radius: var(--radius-full);
+  padding: 10px 18px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px; font-weight: 800;
+  cursor: pointer; text-decoration: none;
+  white-space: nowrap;
+  min-height: 44px; display: flex; align-items: center;
+}
+
+/* ── 블로그 카드 ── */
+.blog-card {
+  background: var(--white);
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius); overflow: hidden;
+  width: 200px; flex-shrink: 0;
+  display: block; text-decoration: none;
+}
+.blog-card:active { border-color: var(--pink-border); transform: scale(0.98); }
+.blog-thumb {
+  height: 72px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+}
+.blog-body { padding: 10px 12px; }
+.blog-tag {
+  font-size: 10px; font-weight: 700;
+  background: var(--pink-pale); color: var(--pink);
+  padding: 2px 9px; border-radius: var(--radius-full);
+  display: inline-block; margin-bottom: 5px;
+}
+.blog-title { font-size: 12px; font-weight: 700; color: var(--gray-900); line-height: 1.4; }
+
+/* ── Coming Soon ── */
+.coming-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  margin: 20px 16px 0;
+}
+.coming-card {
+  background: var(--white);
+  border: 1.5px dashed var(--gray-200);
+  border-radius: var(--radius);
+  padding: 18px 12px; text-align: center; opacity: .6;
+}
+.coming-card-icon { font-size: 26px; margin-bottom: 7px; }
+.coming-card-title { font-size: 12px; font-weight: 700; color: var(--gray-600); margin-bottom: 3px; }
+.coming-card-sub { font-size: 10px; color: var(--gray-400); line-height: 1.4; }
+.coming-soon { display: inline-block; margin-top: 7px; font-size: 9px; font-weight: 700; background: var(--gray-100); color: var(--gray-400); padding: 2px 9px; border-radius: var(--radius-full); }
+
+/* ── 하단 고정 카카오 버튼 (모바일 핵심) ── */
+.fixed-kakao {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  z-index: 300;
+  background: var(--white);
+  border-top: 1px solid var(--pink-border);
+  padding: 10px 16px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  display: flex; gap: 10px;
+}
+.fixed-kakao-btn {
+  flex: 1;
+  background: #FEE500; color: #1b1b1b;
+  border: none; border-radius: var(--radius-full);
+  padding: 14px 16px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px; font-weight: 800;
+  cursor: pointer; text-decoration: none;
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; min-height: 52px;
+}
+.fixed-quote-btn {
+  flex: 1;
+  background: linear-gradient(135deg, var(--pink), var(--purple));
+  color: var(--white);
+  border: none; border-radius: var(--radius-full);
+  padding: 14px 16px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px; font-weight: 800;
+  cursor: pointer; text-decoration: none;
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; min-height: 52px;
+}
+
+/* ── 푸터 ── */
+footer {
+  background: var(--gray-900); color: rgba(255,255,255,.45);
+  padding: 24px 16px; text-align: center;
+  margin-top: 28px;
+}
+.footer-logo {
+  font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px;
+  background: linear-gradient(135deg, var(--pink), var(--purple));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; display: inline-block; margin-bottom: 10px;
+}
+.footer-links { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 10px; }
+.footer-links a { font-size: 11px; color: rgba(255,255,255,.45); transition: color .2s; }
+.footer-links a:hover { color: rgba(255,255,255,.8); }
+.footer-copy { font-size: 10px; }
+
+/* ── 데스크탑 확장 ── */
+@media (min-width: 640px) {
+  body { padding-bottom: 0; }
+  .fixed-kakao { display: none; }
+  .quick-grid { grid-template-columns: repeat(6, 1fr); }
+  .golf-grid { grid-template-columns: repeat(4, 1fr); }
+  .coming-grid { grid-template-columns: repeat(3, 1fr); }
+  .hero h1 { font-size: 36px; }
+  .banner-main { min-height: 160px; }
+  .nav { padding: 0 24px; }
+  .section { padding: 24px 24px 0; }
+  .banner-main { margin: 24px 24px 0; }
+  .banner-sub-row { margin: 12px 24px 0; }
+  .hscroll-wrap { padding: 4px 24px 14px; margin: 0 -24px; }
+  .hscroll-inner { padding: 0 24px; }
+  .cta-band { margin: 24px 24px 0; }
+  .kakao-band { margin: 24px 24px 0; }
+  .coming-grid { margin: 24px 24px 0; }
+}
+@media (min-width: 1024px) {
+  .hero h1 { font-size: 44px; }
+  .hero-searchbar { max-width: 520px; margin-left: auto; margin-right: auto; }
+  .nav { max-width: 100%; }
+  .section, .banner-main, .banner-sub-row, .cta-band, .kakao-band, .coming-grid {
+    max-width: 1100px; margin-left: auto; margin-right: auto;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- 네비 -->
+<nav class="nav">
+  <a href="/" class="logo">CLARKGO</a>
+  <div class="nav-search">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input placeholder="골프장, 호텔, 캐디...">
+  </div>
+  <div class="nav-lang">
+    <button class="lang-btn on">KOR</button>
+    <button class="lang-btn">ENG</button>
+  </div>
+</nav>
+
+<!-- 히어로 -->
+<div class="hero">
+  <div class="hero-badge">📍 필리핀 팜팡가 · 앙헬레스 · 클락</div>
+  <h1>클락의 모든 것,<br><em>한 곳에서</em></h1>
+  <p class="hero-sub">골프 · 호텔 · 캐디 · 레슨 · 맞춤 견적</p>
+  <div class="hero-searchbar">
+    <input placeholder="어떤 여행을 계획하고 계세요?">
+    <button>검색</button>
+  </div>
+  <div class="hero-tags">
+    <span class="hero-tag">골프 전지훈련</span>
+    <span class="hero-tag">주말 라운드</span>
+    <span class="hero-tag">캐디 매칭</span>
+    <span class="hero-tag">레슨 패키지</span>
+    <span class="hero-tag">나 홀로 여행</span>
+  </div>
+</div>
+
+<!-- 빠른 메뉴 -->
+<div class="quick-wrap">
+  <div class="quick-grid">
+    <a href="#packages" class="quick-item">
+      <div class="quick-icon" style="background:#fdf2f8">⛳</div>
+      <div class="quick-label">골프 패키지</div>
+      <div class="quick-sub">기획 상품</div>
+    </a>
+    <a href="quote.html" class="quick-item">
+      <div class="quick-icon" style="background:#faf5ff">🛒</div>
+      <div class="quick-label">맞춤 견적</div>
+      <div class="quick-sub">직접 구성</div>
+    </a>
+    <a href="#golf" class="quick-item">
+      <div class="quick-icon" style="background:#eff6ff">🏌️</div>
+      <div class="quick-label">골프장</div>
+      <div class="quick-sub">코스 정보</div>
+    </a>
+    <a href="caddy.html" class="quick-item">
+      <div class="quick-icon" style="background:#f0fdf4">🤝</div>
+      <div class="quick-label">캐디 매칭</div>
+      <div class="quick-sub">실시간</div>
+    </a>
+    <a href="blog.html" class="quick-item">
+      <div class="quick-icon" style="background:#fff7ed">📝</div>
+      <div class="quick-label">블로그</div>
+      <div class="quick-sub">여행 정보</div>
+    </a>
+    <div class="quick-item disabled">
+      <div class="quick-icon" style="background:#f4f4f5">🛍️</div>
+      <div class="quick-label">쇼핑</div>
+      <div class="soon-badge">준비중</div>
+    </div>
+  </div>
+</div>
+
+<!-- 메인 배너 -->
+<a href="quote.html" class="banner-main">
+  <div class="banner-badge">✨ 지금 인기</div>
+  <h2>나만의 골프 여행<br>직접 설계하기</h2>
+  <p>날짜 · 골프장 · 호텔 · 레슨<br>원하는 것만 골라 견적 확인</p>
+  <div class="banner-btn">
+    견적 만들기
+    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  </div>
+  <div class="banner-deco">🏌️</div>
+</a>
+
+<!-- 서브 배너 -->
+<div class="banner-sub-row">
+  <a href="caddy.html" class="banner-sub banner-sub-caddy">
+    <div>
+      <h3>캐디<br>바로 매칭</h3>
+      <p>클락 검증 캐디<br>한국어 가능</p>
+    </div>
+    <div class="banner-sub-arrow">
+      <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </div>
+  </a>
+  <a href="blog.html" class="banner-sub banner-sub-blog">
+    <div>
+      <h3>여행<br>정보 블로그</h3>
+      <p>클락 여행 팁<br>최신 정보</p>
+    </div>
+    <div class="banner-sub-arrow">
+      <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </div>
+  </a>
+</div>
+
+<!-- 골프 패키지 -->
+<div class="section" id="packages">
+  <div class="sec-head">
+    <div class="sec-title">⛳ 골프 패키지</div>
+    <a href="#packages" class="sec-more">전체보기 <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+  </div>
+  <div class="hscroll-wrap">
+    <div class="hscroll-inner">
+      <a href="#" onclick="openPkg('starter');return false;" class="pkg-card">
+        <div class="pkg-thumb pkg-thumb-pink">⛳</div>
+        <div class="pkg-body">
+          <div class="pkg-tag tag-green">입문</div>
+          <div class="pkg-name">입문 패키지 3박 4일</div>
+          <div class="pkg-desc">연습장 레슨 3회 · 9홀 1회 · 조식 포함</div>
+          <div class="pkg-price">$299 <span>/ person</span></div>
+        </div>
+      </a>
+      <a href="#" onclick="openPkg('balance');return false;" class="pkg-card featured">
+        <div class="pkg-thumb pkg-thumb-purple">
+          🏆 <div class="pkg-hot">인기</div>
+        </div>
+        <div class="pkg-body">
+          <div class="pkg-tag tag-pink">밸런스</div>
+          <div class="pkg-name">밸런스 패키지 5박 6일</div>
+          <div class="pkg-desc">필드 레슨 2회 · 18홀 3회 · 3식 포함</div>
+          <div class="pkg-price">$549 <span>/ person</span></div>
+        </div>
+      </a>
+      <a href="#" onclick="openPkg('round');return false;" class="pkg-card">
+        <div class="pkg-thumb pkg-thumb-blue">🏌️</div>
+        <div class="pkg-body">
+          <div class="pkg-tag tag-blue">라운드</div>
+          <div class="pkg-name">라운드 패키지 5박 6일</div>
+          <div class="pkg-desc">18홀 5회 · 선택 레슨 1회 · 전용차 포함</div>
+          <div class="pkg-price">$649 <span>/ person</span></div>
+        </div>
+      </a>
+      <a href="#" onclick="openPkg('longstay');return false;" class="pkg-card">
+        <div class="pkg-thumb pkg-thumb-pink">🌴</div>
+        <div class="pkg-body">
+          <div class="pkg-tag tag-green">장기</div>
+          <div class="pkg-name">장기 체류 30박</div>
+          <div class="pkg-desc">집중 훈련 · 숙식 포함 · 라운드 무제한</div>
+          <div class="pkg-price">$2,499 <span>/ person</span></div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- 맞춤 견적 CTA -->
+<div class="cta-band">
+  <h3>패키지가 딱 안 맞으세요?</h3>
+  <p>원하는 것만 골라서 나만의 견적을 만들어보세요</p>
+  <div class="cta-btns">
+    <a href="quote.html" class="cta-btn-w">견적 만들기</a>
+    <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="cta-btn-o">카카오 문의</a>
+  </div>
+</div>
+
+<!-- 골프장 -->
+<div class="section" id="golf">
+  <div class="sec-head">
+    <div class="sec-title">🗺️ 클락 골프장</div>
+    <a href="#golf" class="sec-more">전체보기 <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+  </div>
+  <div class="golf-grid">
+    <a href="#" class="golf-card">
+      <div class="golf-icon" style="background:#fdf2f8">⛳</div>
+      <div class="golf-name">프라데라 베르데</div>
+      <div class="golf-info">36홀 챔피언십 · 캐디+카트 포함</div>
+      <div class="golf-price">$75~ <span>/ 18홀</span></div>
+    </a>
+    <a href="#" class="golf-card">
+      <div class="golf-icon" style="background:#eff6ff">⛳</div>
+      <div class="golf-name">베버리 G&CC</div>
+      <div class="golf-info">클락 인기 코스</div>
+      <div class="golf-price">$65~ <span>/ 18홀</span></div>
+    </a>
+    <a href="#" class="golf-card">
+      <div class="golf-icon" style="background:#f0fdf4">⛳</div>
+      <div class="golf-name">미모사 G&CC</div>
+      <div class="golf-info">접근 편리 · 시내 인접</div>
+      <div class="golf-price">$60~ <span>/ 18홀</span></div>
+    </a>
+    <a href="#" class="golf-card">
+      <div class="golf-icon" style="background:#fff7ed">⛳</div>
+      <div class="golf-name">코리아나 GC</div>
+      <div class="golf-info">한국인 운영 · 한국어 서비스</div>
+      <div class="golf-price">$55~ <span>/ 18홀</span></div>
+    </a>
+  </div>
+</div>
+
+<!-- 캐디 매칭 -->
+<div class="section">
+  <div class="sec-head">
+    <div class="sec-title">🤝 캐디 매칭</div>
+    <a href="caddy.html" class="sec-more">전체보기 <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+  </div>
+  <div class="hscroll-wrap">
+    <div class="hscroll-inner">
+      <a href="caddy.html" class="caddy-card">
+        <div class="caddy-avatar" style="background:#fdf2f8">👩</div>
+        <div class="caddy-name">Maria S.</div>
+        <div class="caddy-info">경력 5년</div>
+        <div class="caddy-badges">
+          <span class="c-badge" style="background:#fdf2f8;color:#be185d">한국어</span>
+        </div>
+      </a>
+      <a href="caddy.html" class="caddy-card">
+        <div class="caddy-avatar" style="background:#eff6ff">👨</div>
+        <div class="caddy-name">Jose R.</div>
+        <div class="caddy-info">경력 8년</div>
+        <div class="caddy-badges">
+          <span class="c-badge" style="background:#eff6ff;color:#1d4ed8">영어</span>
+        </div>
+      </a>
+      <a href="caddy.html" class="caddy-card">
+        <div class="caddy-avatar" style="background:#f0fdf4">👩</div>
+        <div class="caddy-name">Ana L.</div>
+        <div class="caddy-info">경력 3년</div>
+        <div class="caddy-badges">
+          <span class="c-badge" style="background:#fff7ed;color:#c2410c">인기</span>
+        </div>
+      </a>
+      <a href="caddy.html" class="caddy-card">
+        <div class="caddy-avatar" style="background:#fdf2f8">➕</div>
+        <div class="caddy-name">전체 보기</div>
+        <div class="caddy-info">등록 캐디 확인</div>
+        <div class="caddy-badges">
+          <span class="c-badge" style="background:#fdf2f8;color:#be185d">바로가기</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- 카카오 -->
+<div class="kakao-band">
+  <div class="kakao-icon">💬</div>
+  <div class="kakao-text">
+    <h4>카카오 채널 문의</h4>
+    <p>예약 · 상담 · 궁금한 점</p>
+  </div>
+  <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="kakao-btn">채널 열기</a>
+</div>
+
+<!-- 메신저 밴드 -->
+<div class="kakao-band" style="border-color:#0099ff;margin-top:12px">
+  <div class="kakao-icon" style="background:#0099ff">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.145 2 11.243c0 2.914 1.318 5.52 3.396 7.28V22l3.12-1.717c.832.23 1.715.355 2.63.355 5.523 0 10-4.144 10-9.243S17.523 2 12 2zm1.008 12.44l-2.55-2.72-4.976 2.72 5.478-5.813 2.613 2.72 4.914-2.72-5.479 5.813z"/></svg>
+  </div>
+  <div class="kakao-text">
+    <h4>페이스북 메신저 문의</h4>
+    <p>필리핀 로컬 · 영어 상담 가능</p>
+  </div>
+  <a href="https://m.me/iclarkgolf" target="_blank" class="kakao-btn" style="background:#0099ff;color:#fff">
+    메신저 열기
+  </a>
+</div>
+
+<!-- 블로그 -->
+<div class="section">
+  <div class="sec-head">
+    <div class="sec-title">📝 여행 정보</div>
+    <a href="blog.html" class="sec-more">전체보기 <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+  </div>
+  <div class="hscroll-wrap">
+    <div class="hscroll-inner">
+      <a href="blog-p1.html" class="blog-card">
+        <div class="blog-thumb" style="background:#fdf2f8">🏖️</div>
+        <div class="blog-body">
+          <div class="blog-tag">여행 팁</div>
+          <div class="blog-title">여름 휴가, 골프 전지훈련으로 바꿔보세요</div>
+        </div>
+      </a>
+      <a href="blog-p2.html" class="blog-card">
+        <div class="blog-thumb" style="background:#faf5ff">⛅</div>
+        <div class="blog-body">
+          <div class="blog-tag">날씨</div>
+          <div class="blog-title">필리핀 클락 골프 날씨 완전 가이드</div>
+        </div>
+      </a>
+      <a href="blog-p3.html" class="blog-card">
+        <div class="blog-thumb" style="background:#f0fdf4">🤝</div>
+        <div class="blog-body">
+          <div class="blog-tag">캐디 정보</div>
+          <div class="blog-title">필리핀 골프 캐디 완전 가이드</div>
+        </div>
+      </a>
+      <a href="blog-p4.html" class="blog-card">
+        <div class="blog-thumb" style="background:#fff7ed">🍽️</div>
+        <div class="blog-body">
+          <div class="blog-tag">먹자골</div>
+          <div class="blog-title">나 홀로도 전지훈련은 됩니다</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Coming Soon -->
+<div class="coming-grid">
+  <div class="coming-card">
+    <div class="coming-card-icon">🛍️</div>
+    <div class="coming-card-title">한국 상품 쇼핑</div>
+    <div class="coming-card-sub">클락 로컬용<br>한국 인기 상품</div>
+    <div class="coming-soon">Coming Soon</div>
+  </div>
+  <div class="coming-card">
+    <div class="coming-card-icon">🍽️</div>
+    <div class="coming-card-title">맛집 가이드</div>
+    <div class="coming-card-sub">클락 추천<br>식당 정보</div>
+    <div class="coming-soon">Coming Soon</div>
+  </div>
+  <div class="coming-card">
+    <div class="coming-card-icon">🏨</div>
+    <div class="coming-card-title">호텔 예약</div>
+    <div class="coming-card-sub">실시간 요금<br>아고다 연동</div>
+    <div class="coming-soon">Coming Soon</div>
+  </div>
+</div>
+
+<!-- 푸터 -->
+<footer>
+  <div class="footer-logo">CLARKGO</div>
+  <div class="footer-links">
+    <a href="/">홈</a>
+    <a href="#packages">패키지</a>
+    <a href="quote.html">맞춤 견적</a>
+    <a href="caddy.html">캐디 매칭</a>
+    <a href="blog.html">블로그</a>
+    <a href="privacy.html">개인정보처리방침</a>
+  </div>
+  <p class="footer-copy">© 2025 ClarkGo · iClark Golf Academy · Pradera Verde, Pampanga, Philippines</p>
+</footer>
+
+<!-- 하단 고정 버튼 (모바일 핵심) -->
+<div class="fixed-kakao">
+  <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="fixed-kakao-btn" style="flex:1">
+    💬 카카오
+  </a>
+  <a href="https://m.me/iclarkgolf" target="_blank" class="fixed-kakao-btn" style="flex:1;background:#0099ff;color:#fff;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="white" style="flex-shrink:0"><path d="M12 2C6.477 2 2 6.145 2 11.243c0 2.914 1.318 5.52 3.396 7.28V22l3.12-1.717c.832.23 1.715.355 2.63.355 5.523 0 10-4.144 10-9.243S17.523 2 12 2zm1.008 12.44l-2.55-2.72-4.976 2.72 5.478-5.813 2.613 2.72 4.914-2.72-5.479 5.813z"/></svg>
+    메신저
+  </a>
+  <a href="quote.html" class="fixed-quote-btn" style="flex:1">
+    🛒 견적
+  </a>
+</div>
+
+<script>
+function openPkg(type) {
+  const map = {
+    starter: ['입문 패키지 3박 4일', '$299'],
+    balance: ['밸런스 패키지 5박 6일', '$549'],
+    round: ['라운드 패키지 5박 6일', '$649'],
+    longstay: ['장기 체류 30박', '$2,499']
+  };
+  const [name, price] = map[type] || [];
+  if (!name) return;
+  if (confirm(`${name} (${price})\n\n카카오 채널로 자세한 상담을 받으시겠어요?`)) {
+    window.open('https://pf.kakao.com/_nbHKX/chat', '_blank');
+  }
+}
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', function () {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('on'));
+    this.classList.add('on');
+  });
+});
+</script>
+</body>
+</html>
