@@ -1571,7 +1571,7 @@ body.lang-en span.kr { display:none !important; }
 
     </div>
     <div style="text-align:center; margin-top:36px;">
-      <a href="#" onclick="openBooking();return false;" class="btn-primary">
+      <a href="https://iclarkgolf.com/quote.html" class="btn-primary">
         <span class="kr">직접 구성하기 →</span>
         <span class="en">Build My Own →</span>
       </a>
@@ -1977,6 +1977,11 @@ body.lang-en span.kr { display:none !important; }
           <option value="라운드 마스터">🔴 라운드 마스터 ($649)</option>
           <option value="직접 구성">🛒 직접 구성하기</option>
         </select>
+        <script>
+        document.getElementById('cf-pkg').addEventListener('change', function(){
+          if(this.value === '직접 구성') window.location.href = 'https://iclarkgolf.com/quote.html';
+        });
+        </script>
         <textarea class="cf-textarea" id="cf-msg" autocomplete="off" placeholder="문의 내용을 입력해 주세요 / Your message here..."></textarea>
         <button class="cf-submit" onclick="submitInquiry()">
           <span class="kr">문의 보내기 →</span>
