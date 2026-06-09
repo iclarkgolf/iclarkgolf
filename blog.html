@@ -81,24 +81,47 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .loading-spinner{font-size:36px;animation:spin 1s linear infinite;display:inline-block;margin-bottom:12px;}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 /* 모달 */
-.modal-ov{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding:80px 20px 40px;overflow-y:auto;}
-.modal-ov.open{display:flex;}
-.modal-box{background:#fff;border-radius:20px;max-width:740px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:su 0.3s ease;}
-@keyframes su{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
-.mhead{background:linear-gradient(135deg,var(--dark),var(--green));padding:36px 40px 28px;border-radius:20px 20px 0 0;color:#fff;}
-.mcat{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
-.mtitle{font-size:24px;font-weight:700;line-height:1.4;margin-bottom:12px;}
-.mmeta{font-size:13px;color:rgba(255,255,255,0.6);display:flex;gap:16px;flex-wrap:wrap;}
-.mbody{padding:36px 40px;}
+/* ── 풀페이지 모달 ── */
+.modal-ov{display:none;position:fixed;inset:0;z-index:200;background:var(--cream);overflow-y:auto;}
+.modal-ov.open{display:block;}
+@keyframes su{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal-box{max-width:800px;margin:0 auto;animation:su 0.35s ease;padding-bottom:80px;}
+
+/* 히어로 */
+.mhero{position:relative;width:100%;height:420px;background:linear-gradient(135deg,var(--dark),var(--green));display:flex;align-items:flex-end;overflow:hidden;}
+.mhero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.55;}
+.mhero-gradient{position:absolute;inset:0;background:linear-gradient(to top,rgba(13,31,23,0.92) 0%,rgba(13,31,23,0.3) 60%,transparent 100%);}
+.mhero-content{position:relative;z-index:2;padding:36px 40px;width:100%;}
+.mcat{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;display:inline-block;background:rgba(244,162,97,0.15);padding:4px 12px;border-radius:20px;border:1px solid rgba(244,162,97,0.3);}
+.mtitle{font-size:32px;font-weight:800;line-height:1.3;color:#fff;margin-bottom:14px;}
+.mmeta{font-size:13px;color:rgba(255,255,255,0.7);display:flex;gap:16px;flex-wrap:wrap;align-items:center;}
+
+/* 닫기 버튼 */
+.mclose-top{position:fixed;top:16px;right:20px;z-index:300;background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.3);color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.mclose-top:hover{background:rgba(255,255,255,0.3);}
+
+/* 본문 */
+.mbody{padding:40px 40px 20px;background:#fff;border-radius:0 0 20px 20px;}
 .modal-ad{margin:20px 0;background:var(--cream);border:1px dashed var(--light);border-radius:10px;min-height:80px;display:flex;align-items:center;justify-content:center;color:var(--gray);font-size:11px;}
-.mcontent{font-size:15px;line-height:1.9;color:#2c3e2d;}
-/* 모달 이미지 갤러리 */
-.modal-images{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
-.modal-images img{width:calc(50% - 4px);border-radius:10px;object-fit:cover;max-height:220px;}
-.share-row{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;}
-.sbtn{padding:8px 16px;border-radius:20px;border:none;cursor:pointer;font-size:13px;font-weight:600;font-family:'Noto Sans KR',sans-serif;}
+.mcontent{font-size:16px;line-height:2;color:#2c3e2d;}
+.mcontent h2{font-size:22px;font-weight:800;color:var(--green);margin:36px 0 14px;line-height:1.3;}
+.mcontent h3{font-size:18px;font-weight:700;color:var(--green-mid);margin:28px 0 10px;border-left:4px solid var(--gold);padding-left:12px;}
+.mcontent h4{font-size:16px;font-weight:700;color:var(--dark);margin:20px 0 8px;}
+.mcontent strong{font-weight:800;color:var(--dark);}
+.mcontent blockquote{border-left:4px solid var(--gold);padding:12px 20px;background:var(--cream);margin:20px 0;border-radius:0 10px 10px 0;color:#555;}
+.mcontent hr{border:none;border-top:1px solid var(--light);margin:28px 0;}
+.mcontent li{margin:6px 0 6px 24px;}
+
+/* 이미지 갤러리 */
+.modal-images{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:28px;}
+.modal-images img{width:100%;border-radius:12px;object-fit:cover;max-height:260px;}
+.modal-images img:first-child:last-child{grid-column:1/-1;max-height:400px;}
+
+/* 하단 버튼 */
+.share-row{display:flex;gap:10px;margin-top:28px;flex-wrap:wrap;padding-top:20px;border-top:1px solid var(--light);}
+.sbtn{padding:10px 20px;border-radius:20px;border:none;cursor:pointer;font-size:13px;font-weight:700;font-family:'Noto Sans KR',sans-serif;}
 .s-copy{background:var(--light);color:var(--dark);}
-.mclose{display:block;margin:20px auto 0;padding:12px 36px;background:var(--green);color:#fff;border:none;border-radius:30px;cursor:pointer;font-size:14px;font-family:'Noto Sans KR',sans-serif;font-weight:700;}
+.mclose{display:block;margin:24px auto 0;padding:14px 48px;background:var(--green);color:#fff;border:none;border-radius:30px;cursor:pointer;font-size:15px;font-family:'Noto Sans KR',sans-serif;font-weight:700;}
 .fab{position:fixed;bottom:32px;right:32px;background:var(--gold);color:var(--dark);width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 6px 20px rgba(0,0,0,0.25);text-decoration:none;z-index:50;transition:transform 0.2s;}
 .fab:hover{transform:scale(1.1);}
 footer{background:var(--dark);color:rgba(255,255,255,0.6);text-align:center;padding:40px 24px;font-size:13px;}
@@ -113,7 +136,7 @@ footer{background:var(--dark);color:rgba(255,255,255,0.6);text-align:center;padd
 .ckbtn{padding:9px 20px;border-radius:20px;border:none;cursor:pointer;font-weight:700;font-family:'Noto Sans KR',sans-serif;font-size:13px;}
 .ck-ok{background:var(--gold);color:var(--dark);}
 .ck-no{background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);}
-@media(max-width:600px){nav{padding:14px 20px;}.blog-hero h1{font-size:38px;}.mhead{padding:22px;}.mbody{padding:20px;}.cookie{padding:14px 20px;}.modal-images img{width:100%;}}
+@media(max-width:600px){nav{padding:14px 20px;}.blog-hero h1{font-size:38px;}.mbody{padding:20px;}.cookie{padding:14px 20px;}.modal-images img{width:100%;}.mhero{height:300px;}.mhero-content{padding:20px;}.mtitle{font-size:22px;}.modal-images{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -171,14 +194,21 @@ footer{background:var(--dark);color:rgba(255,255,255,0.6);text-align:center;padd
   </aside>
 </div>
 
-<!-- 글 읽기 모달 -->
-<div class="modal-ov" id="readModal" onclick="closeModal(event)">
+<!-- 글 읽기 모달 (풀페이지) -->
+<div class="modal-ov" id="readModal">
+  <button class="mclose-top" onclick="closeReadModal()">✕</button>
   <div class="modal-box">
-    <div class="mhead">
-      <div class="mcat" id="mCat"></div>
-      <div class="mtitle" id="mTitle"></div>
-      <div class="mmeta"><span id="mAuthor"></span><span id="mDate"></span></div>
+    <!-- 히어로 -->
+    <div class="mhero" id="mHero">
+      <img class="mhero-img" id="mHeroImg" src="" alt="" style="display:none;">
+      <div class="mhero-gradient"></div>
+      <div class="mhero-content">
+        <div class="mcat" id="mCat"></div>
+        <div class="mtitle" id="mTitle"></div>
+        <div class="mmeta"><span id="mAuthor"></span><span id="mDate"></span></div>
+      </div>
     </div>
+    <!-- 본문 -->
     <div class="mbody">
       <div class="modal-ad"><span>인아티클 광고 영역 — 애드센스 승인 후 활성화</span></div>
       <div class="modal-images" id="mImages"></div>
@@ -187,7 +217,7 @@ footer{background:var(--dark);color:rgba(255,255,255,0.6);text-align:center;padd
       <div class="share-row">
         <button class="sbtn s-copy" onclick="copyLink()">🔗 링크 복사</button>
       </div>
-      <button class="mclose" onclick="closeReadModal()">닫기</button>
+      <button class="mclose" onclick="closeReadModal()">← 블로그 목록으로</button>
     </div>
   </div>
 </div>
@@ -375,8 +405,21 @@ function openPost(id) {
   document.getElementById("mTitle").textContent = p.title || "";
   document.getElementById("mAuthor").textContent = "✍️ " + (p.author || "작성자");
   document.getElementById("mDate").textContent = "📅 " + fmtDate(p);
-  // 이미지
-  var imgs = p.images && p.images.length ? p.images.map(url=>'<img src="'+url+'" alt="">').join("") : "";
+  // 히어로 이미지
+  var heroImg = p.thumbnail || (p.images && p.images[0]) || "";
+  var heroEl = document.getElementById("mHeroImg");
+  var heroWrap = document.getElementById("mHero");
+  if (heroImg) {
+    heroEl.src = heroImg;
+    heroEl.style.display = "block";
+    heroWrap.style.height = "420px";
+  } else {
+    heroEl.style.display = "none";
+    heroWrap.style.height = "280px";
+  }
+  // 본문 이미지 (썸네일 제외)
+  var bodyImgs = p.images && p.images.length > 0 ? p.images.slice(1) : [];
+  var imgs = bodyImgs.length ? bodyImgs.map(url=>'<img src="'+url+'" alt="">').join("") : "";
   document.getElementById("mImages").innerHTML = imgs;
   // 내용 마크다운 렌더링
   var raw = p.content || "";
@@ -392,12 +435,12 @@ function openPost(id) {
     .replace(/^---$/gm,'<hr style="border:none;border-top:1px solid #e0d8ce;margin:24px 0;">')
     .replace(/\n/g,"<br>");
   document.getElementById("mContent").innerHTML = fmt;
-  document.getElementById("readModal").classList.add("open");
+  document.getElementById("readModal").style.display = "block";
+  document.getElementById("readModal").scrollTop = 0;
   document.body.style.overflow = "hidden";
 }
 
-window.closeModal = function(e){ if(e.target===document.getElementById("readModal")) closeReadModal(); };
-window.closeReadModal = function(){ document.getElementById("readModal").classList.remove("open"); document.body.style.overflow=""; };
+window.closeReadModal = function(){ document.getElementById("readModal").style.display="none"; document.body.style.overflow=""; window.scrollTo(0,0); };
 window.copyLink = function(){ navigator.clipboard.writeText(window.location.href).then(()=>alert("링크가 복사되었습니다!")); };
 
 // 쿠키 배너
