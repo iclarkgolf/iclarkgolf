@@ -148,17 +148,17 @@ a{text-decoration:none;color:inherit}
   <a href="index-new.html" class="nav-back">
     <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
   </a>
-  <span class="nav-title">📸 갤러리 · 커뮤니티</span>
+  <span class="nav-title" data-i18n="g.title">📸 갤러리 · 커뮤니티</span>
   <a href="/" class="logo">CG</a>
 </nav>
 
 <!-- 탭 -->
 <div class="tab-wrap">
-  <button class="tab-btn on" onclick="switchTab('all',this)">전체</button>
-  <button class="tab-btn" onclick="switchTab('round',this)">라운드</button>
-  <button class="tab-btn" onclick="switchTab('lesson',this)">레슨</button>
-  <button class="tab-btn" onclick="switchTab('food',this)">맛집</button>
-  <button class="tab-btn" onclick="switchTab('caddy',this)">캐디</button>
+  <button class="tab-btn on" onclick="switchTab('all',this)" data-i18n="g.tab.all">전체</button>
+  <button class="tab-btn" onclick="switchTab('round',this)" data-i18n="g.tab.round">라운드</button>
+  <button class="tab-btn" onclick="switchTab('lesson',this)" data-i18n="g.tab.lesson">레슨</button>
+  <button class="tab-btn" onclick="switchTab('food',this)" data-i18n="g.tab.food">맛집</button>
+  <button class="tab-btn" onclick="switchTab('caddy',this)" data-i18n="g.tab.caddy">캐디</button>
 </div>
 
 <!-- 업로드 바 -->
@@ -168,8 +168,8 @@ a{text-decoration:none;color:inherit}
     사진 올리기
   </button>
   <select class="sort-select" onchange="sortPosts(this.value)">
-    <option value="latest">최신순</option>
-    <option value="likes">인기순</option>
+    <option value="latest" data-i18n="g.sort.latest">최신순</option>
+    <option value="likes" data-i18n="g.sort.likes">인기순</option>
   </select>
 </div>
 
@@ -180,7 +180,7 @@ a{text-decoration:none;color:inherit}
   </div>
   <div class="empty-state" id="empty-state" style="display:none">
     <div class="icon">📷</div>
-    <p>아직 사진이 없어요<br>첫 번째 사진을 올려보세요!</p>
+    <p data-i18n="g.empty1">아직 사진이 없어요<br data-i18n="g.empty2">첫 번째 사진을 올려보세요!</p>
   </div>
 </div>
 
@@ -191,39 +191,39 @@ a{text-decoration:none;color:inherit}
     <div class="modal-title">📸 사진 올리기</div>
 
     <div class="form-group">
-      <label class="form-label">닉네임</label>
+      <label class="form-label" data-i18n="g.form.nick">닉네임</label>
       <input class="form-input" id="up-name" placeholder="예: 홍길동 / Maria" maxlength="20">
     </div>
 
     <div class="photo-upload-area" onclick="document.getElementById('photo-input').click()">
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
-      <p>사진을 탭해서 선택하세요</p>
-      <span>JPG, PNG · 최대 5장</span>
+      <p data-i18n="g.form.photo">사진을 탭해서 선택하세요</p>
+      <span data-i18n="g.form.photo.sub">JPG, PNG · 최대 5장</span>
     </div>
     <input type="file" id="photo-input" accept="image/*" multiple style="display:none" onchange="previewPhotos(event)">
     <div class="photo-preview" id="photo-preview"></div>
 
     <div class="form-group">
-      <label class="form-label">제목</label>
+      <label class="form-label" data-i18n="g.form.title">제목</label>
       <input class="form-input" id="up-title" placeholder="예: 프라데라 라운드 첫 날!" maxlength="40">
     </div>
     <div class="form-group">
-      <label class="form-label">내용 (선택)</label>
+      <label class="form-label" data-i18n="g.form.content">내용 (선택)</label>
       <textarea class="form-textarea" id="up-content" placeholder="오늘의 라운드 후기를 남겨보세요..." maxlength="300"></textarea>
     </div>
     <div class="form-group">
-      <label class="form-label">카테고리</label>
+      <label class="form-label" data-i18n="g.form.category">카테고리</label>
       <select class="form-input" id="up-category">
-        <option value="round">⛳ 라운드</option>
-        <option value="lesson">🏌️ 레슨</option>
-        <option value="food">🍽️ 맛집</option>
-        <option value="caddy">🤝 캐디</option>
-        <option value="etc">📷 기타</option>
+        <option value="round" data-i18n="g.cat.round">⛳ 라운드</option>
+        <option value="lesson" data-i18n="g.cat.lesson">🏌️ 레슨</option>
+        <option value="food" data-i18n="g.cat.food">🍽️ 맛집</option>
+        <option value="caddy" data-i18n="g.cat.caddy">🤝 캐디</option>
+        <option value="etc" data-i18n="g.cat.etc">📷 기타</option>
       </select>
     </div>
 
-    <button class="submit-btn" onclick="submitPost()">올리기 ✨</button>
-    <button class="cancel-btn" onclick="closeUpload()">취소</button>
+    <button class="submit-btn" onclick="submitPost()" data-i18n="g.submit">올리기 ✨</button>
+    <button class="cancel-btn" onclick="closeUpload()" data-i18n="g.cancel">취소</button>
   </div>
 </div>
 
@@ -249,7 +249,7 @@ a{text-decoration:none;color:inherit}
       <div id="comments-list"></div>
       <div class="comment-input-row">
         <input class="comment-input" id="comment-input" placeholder="댓글을 입력하세요...">
-        <button class="comment-send" onclick="addComment()">전송</button>
+        <button class="comment-send" onclick="addComment()" data-i18n="g.comment.send">전송</button>
       </div>
     </div>
   </div>
@@ -257,7 +257,7 @@ a{text-decoration:none;color:inherit}
 
 <!-- 하단 고정 -->
 <div class="fixed-bottom">
-  <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="fixed-kakao-btn">💬 카카오 문의</a>
+  <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="fixed-kakao-btn" data-i18n="g.fixed.kakao">💬 카카오 문의</a>
   <button class="fixed-upload-btn" onclick="openUpload()">📸 사진 올리기</button>
 </div>
 
@@ -417,7 +417,7 @@ function toggleDetailLike(){
 function renderComments(){
   if(!selectedPost) return;
   const list = document.getElementById('comments-list');
-  if(!selectedPost.comments.length){ list.innerHTML='<p style="font-size:12px;color:#a1a1aa;margin-bottom:12px">첫 댓글을 남겨보세요!</p>'; return; }
+  if(!selectedPost.comments.length){ list.innerHTML='<p style="font-size:12px;color:#a1a1aa;margin-bottom:12px" data-i18n="g.comment.first">첫 댓글을 남겨보세요!</p>'; return; }
   list.innerHTML = selectedPost.comments.map(c=>`
     <div class="comment-item">
       <div class="comment-avatar" style="background:${c.color||'#e8498a'}">${c.name.charAt(0)}</div>
@@ -446,5 +446,6 @@ function addComment(){
 
 renderGallery();
 </script>
+<script src="i18n.js"></script>
 </body>
 </html>

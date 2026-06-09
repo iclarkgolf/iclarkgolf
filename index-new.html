@@ -632,29 +632,29 @@ footer {
   <a href="/" class="logo">CLARKGO</a>
   <div class="nav-search">
     <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input placeholder="골프장, 호텔, 캐디...">
+    <input data-i18n-ph="nav.search" placeholder="골프장, 호텔, 캐디...">
   </div>
   <div class="nav-lang">
-    <button class="lang-btn on">KOR</button>
-    <button class="lang-btn">ENG</button>
+    <button class="lang-btn on" onclick="setLang('kr')">KOR</button>
+    <button class="lang-btn" onclick="setLang('en')">ENG</button>
   </div>
 </nav>
 
 <!-- 히어로 -->
 <div class="hero">
-  <div class="hero-badge">📍 필리핀 팜팡가 · 앙헬레스 · 클락</div>
-  <h1>클락의 모든 것,<br><em>한 곳에서</em></h1>
-  <p class="hero-sub">골프 · 호텔 · 캐디 · 레슨 · 맞춤 견적</p>
+  <div class="hero-badge" data-i18n="hero.badge">📍 필리핀 팜팡가 · 앙헬레스 · 클락</div>
+  <h1><span data-i18n="hero.title1">클락의 모든 것,</span><br><em data-i18n="hero.title2">한 곳에서</em></h1>
+  <p class="hero-sub" data-i18n="hero.sub">골프 · 호텔 · 캐디 · 레슨 · 맞춤 견적</p>
   <div class="hero-searchbar">
-    <input placeholder="어떤 여행을 계획하고 계세요?">
-    <button>검색</button>
+    <input data-i18n-ph="hero.search" placeholder="어떤 여행을 계획하고 계세요?">
+    <button data-i18n="hero.search.btn">검색</button>
   </div>
   <div class="hero-tags">
-    <span class="hero-tag">골프 전지훈련</span>
-    <span class="hero-tag">주말 라운드</span>
-    <span class="hero-tag">캐디 매칭</span>
-    <span class="hero-tag">레슨 패키지</span>
-    <span class="hero-tag">나 홀로 여행</span>
+    <span class="hero-tag" data-i18n="hero.tag1">골프 전지훈련</span>
+    <span class="hero-tag" data-i18n="hero.tag2">주말 라운드</span>
+    <span class="hero-tag" data-i18n="hero.tag3" data-i18n="footer.caddy">캐디 매칭</span>
+    <span class="hero-tag" data-i18n="hero.tag4">레슨 패키지</span>
+    <span class="hero-tag" data-i18n="hero.tag5">나 홀로 여행</span>
   </div>
 </div>
 
@@ -663,44 +663,44 @@ footer {
   <div class="quick-grid">
     <a href="#packages" class="quick-item">
       <div class="quick-icon" style="background:#fdf2f8">⛳</div>
-      <div class="quick-label">골프 패키지</div>
-      <div class="quick-sub">기획 상품</div>
+      <div class="quick-label" data-i18n="quick.packages">골프 패키지</div>
+      <div class="quick-sub" data-i18n="quick.packages.sub">기획 상품</div>
     </a>
     <a href="quote.html" class="quick-item">
       <div class="quick-icon" style="background:#faf5ff">🛒</div>
-      <div class="quick-label">맞춤 견적</div>
-      <div class="quick-sub">직접 구성</div>
+      <div class="quick-label" data-i18n="quick.quote" data-i18n="footer.quote">맞춤 견적</div>
+      <div class="quick-sub" data-i18n="quick.quote.sub">직접 구성</div>
     </a>
     <a href="#golf" class="quick-item">
       <div class="quick-icon" style="background:#eff6ff">🏌️</div>
-      <div class="quick-label">골프장</div>
-      <div class="quick-sub">코스 정보</div>
+      <div class="quick-label" data-i18n="quick.golf">골프장</div>
+      <div class="quick-sub" data-i18n="quick.golf.sub">코스 정보</div>
     </a>
     <a href="caddy.html" class="quick-item">
       <div class="quick-icon" style="background:#f0fdf4">🤝</div>
-      <div class="quick-label">캐디 매칭</div>
-      <div class="quick-sub">실시간</div>
+      <div class="quick-label" data-i18n="quick.caddy">캐디 매칭</div>
+      <div class="quick-sub" data-i18n="quick.caddy.sub">실시간</div>
     </a>
     <a href="blog.html" class="quick-item">
       <div class="quick-icon" style="background:#fff7ed">📝</div>
-      <div class="quick-label">블로그</div>
-      <div class="quick-sub">여행 정보</div>
+      <div class="quick-label" data-i18n="quick.blog" data-i18n="footer.blog">블로그</div>
+      <div class="quick-sub" data-i18n="quick.blog.sub">여행 정보</div>
     </a>
     <div class="quick-item disabled">
       <div class="quick-icon" style="background:#f4f4f5">🛍️</div>
-      <div class="quick-label">쇼핑</div>
-      <div class="soon-badge">준비중</div>
+      <div class="quick-label" data-i18n="quick.shop">쇼핑</div>
+      <div class="soon-badge" data-i18n="quick.shop.sub">준비중</div>
     </div>
   </div>
 </div>
 
 <!-- 메인 배너 -->
 <a href="quote.html" class="banner-main">
-  <div class="banner-badge">✨ 지금 인기</div>
+  <div class="banner-badge" data-i18n="banner.main.badge">✨ 지금 인기</div>
   <h2>나만의 골프 여행<br>직접 설계하기</h2>
-  <p>날짜 · 골프장 · 호텔 · 레슨<br>원하는 것만 골라 견적 확인</p>
+  <p><span data-i18n="banner.main.desc1">날짜 · 골프장 · 호텔 · 레슨</span><br><span data-i18n="banner.main.desc2">원하는 것만 골라 견적 확인</span></p>
   <div class="banner-btn">
-    견적 만들기
+    <span data-i18n="banner.main.btn">견적 만들기</span>
     <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
   </div>
   <div class="banner-deco">🏌️</div>
@@ -731,46 +731,46 @@ footer {
 <!-- 골프 패키지 -->
 <div class="section" id="packages">
   <div class="sec-head">
-    <div class="sec-title">⛳ 골프 패키지</div>
-    <a href="#packages" class="sec-more">전체보기 <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    <div class="sec-title" data-i18n="sec.packages">⛳ 골프 패키지</div>
+    <a href="#packages" class="sec-more"><span data-i18n="sec.more">전체보기</span> <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
   </div>
   <div class="hscroll-wrap pkg-hscroll-wrap">
     <div class="hscroll-inner pkg-hscroll-inner">
       <a href="#" onclick="openPkg('starter');return false;" class="pkg-card">
         <div class="pkg-thumb pkg-thumb-pink">⛳</div>
         <div class="pkg-body">
-          <div class="pkg-tag tag-green">입문</div>
-          <div class="pkg-name">입문 패키지 3박 4일</div>
-          <div class="pkg-desc">연습장 레슨 3회 · 9홀 1회 · 조식 포함</div>
+          <div class="pkg-tag tag-green" data-i18n="pkg.tag.starter">입문</div>
+          <div class="pkg-name" data-i18n="pkg.name.starter">입문 패키지 3박 4일</div>
+          <div class="pkg-desc" data-i18n="pkg.desc.starter">연습장 레슨 3회 · 9홀 1회 · 조식 포함</div>
           <div class="pkg-price">$299 <span>/ person</span></div>
         </div>
       </a>
       <a href="#" onclick="openPkg('balance');return false;" class="pkg-card featured">
         <div class="pkg-thumb pkg-thumb-purple">
-          🏆 <div class="pkg-hot">인기</div>
+          🏆 <div class="pkg-hot" data-i18n="pkg.hot.balance" data-i18n="caddy.hot">인기</div>
         </div>
         <div class="pkg-body">
-          <div class="pkg-tag tag-pink">밸런스</div>
-          <div class="pkg-name">밸런스 패키지 5박 6일</div>
-          <div class="pkg-desc">필드 레슨 2회 · 18홀 3회 · 3식 포함</div>
+          <div class="pkg-tag tag-pink" data-i18n="pkg.tag.balance">밸런스</div>
+          <div class="pkg-name" data-i18n="pkg.name.balance">밸런스 패키지 5박 6일</div>
+          <div class="pkg-desc" data-i18n="pkg.desc.balance">필드 레슨 2회 · 18홀 3회 · 3식 포함</div>
           <div class="pkg-price">$549 <span>/ person</span></div>
         </div>
       </a>
       <a href="#" onclick="openPkg('round');return false;" class="pkg-card">
         <div class="pkg-thumb pkg-thumb-blue">🏌️</div>
         <div class="pkg-body">
-          <div class="pkg-tag tag-blue">라운드</div>
-          <div class="pkg-name">라운드 패키지 5박 6일</div>
-          <div class="pkg-desc">18홀 5회 · 선택 레슨 1회 · 전용차 포함</div>
+          <div class="pkg-tag tag-blue" data-i18n="pkg.tag.round">라운드</div>
+          <div class="pkg-name" data-i18n="pkg.name.round">라운드 패키지 5박 6일</div>
+          <div class="pkg-desc" data-i18n="pkg.desc.round">18홀 5회 · 선택 레슨 1회 · 전용차 포함</div>
           <div class="pkg-price">$649 <span>/ person</span></div>
         </div>
       </a>
       <a href="#" onclick="openPkg('longstay');return false;" class="pkg-card">
         <div class="pkg-thumb pkg-thumb-pink">🌴</div>
         <div class="pkg-body">
-          <div class="pkg-tag tag-green">장기</div>
-          <div class="pkg-name">장기 체류 30박</div>
-          <div class="pkg-desc">집중 훈련 · 숙식 포함 · 라운드 무제한</div>
+          <div class="pkg-tag tag-green" data-i18n="pkg.tag.longstay">장기</div>
+          <div class="pkg-name" data-i18n="pkg.name.longstay">장기 체류 30박</div>
+          <div class="pkg-desc" data-i18n="pkg.desc.longstay">집중 훈련 · 숙식 포함 · 라운드 무제한</div>
           <div class="pkg-price">$2,499 <span>/ person</span></div>
         </div>
       </a>
@@ -780,43 +780,43 @@ footer {
 
 <!-- 맞춤 견적 CTA -->
 <div class="cta-band">
-  <h3>패키지가 딱 안 맞으세요?</h3>
-  <p>원하는 것만 골라서 나만의 견적을 만들어보세요</p>
+  <h3><span data-i18n="cta.title">패키지가 딱 안 맞으세요?</span></h3>
+  <p><span data-i18n="cta.desc">원하는 것만 골라서 나만의 견적을 만들어보세요</span></p>
   <div class="cta-btns">
     <a href="quote.html" class="cta-btn-w">견적 만들기</a>
-    <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="cta-btn-o">카카오 문의</a>
+    <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="cta-btn-o"><span data-i18n="cta.kakao">카카오 문의</span></a>
   </div>
 </div>
 
 <!-- 골프장 -->
 <div class="section" id="golf">
   <div class="sec-head">
-    <div class="sec-title">🗺️ 클락 골프장</div>
-    <a href="#golf" class="sec-more">전체보기 <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    <div class="sec-title" data-i18n="sec.golf">🗺️ 클락 골프장</div>
+    <a href="#golf" class="sec-more"><span data-i18n="sec.more">전체보기</span> <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
   </div>
   <div class="golf-grid">
     <a href="#" class="golf-card">
       <div class="golf-icon" style="background:#fdf2f8">⛳</div>
-      <div class="golf-name">프라데라 베르데</div>
-      <div class="golf-info">36홀 챔피언십 · 캐디+카트 포함</div>
+      <div class="golf-name" data-i18n="golf.pradera.name">프라데라 베르데</div>
+      <div class="golf-info" data-i18n="golf.pradera.desc">36홀 챔피언십 · 캐디+카트 포함</div>
       <div class="golf-price">$75~ <span>/ 18홀</span></div>
     </a>
     <a href="#" class="golf-card">
       <div class="golf-icon" style="background:#eff6ff">⛳</div>
-      <div class="golf-name">베버리 G&CC</div>
-      <div class="golf-info">클락 인기 코스</div>
+      <div class="golf-name" data-i18n="golf.beverly.name">베버리 G&CC</div>
+      <div class="golf-info" data-i18n="golf.beverly.desc">클락 인기 코스</div>
       <div class="golf-price">$65~ <span>/ 18홀</span></div>
     </a>
     <a href="#" class="golf-card">
       <div class="golf-icon" style="background:#f0fdf4">⛳</div>
-      <div class="golf-name">미모사 G&CC</div>
-      <div class="golf-info">접근 편리 · 시내 인접</div>
+      <div class="golf-name" data-i18n="golf.mimosa.name">미모사 G&CC</div>
+      <div class="golf-info" data-i18n="golf.mimosa.desc">접근 편리 · 시내 인접</div>
       <div class="golf-price">$60~ <span>/ 18홀</span></div>
     </a>
     <a href="#" class="golf-card">
       <div class="golf-icon" style="background:#fff7ed">⛳</div>
-      <div class="golf-name">코리아나 GC</div>
-      <div class="golf-info">한국인 운영 · 한국어 서비스</div>
+      <div class="golf-name" data-i18n="golf.koreana.name">코리아나 GC</div>
+      <div class="golf-info" data-i18n="golf.koreana.desc">한국인 운영 · 한국어 서비스</div>
       <div class="golf-price">$55~ <span>/ 18홀</span></div>
     </a>
   </div>
@@ -825,41 +825,41 @@ footer {
 <!-- 캐디 매칭 -->
 <div class="section">
   <div class="sec-head">
-    <div class="sec-title">🤝 캐디 매칭</div>
-    <a href="caddy.html" class="sec-more">전체보기 <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    <div class="sec-title" data-i18n="sec.caddy">🤝 캐디 매칭</div>
+    <a href="caddy.html" class="sec-more"><span data-i18n="sec.more">전체보기</span> <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
   </div>
   <div class="hscroll-wrap caddy-hscroll-wrap">
     <div class="hscroll-inner caddy-hscroll-inner">
       <a href="caddy.html" class="caddy-card">
         <div class="caddy-avatar" style="background:#fdf2f8">👩</div>
         <div class="caddy-name">Maria S.</div>
-        <div class="caddy-info">경력 5년</div>
+        <div class="caddy-info" data-i18n="caddy.exp1">경력 5년</div>
         <div class="caddy-badges">
-          <span class="c-badge" style="background:#fdf2f8;color:#be185d">한국어</span>
+          <span class="c-badge" style="background:#fdf2f8;color:#be185d" data-i18n="caddy.lang1">한국어</span>
         </div>
       </a>
       <a href="caddy.html" class="caddy-card">
         <div class="caddy-avatar" style="background:#eff6ff">👨</div>
         <div class="caddy-name">Jose R.</div>
-        <div class="caddy-info">경력 8년</div>
+        <div class="caddy-info" data-i18n="caddy.exp2">경력 8년</div>
         <div class="caddy-badges">
-          <span class="c-badge" style="background:#eff6ff;color:#1d4ed8">영어</span>
+          <span class="c-badge" style="background:#eff6ff;color:#1d4ed8" data-i18n="caddy.lang2">영어</span>
         </div>
       </a>
       <a href="caddy.html" class="caddy-card">
         <div class="caddy-avatar" style="background:#f0fdf4">👩</div>
         <div class="caddy-name">Ana L.</div>
-        <div class="caddy-info">경력 3년</div>
+        <div class="caddy-info" data-i18n="caddy.exp3">경력 3년</div>
         <div class="caddy-badges">
           <span class="c-badge" style="background:#fff7ed;color:#c2410c">인기</span>
         </div>
       </a>
       <a href="caddy.html" class="caddy-card">
         <div class="caddy-avatar" style="background:#fdf2f8">➕</div>
-        <div class="caddy-name">전체 보기</div>
-        <div class="caddy-info">등록 캐디 확인</div>
+        <div class="caddy-name" data-i18n="caddy.all">전체 보기</div>
+        <div class="caddy-info" data-i18n="caddy.all.sub">등록 캐디 확인</div>
         <div class="caddy-badges">
-          <span class="c-badge" style="background:#fdf2f8;color:#be185d">바로가기</span>
+          <span class="c-badge" style="background:#fdf2f8;color:#be185d" data-i18n="caddy.all.badge">바로가기</span>
         </div>
       </a>
     </div>
@@ -870,10 +870,10 @@ footer {
 <div class="kakao-band">
   <div class="kakao-icon">💬</div>
   <div class="kakao-text">
-    <h4>카카오 채널 문의</h4>
-    <p>예약 · 상담 · 궁금한 점</p>
+    <h4 data-i18n="kakao.title">카카오 채널 문의</h4>
+    <p data-i18n="kakao.desc">예약 · 상담 · 궁금한 점</p>
   </div>
-  <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="kakao-btn">채널 열기</a>
+  <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="kakao-btn" data-i18n="kakao.btn">채널 열기</a>
 </div>
 
 <!-- 메신저 밴드 -->
@@ -882,8 +882,8 @@ footer {
     <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.477 2 2 6.145 2 11.243c0 2.914 1.318 5.52 3.396 7.28V22l3.12-1.717c.832.23 1.715.355 2.63.355 5.523 0 10-4.144 10-9.243S17.523 2 12 2zm1.008 12.44l-2.55-2.72-4.976 2.72 5.478-5.813 2.613 2.72 4.914-2.72-5.479 5.813z"/></svg>
   </div>
   <div class="kakao-text">
-    <h4>페이스북 메신저 문의</h4>
-    <p>필리핀 로컬 · 영어 상담 가능</p>
+    <h4 data-i18n="messenger.title">페이스북 메신저 문의</h4>
+    <p data-i18n="messenger.desc">필리핀 로컬 · 영어 상담 가능</p>
   </div>
   <a href="https://m.me/iclarkgolf" target="_blank" class="kakao-btn" style="background:#0099ff;color:#fff">
     메신저 열기
@@ -893,37 +893,37 @@ footer {
 <!-- 블로그 -->
 <div class="section">
   <div class="sec-head">
-    <div class="sec-title">📝 여행 정보</div>
-    <a href="blog.html" class="sec-more">전체보기 <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    <div class="sec-title" data-i18n="sec.blog">📝 여행 정보</div>
+    <a href="blog.html" class="sec-more"><span data-i18n="sec.more">전체보기</span> <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
   </div>
   <div class="hscroll-wrap blog-hscroll-wrap">
     <div class="hscroll-inner blog-hscroll-inner">
       <a href="blog-p1.html" class="blog-card">
         <div class="blog-thumb" style="background:#fdf2f8">🏖️</div>
         <div class="blog-body">
-          <div class="blog-tag">여행 팁</div>
-          <div class="blog-title">여름 휴가, 골프 전지훈련으로 바꿔보세요</div>
+          <div class="blog-tag" data-i18n="blog.tag1">여행 팁</div>
+          <div class="blog-title" data-i18n="blog.title1">여름 휴가, 골프 전지훈련으로 바꿔보세요</div>
         </div>
       </a>
       <a href="blog-p2.html" class="blog-card">
         <div class="blog-thumb" style="background:#faf5ff">⛅</div>
         <div class="blog-body">
-          <div class="blog-tag">날씨</div>
-          <div class="blog-title">필리핀 클락 골프 날씨 완전 가이드</div>
+          <div class="blog-tag" data-i18n="blog.tag2">날씨</div>
+          <div class="blog-title" data-i18n="blog.title2">필리핀 클락 골프 날씨 완전 가이드</div>
         </div>
       </a>
       <a href="blog-p3.html" class="blog-card">
         <div class="blog-thumb" style="background:#f0fdf4">🤝</div>
         <div class="blog-body">
-          <div class="blog-tag">캐디 정보</div>
-          <div class="blog-title">필리핀 골프 캐디 완전 가이드</div>
+          <div class="blog-tag" data-i18n="blog.tag3">캐디 정보</div>
+          <div class="blog-title" data-i18n="blog.title3">필리핀 골프 캐디 완전 가이드</div>
         </div>
       </a>
       <a href="blog-p4.html" class="blog-card">
         <div class="blog-thumb" style="background:#fff7ed">🍽️</div>
         <div class="blog-body">
-          <div class="blog-tag">먹자골</div>
-          <div class="blog-title">나 홀로도 전지훈련은 됩니다</div>
+          <div class="blog-tag" data-i18n="blog.tag4">먹자골</div>
+          <div class="blog-title" data-i18n="blog.title4">나 홀로도 전지훈련은 됩니다</div>
         </div>
       </a>
     </div>
@@ -933,8 +933,8 @@ footer {
 <!-- 갤러리 미리보기 -->
 <div class="section">
   <div class="sec-head">
-    <div class="sec-title">📸 갤러리 · 커뮤니티</div>
-    <a href="gallery.html" class="sec-more">전체보기 <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    <div class="sec-title" data-i18n="sec.gallery">📸 갤러리 · 커뮤니티</div>
+    <a href="gallery.html" class="sec-more"><span data-i18n="sec.more">전체보기</span> <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
   </div>
   <div class="hscroll-wrap">
     <div class="hscroll-inner" id="main-gallery"></div>
@@ -950,20 +950,20 @@ footer {
 <div class="coming-grid">
   <div class="coming-card">
     <div class="coming-card-icon">🛍️</div>
-    <div class="coming-card-title">한국 상품 쇼핑</div>
-    <div class="coming-card-sub">클락 로컬용<br>한국 인기 상품</div>
+    <div class="coming-card-title" data-i18n="coming.shop.title">한국 상품 쇼핑</div>
+    <div class="coming-card-sub" data-i18n="coming.shop.desc1">클락 로컬용<br data-i18n="coming.shop.desc2">한국 인기 상품</div>
     <div class="coming-soon">Coming Soon</div>
   </div>
   <div class="coming-card">
     <div class="coming-card-icon">🍽️</div>
-    <div class="coming-card-title">맛집 가이드</div>
-    <div class="coming-card-sub">클락 추천<br>식당 정보</div>
+    <div class="coming-card-title" data-i18n="coming.food.title">맛집 가이드</div>
+    <div class="coming-card-sub" data-i18n="coming.food.desc1">클락 추천<br data-i18n="coming.food.desc2">식당 정보</div>
     <div class="coming-soon">Coming Soon</div>
   </div>
   <div class="coming-card">
     <div class="coming-card-icon">🏨</div>
-    <div class="coming-card-title">호텔 예약</div>
-    <div class="coming-card-sub">실시간 요금<br>아고다 연동</div>
+    <div class="coming-card-title" data-i18n="coming.hotel.title">호텔 예약</div>
+    <div class="coming-card-sub" data-i18n="coming.hotel.desc1">실시간 요금<br data-i18n="coming.hotel.desc2">아고다 연동</div>
     <div class="coming-soon">Coming Soon</div>
   </div>
 </div>
@@ -994,40 +994,40 @@ footer {
   <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
 
     <div>
-      <div style="font-size:11px;font-weight:700;color:#e8498a;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">⛳ 골프 여행</div>
+      <div style="font-size:11px;font-weight:700;color:#e8498a;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;" data-i18n="sitemap.cat1">⛳ 골프 여행</div>
       <div style="display:flex;flex-direction:column;gap:6px;">
-        <a href="#packages" style="font-size:13px;color:#374151;text-decoration:none;display:flex;align-items:center;gap:6px;">→ 골프 패키지</a>
-        <a href="quote.html" style="font-size:13px;color:#374151;text-decoration:none;display:flex;align-items:center;gap:6px;">→ 맞춤 견적 구성</a>
-        <a href="#golf" style="font-size:13px;color:#374151;text-decoration:none;display:flex;align-items:center;gap:6px;">→ 클락 골프장 안내</a>
+        <a href="#packages" style="font-size:13px;color:#374151;text-decoration:none;display:flex;align-items:center;gap:6px;" data-i18n="sitemap.packages">→ 골프 패키지</a>
+        <a href="quote.html" style="font-size:13px;color:#374151;text-decoration:none;display:flex;align-items:center;gap:6px;" data-i18n="sitemap.quote">→ 맞춤 견적 구성</a>
+        <a href="#golf" style="font-size:13px;color:#374151;text-decoration:none;display:flex;align-items:center;gap:6px;" data-i18n="sitemap.golf">→ 클락 골프장 안내</a>
       </div>
     </div>
 
     <div>
-      <div style="font-size:11px;font-weight:700;color:#e8498a;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">🤝 서비스</div>
+      <div style="font-size:11px;font-weight:700;color:#e8498a;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;" data-i18n="sitemap.cat2">🤝 서비스</div>
       <div style="display:flex;flex-direction:column;gap:6px;">
-        <a href="caddy.html" style="font-size:13px;color:#374151;text-decoration:none;display:flex;align-items:center;gap:6px;">→ 캐디 매칭</a>
-        <a href="blog.html" style="font-size:13px;color:#374151;text-decoration:none;display:flex;align-items:center;gap:6px;">→ 블로그 · 여행 정보</a>
-        <a href="about.html" style="font-size:13px;color:#374151;text-decoration:none;display:flex;align-items:center;gap:6px;">→ 아카데미 소개</a>
+        <a href="caddy.html" style="font-size:13px;color:#374151;text-decoration:none;display:flex;align-items:center;gap:6px;" data-i18n="sitemap.caddy">→ 캐디 매칭</a>
+        <a href="blog.html" style="font-size:13px;color:#374151;text-decoration:none;display:flex;align-items:center;gap:6px;" data-i18n="sitemap.blog.link">→ 블로그 · 여행 정보</a>
+        <a href="about.html" style="font-size:13px;color:#374151;text-decoration:none;display:flex;align-items:center;gap:6px;" data-i18n="sitemap.about">→ 아카데미 소개</a>
       </div>
     </div>
 
     <div>
-      <div style="font-size:11px;font-weight:700;color:#e8498a;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">📝 블로그</div>
+      <div style="font-size:11px;font-weight:700;color:#e8498a;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;" data-i18n="sitemap.cat3">📝 블로그</div>
       <div style="display:flex;flex-direction:column;gap:6px;">
-        <a href="blog-p1.html" style="font-size:13px;color:#374151;text-decoration:none;">→ 여름 휴가, 골프 전지훈련으로</a>
-        <a href="blog-p2.html" style="font-size:13px;color:#374151;text-decoration:none;">→ 클락 날씨 완전 가이드</a>
-        <a href="blog-p3.html" style="font-size:13px;color:#374151;text-decoration:none;">→ 필리핀 캐디 완전 가이드</a>
-        <a href="blog.html" style="font-size:13px;color:#e8498a;font-weight:700;text-decoration:none;">→ 전체 블로그 보기</a>
+        <a href="blog-p1.html" style="font-size:13px;color:#374151;text-decoration:none;" data-i18n="sitemap.blog1">→ 여름 휴가, 골프 전지훈련으로</a>
+        <a href="blog-p2.html" style="font-size:13px;color:#374151;text-decoration:none;" data-i18n="sitemap.blog2">→ 클락 날씨 완전 가이드</a>
+        <a href="blog-p3.html" style="font-size:13px;color:#374151;text-decoration:none;" data-i18n="sitemap.blog3">→ 필리핀 캐디 완전 가이드</a>
+        <a href="blog.html" style="font-size:13px;color:#e8498a;font-weight:700;text-decoration:none;" data-i18n="sitemap.blog.all">→ 전체 블로그 보기</a>
       </div>
     </div>
 
     <div>
-      <div style="font-size:11px;font-weight:700;color:#e8498a;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">📞 연락처</div>
+      <div style="font-size:11px;font-weight:700;color:#e8498a;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;" data-i18n="sitemap.cat4">📞 연락처</div>
       <div style="display:flex;flex-direction:column;gap:6px;">
-        <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" style="font-size:13px;color:#374151;text-decoration:none;">→ 카카오 채널 문의</a>
-        <a href="https://m.me/iclarkgolf" target="_blank" style="font-size:13px;color:#374151;text-decoration:none;">→ 페이스북 메신저</a>
-        <a href="privacy.html" style="font-size:13px;color:#374151;text-decoration:none;">→ 개인정보처리방침</a>
-        <a href="disclaimer.html" style="font-size:13px;color:#374151;text-decoration:none;">→ 면책조항</a>
+        <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" style="font-size:13px;color:#374151;text-decoration:none;" data-i18n="sitemap.kakao.link">→ 카카오 채널 문의</a>
+        <a href="https://m.me/iclarkgolf" target="_blank" style="font-size:13px;color:#374151;text-decoration:none;" data-i18n="sitemap.messenger">→ 페이스북 메신저</a>
+        <a href="privacy.html" style="font-size:13px;color:#374151;text-decoration:none;" data-i18n="sitemap.privacy">→ 개인정보처리방침</a>
+        <a href="disclaimer.html" style="font-size:13px;color:#374151;text-decoration:none;" data-i18n="sitemap.disclaimer">→ 면책조항</a>
       </div>
     </div>
 
@@ -1038,7 +1038,7 @@ footer {
     <div style="font-size:22px;flex-shrink:0;">⛳</div>
     <div style="flex:1;">
       <div style="font-size:12px;font-weight:800;color:#18181b;margin-bottom:2px;">Pradera Verde Golf Club</div>
-      <div style="font-size:11px;color:#6b7280;">필리핀 팜팡가 클락 지역 최고의 36홀 챔피언십 골프장</div>
+      <div style="font-size:11px;color:#6b7280;" data-i18n="sitemap.pradera.desc">필리핀 팜팡가 클락 지역 최고의 36홀 챔피언십 골프장</div>
     </div>
     <a href="https://www.facebook.com/praderaverdegolf/" target="_blank"
        style="font-size:11px;font-weight:700;color:#e8498a;text-decoration:none;white-space:nowrap;">
@@ -1052,11 +1052,11 @@ footer {
   <div class="footer-logo">CLARKGO</div>
   <div class="footer-links">
     <a href="/">홈</a>
-    <a href="#packages">패키지</a>
+    <a href="#packages" data-i18n="footer.packages">패키지</a>
     <a href="quote.html">맞춤 견적</a>
     <a href="caddy.html">캐디 매칭</a>
     <a href="blog.html">블로그</a>
-    <a href="privacy.html">개인정보처리방침</a>
+    <a href="privacy.html" data-i18n="footer.privacy">개인정보처리방침</a>
   </div>
   <p class="footer-copy">© 2025 ClarkGo · iClark Golf Academy · Pradera Verde, Pampanga, Philippines</p>
 </footer>
@@ -1117,5 +1117,6 @@ document.querySelectorAll('.lang-btn').forEach(btn => {
   });
 });
 </script>
+<script src="i18n.js"></script>
 </body>
 </html>

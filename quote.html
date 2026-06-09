@@ -484,9 +484,9 @@ footer a { color: rgba(255,255,255,.8); text-decoration: none; }
 </nav>
 
 <div class="hero">
-  <div class="hero-badge">트랙 2 — 맞춤 견적</div>
-  <h1>나만의 <span>골프 여행</span><br>직접 설계하기</h1>
-  <p>원하는 항목을 골라 담으면 자동으로 견적이 계산됩니다</p>
+  <div class="hero-badge" data-i18n="q.badge">트랙 2 — 맞춤 견적</div>
+  <h1>나만의 <span data-i18n="q.title2">골프 여행</span><br data-i18n="q.title3">직접 설계하기</h1>
+  <p data-i18n="q.sub">원하는 항목을 골라 담으면 자동으로 견적이 계산됩니다</p>
 </div>
 
 <div class="main">
@@ -496,15 +496,15 @@ footer a { color: rgba(255,255,255,.8); text-decoration: none; }
   <div class="sec-card">
     <div class="sec-head">
       <div class="step-num">1</div>
-      <span class="sec-title">여행 날짜</span>
+      <span class="sec-title" data-i18n="q.step1">여행 날짜</span>
     </div>
     <div class="date-grid">
       <div class="date-box">
-        <div class="date-label">도착일 Arrival</div>
+        <div class="date-label" data-i18n="q.arrival">도착일 Arrival</div>
         <div class="date-val" id="arr-disp">—</div>
       </div>
       <div class="date-box">
-        <div class="date-label">출발일 Departure</div>
+        <div class="date-label" data-i18n="q.departure">출발일 Departure</div>
         <div class="date-val" id="dep-disp">—</div>
       </div>
     </div>
@@ -521,7 +521,7 @@ footer a { color: rgba(255,255,255,.8); text-decoration: none; }
   <div class="sec-card">
     <div class="sec-head">
       <div class="step-num">2</div>
-      <span class="sec-title">참가 인원</span>
+      <span class="sec-title" data-i18n="q.step2">참가 인원</span>
     </div>
     <div class="pax-row">
       <div class="pax-label">골퍼 <span class="pax-sub">Golfer</span></div>
@@ -547,8 +547,8 @@ footer a { color: rgba(255,255,255,.8); text-decoration: none; }
   <div class="sec-card">
     <div class="sec-head">
       <div class="step-num">3</div>
-      <span class="sec-title">호텔 선택</span>
-      <span class="sec-sub">아고다 기준 참고 요금 · 날짜마다 변동됨</span>
+      <span class="sec-title" data-i18n="q.step3">호텔 선택</span>
+      <span class="sec-sub" data-i18n="q.hotel.sub">아고다 기준 참고 요금 · 날짜마다 변동됨</span>
     </div>
     <div class="pick-grid" id="hotel-grid"></div>
     <div class="custom-price-row" id="custom-price-row" style="display:none">
@@ -561,8 +561,8 @@ footer a { color: rgba(255,255,255,.8); text-decoration: none; }
   <div class="sec-card">
     <div class="sec-head">
       <div class="step-num">4</div>
-      <span class="sec-title">골프장 선택</span>
-      <span class="sec-sub">18홀 기준 · 복수 선택 가능</span>
+      <span class="sec-title" data-i18n="q.step4">골프장 선택</span>
+      <span class="sec-sub" data-i18n="q.golf.sub">18홀 기준 · 복수 선택 가능</span>
     </div>
     <div class="pick-grid" id="golf-grid"></div>
   </div>
@@ -571,7 +571,7 @@ footer a { color: rgba(255,255,255,.8); text-decoration: none; }
   <div class="sec-card">
     <div class="sec-head">
       <div class="step-num">5</div>
-      <span class="sec-title">이동 서비스</span>
+      <span class="sec-title" data-i18n="q.step5">이동 서비스</span>
     </div>
     <div id="transfer-grid"></div>
   </div>
@@ -580,7 +580,7 @@ footer a { color: rgba(255,255,255,.8); text-decoration: none; }
   <div class="sec-card">
     <div class="sec-head">
       <div class="step-num">6</div>
-      <span class="sec-title">레슨</span>
+      <span class="sec-title" data-i18n="q.step6">레슨</span>
     </div>
     <div id="lesson-grid"></div>
   </div>
@@ -589,7 +589,7 @@ footer a { color: rgba(255,255,255,.8); text-decoration: none; }
   <div class="sec-card">
     <div class="sec-head">
       <div class="step-num">7</div>
-      <span class="sec-title">식사 · 기타 서비스</span>
+      <span class="sec-title" data-i18n="q.step7">식사 · 기타 서비스</span>
     </div>
     <div id="extra-grid"></div>
   </div>
@@ -618,11 +618,11 @@ footer a { color: rgba(255,255,255,.8); text-decoration: none; }
   </button>
 
   <div style="text-align:center;margin:14px 0 10px;padding:14px;background:#fffde7;border-radius:10px;border:1px solid #f4e040">
-    <div style="font-size:11px;font-weight:700;color:#5c4a00;margin-bottom:8px;letter-spacing:.03em">카카오 채널 QR코드</div>
+    <div style="font-size:11px;font-weight:700;color:#5c4a00;margin-bottom:8px;letter-spacing:.03em" data-i18n="q.kakao.qr">카카오 채널 QR코드</div>
     <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://pf.kakao.com/_nbHKX/chat&color=3C1E1E&bgcolor=FEE500&margin=6"
          alt="카카오 채널 QR코드"
          style="width:110px;height:110px;border-radius:8px;display:block;margin:0 auto">
-    <div style="font-size:10px;color:#856a00;margin-top:8px">스캔하면 바로 채널 연결</div>
+    <div style="font-size:10px;color:#856a00;margin-top:8px" data-i18n="q.kakao.scan">스캔하면 바로 채널 연결</div>
   </div>
 
   <div class="cta-note">
@@ -994,5 +994,6 @@ function renderAll() {
 
 renderAll();
 </script>
+<script src="i18n.js"></script>
 </body>
 </html>
