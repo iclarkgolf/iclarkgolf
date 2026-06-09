@@ -276,6 +276,9 @@ a { text-decoration: none; color: inherit; }
         </div>
 
         <div class="form-group">
+          <label class="form-label">🖼️ 썸네일 URL (대표 사진)</label>
+          <input class="form-input" id="w-thumb" placeholder="imgbb에서 복사한 직접 링크 URL — https://i.ibb.co/..." type="text">
+          <div style="font-size:11px;color:var(--gray-400);margin-top:-12px;margin-bottom:16px;">💡 imgbb.com → 사진 업로드 → HTML 원본 이미지 링크 → img src="" 안의 URL 복사</div>
           <label class="form-label">SEO 설명 (검색 미리보기)</label>
           <input class="form-input" id="w-desc" placeholder="검색엔진에 표시될 짧은 설명 (160자 이내)" type="text">
         </div>
@@ -620,11 +623,12 @@ window.savePost = async function(status) {
       emoji: document.getElementById('w-emoji').value || '📝',
       content,
       desc: document.getElementById('w-desc').value.trim(),
+      thumbnail: document.getElementById('w-thumb').value.trim(),
       images: imageUrls,
       status,
       createdAt: serverTimestamp(),
     });
-    ['w-title','w-content','w-desc'].forEach(id => document.getElementById(id).value='');
+    ['w-title','w-content','w-desc','w-thumb'].forEach(id => document.getElementById(id).value='');
     document.getElementById('w-emoji').value='';
     document.getElementById('w-img-preview').innerHTML='';
     selectedFiles = [];
