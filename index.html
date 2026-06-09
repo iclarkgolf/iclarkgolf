@@ -2846,10 +2846,13 @@ function openBooking() {
 (function(){
   if (sessionStorage.getItem('openAdmin') === '1') {
     sessionStorage.removeItem('openAdmin');
+    // DOM 완전히 로드된 후 openAdmin() 직접 호출
     window.addEventListener('load', function(){
-      // 기존 admin 버튼 클릭 트리거
-      var adminBtn = document.querySelector('[onclick*="admin"], [onclick*="Admin"], [title="관리자"]');
-      if (adminBtn) adminBtn.click();
+      setTimeout(function(){
+        if (typeof openAdmin === 'function') {
+          openAdmin();
+        }
+      }, 500);
     });
   }
 })();
