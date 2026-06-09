@@ -2,820 +2,796 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>블로그 관리자 — iClark Golf Academy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ClarkGo 관리자 — 블로그 관리</title>
 <meta name="robots" content="noindex, nofollow">
-
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
 
 <style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Nunito', sans-serif; background: #f9f0f5; color: #1a1a2e; min-height: 100vh; }
+a { text-decoration: none; color: inherit; }
 :root {
-  --green: #1b4332;
-  --green-mid: #2d6a4f;
-  --lime: #74c69d;
-  --gold: #f4a261;
-  --white: #ffffff;
-  --cream: #f8f5f0;
-  --dark: #0d1f17;
-  --gray: #6c757d;
-  --light-gray: #e9ecef;
-  --red: #e74c3c;
-  --blue: #3498db;
-  --card-shadow: 0 4px 20px rgba(13,31,23,0.10);
+  --pink: #e8498a; --pink2: #f472b6; --pink-pale: #fdf2f8; --pink-border: #fbcfe8;
+  --purple: #9333ea; --white: #ffffff; --gray-50: #fafafa; --gray-100: #f4f4f5;
+  --gray-200: #e4e4e7; --gray-400: #a1a1aa; --gray-600: #52525b; --gray-900: #18181b;
+  --green: #22c55e; --red: #ef4444; --orange: #f97316;
+  --radius: 16px; --radius-sm: 10px; --radius-full: 100px;
+  --shadow: 0 2px 12px rgba(232,73,138,0.10); --shadow-lg: 0 8px 32px rgba(232,73,138,0.15);
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Noto Sans KR',sans-serif; background:#f0f4f0; color:var(--dark); }
 
-/* NAV */
-nav {
-  position:fixed; top:0; left:0; right:0; z-index:100;
-  display:flex; justify-content:space-between; align-items:center;
-  padding:14px 40px;
-  background:rgba(13,31,23,0.95);
-  backdrop-filter:blur(12px);
-}
-.nav-logo { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:3px; color:var(--white); text-decoration:none; }
-.nav-logo span { color:var(--gold); }
-.nav-links { display:flex; gap:20px; align-items:center; }
-.nav-links a { color:rgba(255,255,255,0.8); text-decoration:none; font-size:13px; font-family:'Barlow Condensed',sans-serif; font-weight:600; letter-spacing:1px; text-transform:uppercase; transition:color 0.2s; }
-.nav-links a:hover { color:var(--gold); }
+/* 로그인 */
+#login-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; background:linear-gradient(160deg,#fff0f9 0%,#fdf4ff 50%,#f0f4ff 100%); }
+.login-box { background:var(--white); border:1.5px solid var(--pink-border); border-radius:var(--radius); padding:40px 32px; width:100%; max-width:380px; box-shadow:var(--shadow-lg); text-align:center; }
+.login-logo { font-family:'Bebas Neue',sans-serif; font-size:32px; letter-spacing:3px; background:linear-gradient(135deg,var(--pink),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:6px; }
+.login-sub { font-size:12px; color:var(--gray-400); font-weight:700; margin-bottom:28px; letter-spacing:.05em; }
+.login-input { width:100%; border:1.5px solid var(--gray-200); border-radius:var(--radius-sm); padding:13px 16px; font-family:'Nunito',sans-serif; font-size:14px; color:var(--gray-900); outline:none; margin-bottom:12px; transition:border-color .2s; -webkit-appearance:none; }
+.login-input:focus { border-color:var(--pink); }
+.login-btn { width:100%; background:linear-gradient(135deg,var(--pink),var(--purple)); color:var(--white); border:none; border-radius:var(--radius-full); padding:14px; font-family:'Nunito',sans-serif; font-size:15px; font-weight:800; cursor:pointer; min-height:48px; margin-top:4px; }
+.login-err { font-size:12px; color:var(--red); font-weight:700; margin-top:10px; display:none; }
 
-/* LAYOUT */
-.admin-wrap { max-width:1200px; margin:0 auto; padding:90px 24px 80px; }
-.admin-header { margin-bottom:32px; }
-.admin-header h1 { font-family:'Bebas Neue',sans-serif; font-size:40px; letter-spacing:3px; color:var(--green); }
-.admin-header p { color:var(--gray); font-size:14px; margin-top:4px; }
+/* 관리자 */
+#admin-screen { display:none; }
+.nav { position:sticky; top:0; z-index:200; background:var(--white); border-bottom:1.5px solid var(--pink-border); padding:0 16px; height:54px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.logo { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:2px; background:linear-gradient(135deg,var(--pink),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.nav-badge { font-size:10px; font-weight:800; color:var(--white); background:var(--pink); border-radius:var(--radius-full); padding:3px 9px; letter-spacing:.05em; }
+.nav-logout { font-size:12px; font-weight:700; color:var(--gray-400); background:var(--gray-100); border:none; border-radius:var(--radius-full); padding:7px 14px; cursor:pointer; font-family:'Nunito',sans-serif; }
 
-/* TAB */
-.tab-nav { display:flex; gap:0; background:var(--white); border-radius:12px; padding:4px; box-shadow:var(--card-shadow); margin-bottom:28px; width:fit-content; }
-.tab-btn {
-  padding:10px 28px; border:none; background:transparent; cursor:pointer;
-  font-family:'Noto Sans KR',sans-serif; font-size:14px; font-weight:500; color:var(--gray);
-  border-radius:10px; transition:all 0.2s; display:flex; align-items:center; gap:6px;
-}
-.tab-btn.active { background:var(--green); color:var(--white); }
-.badge { background:var(--red); color:var(--white); border-radius:10px; padding:2px 7px; font-size:11px; font-weight:700; }
+.tab-bar { display:flex; background:var(--white); border-bottom:1.5px solid var(--gray-200); padding:0 16px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.tab-bar::-webkit-scrollbar { display:none; }
+.tab-btn { flex-shrink:0; font-family:'Nunito',sans-serif; font-size:13px; font-weight:700; color:var(--gray-400); background:none; border:none; padding:14px 16px; cursor:pointer; border-bottom:2.5px solid transparent; transition:all .2s; white-space:nowrap; }
+.tab-btn.on { color:var(--pink); border-bottom-color:var(--pink); }
 
-/* WRITE PANEL */
-.panel { background:var(--white); border-radius:16px; box-shadow:var(--card-shadow); padding:32px; }
-.form-row { margin-bottom:20px; }
-.form-row label { display:block; font-size:13px; font-weight:700; color:var(--green); margin-bottom:6px; letter-spacing:0.5px; }
-.form-row input, .form-row select, .form-row textarea {
-  width:100%; padding:12px 16px; border:1.5px solid var(--light-gray);
-  border-radius:10px; font-family:'Noto Sans KR',sans-serif; font-size:14px;
-  color:var(--dark); background:var(--cream); outline:none;
-  transition:border-color 0.2s;
-}
-.form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color:var(--green-mid); background:var(--white); }
-.form-row textarea { resize:vertical; min-height:280px; line-height:1.8; }
-.form-hint { font-size:12px; color:var(--gray); margin-top:4px; }
-.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.dash-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; padding:16px; max-width:1100px; margin:0 auto; }
+.stat-card { background:var(--white); border:1.5px solid var(--pink-border); border-radius:var(--radius); padding:18px 16px; text-align:center; }
+.stat-num { font-size:32px; font-weight:800; background:linear-gradient(135deg,var(--pink),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:4px; }
+.stat-label { font-size:12px; color:var(--gray-400); font-weight:700; }
 
-/* BUTTONS */
-.btn { padding:12px 28px; border-radius:30px; border:none; cursor:pointer; font-family:'Noto Sans KR',sans-serif; font-size:14px; font-weight:700; transition:all 0.2s; }
-.btn-green { background:var(--green); color:var(--white); }
-.btn-green:hover { background:var(--green-mid); }
-.btn-gold { background:var(--gold); color:var(--dark); }
-.btn-gold:hover { background:#e8924e; }
-.btn-red { background:var(--red); color:var(--white); }
-.btn-red:hover { background:#c0392b; }
-.btn-gray { background:var(--light-gray); color:var(--dark); }
-.btn-blue { background:var(--blue); color:var(--white); }
-.btn-blue:hover { background:#2980b9; }
-.btn-outline { background:transparent; border:1.5px solid var(--green); color:var(--green); }
-.btn-outline:hover { background:var(--green); color:var(--white); }
-.btn-sm { padding:7px 16px; font-size:12px; }
+.admin-section { max-width:1100px; margin:0 auto; padding:0 16px 32px; }
+.sec-head { display:flex; align-items:center; justify-content:space-between; padding:20px 0 12px; }
+.sec-title { font-size:16px; font-weight:800; color:var(--gray-900); }
+.sec-action { font-size:12px; font-weight:700; background:linear-gradient(135deg,var(--pink),var(--purple)); color:var(--white); border:none; border-radius:var(--radius-full); padding:8px 16px; cursor:pointer; font-family:'Nunito',sans-serif; min-height:36px; }
 
-/* SUCCESS / ERROR MSG */
-.alert { padding:14px 20px; border-radius:10px; font-size:14px; margin-bottom:20px; display:none; }
-.alert-success { background:#d4edda; color:#155724; border:1px solid #c3e6cb; }
-.alert-error { background:#f8d7da; color:#721c24; border:1px solid #f5c6cb; }
+.post-list { display:flex; flex-direction:column; gap:12px; }
+.post-card { background:var(--white); border:1.5px solid var(--gray-200); border-radius:var(--radius); padding:16px; }
+.post-card.pending { border-color:var(--orange); }
+.post-card.approved { border-color:var(--green); }
+.post-card.rejected { border-color:var(--red); opacity:.7; }
+.post-card-top { display:flex; align-items:flex-start; gap:12px; margin-bottom:10px; }
+.post-emoji { width:44px; height:44px; flex-shrink:0; border-radius:10px; background:var(--pink-pale); display:flex; align-items:center; justify-content:center; font-size:22px; }
 
-/* POST LIST */
-.post-list { display:flex; flex-direction:column; gap:14px; }
-.post-item {
-  background:var(--white); border-radius:14px; padding:20px 24px;
-  box-shadow:var(--card-shadow); display:flex; align-items:center; gap:16px;
-  border-left:4px solid transparent;
-}
-.post-item.pending { border-left-color:var(--gold); }
-.post-item.approved { border-left-color:var(--lime); }
-.post-item.rejected { border-left-color:var(--red); }
-.post-info { flex:1; }
-.post-title { font-size:15px; font-weight:700; margin-bottom:4px; }
-.post-meta { font-size:12px; color:var(--gray); display:flex; gap:12px; }
-.status-badge { padding:4px 12px; border-radius:12px; font-size:11px; font-weight:700; font-family:'Barlow Condensed',sans-serif; letter-spacing:1px; }
-.status-badge.pending { background:#fff3cd; color:#856404; }
-.status-badge.approved { background:#d4edda; color:#155724; }
-.status-badge.rejected { background:#f8d7da; color:#721c24; }
-.post-actions { display:flex; gap:8px; flex-shrink:0; }
+/* 썸네일 이미지 */
+.post-thumb-img { width:44px; height:44px; flex-shrink:0; border-radius:10px; object-fit:cover; }
 
-/* DETAIL MODAL */
-.modal-overlay {
-  display:none; position:fixed; inset:0; z-index:200;
-  background:rgba(0,0,0,0.6); backdrop-filter:blur(4px);
-  align-items:center; justify-content:center; padding:40px 20px;
-}
-.modal-overlay.open { display:flex; }
-.modal-box {
-  background:var(--white); border-radius:20px; max-width:680px; width:100%;
-  box-shadow:0 20px 60px rgba(0,0,0,0.3); max-height:85vh; overflow-y:auto;
-  animation:slideUp 0.3s ease;
-}
-@keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
-.modal-header { background:linear-gradient(135deg,var(--dark),var(--green)); padding:28px 32px; color:var(--white); border-radius:20px 20px 0 0; }
-.modal-header .cat { font-size:11px; color:var(--gold); letter-spacing:2px; text-transform:uppercase; font-family:'Barlow Condensed',sans-serif; margin-bottom:8px; }
-.modal-header h2 { font-size:22px; font-weight:700; }
-.modal-header .meta { font-size:12px; color:rgba(255,255,255,0.6); margin-top:10px; display:flex; gap:14px; }
-.modal-body { padding:28px 32px; }
-.modal-content-text { font-size:14px; line-height:1.9; color:#2c3e2d; white-space:pre-wrap; background:var(--cream); padding:16px; border-radius:10px; margin-bottom:20px; }
-.modal-actions { display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; }
-.reject-reason { width:100%; margin-top:12px; }
-.reject-reason textarea { width:100%; padding:10px 14px; border:1.5px solid var(--light-gray); border-radius:8px; font-family:'Noto Sans KR',sans-serif; font-size:13px; resize:none; height:80px; }
+.post-info { flex:1; min-width:0; }
+.post-title { font-size:14px; font-weight:800; color:var(--gray-900); line-height:1.4; margin-bottom:4px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+.post-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.post-tag { font-size:10px; font-weight:700; padding:3px 8px; border-radius:var(--radius-full); background:var(--pink-pale); color:var(--pink); }
+.post-date { font-size:11px; color:var(--gray-400); }
+.status-badge { font-size:10px; font-weight:800; letter-spacing:.04em; padding:4px 10px; border-radius:var(--radius-full); white-space:nowrap; flex-shrink:0; }
+.status-badge.pending { background:#fff7ed; color:var(--orange); }
+.status-badge.approved { background:#f0fdf4; color:var(--green); }
+.status-badge.rejected { background:#fef2f2; color:var(--red); }
+.status-badge.draft { background:var(--gray-100); color:var(--gray-400); }
 
-/* LOGIN */
-.login-overlay {
-  position:fixed; inset:0; z-index:999;
-  background:linear-gradient(135deg,var(--dark),var(--green));
-  display:flex; align-items:center; justify-content:center;
-}
-.login-box { background:var(--white); border-radius:20px; padding:48px 40px; max-width:380px; width:100%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
-.login-logo { font-family:'Bebas Neue',sans-serif; font-size:32px; letter-spacing:4px; color:var(--green); margin-bottom:8px; }
-.login-logo span { color:var(--gold); }
-.login-sub { font-size:13px; color:var(--gray); margin-bottom:32px; }
-.login-box input { width:100%; padding:13px 16px; border:1.5px solid var(--light-gray); border-radius:10px; font-family:'Noto Sans KR',sans-serif; font-size:14px; margin-bottom:12px; outline:none; }
-.login-box input:focus { border-color:var(--green-mid); }
-.login-box .btn { width:100%; margin-top:4px; }
-.login-error { color:var(--red); font-size:13px; margin-top:8px; display:none; }
+.post-preview { font-size:12px; color:var(--gray-600); line-height:1.6; background:var(--gray-50); border-radius:8px; padding:10px 12px; margin-bottom:12px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; }
+.post-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.action-btn { flex:1; min-width:80px; font-family:'Nunito',sans-serif; font-size:12px; font-weight:800; border:1.5px solid; border-radius:var(--radius-full); padding:9px 12px; cursor:pointer; min-height:38px; display:flex; align-items:center; justify-content:center; gap:4px; transition:all .2s; }
+.btn-approve { border-color:var(--green); color:var(--green); background:#f0fdf4; }
+.btn-reject { border-color:var(--red); color:var(--red); background:#fef2f2; }
+.btn-edit { border-color:var(--pink); color:var(--pink); background:var(--pink-pale); }
+.btn-delete { border-color:var(--gray-200); color:var(--gray-400); background:var(--gray-50); }
 
-/* STATS */
-.stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
-.stat-card { background:var(--white); border-radius:14px; padding:20px; text-align:center; box-shadow:var(--card-shadow); }
-.stat-num { font-family:'Bebas Neue',sans-serif; font-size:36px; color:var(--green); }
-.stat-label { font-size:12px; color:var(--gray); margin-top:2px; }
+/* 글쓰기 폼 */
+.write-box { background:var(--white); border:1.5px solid var(--pink-border); border-radius:var(--radius); padding:20px; }
+.form-label { display:block; font-size:12px; font-weight:800; color:var(--gray-600); margin-bottom:6px; letter-spacing:.04em; text-transform:uppercase; }
+.form-input, .form-select, .form-textarea { width:100%; border:1.5px solid var(--gray-200); border-radius:var(--radius-sm); padding:12px 14px; font-family:'Nunito',sans-serif; font-size:14px; color:var(--gray-900); outline:none; margin-bottom:16px; transition:border-color .2s; -webkit-appearance:none; background:var(--white); }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color:var(--pink); }
+.form-textarea { min-height:200px; resize:vertical; line-height:1.8; }
+.form-row { display:flex; gap:12px; }
+.form-row .form-group { flex:1; }
+.form-group { margin-bottom:4px; }
 
-/* EMPTY */
-.empty-state { text-align:center; padding:60px 20px; color:var(--gray); }
-.empty-state .emoji { font-size:44px; margin-bottom:12px; }
+/* 이미지 업로드 */
+.img-upload-area { border:2px dashed var(--pink-border); border-radius:var(--radius-sm); padding:24px; text-align:center; cursor:pointer; margin-bottom:16px; transition:all .2s; background:var(--pink-pale); }
+.img-upload-area:hover { border-color:var(--pink); }
+.img-upload-area input { display:none; }
+.img-preview { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+.img-preview-item { position:relative; width:80px; height:80px; }
+.img-preview-item img { width:100%; height:100%; object-fit:cover; border-radius:8px; }
+.img-preview-del { position:absolute; top:-6px; right:-6px; background:var(--red); color:#fff; border:none; border-radius:50%; width:20px; height:20px; font-size:11px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 
-/* 자체 에디터 툴바 */
-.editor-wrap { border:1.5px solid var(--light-gray); border-radius:10px; overflow:hidden; background:var(--white); }
-.editor-toolbar {
-  display:flex; flex-wrap:wrap; gap:4px; padding:10px 12px;
-  background:#f8f5f0; border-bottom:1.5px solid var(--light-gray);
-}
-.tb-btn {
-  padding:5px 11px; border:1.5px solid #ddd; border-radius:6px;
-  background:var(--white); cursor:pointer; font-size:13px;
-  font-family:'Noto Sans KR',sans-serif; color:var(--dark);
-  transition:all 0.15s; line-height:1;
-}
-.tb-btn:hover { background:var(--green); color:var(--white); border-color:var(--green); }
-.tb-sep { width:1px; background:#ddd; margin:4px 2px; }
-.editor-area {
-  width:100%; min-height:360px; padding:18px 20px;
-  font-family:'Noto Sans KR',sans-serif; font-size:14px;
-  line-height:1.9; color:var(--dark); border:none; outline:none;
-  resize:vertical; background:var(--white);
-}
-.editor-preview {
-  display:none; min-height:360px; padding:18px 20px;
-  font-size:14px; line-height:1.9; color:var(--dark);
-  border-top:1.5px solid var(--light-gray); background:#fff;
-}
-.editor-preview h2 { font-size:22px; font-weight:800; color:#1b4332; margin:28px 0 10px; }
-.editor-preview h3 { font-size:17px; font-weight:700; color:#2d6a4f; margin:22px 0 8px; border-left:4px solid #f4a261; padding-left:10px; }
-.editor-preview hr { border:none; border-top:1px solid #e0d8ce; margin:22px 0; }
-.editor-preview strong { font-weight:700; }
+/* 에디터 툴바 */
+.editor-toolbar { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:8px; padding:8px; background:var(--gray-50); border-radius:var(--radius-sm) var(--radius-sm) 0 0; border:1.5px solid var(--gray-200); border-bottom:none; }
+.toolbar-btn { font-family:'Nunito',sans-serif; font-size:12px; font-weight:700; padding:5px 10px; border:1.5px solid var(--gray-200); border-radius:6px; background:var(--white); cursor:pointer; color:var(--gray-600); min-height:30px; }
+.toolbar-btn:active { background:var(--pink-pale); border-color:var(--pink); color:var(--pink); }
+.form-textarea.with-toolbar { border-radius:0 0 var(--radius-sm) var(--radius-sm); margin-bottom:16px; }
 
-/* RESPONSIVE */
-@media(max-width:640px) {
-  nav { padding:12px 20px; }
-  .form-grid { grid-template-columns:1fr; }
-  .stats-row { grid-template-columns:1fr 1fr; }
-  .post-item { flex-direction:column; align-items:flex-start; }
-  .post-actions { width:100%; }
+/* 모달 */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:500; align-items:flex-end; justify-content:center; }
+.modal-overlay.on { display:flex; }
+.modal-box { background:var(--white); border-radius:var(--radius) var(--radius) 0 0; width:100%; max-width:700px; max-height:92vh; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:20px 20px 40px; }
+.modal-handle { width:40px; height:4px; background:var(--gray-200); border-radius:2px; margin:0 auto 20px; }
+.modal-title { font-size:18px; font-weight:800; margin-bottom:20px; }
+.modal-submit { width:100%; background:linear-gradient(135deg,var(--pink),var(--purple)); color:var(--white); border:none; border-radius:var(--radius-full); padding:15px; font-family:'Nunito',sans-serif; font-size:15px; font-weight:800; cursor:pointer; min-height:50px; margin-top:8px; }
+.modal-cancel { width:100%; background:none; color:var(--gray-400); border:1.5px solid var(--gray-200); border-radius:var(--radius-full); padding:14px; font-family:'Nunito',sans-serif; font-size:14px; font-weight:700; cursor:pointer; min-height:48px; margin-top:10px; }
+
+/* 확인 모달 */
+.confirm-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:600; align-items:center; justify-content:center; padding:20px; }
+.confirm-overlay.on { display:flex; }
+.confirm-box { background:var(--white); border-radius:var(--radius); padding:28px 24px; width:100%; max-width:340px; text-align:center; }
+.confirm-icon { font-size:36px; margin-bottom:12px; }
+.confirm-title { font-size:17px; font-weight:800; margin-bottom:8px; }
+.confirm-desc { font-size:13px; color:var(--gray-600); margin-bottom:24px; line-height:1.6; }
+.confirm-btns { display:flex; gap:10px; }
+.confirm-yes { flex:1; background:linear-gradient(135deg,var(--pink),var(--purple)); color:var(--white); border:none; border-radius:var(--radius-full); padding:13px; font-family:'Nunito',sans-serif; font-size:14px; font-weight:800; cursor:pointer; min-height:46px; }
+.confirm-no { flex:1; background:none; border:1.5px solid var(--gray-200); color:var(--gray-600); border-radius:var(--radius-full); padding:13px; font-family:'Nunito',sans-serif; font-size:14px; font-weight:700; cursor:pointer; min-height:46px; }
+
+/* 필터 */
+.filter-bar { display:flex; gap:8px; padding:12px 16px 0; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; max-width:1100px; margin:0 auto; }
+.filter-bar::-webkit-scrollbar { display:none; }
+.filter-chip { flex-shrink:0; font-family:'Nunito',sans-serif; font-size:12px; font-weight:700; border:1.5px solid var(--gray-200); background:var(--white); color:var(--gray-600); border-radius:var(--radius-full); padding:7px 14px; cursor:pointer; min-height:34px; transition:all .2s; }
+.filter-chip.on { border-color:var(--pink); background:var(--pink-pale); color:var(--pink); }
+
+.empty-state { text-align:center; padding:48px 20px; color:var(--gray-400); }
+.empty-state .ei { font-size:40px; margin-bottom:12px; }
+.empty-state .et { font-size:13px; font-weight:700; }
+
+/* 로딩 */
+.loading { text-align:center; padding:32px; color:var(--gray-400); font-size:13px; font-weight:700; }
+
+#toast { position:fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--gray-900); color:var(--white); font-size:13px; font-weight:700; padding:12px 24px; border-radius:var(--radius-full); z-index:1000; white-space:nowrap; transition:transform .3s cubic-bezier(.34,1.56,.64,1); pointer-events:none; }
+#toast.show { transform:translateX(-50%) translateY(0); }
+
+/* 업로드 진행 */
+.upload-progress { display:none; margin-bottom:12px; }
+.upload-progress-bar { height:4px; background:var(--gray-200); border-radius:2px; overflow:hidden; }
+.upload-progress-fill { height:100%; background:linear-gradient(135deg,var(--pink),var(--purple)); width:0%; transition:width .3s; }
+.upload-progress-txt { font-size:11px; color:var(--pink); font-weight:700; margin-top:4px; }
+
+@media (min-width:768px) {
+  .dash-grid { grid-template-columns:repeat(4,1fr); }
+  .modal-overlay { align-items:center; }
+  .modal-box { border-radius:var(--radius); max-height:85vh; }
 }
 </style>
 </head>
 <body>
 
-<!-- LOGIN OVERLAY -->
-<div class="login-overlay" id="loginOverlay">
+<!-- 로그인 -->
+<div id="login-screen">
   <div class="login-box">
-    <div class="login-logo">i<span>Clark</span></div>
-    <div class="login-sub">블로그 관리자 로그인</div>
-    <input type="text" id="loginId" placeholder="아이디" onkeydown="if(event.key==='Enter')doLogin()">
-    <input type="password" id="loginPw" placeholder="비밀번호" onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="btn btn-green" onclick="doLogin()">로그인</button>
-    <div class="login-error" id="loginError">아이디 또는 비밀번호가 틀립니다.</div>
-    <div style="margin-top:16px;font-size:12px;color:var(--gray)">
-      초기 계정: <strong>admin</strong> / <strong>iclark2024</strong>
-    </div>
+    <div class="login-logo">CLARKGO</div>
+    <div class="login-sub">ADMIN DASHBOARD</div>
+    <input class="login-input" id="login-id" type="text" placeholder="아이디" autocomplete="username">
+    <input class="login-input" id="login-pw" type="password" placeholder="비밀번호" autocomplete="current-password">
+    <button class="login-btn" onclick="doLogin()">로그인</button>
+    <div class="login-err" id="login-err">❌ 아이디 또는 비밀번호가 올바르지 않습니다</div>
   </div>
 </div>
 
-<!-- NAV -->
-<nav>
-  <a href="index.html" class="nav-logo">i<span>Clark</span> Golf</a>
-  <div class="nav-links">
-    <a href="index.html">홈</a>
-    <a href="blog.html">블로그</a>
-    <a href="#" onclick="logout();return false;" style="color:var(--gold)">로그아웃</a>
-  </div>
-</nav>
-
-<!-- ADMIN WRAP -->
-<div class="admin-wrap">
-  <div class="admin-header">
-    <h1>BLOG ADMIN</h1>
-    <p>블로그 글을 작성하고, 승인 대기 중인 글을 검토하세요.</p>
-  </div>
-
-  <!-- STATS -->
-  <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-num" id="statTotal">0</div>
-      <div class="stat-label">전체 글</div>
+<!-- 관리자 메인 -->
+<div id="admin-screen">
+  <div class="nav">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="logo">CLARKGO</div>
+      <span class="nav-badge">ADMIN</span>
     </div>
-    <div class="stat-card">
-      <div class="stat-num" id="statPending" style="color:var(--gold)">0</div>
-      <div class="stat-label">승인 대기</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num" id="statApproved" style="color:#27ae60">0</div>
-      <div class="stat-label">승인 완료</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num" id="statViews" style="color:var(--blue)">0</div>
-      <div class="stat-label">총 조회수</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <a href="index-new.html" style="font-size:12px;font-weight:700;color:var(--pink);">← 사이트</a>
+      <button class="nav-logout" onclick="doLogout()">로그아웃</button>
     </div>
   </div>
 
-  <!-- TABS -->
-  <div class="tab-nav">
-    <button class="tab-btn active" id="tab-write" onclick="showTab('write')">✏️ 글 작성</button>
-    <button class="tab-btn" id="tab-pending" onclick="showTab('pending')">⏳ 승인 대기 <span class="badge" id="pendingBadge">0</span></button>
-    <button class="tab-btn" id="tab-all" onclick="showTab('all')">📋 전체 글</button>
+  <div class="tab-bar">
+    <button class="tab-btn on" onclick="switchTab('dashboard',this)">📊 대시보드</button>
+    <button class="tab-btn" onclick="switchTab('write',this)">✏️ 새 글 작성</button>
+    <button class="tab-btn" onclick="switchTab('pending',this)">⏳ 승인 대기</button>
+    <button class="tab-btn" onclick="switchTab('approved',this)">✅ 게시됨</button>
+    <button class="tab-btn" onclick="switchTab('all',this)">📝 전체 글</button>
   </div>
 
-  <!-- WRITE PANEL -->
-  <div id="panel-write" class="panel">
-    <div class="alert alert-success" id="writeSuccess">✅ 글이 제출되었습니다! 관리자 승인 후 블로그에 게시됩니다.</div>
-    <div class="alert alert-error" id="writeError">❌ 제목과 내용을 입력해주세요.</div>
-
-    <div class="form-grid">
-      <div class="form-row">
-        <label>작성자 이름 *</label>
-        <input type="text" id="wAuthor" placeholder="홍길동">
-      </div>
-      <div class="form-row">
-        <label>카테고리 *</label>
-        <select id="wCategory">
-          <option value="골프 팁">⛳ 골프 팁</option>
-          <option value="코스 리뷰">🏌️ 코스 리뷰</option>
-          <option value="레슨 후기">🎯 레슨 후기</option>
-          <option value="필리핀 생활">🌴 필리핀 생활</option>
-          <option value="패키지 안내">📦 패키지 안내</option>
-        </select>
-      </div>
+  <!-- 대시보드 -->
+  <div id="tab-dashboard">
+    <div class="dash-grid">
+      <div class="stat-card"><div class="stat-num" id="stat-total">-</div><div class="stat-label">전체 글</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-pending" style="background:linear-gradient(135deg,#f97316,#fb923c);-webkit-background-clip:text;background-clip:text;">-</div><div class="stat-label">승인 대기</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-approved" style="background:linear-gradient(135deg,#22c55e,#16a34a);-webkit-background-clip:text;background-clip:text;">-</div><div class="stat-label">게시됨</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-draft" style="background:linear-gradient(135deg,#a1a1aa,#71717a);-webkit-background-clip:text;background-clip:text;">-</div><div class="stat-label">임시저장</div></div>
     </div>
-
-    <div class="form-row">
-      <label>글 제목 *</label>
-      <input type="text" id="wTitle" placeholder="흥미로운 제목을 입력하세요">
+    <div class="admin-section">
+      <div class="sec-head"><div class="sec-title">⏳ 승인 대기 글</div><button class="sec-action" onclick="switchTabByName('pending')">전체 보기</button></div>
+      <div class="post-list" id="dash-pending-list"><div class="loading">⏳ 불러오는 중...</div></div>
     </div>
+    <div class="admin-section">
+      <div class="sec-head"><div class="sec-title">✅ 최근 게시된 글</div></div>
+      <div class="post-list" id="dash-approved-list"><div class="loading">⏳ 불러오는 중...</div></div>
+    </div>
+  </div>
 
-    <div class="form-row">
-      <label>내용 *</label>
-      <div class="editor-wrap">
-        <div class="editor-toolbar">
-          <button type="button" class="tb-btn" onclick="ins('# ','\n')" title="큰 제목">H1</button>
-          <button type="button" class="tb-btn" onclick="ins('## ','\n')" title="소제목">H2</button>
-          <div class="tb-sep"></div>
-          <button type="button" class="tb-btn" onclick="wrap('**','**')" title="굵게"><b>B</b></button>
-          <button type="button" class="tb-btn" onclick="wrap('*','*')" title="기울임"><i>I</i></button>
-          <div class="tb-sep"></div>
-          <button type="button" class="tb-btn" onclick="ins('---\n','')" title="구분선">━━</button>
-          <button type="button" class="tb-btn" onclick="ins('- ','')" title="목록">• 목록</button>
-          <div class="tb-sep"></div>
-          <button type="button" class="tb-btn" onclick="togglePreview()" id="previewBtn">👁 미리보기</button>
+  <!-- 새 글 작성 -->
+  <div id="tab-write" style="display:none;">
+    <div class="admin-section">
+      <div class="sec-head"><div class="sec-title">✏️ 새 블로그 글 작성</div></div>
+      <div class="write-box">
+        <div class="form-group">
+          <label class="form-label">글 제목 *</label>
+          <input class="form-input" id="w-title" placeholder="블로그 글 제목을 입력하세요" type="text">
         </div>
-        <textarea id="wContentEditor" class="editor-area" placeholder="여기에 글을 작성하세요.
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">카테고리</label>
+            <select class="form-select" id="w-cat">
+              <option value="여행 팁">여행 팁</option>
+              <option value="날씨">날씨</option>
+              <option value="골프">골프</option>
+              <option value="캐디">캐디</option>
+              <option value="맛집">맛집</option>
+              <option value="숙소">숙소</option>
+              <option value="비용">비용</option>
+              <option value="기타">기타</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">이모지 아이콘</label>
+            <input class="form-input" id="w-emoji" placeholder="🏌️" type="text" style="margin-bottom:0">
+          </div>
+        </div>
 
-# 큰 제목은 앞에 # 을 붙이세요
-## 소제목은 앞에 ## 을 붙이세요
-**굵게** 하고 싶은 단어는 **양쪽에 별표 두 개**
----  (구분선)
+        <!-- 사진 업로드 -->
+        <div class="form-group">
+          <label class="form-label">📸 사진 업로드</label>
+          <div class="img-upload-area" onclick="document.getElementById('w-img-input').click()">
+            <input type="file" id="w-img-input" accept="image/*" multiple onchange="handleImgSelect(this)">
+            <div style="font-size:32px;margin-bottom:8px;">📷</div>
+            <div style="font-size:13px;font-weight:700;color:var(--pink);">사진을 탭해서 올려주세요</div>
+            <div style="font-size:11px;color:var(--gray-400);margin-top:4px;">JPG, PNG, WebP — 최대 5MB</div>
+          </div>
+          <div class="img-preview" id="w-img-preview"></div>
+          <div class="upload-progress" id="w-upload-progress">
+            <div class="upload-progress-bar"><div class="upload-progress-fill" id="w-progress-fill"></div></div>
+            <div class="upload-progress-txt" id="w-progress-txt">업로드 중...</div>
+          </div>
+        </div>
 
-툴바 버튼을 클릭하면 자동으로 입력됩니다!"></textarea>
-        <div class="editor-preview" id="editorPreview"></div>
+        <!-- 에디터 -->
+        <div class="form-group">
+          <label class="form-label">글 내용 *</label>
+          <div class="editor-toolbar">
+            <button class="toolbar-btn" onclick="insertMd('**','**')"><b>B</b></button>
+            <button class="toolbar-btn" onclick="insertMd('*','*')"><i>I</i></button>
+            <button class="toolbar-btn" onclick="insertMd('\n## ','')">H2</button>
+            <button class="toolbar-btn" onclick="insertMd('\n### ','')">H3</button>
+            <button class="toolbar-btn" onclick="insertMd('\n- ','')">목록</button>
+            <button class="toolbar-btn" onclick="insertMd('\n> ','')">인용</button>
+            <button class="toolbar-btn" onclick="insertImgMd()">📷 삽입</button>
+          </div>
+          <textarea class="form-textarea with-toolbar" id="w-content" placeholder="블로그 글 내용을 작성하세요...
+
+## 소제목
+본문 내용을 여기에 씁니다.
+
+**굵은 글씨**, *기울임* 사용 가능합니다."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">SEO 설명 (검색 미리보기)</label>
+          <input class="form-input" id="w-desc" placeholder="검색엔진에 표시될 짧은 설명 (160자 이내)" type="text">
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:8px;">
+          <button style="flex:1;background:var(--gray-100);color:var(--gray-600);border:1.5px solid var(--gray-200);border-radius:var(--radius-full);padding:14px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;min-height:48px;" onclick="savePost('draft')">💾 임시저장</button>
+          <button style="flex:2;background:linear-gradient(135deg,var(--pink),var(--purple));color:var(--white);border:none;border-radius:var(--radius-full);padding:14px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;min-height:48px;" onclick="savePost('approved')">🚀 바로 게시</button>
+        </div>
       </div>
-      <div class="form-hint">💡 H1=큰제목 &nbsp;|&nbsp; H2=소제목 &nbsp;|&nbsp; B=굵게 &nbsp;|&nbsp; ━━=구분선 &nbsp;|&nbsp; 미리보기로 확인하세요</div>
     </div>
+  </div>
 
+  <!-- 승인 대기 -->
+  <div id="tab-pending" style="display:none;">
+    <div class="admin-section">
+      <div class="sec-head"><div class="sec-title">⏳ 승인 대기 글</div></div>
+      <div class="post-list" id="pending-list"><div class="loading">⏳ 불러오는 중...</div></div>
+    </div>
+  </div>
+
+  <!-- 게시됨 -->
+  <div id="tab-approved" style="display:none;">
+    <div class="admin-section">
+      <div class="sec-head"><div class="sec-title">✅ 게시된 글</div></div>
+      <div class="post-list" id="approved-list"><div class="loading">⏳ 불러오는 중...</div></div>
+    </div>
+  </div>
+
+  <!-- 전체 -->
+  <div id="tab-all" style="display:none;">
+    <div class="filter-bar">
+      <button class="filter-chip on" onclick="filterAll('all',this)">전체</button>
+      <button class="filter-chip" onclick="filterAll('pending',this)">대기중</button>
+      <button class="filter-chip" onclick="filterAll('approved',this)">게시됨</button>
+      <button class="filter-chip" onclick="filterAll('draft',this)">임시저장</button>
+      <button class="filter-chip" onclick="filterAll('rejected',this)">거절됨</button>
+    </div>
+    <div class="admin-section">
+      <div class="sec-head"><div class="sec-title">📝 전체 블로그 글</div><button class="sec-action" onclick="switchTabByName('write')">+ 새 글</button></div>
+      <div class="post-list" id="all-list"><div class="loading">⏳ 불러오는 중...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 편집 모달 -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📝 글 편집</div>
+    <input type="hidden" id="edit-id">
+    <div class="form-group">
+      <label class="form-label">글 제목 *</label>
+      <input class="form-input" id="edit-title" type="text">
+    </div>
     <div class="form-row">
-      <label>대표 이미지 📷</label>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-        <input type="file" id="wImageFile" accept="image/*" onchange="uploadImage()" style="display:none;">
-        <button type="button" class="btn btn-blue" onclick="document.getElementById('wImageFile').click()">🖼️ 사진 선택</button>
-        <span id="uploadStatus" style="font-size:13px;color:var(--gray);">사진을 선택하면 자동 업로드됩니다</span>
-      </div>
-      <div id="imagePreview" style="margin-top:10px;display:none;">
-        <img id="previewImg" src="" style="max-width:200px;max-height:150px;border-radius:8px;border:2px solid var(--lime);">
-      </div>
-      <input type="url" id="wThumbnail" placeholder="또는 이미지 URL 직접 입력" style="margin-top:8px;">
-      <div class="form-hint">💡 사진 선택 시 자동으로 업로드되어 썸네일로 사용됩니다.</div>
-    </div>
-
-    <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:8px;">
-      <button class="btn btn-gray" onclick="clearForm()">초기화</button>
-      <button id="submitBtn" class="btn btn-green" onclick="submitPost()">📤 글 제출 (승인 요청)</button>
-    </div>
-  </div>
-
-  <!-- PENDING PANEL -->
-  <div id="panel-pending" class="panel" style="display:none;">
-    <div style="margin-bottom:20px;">
-      <h2 style="font-size:18px;font-weight:700;color:var(--green)">⏳ 승인 대기 글</h2>
-      <p style="font-size:13px;color:var(--gray);margin-top:4px">각 글을 검토하고 승인 또는 반려하세요.</p>
-    </div>
-    <div class="post-list" id="pendingList"></div>
-  </div>
-
-  <!-- ALL PANEL -->
-  <div id="panel-all" class="panel" style="display:none;">
-    <div style="margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;">
-      <div>
-        <h2 style="font-size:18px;font-weight:700;color:var(--green)">📋 전체 글 관리</h2>
-        <p style="font-size:13px;color:var(--gray);margin-top:4px">모든 글의 상태를 확인하고 삭제할 수 있습니다.</p>
-      </div>
-      <div style="display:flex;gap:8px;">
-        <select id="statusFilter" onchange="renderAllPosts()" style="padding:8px 12px;border:1.5px solid var(--light-gray);border-radius:8px;font-family:'Noto Sans KR',sans-serif;font-size:13px;">
-          <option value="all">전체 상태</option>
-          <option value="pending">대기 중</option>
-          <option value="approved">승인 완료</option>
-          <option value="rejected">반려</option>
+      <div class="form-group">
+        <label class="form-label">카테고리</label>
+        <select class="form-select" id="edit-cat">
+          <option value="여행 팁">여행 팁</option>
+          <option value="날씨">날씨</option>
+          <option value="골프">골프</option>
+          <option value="캐디">캐디</option>
+          <option value="맛집">맛집</option>
+          <option value="숙소">숙소</option>
+          <option value="비용">비용</option>
+          <option value="기타">기타</option>
         </select>
       </div>
+      <div class="form-group">
+        <label class="form-label">이모지</label>
+        <input class="form-input" id="edit-emoji" placeholder="🏌️" type="text" style="margin-bottom:0">
+      </div>
     </div>
-    <div class="post-list" id="allList"></div>
+    <div class="form-group">
+      <label class="form-label">📸 추가 사진 업로드</label>
+      <div class="img-upload-area" onclick="document.getElementById('edit-img-input').click()" style="padding:16px;">
+        <input type="file" id="edit-img-input" accept="image/*" multiple onchange="handleEditImgSelect(this)">
+        <div style="font-size:13px;font-weight:700;color:var(--pink);">📷 사진 추가</div>
+      </div>
+      <div class="img-preview" id="edit-img-preview"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">글 내용 *</label>
+      <textarea class="form-textarea" id="edit-content" style="min-height:180px;"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">SEO 설명</label>
+      <input class="form-input" id="edit-desc" type="text">
+    </div>
+    <div class="form-group">
+      <label class="form-label">상태</label>
+      <select class="form-select" id="edit-status" style="margin-bottom:0">
+        <option value="draft">임시저장</option>
+        <option value="pending">승인 대기</option>
+        <option value="approved">게시됨</option>
+        <option value="rejected">거절됨</option>
+      </select>
+    </div>
+    <button class="modal-submit" onclick="submitEdit()">✅ 저장하기</button>
+    <button class="modal-cancel" onclick="closeModal('edit-modal')">취소</button>
   </div>
 </div>
 
-<!-- REVIEW MODAL -->
-<div class="modal-overlay" id="reviewModal" onclick="closeModalCheck(event)">
-  <div class="modal-box">
-    <div class="modal-header">
-      <div class="cat" id="rCat"></div>
-      <h2 id="rTitle"></h2>
-      <div class="meta">
-        <span id="rAuthor"></span>
-        <span id="rDate"></span>
-      </div>
-    </div>
-    <div class="modal-body">
-      <div class="modal-content-text" id="rContent"></div>
-      <div class="reject-reason" id="rejectReasonWrap" style="display:none;">
-        <textarea id="rejectReason" placeholder="반려 사유를 입력하세요 (선택)"></textarea>
-      </div>
-      <div class="modal-actions" id="rActions"></div>
+<!-- 확인 모달 -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-icon" id="confirm-icon">⚠️</div>
+    <div class="confirm-title" id="confirm-title"></div>
+    <div class="confirm-desc" id="confirm-desc"></div>
+    <div class="confirm-btns">
+      <button class="confirm-yes" id="confirm-yes">확인</button>
+      <button class="confirm-no" onclick="closeConfirm()">취소</button>
     </div>
   </div>
 </div>
 
-<script>
-// ── ImgBB 사진 업로드 ──
-var IMGBB_API_KEY = "b59ca0d334f2bbbc8e26c620c0936cf5";
+<div id="toast"></div>
 
-function uploadImage() {
-  var file = document.getElementById("wImageFile").files[0];
-  if (!file) return;
-  var status = document.getElementById("uploadStatus");
-  status.textContent = "⏳ 업로드 중...";
-  status.style.color = "var(--blue)";
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var base64 = e.target.result.split(",")[1];
-    var formData = new FormData();
-    formData.append("key", IMGBB_API_KEY);
-    formData.append("image", base64);
-    fetch("https://api.imgbb.com/1/upload", { method:"POST", body:formData })
-      .then(function(r){ return r.json(); })
-      .then(function(data){
-        if (data.success) {
-          var url = data.data.url;
-          document.getElementById("wThumbnail").value = url;
-          document.getElementById("previewImg").src = url;
-          document.getElementById("imagePreview").style.display = "block";
-          status.textContent = "✅ 업로드 완료!";
-          status.style.color = "#27ae60";
-        } else {
-          status.textContent = "❌ 업로드 실패. URL을 직접 입력해주세요.";
-          status.style.color = "var(--red)";
-        }
-      })
-      .catch(function(){
-        status.textContent = "❌ 오류 발생. URL을 직접 입력해주세요.";
-        status.style.color = "var(--red)";
-      });
-  };
-  reader.readAsDataURL(file);
-}
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-// ── 인증 ──
-var ADMIN_ID = "admin";
-var ADMIN_PW = "iclark2024";
-var isLoggedIn = false;
+// ── Firebase 설정 ──
+const firebaseConfig = {
+  apiKey: "AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU",
+  authDomain: "iclarkgolf.firebaseapp.com",
+  projectId: "iclarkgolf",
+  storageBucket: "iclarkgolf.firebasestorage.app",
+  messagingSenderId: "503239213724",
+  appId: "1:503239213724:web:c136e25e0cd22c170e6359",
+  measurementId: "G-8S6Z4PD9VZ"
+};
 
-function doLogin() {
-  var id = document.getElementById("loginId").value;
-  var pw = document.getElementById("loginPw").value;
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+// ── 로그인 ──
+const ADMIN_ID = 'admin';
+const ADMIN_PW = 'jsn0115';
+
+window.doLogin = function() {
+  const id = document.getElementById('login-id').value.trim();
+  const pw = document.getElementById('login-pw').value;
   if (id === ADMIN_ID && pw === ADMIN_PW) {
-    isLoggedIn = true;
-    document.getElementById("loginOverlay").style.display = "none";
-    init();
+    sessionStorage.setItem('cg_admin','1');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-screen').style.display = 'block';
+    loadAll();
   } else {
-    document.getElementById("loginError").style.display = "block";
+    document.getElementById('login-err').style.display = 'block';
+    document.getElementById('login-pw').value = '';
+  }
+};
+
+window.doLogout = function() {
+  sessionStorage.removeItem('cg_admin');
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('admin-screen').style.display = 'none';
+  document.getElementById('login-id').value = '';
+  document.getElementById('login-pw').value = '';
+};
+
+document.getElementById('login-id').addEventListener('keypress', e => { if(e.key==='Enter') document.getElementById('login-pw').focus(); });
+document.getElementById('login-pw').addEventListener('keypress', e => { if(e.key==='Enter') doLogin(); });
+
+if (sessionStorage.getItem('cg_admin')==='1') {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('admin-screen').style.display = 'block';
+  loadAll();
+}
+
+// ── 데이터 로드 ──
+let allPosts = [];
+let currentFilter = 'all';
+let editImgUrls = [];
+
+async function loadAll() {
+  try {
+    const q = query(collection(db,'blog_posts'), orderBy('createdAt','desc'));
+    const snap = await getDocs(q);
+    allPosts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderAll();
+  } catch(e) {
+    console.error(e);
+    showToast('❌ 데이터 로드 실패: ' + e.message);
   }
 }
 
-function logout() {
-  isLoggedIn = false;
-  document.getElementById("loginId").value = "";
-  document.getElementById("loginPw").value = "";
-  document.getElementById("loginError").style.display = "none";
-  document.getElementById("loginOverlay").style.display = "flex";
+function renderAll() {
+  updateStats();
+  renderDashboard();
+  renderPendingTab();
+  renderApprovedTab();
+  renderAllTab(currentFilter);
 }
 
-// ── 글 데이터 ──
-function getPosts() { try { return JSON.parse(localStorage.getItem("blog_posts") || "[]"); } catch(e){ return []; } }
-function savePosts(posts) { localStorage.setItem("blog_posts", JSON.stringify(posts)); }
-function genId() { return "post_" + Date.now() + "_" + Math.random().toString(36).substr(2,6); }
-function formatDate(d) { if(!d) return ""; var dt=new Date(d); return dt.getFullYear()+"."+(dt.getMonth()+1).toString().padStart(2,"0")+"."+dt.getDate().toString().padStart(2,"0")+" "+dt.getHours().toString().padStart(2,"0")+":"+dt.getMinutes().toString().padStart(2,"0"); }
-
-// ── 통계 업데이트 ──
 function updateStats() {
-  var posts = getPosts();
-  document.getElementById("statTotal").textContent = posts.length;
-  var pending = posts.filter(function(p){ return p.status==="pending"; });
-  var approved = posts.filter(function(p){ return p.status==="approved"; });
-  var totalViews = posts.reduce(function(s,p){ return s+(p.views||0); }, 0);
-  document.getElementById("statPending").textContent = pending.length;
-  document.getElementById("statApproved").textContent = approved.length;
-  document.getElementById("statViews").textContent = totalViews;
-  document.getElementById("pendingBadge").textContent = pending.length;
+  document.getElementById('stat-total').textContent = allPosts.length;
+  document.getElementById('stat-pending').textContent = allPosts.filter(p=>p.status==='pending').length;
+  document.getElementById('stat-approved').textContent = allPosts.filter(p=>p.status==='approved').length;
+  document.getElementById('stat-draft').textContent = allPosts.filter(p=>p.status==='draft').length;
 }
 
-// ── 탭 전환 ──
-function showTab(tab) {
-  ["write","pending","all"].forEach(function(t){
-    document.getElementById("panel-"+t).style.display = t===tab?"block":"none";
-    document.getElementById("tab-"+t).classList.toggle("active", t===tab);
+function renderDashboard() {
+  const pending = allPosts.filter(p=>p.status==='pending').slice(0,3);
+  const approved = allPosts.filter(p=>p.status==='approved').slice(0,3);
+  document.getElementById('dash-pending-list').innerHTML = pending.length ? pending.map(renderCard).join('') : emptyHTML('승인 대기 글이 없어요 🎉');
+  document.getElementById('dash-approved-list').innerHTML = approved.length ? approved.map(renderCard).join('') : emptyHTML('아직 게시된 글이 없어요');
+}
+
+function renderPendingTab() {
+  const posts = allPosts.filter(p=>p.status==='pending');
+  document.getElementById('pending-list').innerHTML = posts.length ? posts.map(renderCard).join('') : emptyHTML('승인 대기 글이 없어요 🎉');
+}
+
+function renderApprovedTab() {
+  const posts = allPosts.filter(p=>p.status==='approved');
+  document.getElementById('approved-list').innerHTML = posts.length ? posts.map(renderCard).join('') : emptyHTML('아직 게시된 글이 없어요');
+}
+
+window.filterAll = function(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-chip').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderAllTab(filter);
+};
+
+function renderAllTab(filter) {
+  const posts = filter==='all' ? allPosts : allPosts.filter(p=>p.status===filter);
+  document.getElementById('all-list').innerHTML = posts.length ? posts.map(renderCard).join('') : emptyHTML('해당 글이 없어요');
+}
+
+const STATUS_LABEL = { pending:'⏳ 승인 대기', approved:'✅ 게시됨', rejected:'❌ 거절됨', draft:'📁 임시저장' };
+
+function renderCard(post) {
+  const imgs = post.images && post.images.length ? `<div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;">${post.images.map(url=>`<img src="${url}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;flex-shrink:0;">`).join('')}</div>` : '';
+  let actions = '';
+  if (post.status==='pending') {
+    actions += `<button class="action-btn btn-approve" onclick="approvePost('${post.id}')">✅ 승인</button>`;
+    actions += `<button class="action-btn btn-reject" onclick="rejectPost('${post.id}')">❌ 거절</button>`;
+  }
+  if (post.status==='approved') actions += `<button class="action-btn btn-reject" onclick="rejectPost('${post.id}')">📤 게시 취소</button>`;
+  if (post.status==='rejected'||post.status==='draft') actions += `<button class="action-btn btn-approve" onclick="approvePost('${post.id}')">✅ 게시</button>`;
+  actions += `<button class="action-btn btn-edit" onclick="openEdit('${post.id}')">✏️ 편집</button>`;
+  actions += `<button class="action-btn btn-delete" onclick="deletePost('${post.id}')">🗑️</button>`;
+
+  const dateStr = post.createdAt ? (post.createdAt.toDate ? post.createdAt.toDate().toLocaleDateString('ko-KR') : post.createdAt) : '';
+
+  return `
+  <div class="post-card ${post.status}" id="card-${post.id}">
+    <div class="post-card-top">
+      <div class="post-emoji">${post.emoji||'📝'}</div>
+      <div class="post-info">
+        <div class="post-title">${esc(post.title)}</div>
+        <div class="post-meta">
+          <span class="post-tag">${esc(post.category||'')}</span>
+          <span class="post-date">📅 ${dateStr}</span>
+        </div>
+      </div>
+      <span class="status-badge ${post.status}">${STATUS_LABEL[post.status]||post.status}</span>
+    </div>
+    ${imgs}
+    <div class="post-preview">${esc(post.content)}</div>
+    <div class="post-actions">${actions}</div>
+  </div>`;
+}
+
+function emptyHTML(msg) {
+  return `<div class="empty-state"><div class="ei">📭</div><div class="et">${msg}</div></div>`;
+}
+
+// ── 이미지 업로드 ──
+let selectedFiles = [];
+
+window.handleImgSelect = function(input) {
+  const files = Array.from(input.files);
+  selectedFiles = [...selectedFiles, ...files];
+  renderImgPreview();
+};
+
+function renderImgPreview() {
+  const wrap = document.getElementById('w-img-preview');
+  wrap.innerHTML = selectedFiles.map((f,i) => `
+    <div class="img-preview-item">
+      <img src="${URL.createObjectURL(f)}" alt="">
+      <button class="img-preview-del" onclick="removeImg(${i})">×</button>
+    </div>`).join('');
+}
+
+window.removeImg = function(idx) {
+  selectedFiles.splice(idx,1);
+  renderImgPreview();
+};
+
+async function uploadImages(files, progressId, fillId, txtId) {
+  const urls = [];
+  if (!files.length) return urls;
+  const prog = document.getElementById(progressId);
+  if (prog) prog.style.display = 'block';
+  for (let i=0; i<files.length; i++) {
+    const f = files[i];
+    const path = `blog/${Date.now()}_${f.name}`;
+    const storageRef = ref(storage, path);
+    await new Promise((resolve, reject) => {
+      const task = uploadBytesResumable(storageRef, f);
+      task.on('state_changed',
+        snap => {
+          const pct = Math.round((snap.bytesTransferred/snap.totalBytes)*100);
+          const fill = document.getElementById(fillId);
+          const txt = document.getElementById(txtId);
+          if (fill) fill.style.width = pct+'%';
+          if (txt) txt.textContent = `업로드 중... ${i+1}/${files.length} (${pct}%)`;
+        },
+        reject,
+        async () => {
+          const url = await getDownloadURL(task.snapshot.ref);
+          urls.push(url);
+          resolve();
+        }
+      );
+    });
+  }
+  if (prog) prog.style.display = 'none';
+  return urls;
+}
+
+// ── 글 저장 ──
+window.savePost = async function(status) {
+  const title = document.getElementById('w-title').value.trim();
+  const content = document.getElementById('w-content').value.trim();
+  if (!title || !content) { showToast('❗ 제목과 내용을 입력해주세요.'); return; }
+
+  showToast('⏳ 저장 중...');
+  try {
+    const imageUrls = await uploadImages(selectedFiles, 'w-upload-progress', 'w-progress-fill', 'w-progress-txt');
+    await addDoc(collection(db,'blog_posts'), {
+      title,
+      category: document.getElementById('w-cat').value,
+      emoji: document.getElementById('w-emoji').value || '📝',
+      content,
+      desc: document.getElementById('w-desc').value.trim(),
+      images: imageUrls,
+      status,
+      createdAt: serverTimestamp(),
+    });
+    ['w-title','w-content','w-desc'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('w-emoji').value='';
+    document.getElementById('w-img-preview').innerHTML='';
+    selectedFiles = [];
+    await loadAll();
+    showToast(status==='draft' ? '💾 임시저장 완료!' : '🚀 게시 완료!');
+    switchTabByName('all');
+  } catch(e) {
+    showToast('❌ 저장 실패: ' + e.message);
+  }
+};
+
+// ── 상태 변경 ──
+window.approvePost = function(id) {
+  showConfirm('✅','이 글을 게시할까요?','사이트 블로그에 바로 게시됩니다.', async () => {
+    await updateDoc(doc(db,'blog_posts',id), { status:'approved' });
+    await loadAll();
+    showToast('✅ 게시 완료!');
   });
-  if (tab==="pending") renderPendingPosts();
-  if (tab==="all") renderAllPosts();
-}
+};
 
-// ── 글 작성 ──
+window.rejectPost = function(id) {
+  const p = allPosts.find(x=>x.id===id);
+  const isPublished = p && p.status==='approved';
+  showConfirm('❌', isPublished?'게시를 취소할까요?':'이 글을 거절할까요?',
+    isPublished?'사이트에서 내려갑니다.':'거절됨으로 표시됩니다.', async () => {
+    await updateDoc(doc(db,'blog_posts',id), { status:'rejected' });
+    await loadAll();
+    showToast(isPublished?'📤 게시 취소됨':'❌ 거절 처리됨');
+  });
+};
 
-// 글 수정
-function editPost(id) {
-  var posts = getPosts();
-  var p = posts.find(function(x){ return x.id===id; });
+window.deletePost = function(id) {
+  showConfirm('🗑️','이 글을 삭제할까요?','삭제하면 복구할 수 없습니다.', async () => {
+    await deleteDoc(doc(db,'blog_posts',id));
+    await loadAll();
+    showToast('🗑️ 삭제됨');
+  }, true);
+};
+
+// ── 편집 모달 ──
+window.openEdit = function(id) {
+  const p = allPosts.find(x=>x.id===id);
   if (!p) return;
-  showTab('write');
-  document.getElementById('wTitle').value = p.title || '';
-  document.getElementById('wAuthor').value = p.author || '';
-  document.getElementById('wCategory').value = p.category || '';
-  document.getElementById('wThumbnail').value = p.thumbnail || '';
-  document.getElementById('wContentEditor').value = p.content || '';
-  if (p.thumbnail) {
-    document.getElementById('previewImg').src = p.thumbnail;
-    document.getElementById('imagePreview').style.display = 'block';
+  editImgUrls = p.images ? [...p.images] : [];
+  document.getElementById('edit-id').value = id;
+  document.getElementById('edit-title').value = p.title;
+  document.getElementById('edit-cat').value = p.category || '여행 팁';
+  document.getElementById('edit-emoji').value = p.emoji || '';
+  document.getElementById('edit-content').value = p.content;
+  document.getElementById('edit-desc').value = p.desc || '';
+  document.getElementById('edit-status').value = p.status;
+  renderEditImgPreview();
+  document.getElementById('edit-modal').classList.add('on');
+};
+
+window.handleEditImgSelect = function(input) {
+  // 새 파일은 별도 배열에
+  window._editNewFiles = Array.from(input.files);
+  const wrap = document.getElementById('edit-img-preview');
+  const existing = editImgUrls.map((url,i)=>`<div class="img-preview-item"><img src="${url}"><button class="img-preview-del" onclick="removeEditImg(${i})">×</button></div>`).join('');
+  const newPreviews = (window._editNewFiles||[]).map((f,i)=>`<div class="img-preview-item"><img src="${URL.createObjectURL(f)}"><span style="position:absolute;bottom:2px;right:2px;background:#e8498a;color:#fff;font-size:9px;padding:2px 4px;border-radius:4px;">NEW</span></div>`).join('');
+  wrap.innerHTML = existing + newPreviews;
+};
+
+window.removeEditImg = function(idx) {
+  editImgUrls.splice(idx,1);
+  renderEditImgPreview();
+};
+
+function renderEditImgPreview() {
+  document.getElementById('edit-img-preview').innerHTML = editImgUrls.map((url,i)=>`
+    <div class="img-preview-item">
+      <img src="${url}">
+      <button class="img-preview-del" onclick="removeEditImg(${i})">×</button>
+    </div>`).join('');
+}
+
+window.submitEdit = async function() {
+  const id = document.getElementById('edit-id').value;
+  const title = document.getElementById('edit-title').value.trim();
+  const content = document.getElementById('edit-content').value.trim();
+  if (!title || !content) { showToast('❗ 제목과 내용을 입력해주세요.'); return; }
+  showToast('⏳ 저장 중...');
+  try {
+    const newFiles = window._editNewFiles || [];
+    const newUrls = newFiles.length ? await uploadImages(newFiles, null, null, null) : [];
+    const allImgs = [...editImgUrls, ...newUrls];
+    await updateDoc(doc(db,'blog_posts',id), {
+      title,
+      category: document.getElementById('edit-cat').value,
+      emoji: document.getElementById('edit-emoji').value || '📝',
+      content,
+      desc: document.getElementById('edit-desc').value.trim(),
+      images: allImgs,
+      status: document.getElementById('edit-status').value,
+    });
+    window._editNewFiles = [];
+    closeModal('edit-modal');
+    await loadAll();
+    showToast('✅ 수정 완료!');
+  } catch(e) {
+    showToast('❌ 수정 실패: ' + e.message);
   }
-  document.getElementById('submitBtn').textContent = '✅ 수정 완료';
-  document.getElementById('submitBtn').onclick = function(){ saveEdit(id); };
-  window.scrollTo({top:0, behavior:'smooth'});
-  alert('수정 모드입니다. 내용 수정 후 수정 완료 버튼을 눌러주세요.');
-}
+};
 
-function saveEdit(id) {
-  var title = document.getElementById('wTitle').value.trim();
-  var content = document.getElementById('wContentEditor').value.trim();
-  var author = document.getElementById('wAuthor').value.trim() || '익명';
-  var category = document.getElementById('wCategory').value;
-  var thumbnail = document.getElementById('wThumbnail').value.trim();
-  if (!title || !content) { showAlert('writeError'); return; }
-  var posts = getPosts();
-  var p = posts.find(function(x){ return x.id===id; });
-  if (!p) return;
-  p.title = title;
-  p.content = content;
-  p.author = author;
-  p.category = category;
-  p.thumbnail = thumbnail;
-  savePosts(posts);
-  document.getElementById('submitBtn').textContent = '📤 제출하기';
-  document.getElementById('submitBtn').onclick = submitPost;
-  clearForm();
-  showAlert('writeSuccess');
-  updateStats();
-  alert('글이 수정되었습니다!');
-}
-
-function submitPost() {
-  var title = document.getElementById("wTitle").value.trim();
-  var content = document.getElementById("wContentEditor").value.trim();
-  var author = document.getElementById("wAuthor").value.trim() || "익명";
-  var category = document.getElementById("wCategory").value;
-  var thumbnail = document.getElementById("wThumbnail").value.trim();
-
-  if (!title || !content) {
-    showAlert("writeError");
-    return;
-  }
-
-  var post = {
-    id: genId(),
-    title: title,
-    content: content,
-    author: author,
-    category: category,
-    thumbnail: thumbnail,
-    status: "pending",
-    createdAt: new Date().toISOString(),
-    approvedAt: null,
-    rejectedAt: null,
-    rejectReason: null,
-    views: 0
-  };
-
-  var posts = getPosts();
-  posts.unshift(post);
-  savePosts(posts);
-
-  clearForm();
-  showAlert("writeSuccess");
-  updateStats();
-}
-
-function clearForm() {
-  ["wTitle","wAuthor","wThumbnail","wContentEditor"].forEach(function(id){ document.getElementById(id).value = ""; });
-  document.getElementById("wCategory").selectedIndex = 0;
-  // 미리보기 닫기
-  document.getElementById("editorPreview").style.display = "none";
-  document.getElementById("wContentEditor").style.display = "block";
-  document.getElementById("previewBtn").textContent = "👁 미리보기";
-}
-
-function showAlert(id) {
-  var el = document.getElementById(id);
-  el.style.display = "block";
-  setTimeout(function(){ el.style.display = "none"; }, 4000);
-}
-
-// ── 승인 대기 목록 ──
-function renderPendingPosts() {
-  var posts = getPosts().filter(function(p){ return p.status==="pending"; });
-  posts.sort(function(a,b){ return new Date(b.createdAt)-new Date(a.createdAt); });
-  var list = document.getElementById("pendingList");
-  if (posts.length===0) {
-    list.innerHTML = '<div class="empty-state"><div class="emoji">🎉</div><p>승인 대기 중인 글이 없습니다.</p></div>';
-    return;
-  }
-  list.innerHTML = posts.map(function(p){
-    return '<div class="post-item pending">' +
-      '<div class="post-info">' +
-        '<div class="post-title">'+escHtml(p.title)+'</div>' +
-        '<div class="post-meta"><span>✍️ '+escHtml(p.author)+'</span><span>🗂 '+escHtml(p.category)+'</span><span>📅 '+formatDate(p.createdAt)+'</span></div>' +
-      '</div>' +
-      '<span class="status-badge pending">대기 중</span>' +
-      '<div class="post-actions">' +
-        '<button class="btn btn-blue btn-sm" onclick="openReview(\''+p.id+'\')">📖 검토</button>' +
-        '<button class="btn btn-green btn-sm" onclick="quickApprove(\''+p.id+'\')">✅ 승인</button>' +
-        '<button class="btn btn-red btn-sm" onclick="quickReject(\''+p.id+'\')">❌ 반려</button>' +
-      '</div>' +
-    '</div>';
-  }).join("");
-}
-
-// ── 전체 목록 ──
-function renderAllPosts() {
-  var filter = document.getElementById("statusFilter").value;
-  var posts = getPosts();
-  if (filter !== "all") posts = posts.filter(function(p){ return p.status===filter; });
-  posts.sort(function(a,b){ return new Date(b.createdAt)-new Date(a.createdAt); });
-  var list = document.getElementById("allList");
-  if (posts.length===0) {
-    list.innerHTML = '<div class="empty-state"><div class="emoji">📭</div><p>글이 없습니다.</p></div>';
-    return;
-  }
-  list.innerHTML = posts.map(function(p){
-    var statusLabel = {pending:"대기 중",approved:"승인 완료",rejected:"반려"}[p.status]||p.status;
-    var btns = '<button class="btn btn-blue btn-sm" onclick="openReview(\''+p.id+'\')">📖 보기</button>';
-    btns += '<button class="btn btn-outline btn-sm" onclick="editPost(\''+p.id+'\')">✏️ 수정</button>';
-    if (p.status==="pending") {
-      btns += '<button class="btn btn-green btn-sm" onclick="quickApprove(\''+p.id+'\')">✅ 승인</button>';
-      btns += '<button class="btn btn-red btn-sm" onclick="quickReject(\''+p.id+'\')">❌ 반려</button>';
-    }
-    if (p.status==="rejected") {
-      btns += '<button class="btn btn-outline btn-sm" onclick="quickApprove(\''+p.id+'\')">↩ 재승인</button>';
-    }
-    if (p.status==="approved") {
-      btns += '<button class="btn btn-red btn-sm" onclick="quickReject(\''+p.id+'\')">↩ 반려</button>';
-    }
-    btns += '<button class="btn btn-gray btn-sm" onclick="deletePost(\''+p.id+'\')">🗑</button>';
-    return '<div class="post-item '+p.status+'">' +
-      '<div class="post-info">' +
-        '<div class="post-title">'+escHtml(p.title)+'</div>' +
-        '<div class="post-meta"><span>✍️ '+escHtml(p.author)+'</span><span>🗂 '+escHtml(p.category)+'</span><span>📅 '+formatDate(p.createdAt)+'</span><span>👁 '+((p.views||0))+'회</span></div>' +
-        (p.rejectReason ? '<div style="font-size:12px;color:var(--red);margin-top:4px">반려 사유: '+escHtml(p.rejectReason)+'</div>' : '') +
-      '</div>' +
-      '<span class="status-badge '+p.status+'">'+statusLabel+'</span>' +
-      '<div class="post-actions">'+btns+'</div>' +
-    '</div>';
-  }).join("");
-}
-
-// ── 상세 검토 모달 ──
-var currentReviewId = null;
-function openReview(id) {
-  var posts = getPosts();
-  var p = posts.find(function(x){ return x.id===id; });
-  if (!p) return;
-  currentReviewId = id;
-  document.getElementById("rCat").textContent = p.category || "일반";
-  document.getElementById("rTitle").textContent = p.title || "";
-  document.getElementById("rAuthor").textContent = "✍️ " + (p.author||"익명");
-  document.getElementById("rDate").textContent = "📅 " + formatDate(p.createdAt);
-  document.getElementById("rContent").innerHTML = p.content || "";
-  document.getElementById("rejectReasonWrap").style.display = "none";
-  document.getElementById("rejectReason").value = "";
-
-  var actions = "";
-  if (p.status==="pending") {
-    actions = '<button class="btn btn-green" onclick="approvePost(currentReviewId)">✅ 승인하기</button>' +
-              '<button class="btn btn-red" onclick="showRejectInput()">❌ 반려하기</button>';
-  } else if (p.status==="approved") {
-    actions = '<span style="color:#27ae60;font-weight:700;">✅ 승인된 글</span>' +
-              '<button class="btn btn-red btn-sm" onclick="rejectPost(currentReviewId,\'\')">반려로 변경</button>';
-  } else {
-    actions = '<span style="color:var(--red);font-weight:700;">❌ 반려된 글</span>' +
-              '<button class="btn btn-green btn-sm" onclick="approvePost(currentReviewId)">재승인</button>';
-    if (p.rejectReason) actions += '<div style="font-size:13px;color:var(--gray);margin-top:8px">반려 사유: '+escHtml(p.rejectReason)+'</div>';
-  }
-  actions += '<button class="btn btn-gray" onclick="closeReviewModal()">닫기</button>';
-  document.getElementById("rActions").innerHTML = actions;
-  document.getElementById("reviewModal").classList.add("open");
-  document.body.style.overflow = "hidden";
-}
-
-function showRejectInput() {
-  document.getElementById("rejectReasonWrap").style.display = "block";
-  document.getElementById("rActions").innerHTML =
-    '<button class="btn btn-red" onclick="rejectPost(currentReviewId, document.getElementById(\'rejectReason\').value)">반려 확정</button>' +
-    '<button class="btn btn-gray" onclick="document.getElementById(\'rejectReasonWrap\').style.display=\'none\'">취소</button>';
-}
-
-function approvePost(id) {
-  var posts = getPosts();
-  var p = posts.find(function(x){ return x.id===id; });
-  if (!p) return;
-  p.status = "approved";
-  p.approvedAt = new Date().toISOString();
-  p.rejectedAt = null;
-  p.rejectReason = null;
-  savePosts(posts);
-  closeReviewModal();
-  updateStats();
-  renderPendingPosts();
-  renderAllPosts();
-  alert("✅ 글이 승인되었습니다! 블로그에 게시됩니다.");
-}
-
-function rejectPost(id, reason) {
-  var posts = getPosts();
-  var p = posts.find(function(x){ return x.id===id; });
-  if (!p) return;
-  p.status = "rejected";
-  p.rejectedAt = new Date().toISOString();
-  p.approvedAt = null;
-  p.rejectReason = reason || null;
-  savePosts(posts);
-  closeReviewModal();
-  updateStats();
-  renderPendingPosts();
-  renderAllPosts();
-  alert("❌ 글이 반려되었습니다.");
-}
-
-function quickApprove(id) { if(confirm("이 글을 승인할까요?")) approvePost(id); }
-function quickReject(id) {
-  var reason = prompt("반려 사유를 입력하세요 (취소 시 빈 사유로 반려):", "");
-  if (reason !== null) rejectPost(id, reason);
-}
-
-function deletePost(id) {
-  if (!confirm("이 글을 완전히 삭제할까요? 복구할 수 없습니다.")) return;
-  var posts = getPosts().filter(function(p){ return p.id!==id; });
-  savePosts(posts);
-  updateStats();
-  renderAllPosts();
-}
-
-function closeReviewModal() {
-  document.getElementById("reviewModal").classList.remove("open");
-  document.body.style.overflow = "";
-}
-function closeModalCheck(e) {
-  if (e.target===document.getElementById("reviewModal")) closeReviewModal();
-}
-
-// ── 유틸 ──
-function escHtml(s) {
-  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-}
-
-// ── 초기화 ──
-// ── 에디터 툴바 함수 ──
-function ins(before, after) {
-  var ta = document.getElementById("wContentEditor");
-  var s = ta.selectionStart, e = ta.selectionEnd;
-  var val = ta.value;
-  var sel = val.substring(s, e);
-  // 줄 시작에 삽입
-  var newline = (s > 0 && val[s-1] !== "\n") ? "\n" : "";
-  ta.value = val.substring(0, s) + newline + before + sel + after + val.substring(e);
-  ta.focus();
-  ta.selectionStart = ta.selectionEnd = s + newline.length + before.length + sel.length + after.length;
-}
-
-function wrap(before, after) {
-  var ta = document.getElementById("wContentEditor");
-  var s = ta.selectionStart, e = ta.selectionEnd;
-  var val = ta.value;
-  var sel = val.substring(s, e) || "텍스트";
-  ta.value = val.substring(0, s) + before + sel + after + val.substring(e);
+// ── 에디터 툴바 ──
+window.insertMd = function(before, after) {
+  const ta = document.getElementById('w-content');
+  const s = ta.selectionStart, e = ta.selectionEnd;
+  const sel = ta.value.substring(s,e);
+  ta.value = ta.value.substring(0,s) + before + sel + after + ta.value.substring(e);
   ta.focus();
   ta.selectionStart = s + before.length;
   ta.selectionEnd = s + before.length + sel.length;
-}
+};
 
-function togglePreview() {
-  var ta = document.getElementById("wContentEditor");
-  var pv = document.getElementById("editorPreview");
-  var btn = document.getElementById("previewBtn");
-  if (pv.style.display === "block") {
-    pv.style.display = "none";
-    ta.style.display = "block";
-    btn.textContent = "👁 미리보기";
-  } else {
-    var raw = ta.value;
-    var fmt = raw
-      .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
-      .replace(/^# (.+)$/gm,'<h2>$1</h2>')
-      .replace(/^## (.+)$/gm,'<h3>$1</h3>')
-      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-      .replace(/\*(.+?)\*/g,'<em>$1</em>')
-      .replace(/^---$/gm,'<hr>')
-      .replace(/^- (.+)$/gm,'<li>$1</li>')
-      .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
-      .replace(/\n/g,"<br>");
-    pv.innerHTML = fmt;
-    pv.style.display = "block";
-    ta.style.display = "none";
-    btn.textContent = "✏️ 편집으로";
-  }
-}
+window.insertImgMd = function() {
+  if (!selectedFiles.length) { showToast('❗ 먼저 사진을 업로드하세요'); return; }
+  showToast('💡 글 저장 시 사진이 자동으로 삽입됩니다');
+};
 
-function init() {
-  updateStats();
-  if (window.location.hash === "#write") showTab("write");
+// ── 탭 전환 ──
+const TABS = ['dashboard','write','pending','approved','all'];
+window.switchTab = function(name, btn) {
+  TABS.forEach(t => document.getElementById('tab-'+t).style.display = (t===name)?'block':'none');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+  if (name==='pending') renderPendingTab();
+  if (name==='approved') renderApprovedTab();
+  if (name==='all') renderAllTab(currentFilter);
+};
 
-  // 작성된 글 자동 등록
-  var posts = getPosts();
-  var exists = posts.find(function(p){ return p.id === "p1"; });
-  if (!exists) {
-    var newPost = {
-      id: "p1",
-      title: "7·8월 여름 휴가, 골프 전지훈련으로 바꿔보세요 — 필리핀 클락 프라데라 완벽 가이드",
-      category: "패키지 안내",
-      author: "투어장",
-      content: "골퍼라면 누구나 꿈꾸는 여름 휴가\n\n7월과 8월, 직장인들의 연차가 몰리는 시즌입니다. 골프를 좋아하는 분이라면 이 시기에 한 번쯤 이런 생각을 해봤을 겁니다.\n\n\"제발 아무도 없는 골프장에서, 눈치 없이, 원없이 치고 싶다.\"\n\n가족 여행도 좋고, 해외 관광도 좋지만 — 골퍼에게 최고의 휴가는 결국 골프입니다. 그런데 막상 7·8월 한국 골프장을 예약하려면 현실이 다릅니다. 새벽 5시에 일어나 예약 전쟁을 치러야 하고, 찜통더위 속에서 5시간 넘게 기다리며 돌아야 합니다. 그린피는 주말 기준 20만원을 훌쩍 넘습니다.\n\n그래서 요즘 많은 골퍼들이 눈을 돌리는 곳이 있습니다. 바로 필리핀 클락(Clark)입니다. 인천에서 비행기로 3시간 50분. 생각보다 훨씬 가깝고, 생각보다 훨씬 합리적인 곳입니다.\n\n---\n\n# 한국 여름 vs 클락 우기, 골프하기 좋은 곳은 어디?\n\n많은 분들이 \"필리핀은 우기 아닌가요?\"라고 물어봅니다. 맞습니다. 하지만 클락은 다릅니다.\n\n**한국의 7·8월**은 장마와 폭염이 동시에 옵니다. 기온 34~36도에 습도 80% 이상. 라운드 중에 땀이 그치지 않고, 3홀만 넘어가도 집중력이 떨어집니다.\n\n**클락의 7·8월 낮 최고 기온은 평균 27도입니다.** 비가 오더라도 오후에 1~2시간 스콜이 지나가는 방식이라, 오전 라운드는 대부분 맑습니다. 클락은 산으로 둘러싸인 분지 지형이라 습도가 낮고 바람이 잘 통합니다. 비가 지나간 코스는 잔디가 싱싱하고 그린이 부드럽습니다.\n\n---\n\n# 접근성과 경제성 — 예상보다 훨씬 현실적입니다\n\n클락은 생각보다 가깝습니다. 인천, 김해 등 국내 주요 공항에서 클락 국제공항(CRK)까지 직항편이 운항합니다. 진에어, 아시아나항공, 제주항공, 에어아시아, 세부퍼시픽 등 다양한 항공사가 있습니다. 비행 시간은 약 3시간 50분.\n\n## 5박 6일 예상 비용 (1인 기준)\n\n항공 왕복: 25~40만원\n숙소 5박: 20~35만원\n그린피 5라운드: 25~35만원\n식사·교통·기타: 10~15만원\n**총합계: 약 80~125만원**\n\n한국에서 주말 라운드 5번이면 그린피만 100만원이 넘습니다. 같은 돈으로 클락에서는 5박을 자고, 매일 라운드하고, 매일 레슨을 받을 수 있습니다.\n\n---\n\n# 10분~40분 안에 36홀 — 클락의 골프 인프라\n\n클락과 팜팡가 지역은 필리핀에서도 손꼽히는 골프 밀집 지역입니다. 숙소에서 10분~40분 이내에 수준급 골프장이 즐비합니다.\n\n그 중심에 **프라데라 베르데 골프 & 컨트리 클럽(Pradera Verde Golf & Country Club)**이 있습니다. 36홀 챔피언십 코스를 보유한 명문 골프장으로, 넓은 평지형 페어웨이, 전략적인 워터 해저드, 잘 관리된 그린이 특징입니다.\n\n36홀이기 때문에 오전과 오후로 나눠 하루 두 라운드도 가능합니다. 한국에서는 꿈도 못 꿀 일이 이곳에서는 일상입니다.\n\n---\n\n# 간단한 영어로 모든 것이 통하는 곳\n\n필리핀은 영어 공용 국가입니다. 공항, 골프장, 식당, 숙소 어디서든 간단한 영어면 충분합니다. 골프장 캐디들도 영어로 소통이 가능합니다.\n\n처음 해외 골프를 계획하는 분들이 가장 걱정하는 것이 언어 문제입니다. 클락은 그 걱정이 가장 적은 곳 중 하나입니다. 더불어 저를 통해 예약하시면 **공항 픽업부터 골프장 예약, 레슨 스케줄까지 한국어로** 진행됩니다.\n\n---\n\n# 나홀로 플레이가 자유로운 곳\n\n한국 골프장에서 나홀로 플레이는 사실상 불가능합니다. 모르는 팀에 끼워지거나, 아예 예약 자체가 안 되는 경우가 많습니다.\n\n**프라데라에서는 나홀로 플레이가 자유롭습니다.** 원하는 시간에, 원하는 페이스로, 눈치 없이 라운드할 수 있습니다. 연습 라운드를 추가하고 싶으면 추가하고, 특정 홀을 반복하고 싶으면 반복할 수 있습니다.\n\n---\n\n# 필드 위에서 프로에게 1:1 레슨\n\n연습장에서 받는 레슨과 실제 필드에서 받는 레슨은 차원이 다릅니다.\n\n클락에서는 클럽 프로와 함께 실제 라운드를 하면서 **실시간 피드백**을 받을 수 있습니다. 드라이버 방향이 틀어지면 바로 교정하고, 어프로치 거리 감각이 안 잡히면 그 자리에서 반복 연습합니다.\n\n입문자도, 100타 벽을 넘지 못하는 중급자도, 싱글을 목표로 하는 상급자도 모두 환영합니다.\n\n---\n\n# 먹고 자고 골프만 — 오직 골프에 집중하는 시스템\n\n전지훈련의 핵심은 단순화입니다. 일상의 모든 잡념을 끊고, 오직 골프에만 집중하는 시간을 만드는 것입니다.\n\n## 하루 일과\n\n아침에 일어나면 골프장으로 이동합니다. 오전 레슨과 라운드, 점심 식사, 오후 연습장 타격 또는 추가 라운드, 저녁 식사 후 휴식. 이것이 하루의 전부입니다.\n\n관광도 쇼핑도 없습니다. 오직 골프. 이 단순한 루틴이 5박 6일 동안 반복되면 몸이 골프 리듬을 기억하기 시작합니다.\n\n---\n\n# 올여름 휴가, 한 번쯤 다르게 써보세요\n\n7·8월 한국 골프장 — 더위, 대기, 비싼 그린피, 눈치 라운드.\n7·8월 클락 프라데라 — 쾌적한 기후, 대기 없음, 합리적 비용, 나홀로 플레이, 1:1 프로 레슨.\n\n올여름 휴가를 골프 전지훈련으로 바꿔보세요. 돌아오는 날, 스코어가 달라져 있을 겁니다.\n\n필리핀 골프 여행을 계획 중이라면, 클락 골프 전지훈련은 단순한 해외 골프 투어가 아닙니다. 팜팡가 프라데라에서의 나홀로 골프, 1:1 프로 레슨, 비수기 합리적 비용까지 — 7월 골프, 8월 골프의 새로운 기준을 경험하게 됩니다. 필리핀 골프 패키지를 찾고 계신 분, 골프 유학이나 골프 전지훈련을 처음 고민하는 분 모두에게 클락 iClark Golf가 함께합니다.",
-      status: "approved",
-      createdAt: "2025-05-20T09:00:00",
-      approvedAt: "2025-05-20T10:00:00",
-      views: 0
-    };
-    posts.unshift(newPost);
-    savePosts(posts);
-  }
-  updateStats();
-  renderPendingPosts();
-  renderAllPosts();
-}
+window.switchTabByName = function(name) {
+  const idx = TABS.indexOf(name);
+  switchTab(name, document.querySelectorAll('.tab-btn')[idx]||null);
+};
+
+// ── 확인 모달 ──
+let _confirmCb = null;
+window.showConfirm = function(icon, title, desc, cb, isDanger) {
+  document.getElementById('confirm-icon').textContent = icon;
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-desc').textContent = desc;
+  document.getElementById('confirm-yes').style.background = isDanger ? 'linear-gradient(135deg,#ef4444,#dc2626)' : 'linear-gradient(135deg,var(--pink),var(--purple))';
+  _confirmCb = cb;
+  document.getElementById('confirm-overlay').classList.add('on');
+};
+document.getElementById('confirm-yes').addEventListener('click', () => { if(_confirmCb) _confirmCb(); closeConfirm(); });
+window.closeConfirm = function() { document.getElementById('confirm-overlay').classList.remove('on'); _confirmCb=null; };
+document.getElementById('confirm-overlay').addEventListener('click', function(e){ if(e.target===this) closeConfirm(); });
+
+// ── 모달 닫기 ──
+window.closeModal = function(id) { document.getElementById(id).classList.remove('on'); };
+document.getElementById('edit-modal').addEventListener('click', function(e){ if(e.target===this) closeModal('edit-modal'); });
+
+// ── 토스트 ──
+let _tt = null;
+window.showToast = function(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  if (_tt) clearTimeout(_tt);
+  _tt = setTimeout(()=>el.classList.remove('show'), 2800);
+};
+
+// ── 유틸 ──
+function esc(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
 </script>
 </body>
 </html>
