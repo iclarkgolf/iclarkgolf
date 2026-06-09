@@ -367,6 +367,8 @@ a { text-decoration: none; color: inherit; }
     <div class="form-group">
       <label class="form-label">SEO 설명</label>
       <input class="form-input" id="edit-desc" type="text">
+      <label class="form-label">🖼️ 썸네일 URL (대표 사진)</label>
+      <input class="form-input" id="edit-thumb" placeholder="https://i.ibb.co/..." type="text">
     </div>
     <div class="form-group">
       <label class="form-label">상태</label>
@@ -679,6 +681,7 @@ window.openEdit = function(id) {
   document.getElementById('edit-emoji').value = p.emoji || '';
   document.getElementById('edit-content').value = p.content;
   document.getElementById('edit-desc').value = p.desc || '';
+  document.getElementById('edit-thumb').value = p.thumbnail || '';
   document.getElementById('edit-status').value = p.status;
   renderEditImgPreview();
   document.getElementById('edit-modal').classList.add('on');
@@ -722,6 +725,7 @@ window.submitEdit = async function() {
       emoji: document.getElementById('edit-emoji').value || '📝',
       content,
       desc: document.getElementById('edit-desc').value.trim(),
+      thumbnail: document.getElementById('edit-thumb').value.trim(),
       images: allImgs,
       status: document.getElementById('edit-status').value,
     });
