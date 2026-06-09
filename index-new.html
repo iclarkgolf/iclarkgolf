@@ -697,7 +697,7 @@ footer {
 <!-- 메인 배너 -->
 <a href="quote.html" class="banner-main">
   <div class="banner-badge" data-i18n="banner.main.badge">✨ 지금 인기</div>
-  <h2>나만의 골프 여행<br>직접 설계하기</h2>
+  <h2><span data-i18n="banner.main.title1">나만의 골프 여행</span><br><span data-i18n="banner.main.title2">직접 설계하기</span></h2>
   <p><span data-i18n="banner.main.desc1">날짜 · 골프장 · 호텔 · 레슨</span><br><span data-i18n="banner.main.desc2">원하는 것만 골라 견적 확인</span></p>
   <div class="banner-btn">
     <span data-i18n="banner.main.btn">견적 만들기</span>
@@ -783,7 +783,7 @@ footer {
   <h3><span data-i18n="cta.title">패키지가 딱 안 맞으세요?</span></h3>
   <p><span data-i18n="cta.desc">원하는 것만 골라서 나만의 견적을 만들어보세요</span></p>
   <div class="cta-btns">
-    <a href="quote.html" class="cta-btn-w">견적 만들기</a>
+    <a href="quote.html" class="cta-btn-w" data-i18n="cta.quote">견적 만들기</a>
     <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="cta-btn-o"><span data-i18n="cta.kakao">카카오 문의</span></a>
   </div>
 </div>
@@ -851,7 +851,7 @@ footer {
         <div class="caddy-name">Ana L.</div>
         <div class="caddy-info" data-i18n="caddy.exp3">경력 3년</div>
         <div class="caddy-badges">
-          <span class="c-badge" style="background:#fff7ed;color:#c2410c">인기</span>
+          <span class="c-badge" style="background:#fff7ed;color:#c2410c" data-i18n="caddy.hot">인기</span>
         </div>
       </a>
       <a href="caddy.html" class="caddy-card">
@@ -1051,7 +1051,7 @@ footer {
 <footer>
   <div class="footer-logo">CLARKGO</div>
   <div class="footer-links">
-    <a href="/">홈</a>
+    <a href="/" data-i18n="footer.home">홈</a>
     <a href="#packages" data-i18n="footer.packages">패키지</a>
     <a href="quote.html">맞춤 견적</a>
     <a href="caddy.html">캐디 매칭</a>
@@ -1098,15 +1098,17 @@ function loadMainGallery(){
 loadMainGallery();
 
 function openPkg(type) {
+  const lang = localStorage.getItem('clarkgo_lang')||'kr';
   const map = {
-    starter: ['입문 패키지 3박 4일', '$299'],
-    balance: ['밸런스 패키지 5박 6일', '$549'],
-    round: ['라운드 패키지 5박 6일', '$649'],
-    longstay: ['장기 체류 30박', '$2,499']
+    starter: [lang==='en'?'Starter Package 3N4D':'입문 패키지 3박 4일', '$299'],
+    balance: [lang==='en'?'Balance Package 5N6D':'밸런스 패키지 5박 6일', '$549'],
+    round:   [lang==='en'?'Round Package 5N6D':'라운드 패키지 5박 6일', '$649'],
+    longstay:[lang==='en'?'Long Stay 30 Nights':'장기 체류 30박', '$2,499']
   };
   const [name, price] = map[type] || [];
   if (!name) return;
-  if (confirm(`${name} (${price})\n\n카카오 채널로 자세한 상담을 받으시겠어요?`)) {
+  const confirmMsg = localStorage.getItem('clarkgo_lang')==='en' ? `${name} (${price})\n\nContact us via KakaoTalk Channel?` : `${name} (${price})\n\n카카오 채널로 자세한 상담을 받으시겠어요?`;
+  if (confirm(confirmMsg)) {
     window.open('https://pf.kakao.com/_nbHKX/chat', '_blank');
   }
 }

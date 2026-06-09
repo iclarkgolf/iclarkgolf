@@ -183,6 +183,7 @@ const I18N = {
     'footer.caddy':    '캐디 매칭',
     'footer.blog':     '블로그',
     'footer.privacy':  '개인정보처리방침',
+    'footer.home':     '홈',
 
     /* ── 하단 고정 버튼 ── */
     'fixed.kakao':     '💬 카카오',
@@ -417,6 +418,7 @@ const I18N = {
     'footer.caddy':    'Caddy Match',
     'footer.blog':     'Blog',
     'footer.privacy':  'Privacy Policy',
+    'footer.home':     'Home',
 
     'fixed.kakao':     '💬 KakaoTalk',
     'fixed.messenger': 'Messenger',
