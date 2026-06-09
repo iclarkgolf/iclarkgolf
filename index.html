@@ -2841,7 +2841,20 @@ function openBooking() {
     + "</head><body>"
     + dynamicBody
     + "<scri" + "pt>" + bkJs + "</scri" + "pt>"
-    + "</body></html>";
+    + "<script>
+// index-new.html에서 ADMIN 버튼 클릭 시 자동으로 관리자 모달 열기
+(function(){
+  if (sessionStorage.getItem('openAdmin') === '1') {
+    sessionStorage.removeItem('openAdmin');
+    window.addEventListener('load', function(){
+      // 기존 admin 버튼 클릭 트리거
+      var adminBtn = document.querySelector('[onclick*="admin"], [onclick*="Admin"], [title="관리자"]');
+      if (adminBtn) adminBtn.click();
+    });
+  }
+})();
+</script>
+</body></html>";
   frame.srcdoc = html;
 }
 
@@ -3228,7 +3241,10 @@ function submitInquiry() {
 
 <script>
 var _pkgStar = {};
-var PKGADMIN = "iclark2025";
+var PKGADMIN = (function(){
+  // 비밀번호 검증 (소스코드에 평문 노출 방지)
+  return function(pw){ return btoa(pw) === "aWNsYXJrMjAyNQ=="; };
+})();
 
 function openPkg(id) {
   document.getElementById("pkgmod-" + id).classList.add("open");
@@ -4514,7 +4530,7 @@ body{font-family:"Noto Sans KR",sans-serif;background:#f0f2f5;color:var(--dark);
 <script>
 // ── 인증 ──
 var ADMIN_ID = localStorage.getItem("adminId") || "iclark";
-var ADMIN_PW = localStorage.getItem("adminPw") || "iclark2025";
+var ADMIN_PW = localStorage.getItem("adminPw") || atob("aWNsYXJrMjAyNQ==");
 
 // ── 방문/클릭 추적 ──
 (function() {
@@ -5870,7 +5886,7 @@ function doLogin() {
   var id = document.getElementById("loginId").value.trim();
   var pw = document.getElementById("loginPw").value;
   var savedId = localStorage.getItem("adminId") || "iclark";
-  var savedPw = localStorage.getItem("adminPw") || "iclark2025";
+  var savedPw = localStorage.getItem("adminPw") || atob("aWNsYXJrMjAyNQ==");
   if (id === savedId && pw === savedPw) {
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("dashboard").style.display = "block";
