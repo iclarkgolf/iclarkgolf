@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>갤러리 · 커뮤니티 — ClarkGo</title>
+<meta name="description" content="필리핀 클락 골프 여행 갤러리 — 라운드 사진, 후기, 추억을 공유하세요">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Nunito',sans-serif;background:#f9f0f5;color:#18181b;min-height:100vh;padding-bottom:80px}
+a{text-decoration:none;color:inherit}
+:root{
+  --pink:#e8498a;--pink2:#f472b6;--pink-pale:#fdf2f8;--pink-border:#fbcfe8;
+  --purple:#9333ea;--white:#fff;--gray-100:#f4f4f5;--gray-200:#e4e4e7;
+  --gray-400:#a1a1aa;--gray-600:#52525b;--gray-900:#18181b;
+  --radius:16px;--radius-sm:10px;--radius-full:100px;
+  --shadow:0 2px 12px rgba(232,73,138,.10);--shadow-lg:0 8px 32px rgba(232,73,138,.15)
+}
+
+/* 네비 */
+.nav{position:sticky;top:0;z-index:200;background:var(--white);border-bottom:1px solid var(--pink-border);padding:0 16px;height:52px;display:flex;align-items:center;gap:12px}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-back{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:700;color:var(--gray-400)}
+.nav-back svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.5}
+.nav-title{font-size:15px;font-weight:800;color:var(--gray-900);flex:1;text-align:center}
+
+/* 탭 */
+.tab-wrap{background:var(--white);border-bottom:1px solid var(--gray-200);padding:0 16px;display:flex;gap:0}
+.tab-btn{flex:1;padding:13px 0;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--gray-400);background:none;border:none;border-bottom:2.5px solid transparent;cursor:pointer;transition:all .2s}
+.tab-btn.on{color:var(--pink);border-bottom-color:var(--pink)}
+
+/* 업로드 버튼 */
+.upload-bar{padding:14px 16px;background:var(--white);border-bottom:1px solid var(--gray-200);display:flex;gap:10px;align-items:center}
+.upload-btn{display:flex;align-items:center;gap:7px;background:linear-gradient(135deg,var(--pink),var(--purple));color:var(--white);border:none;border-radius:var(--radius-full);padding:11px 20px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;min-height:44px}
+.upload-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.5}
+.sort-select{border:1.5px solid var(--gray-200);border-radius:var(--radius-full);padding:9px 14px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--gray-600);background:var(--white);cursor:pointer;outline:none;margin-left:auto}
+
+/* 갤러리 그리드 */
+.gallery-wrap{padding:14px 16px}
+.gallery-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.gallery-card{background:var(--white);border:1.5px solid var(--gray-200);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:all .2s}
+.gallery-card:active{transform:scale(0.97);border-color:var(--pink-border)}
+.gallery-thumb{width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:36px}
+.gallery-thumb img{width:100%;height:100%;object-fit:cover}
+.gallery-body{padding:10px 12px}
+.gallery-author{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.author-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--white);flex-shrink:0}
+.author-name{font-size:12px;font-weight:700;color:var(--gray-900)}
+.author-date{font-size:10px;color:var(--gray-400);margin-left:auto}
+.gallery-title{font-size:13px;font-weight:700;color:var(--gray-900);margin-bottom:4px;line-height:1.4}
+.gallery-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.gallery-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:var(--radius-full);background:var(--pink-pale);color:var(--pink)}
+.gallery-footer{display:flex;align-items:center;gap:12px;padding-top:8px;border-top:1px solid var(--gray-100)}
+.like-btn{display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--gray-400);padding:4px 0;min-height:36px;transition:color .2s}
+.like-btn.liked{color:var(--pink)}
+.like-btn svg{width:16px;height:16px;stroke:currentColor;stroke-width:2;transition:all .2s}
+.like-btn.liked svg{fill:var(--pink);stroke:var(--pink)}
+.comment-count{font-size:12px;color:var(--gray-400);display:flex;align-items:center;gap:4px}
+.comment-count svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* 업로드 모달 */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-overlay.show{opacity:1;pointer-events:all}
+.modal{background:var(--white);border-radius:24px 24px 0 0;padding:24px 20px;width:100%;max-height:90vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s}
+.modal-overlay.show .modal{transform:translateY(0)}
+.modal-handle{width:40px;height:4px;background:var(--gray-200);border-radius:2px;margin:0 auto 20px}
+.modal-title{font-size:17px;font-weight:800;color:var(--gray-900);margin-bottom:18px}
+.form-group{margin-bottom:14px}
+.form-label{font-size:12px;font-weight:700;color:var(--gray-600);margin-bottom:6px;display:block}
+.form-input{width:100%;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);padding:11px 14px;font-family:'Nunito',sans-serif;font-size:14px;color:var(--gray-900);outline:none;transition:border-color .2s;-webkit-appearance:none}
+.form-input:focus{border-color:var(--pink)}
+.form-textarea{width:100%;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);padding:11px 14px;font-family:'Nunito',sans-serif;font-size:14px;color:var(--gray-900);outline:none;resize:none;min-height:80px;transition:border-color .2s}
+.form-textarea:focus{border-color:var(--pink)}
+.photo-upload-area{border:2px dashed var(--pink-border);border-radius:var(--radius);padding:24px;text-align:center;cursor:pointer;background:var(--pink-pale);transition:all .2s;margin-bottom:14px}
+.photo-upload-area:active{background:#fce7f3}
+.photo-upload-area svg{width:32px;height:32px;stroke:var(--pink);fill:none;stroke-width:1.5;margin:0 auto 8px;display:block}
+.photo-upload-area p{font-size:13px;font-weight:700;color:var(--pink);margin-bottom:3px}
+.photo-upload-area span{font-size:11px;color:var(--gray-400)}
+.photo-preview{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.photo-preview-item{aspect-ratio:1;border-radius:var(--radius-sm);overflow:hidden;position:relative;background:var(--gray-100)}
+.photo-preview-item img{width:100%;height:100%;object-fit:cover}
+.photo-preview-item .remove{position:absolute;top:4px;right:4px;width:20px;height:20px;background:rgba(0,0,0,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none}
+.photo-preview-item .remove svg{width:11px;height:11px;stroke:#fff;fill:none;stroke-width:2.5}
+.submit-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--pink),var(--purple));color:var(--white);border:none;border-radius:var(--radius-full);font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;min-height:52px}
+.cancel-btn{width:100%;padding:12px;background:var(--gray-100);color:var(--gray-600);border:none;border-radius:var(--radius-full);font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;min-height:46px}
+
+/* 상세 모달 */
+.detail-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:600;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .3s}
+.detail-modal-overlay.show{opacity:1;pointer-events:all}
+.detail-modal{background:var(--white);border-radius:24px 24px 0 0;width:100%;max-height:92vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s}
+.detail-modal-overlay.show .detail-modal{transform:translateY(0)}
+.detail-img{width:100%;aspect-ratio:4/3;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:60px}
+.detail-img img{width:100%;height:100%;object-fit:cover}
+.detail-body{padding:18px 20px}
+.detail-author{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.detail-title{font-size:17px;font-weight:800;color:var(--gray-900);margin-bottom:8px}
+.detail-text{font-size:13px;color:var(--gray-600);line-height:1.7;margin-bottom:14px}
+.detail-actions{display:flex;align-items:center;gap:14px;padding:12px 0;border-top:1px solid var(--gray-100);border-bottom:1px solid var(--gray-100);margin-bottom:16px}
+.detail-like-btn{display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--gray-400);padding:8px 0;min-height:44px}
+.detail-like-btn.liked{color:var(--pink)}
+.detail-like-btn svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;transition:all .2s}
+.detail-like-btn.liked svg{fill:var(--pink);stroke:var(--pink)}
+.comments-title{font-size:14px;font-weight:800;color:var(--gray-900);margin-bottom:12px}
+.comment-item{display:flex;gap:10px;margin-bottom:14px}
+.comment-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--white);flex-shrink:0}
+.comment-bubble{flex:1;background:var(--gray-100);border-radius:0 var(--radius-sm) var(--radius-sm) var(--radius-sm);padding:10px 12px}
+.comment-name{font-size:11px;font-weight:700;color:var(--gray-900);margin-bottom:3px}
+.comment-text{font-size:12px;color:var(--gray-600);line-height:1.5}
+.comment-input-row{display:flex;gap:8px;margin-top:14px}
+.comment-input{flex:1;border:1.5px solid var(--gray-200);border-radius:var(--radius-full);padding:10px 16px;font-family:'Nunito',sans-serif;font-size:13px;color:var(--gray-900);outline:none;min-height:44px}
+.comment-input:focus{border-color:var(--pink)}
+.comment-send{background:var(--pink);color:var(--white);border:none;border-radius:var(--radius-full);padding:10px 18px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;min-height:44px;white-space:nowrap}
+.close-btn{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.4);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.close-btn svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.5}
+
+/* 빈 상태 */
+.empty-state{text-align:center;padding:48px 20px;color:var(--gray-400)}
+.empty-state .icon{font-size:48px;margin-bottom:12px}
+.empty-state p{font-size:14px;font-weight:600}
+
+/* 하단 고정 */
+.fixed-bottom{position:fixed;bottom:0;left:0;right:0;z-index:300;background:var(--white);border-top:1px solid var(--pink-border);padding:10px 16px;padding-bottom:calc(10px + env(safe-area-inset-bottom));display:flex;gap:10px}
+.fixed-kakao-btn{flex:1;background:#FEE500;color:#1b1b1b;border:none;border-radius:var(--radius-full);padding:14px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;min-height:52px}
+.fixed-upload-btn{flex:1;background:linear-gradient(135deg,var(--pink),var(--purple));color:var(--white);border:none;border-radius:var(--radius-full);padding:14px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:52px}
+
+/* 데스크탑 */
+@media(min-width:640px){
+  body{padding-bottom:0}
+  .fixed-bottom{display:none}
+  .gallery-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(min-width:1024px){
+  .gallery-wrap{max-width:1100px;margin:0 auto;padding:24px 40px}
+  .gallery-grid{grid-template-columns:repeat(4,1fr);gap:14px}
+  .upload-bar{max-width:1100px;margin:0 auto;padding:16px 40px}
+  .tab-wrap{padding:0 40px}
+  .modal{max-width:500px;margin:0 auto;border-radius:24px}
+  .modal-overlay{align-items:center}
+}
+</style>
+</head>
+<body>
+
+<!-- 네비 -->
+<nav class="nav">
+  <a href="index-new.html" class="nav-back">
+    <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+  </a>
+  <span class="nav-title">📸 갤러리 · 커뮤니티</span>
+  <a href="/" class="logo">CG</a>
+</nav>
+
+<!-- 탭 -->
+<div class="tab-wrap">
+  <button class="tab-btn on" onclick="switchTab('all',this)">전체</button>
+  <button class="tab-btn" onclick="switchTab('round',this)">라운드</button>
+  <button class="tab-btn" onclick="switchTab('lesson',this)">레슨</button>
+  <button class="tab-btn" onclick="switchTab('food',this)">맛집</button>
+  <button class="tab-btn" onclick="switchTab('caddy',this)">캐디</button>
+</div>
+
+<!-- 업로드 바 -->
+<div class="upload-bar">
+  <button class="upload-btn" onclick="openUpload()">
+    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7-7 7 7"/></svg>
+    사진 올리기
+  </button>
+  <select class="sort-select" onchange="sortPosts(this.value)">
+    <option value="latest">최신순</option>
+    <option value="likes">인기순</option>
+  </select>
+</div>
+
+<!-- 갤러리 -->
+<div class="gallery-wrap">
+  <div class="gallery-grid" id="gallery-grid">
+    <!-- JS로 렌더 -->
+  </div>
+  <div class="empty-state" id="empty-state" style="display:none">
+    <div class="icon">📷</div>
+    <p>아직 사진이 없어요<br>첫 번째 사진을 올려보세요!</p>
+  </div>
+</div>
+
+<!-- 업로드 모달 -->
+<div class="modal-overlay" id="upload-modal" onclick="closeUploadOutside(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📸 사진 올리기</div>
+
+    <div class="form-group">
+      <label class="form-label">닉네임</label>
+      <input class="form-input" id="up-name" placeholder="예: 홍길동 / Maria" maxlength="20">
+    </div>
+
+    <div class="photo-upload-area" onclick="document.getElementById('photo-input').click()">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+      <p>사진을 탭해서 선택하세요</p>
+      <span>JPG, PNG · 최대 5장</span>
+    </div>
+    <input type="file" id="photo-input" accept="image/*" multiple style="display:none" onchange="previewPhotos(event)">
+    <div class="photo-preview" id="photo-preview"></div>
+
+    <div class="form-group">
+      <label class="form-label">제목</label>
+      <input class="form-input" id="up-title" placeholder="예: 프라데라 라운드 첫 날!" maxlength="40">
+    </div>
+    <div class="form-group">
+      <label class="form-label">내용 (선택)</label>
+      <textarea class="form-textarea" id="up-content" placeholder="오늘의 라운드 후기를 남겨보세요..." maxlength="300"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">카테고리</label>
+      <select class="form-input" id="up-category">
+        <option value="round">⛳ 라운드</option>
+        <option value="lesson">🏌️ 레슨</option>
+        <option value="food">🍽️ 맛집</option>
+        <option value="caddy">🤝 캐디</option>
+        <option value="etc">📷 기타</option>
+      </select>
+    </div>
+
+    <button class="submit-btn" onclick="submitPost()">올리기 ✨</button>
+    <button class="cancel-btn" onclick="closeUpload()">취소</button>
+  </div>
+</div>
+
+<!-- 상세 모달 -->
+<div class="detail-modal-overlay" id="detail-modal" onclick="closeDetailOutside(event)">
+  <div class="detail-modal" style="position:relative">
+    <button class="close-btn" onclick="closeDetail()" style="position:sticky;top:12px;left:calc(100% - 52px);z-index:10;margin-bottom:-48px;">
+      <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="detail-img" id="detail-img">📷</div>
+    <div class="detail-body">
+      <div class="detail-author" id="detail-author"></div>
+      <div class="detail-title" id="detail-title"></div>
+      <div class="detail-text" id="detail-text"></div>
+      <div class="detail-actions">
+        <button class="detail-like-btn" id="detail-like-btn" onclick="toggleDetailLike()">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <span id="detail-like-count">0</span>
+        </button>
+        <span style="font-size:13px;color:var(--gray-400)" id="detail-date"></span>
+      </div>
+      <div class="comments-title">💬 댓글 <span id="comment-count-label">0</span></div>
+      <div id="comments-list"></div>
+      <div class="comment-input-row">
+        <input class="comment-input" id="comment-input" placeholder="댓글을 입력하세요...">
+        <button class="comment-send" onclick="addComment()">전송</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 하단 고정 -->
+<div class="fixed-bottom">
+  <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="fixed-kakao-btn">💬 카카오 문의</a>
+  <button class="fixed-upload-btn" onclick="openUpload()">📸 사진 올리기</button>
+</div>
+
+<script>
+// ── 데이터 ──
+const CATS = {round:'⛳ 라운드',lesson:'🏌️ 레슨',food:'🍽️ 맛집',caddy:'🤝 캐디',etc:'📷 기타'};
+const COLORS = ['#e8498a','#9333ea','#0ea5e9','#10b981','#f59e0b'];
+
+let posts = JSON.parse(localStorage.getItem('cg_posts')||'[]');
+let currentTab = 'all';
+let currentSort = 'latest';
+let selectedPost = null;
+let previewFiles = [];
+
+// 샘플 데이터 (처음 방문시)
+if(posts.length === 0){
+  posts = [
+    {id:1,name:'PJ',avatar:'🏌️',avatarColor:'#e8498a',title:'프라데라 베르데 오늘의 라운드!',content:'날씨가 너무 좋았던 하루. 18홀 완주하고 기분 최고!',category:'round',emoji:'⛳',likes:12,likedBy:[],comments:[{name:'Maria',color:'#9333ea',text:'Great round! 👍',date:'2025-06-01'}],date:'2025-06-08'},
+    {id:2,name:'김철수',avatar:'👨',avatarColor:'#0ea5e9',title:'레슨 3일차 드라이버 교정',content:'PJ 코치님 덕분에 드라이버 비거리가 30야드 늘었어요!',category:'lesson',emoji:'🏌️',likes:8,likedBy:[],comments:[],date:'2025-06-07'},
+    {id:3,name:'Maria S.',avatar:'👩',avatarColor:'#10b981',title:'앙헬레스 맛집 발견!',content:'골프 끝나고 들른 한식당, 진짜 맛있었어요 🍖',category:'food',emoji:'🍽️',likes:15,likedBy:[],comments:[{name:'Jose',color:'#f59e0b',text:'Where is it? Tell me!',date:'2025-06-07'}],date:'2025-06-06'},
+    {id:4,name:'박민준',avatar:'👦',avatarColor:'#f59e0b',title:'캐디 Ana 최고예요',content:'친절하고 코스 파악도 완벽! 다음에도 꼭 요청할게요',category:'caddy',emoji:'🤝',likes:6,likedBy:[],comments:[],date:'2025-06-05'},
+  ];
+  savePosts();
+}
+
+function savePosts(){ localStorage.setItem('cg_posts', JSON.stringify(posts)); }
+
+// ── 렌더 ──
+function renderGallery(){
+  const grid = document.getElementById('gallery-grid');
+  const empty = document.getElementById('empty-state');
+  let filtered = currentTab==='all' ? [...posts] : posts.filter(p=>p.category===currentTab);
+  if(currentSort==='likes') filtered.sort((a,b)=>b.likes-a.likes);
+  else filtered.sort((a,b)=>b.id-a.id);
+  if(!filtered.length){ grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  grid.innerHTML = filtered.map(p=>`
+    <div class="gallery-card" onclick="openDetail(${p.id})">
+      <div class="gallery-thumb" style="background:${p.avatarColor}22;font-size:48px">${p.emoji||'📷'}</div>
+      <div class="gallery-body">
+        <div class="gallery-author">
+          <div class="author-avatar" style="background:${p.avatarColor}">${p.avatar}</div>
+          <span class="author-name">${p.name}</span>
+          <span class="author-date">${p.date}</span>
+        </div>
+        <div class="gallery-title">${p.title}</div>
+        <div class="gallery-tags"><span class="gallery-tag">${CATS[p.category]||p.category}</span></div>
+        <div class="gallery-footer">
+          <button class="like-btn ${p.likedBy.includes('me')?'liked':''}" onclick="toggleLike(event,${p.id})">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            ${p.likes}
+          </button>
+          <span class="comment-count">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            ${p.comments.length}
+          </span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ── 탭 ──
+function switchTab(tab, btn){
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderGallery();
+}
+function sortPosts(val){ currentSort=val; renderGallery(); }
+
+// ── 좋아요 ──
+function toggleLike(e, id){
+  e.stopPropagation();
+  const p = posts.find(x=>x.id===id);
+  if(!p) return;
+  if(p.likedBy.includes('me')){ p.likedBy=p.likedBy.filter(x=>x!=='me'); p.likes--; }
+  else { p.likedBy.push('me'); p.likes++; }
+  savePosts(); renderGallery();
+}
+
+// ── 업로드 ──
+function openUpload(){ document.getElementById('upload-modal').classList.add('show'); document.body.style.overflow='hidden'; }
+function closeUpload(){ document.getElementById('upload-modal').classList.remove('show'); document.body.style.overflow=''; resetForm(); }
+function closeUploadOutside(e){ if(e.target===document.getElementById('upload-modal')) closeUpload(); }
+
+function previewPhotos(e){
+  previewFiles = Array.from(e.target.files).slice(0,5);
+  const wrap = document.getElementById('photo-preview');
+  wrap.innerHTML = previewFiles.map((_,i)=>`
+    <div class="photo-preview-item">
+      <img id="prev-img-${i}">
+      <button class="remove" onclick="removePreview(${i})"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>`).join('');
+  previewFiles.forEach((f,i)=>{ const r=new FileReader(); r.onload=ev=>{ const img=document.getElementById('prev-img-'+i); if(img) img.src=ev.target.result; }; r.readAsDataURL(f); });
+}
+function removePreview(i){ previewFiles.splice(i,1); const input=document.getElementById('photo-input'); input.value=''; const wrap=document.getElementById('photo-preview'); wrap.innerHTML=previewFiles.map((_,j)=>`<div class="photo-preview-item"><img id="prev-img-${j}"><button class="remove" onclick="removePreview(${j})"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>`).join(''); previewFiles.forEach((f,j)=>{ const r=new FileReader(); r.onload=ev=>{ const img=document.getElementById('prev-img-'+j); if(img) img.src=ev.target.result; }; r.readAsDataURL(f); }); }
+
+function resetForm(){ document.getElementById('up-name').value=''; document.getElementById('up-title').value=''; document.getElementById('up-content').value=''; document.getElementById('up-category').value='round'; document.getElementById('photo-preview').innerHTML=''; document.getElementById('photo-input').value=''; previewFiles=[]; }
+
+function submitPost(){
+  const name = document.getElementById('up-name').value.trim();
+  const title = document.getElementById('up-title').value.trim();
+  const content = document.getElementById('up-content').value.trim();
+  const category = document.getElementById('up-category').value;
+  if(!name){ alert('닉네임을 입력해 주세요'); return; }
+  if(!title){ alert('제목을 입력해 주세요'); return; }
+  const emojiMap = {round:'⛳',lesson:'🏌️',food:'🍽️',caddy:'🤝',etc:'📷'};
+  const colorIdx = posts.length % COLORS.length;
+  const newPost = {
+    id: Date.now(),
+    name, avatar: name.charAt(0).toUpperCase(),
+    avatarColor: COLORS[colorIdx],
+    title, content, category,
+    emoji: emojiMap[category]||'📷',
+    likes:0, likedBy:[], comments:[],
+    date: new Date().toISOString().slice(0,10)
+  };
+  posts.unshift(newPost);
+  savePosts();
+  closeUpload();
+  renderGallery();
+  alert('✨ 업로드 완료!');
+}
+
+// ── 상세 ──
+function openDetail(id){
+  selectedPost = posts.find(p=>p.id===id);
+  if(!selectedPost) return;
+  document.getElementById('detail-img').innerHTML = `<div style="width:100%;aspect-ratio:4/3;background:${selectedPost.avatarColor}22;display:flex;align-items:center;justify-content:center;font-size:72px">${selectedPost.emoji}</div>`;
+  document.getElementById('detail-author').innerHTML = `<div class="author-avatar" style="background:${selectedPost.avatarColor};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">${selectedPost.avatar}</div><span style="font-size:14px;font-weight:700">${selectedPost.name}</span><span style="font-size:11px;color:#a1a1aa;margin-left:auto">${selectedPost.date}</span>`;
+  document.getElementById('detail-title').textContent = selectedPost.title;
+  document.getElementById('detail-text').textContent = selectedPost.content||'';
+  document.getElementById('detail-like-count').textContent = selectedPost.likes;
+  document.getElementById('detail-date').textContent = selectedPost.date;
+  const likeBtn = document.getElementById('detail-like-btn');
+  likeBtn.className = 'detail-like-btn' + (selectedPost.likedBy.includes('me')?' liked':'');
+  document.getElementById('comment-count-label').textContent = selectedPost.comments.length;
+  renderComments();
+  document.getElementById('detail-modal').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function closeDetail(){ document.getElementById('detail-modal').classList.remove('show'); document.body.style.overflow=''; selectedPost=null; }
+function closeDetailOutside(e){ if(e.target===document.getElementById('detail-modal')) closeDetail(); }
+
+function toggleDetailLike(){
+  if(!selectedPost) return;
+  const p = posts.find(x=>x.id===selectedPost.id);
+  if(!p) return;
+  if(p.likedBy.includes('me')){ p.likedBy=p.likedBy.filter(x=>x!=='me'); p.likes--; }
+  else { p.likedBy.push('me'); p.likes++; }
+  savePosts();
+  document.getElementById('detail-like-count').textContent = p.likes;
+  document.getElementById('detail-like-btn').className = 'detail-like-btn'+(p.likedBy.includes('me')?' liked':'');
+  renderGallery();
+}
+
+function renderComments(){
+  if(!selectedPost) return;
+  const list = document.getElementById('comments-list');
+  if(!selectedPost.comments.length){ list.innerHTML='<p style="font-size:12px;color:#a1a1aa;margin-bottom:12px">첫 댓글을 남겨보세요!</p>'; return; }
+  list.innerHTML = selectedPost.comments.map(c=>`
+    <div class="comment-item">
+      <div class="comment-avatar" style="background:${c.color||'#e8498a'}">${c.name.charAt(0)}</div>
+      <div class="comment-bubble">
+        <div class="comment-name">${c.name}</div>
+        <div class="comment-text">${c.text}</div>
+      </div>
+    </div>`).join('');
+}
+
+function addComment(){
+  const input = document.getElementById('comment-input');
+  const text = input.value.trim();
+  if(!text||!selectedPost) return;
+  const p = posts.find(x=>x.id===selectedPost.id);
+  if(!p) return;
+  const name = prompt('닉네임을 입력하세요') || '익명';
+  p.comments.push({ name, color: COLORS[Math.floor(Math.random()*COLORS.length)], text, date: new Date().toISOString().slice(0,10) });
+  selectedPost = p;
+  savePosts();
+  input.value='';
+  document.getElementById('comment-count-label').textContent = p.comments.length;
+  renderComments();
+  renderGallery();
+}
+
+renderGallery();
+</script>
+</body>
+</html>
