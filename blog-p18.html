@@ -42,7 +42,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 .nav-links{display:flex;gap:24px;}
 .nav-links a{color:rgba(255,255,255,0.8);text-decoration:none;font-size:13px;letter-spacing:1px;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;font-weight:600;}
 .nav-links a:hover{color:var(--gold);}
-.post-hero{margin-top:64px;background:linear-gradient(135deg,rgba(13,31,23,0.75),rgba(26,107,138,0.55)),url('images/blog-p18-hero.jpg') center center/cover no-repeat;padding:90px 40px 70px;text-align:center;color:#fff;}
+.post-hero{margin-top:0;background:linear-gradient(135deg,rgba(13,31,23,0.75),rgba(26,107,138,0.55)),url('images/blog-p18-hero.jpg') center center/cover no-repeat;padding:90px 40px 70px;text-align:center;color:#fff;}
 .post-category{display:inline-block;border:1.5px solid rgba(244,162,97,0.6);color:var(--gold);font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:6px 18px;border-radius:20px;margin-bottom:20px;}
 .post-hero h1{font-size:clamp(24px,4vw,42px);font-weight:900;line-height:1.3;max-width:860px;margin:0 auto 16px;}
 .post-meta{font-size:13px;color:rgba(255,255,255,0.6);margin-top:12px;display:flex;gap:20px;justify-content:center;flex-wrap:wrap;}
@@ -92,12 +92,11 @@ footer a{color:var(--gold);text-decoration:none;}
 </head>
 <body>
 
-<nav>
-  <a href="/" class="nav-logo">i<span>Clark</span> Golf</a>
-  <div class="nav-links">
-    <a href="/">홈</a>
-    <a href="/blog.html">블로그</a>
-    <a href="/caddy.html">캐디매칭</a>
+<nav style="position:sticky;top:0;z-index:200;background:#fff;border-bottom:1px solid #fbcfe8;padding:0 16px;height:52px;display:flex;align-items:center;justify-content:space-between;">
+  <a href="/index.html" style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;background:linear-gradient(135deg,#e8498a,#9333ea);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none;">CLARKGO</a>
+  <div style="display:flex;gap:12px;align-items:center;">
+    <a href="/blog.html" style="font-size:13px;font-weight:700;color:#52525b;text-decoration:none;">← 블로그</a>
+    <a href="/index.html" style="font-size:13px;font-weight:700;color:#52525b;text-decoration:none;">홈</a>
   </div>
 </nav>
 
