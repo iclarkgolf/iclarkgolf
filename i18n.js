@@ -118,7 +118,10 @@ const TRANSLATIONS = {
     'footer.caddy': '캐디 매칭',
     'footer.blog': '블로그',
     'footer.privacy': '개인정보처리방침',
-  },
+
+    'fixed.kakao': '카카오',
+    'fixed.messenger': '메신저',
+    'fixed.quote': '견적',  },
   en: {
     // Nav
     'nav.search': 'Golf course, hotel, caddy...',
@@ -237,6 +240,9 @@ const TRANSLATIONS = {
     'footer.caddy': 'Caddy Match',
     'footer.blog': 'Blog',
     'footer.privacy': 'Privacy Policy',
+    'fixed.kakao': 'KakaoTalk',
+    'fixed.messenger': 'Messenger',
+    'fixed.quote': 'Quote',
   }
 };
 
