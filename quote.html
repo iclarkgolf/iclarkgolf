@@ -4,519 +4,174 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>맞춤 견적 구성 — iClark Golf Academy</title>
-<meta name="description" content="필리핀 클락 골프 여행을 나만의 스타일로 설계하세요. 호텔·골프장·이동·레슨·식사를 직접 골라 견적을 확인하세요.">
+<meta name="description" content="필리핀 클락 골프 여행을 나만의 스타일로 설계하세요.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://iclarkgolf.com/quote.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  --green: #534AB7;
-  --green-light: #7F77DD;
-  --gold: #1D9E75;
-  --bg: #f4faf7;
-  --white: #ffffff;
-  --text: #26215C;
-  --text-muted: #6b7280;
-  --border: rgba(83,74,183,0.15);
-  --border-focus: #534AB7;
-  --radius: 12px;
-  --radius-sm: 8px;
-  --shadow: 0 2px 12px rgba(83,74,183,0.10);
-  --mint: #1D9E75;
-  --mint-light: #E1F5EE;
-  --mint-mid: #9FE1CB;
-  --purple: #534AB7;
-  --purple-pale: #EEEDFE;
+  --purple:#534AB7; --purple-dark:#3C3489; --purple-deep:#26215C; --purple-pale:#EEEDFE; --purple-border:#AFA9EC;
+  --mint:#1D9E75; --mint-light:#E1F5EE; --mint-mid:#9FE1CB; --mint-border:#c8edd9;
+  --bg:#f4faf7; --white:#fff; --text:#26215C; --muted:#6b7280; --border:rgba(83,74,183,0.15);
+  --radius:14px; --radius-sm:10px; --shadow:0 2px 12px rgba(83,74,183,0.10);
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Barlow Condensed', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px;}
+a{text-decoration:none;color:inherit;}
 
 /* NAV */
-nav {
-  background: linear-gradient(135deg, #26215C, #534AB7);
-  padding: 14px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.nav-logo {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 22px;
-  color: #fff;
-  text-decoration: none;
-  letter-spacing: 1px;
-}
-.nav-back {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: rgba(255,255,255,0.8);
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 500;
-  transition: color .2s;
-}
-.nav-back:hover { color: #fff; }
-.nav-back svg { width: 16px; height: 16px; }
+nav{background:linear-gradient(135deg,#26215C,#534AB7);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;letter-spacing:2px;}
+.nav-back{color:rgba(255,255,255,0.8);font-size:13px;font-weight:700;display:flex;align-items:center;gap:5px;}
+.nav-back:hover{color:#fff;}
 
 /* HERO */
-.hero {
-  background: linear-gradient(135deg, #26215C, #534AB7);
-  color: #fff;
-  padding: 36px 24px 40px;
-  text-align: center;
-}
-.hero-badge {
-  display: inline-block;
-  background: var(--gold);
-  color: var(--green);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .08em;
-  padding: 4px 14px;
-  border-radius: 20px;
-  margin-bottom: 14px;
-  text-transform: uppercase;
-}
-.hero h1 {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(36px, 7vw, 56px);
-  letter-spacing: 2px;
-  line-height: 1;
-  margin-bottom: 10px;
-}
-.hero h1 span { color: var(--gold); }
-.hero p {
-  font-size: 15px;
-  opacity: .75;
-  max-width: 480px;
-  margin: 0 auto;
-}
+.hero{background:linear-gradient(135deg,#26215C,#534AB7);color:#fff;padding:36px 24px 40px;text-align:center;}
+.hero-badge{display:inline-block;background:var(--mint);color:#fff;font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;margin-bottom:14px;}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,7vw,56px);letter-spacing:2px;line-height:1;margin-bottom:10px;}
+.hero h1 span{color:var(--mint-mid);}
+.hero p{font-size:15px;opacity:.8;max-width:480px;margin:0 auto;}
 
-/* MAIN LAYOUT */
-.main {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 28px 16px 60px;
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 20px;
-  align-items: start;
-}
-@media (max-width: 800px) {
-  .main { grid-template-columns: 1fr; }
-  .sidebar { order: -1; }
-}
+/* LAYOUT */
+.main{display:grid;grid-template-columns:1fr 340px;gap:24px;max-width:1100px;margin:0 auto;padding:24px 20px;}
+@media(max-width:800px){.main{grid-template-columns:1fr;}.sidebar{display:none;}.fixed-bar{display:flex!important;}}
+.left-col{display:flex;flex-direction:column;gap:16px;}
 
 /* SECTION CARD */
-.sec-card {
-  background: var(--white);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  padding: 20px 22px;
-  margin-bottom: 16px;
-}
-.sec-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-.step-num {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--green);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.sec-title {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--text);
-  letter-spacing: .02em;
-}
-.sec-sub {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-left: auto;
-}
+.sec-card{background:var(--white);border-radius:var(--radius);border:1.5px solid var(--mint-border);overflow:hidden;}
+.sec-head{padding:16px 20px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;}
+.sec-head:hover{background:#f9fffe;}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;}
+.step-num.mint{background:var(--mint);}
+.sec-title{font-size:15px;font-weight:800;color:var(--text);flex:1;}
+.sec-sub{font-size:12px;color:var(--muted);}
+.sec-arrow{font-size:16px;color:var(--muted);transition:transform .2s;}
+.sec-arrow.open{transform:rotate(180deg);}
+.sec-body{padding:0 20px 20px;display:none;}
+.sec-body.open{display:block;}
 
-/* 날짜 */
-.date-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-.date-box {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-}
-.date-label {
-  font-size: 10px;
-  color: var(--text-muted);
-  font-weight: 600;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  margin-bottom: 4px;
-}
-.date-val {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text);
-}
-.date-inputs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-.date-inputs input[type="date"] {
-  width: 100%;
-  padding: 9px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text);
-  background: var(--bg);
-  cursor: pointer;
-  outline: none;
-  transition: border-color .2s;
-}
-.date-inputs input[type="date"]:focus { border-color: var(--border-focus); }
-.nights-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #eaf3de;
-  color: var(--green);
-  border-radius: 20px;
-  padding: 6px 14px;
-  font-size: 13px;
-  font-weight: 700;
-}
+/* PURPOSE */
+.purpose-list{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+.purpose-item{border:1.5px solid var(--mint-border);border-radius:12px;padding:12px 16px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:12px;}
+.purpose-item:hover{border-color:var(--purple);}
+.purpose-item.on{border-color:var(--purple);background:var(--purple-pale);}
+.purpose-emoji{font-size:22px;flex-shrink:0;}
+.purpose-name{font-size:14px;font-weight:800;color:var(--text);}
+.purpose-desc{font-size:12px;color:var(--muted);}
+.purpose-hint{margin-top:10px;padding:10px 14px;background:var(--mint-light);border-radius:8px;font-size:13px;color:#085041;border-left:3px solid var(--mint);display:none;line-height:1.7;}
+.purpose-hint.show{display:block;}
 
-/* 인원 */
-.pax-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-}
-.pax-row:last-child { border-bottom: none; }
-.pax-label { flex: 1; font-size: 15px; font-weight: 600; }
-.pax-sub { font-size: 12px; color: var(--text-muted); font-weight: 400; }
-.qty-ctrl { display: flex; align-items: center; gap: 8px; }
-.qty-btn {
-  width: 30px; height: 30px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--bg);
-  cursor: pointer;
-  font-size: 18px;
-  color: var(--text);
-  display: flex; align-items: center; justify-content: center;
-  transition: background .15s, border-color .15s;
-  font-family: inherit;
-}
-.qty-btn:hover { background: #e8f5e9; border-color: var(--green); }
-.qty-num {
-  font-size: 16px;
-  font-weight: 700;
-  min-width: 22px;
-  text-align: center;
-  color: var(--text);
-}
+/* HOTEL */
+.hotel-list{display:flex;flex-direction:column;gap:10px;margin-top:4px;}
+.hotel-item{border:2px solid var(--mint-border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all .2s;}
+.hotel-item:hover{border-color:var(--purple);}
+.hotel-item.on{border-color:var(--purple);background:var(--purple-pale);}
+.hotel-top{display:flex;align-items:center;gap:10px;}
+.hotel-icon{font-size:24px;flex-shrink:0;}
+.hotel-info{flex:1;}
+.hotel-name{font-size:14px;font-weight:800;color:var(--text);margin-bottom:3px;}
+.hotel-note{font-size:12px;color:var(--muted);line-height:1.5;}
+.hotel-price{font-size:13px;font-weight:700;color:var(--purple);margin-top:4px;}
+.hotel-tag{display:inline-block;background:var(--purple);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;margin-left:6px;vertical-align:middle;}
+.hotel-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--mint-border);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.hotel-item.on .hotel-check{background:var(--purple);border-color:var(--purple);color:#fff;}
+.custom-price{margin-top:10px;display:none;}
+.custom-price label{font-size:12px;color:var(--muted);margin-bottom:4px;display:block;}
+.custom-price input{width:100%;border:1.5px solid var(--mint-border);border-radius:8px;padding:9px 12px;font-family:'Nunito',sans-serif;font-size:14px;color:var(--text);outline:none;}
+.custom-price input:focus{border-color:var(--purple);}
 
-/* 선택 카드 그리드 (호텔·골프장) */
-.pick-grid { display: flex; flex-direction: column; gap: 8px; }
-.pick-card {
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  cursor: pointer;
-  transition: border-color .15s, background .15s;
-  user-select: none;
-}
-.pick-card:hover { border-color: var(--green-light); background: #f8fffe; }
-.pick-card.selected {
-  border-color: var(--green);
-  background: #f0faf4;
-}
-.pick-top { display: flex; align-items: flex-start; gap: 10px; }
-.pick-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
-.pick-info { flex: 1; min-width: 0; }
-.pick-name { font-size: 15px; font-weight: 700; color: var(--text); }
-.pick-note { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-.pick-price {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--green);
-  margin-top: 4px;
-}
-.pick-check {
-  width: 20px; height: 20px;
-  border-radius: 50%;
-  background: var(--green);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  opacity: 0;
-  transition: opacity .15s;
-}
-.pick-card.selected .pick-check { opacity: 1; }
-.pick-check svg { width: 12px; height: 12px; stroke: #fff; stroke-width: 2.5; fill: none; }
-.ext-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  color: var(--green);
-  text-decoration: none;
-  font-weight: 600;
-  margin-top: 6px;
-  padding: 3px 8px;
-  background: #eaf3de;
-  border-radius: 4px;
-  transition: background .15s;
-}
-.ext-link:hover { background: #c0dd97; }
-.ext-link svg { width: 11px; height: 11px; stroke: currentColor; stroke-width: 2; fill: none; }
+/* GOLF */
+.golf-list{display:flex;flex-direction:column;gap:10px;margin-top:4px;}
+.golf-item{border:1.5px solid var(--mint-border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all .2s;}
+.golf-item:hover{border-color:var(--purple);}
+.golf-item.on{border-color:var(--purple);background:var(--purple-pale);}
+.golf-top{display:flex;align-items:center;gap:10px;}
+.golf-icon{font-size:20px;flex-shrink:0;}
+.golf-name{font-size:14px;font-weight:800;color:var(--text);flex:1;}
+.golf-note{font-size:12px;color:var(--muted);margin-top:2px;}
+.golf-price{font-size:13px;font-weight:700;color:var(--purple);}
+.golf-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--mint-border);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.golf-item.on .golf-check{background:var(--purple);border-color:var(--purple);color:#fff;}
+.rounds-ctrl{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--mint-border);}
+.rounds-label{font-size:12px;color:var(--muted);flex:1;}
+.sq-btn{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--purple-border);background:var(--purple-pale);color:var(--purple);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:800;}
+.sq-num{font-size:15px;font-weight:800;color:var(--text);min-width:20px;text-align:center;}
+.rounds-price{font-size:13px;font-weight:700;color:var(--purple);margin-left:auto;}
 
-/* 골프장 라운드 수 조절 */
-.rounds-ctrl {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border);
-}
-.rounds-label { flex: 1; font-size: 12px; color: var(--text-muted); }
-.rounds-price { font-size: 13px; font-weight: 700; color: var(--green); margin-left: 8px; }
-.sq-btn {
-  width: 24px; height: 24px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg);
-  cursor: pointer;
-  font-size: 15px;
-  color: var(--text);
-  display: flex; align-items: center; justify-content: center;
-  font-family: inherit;
-  transition: background .15s;
-}
-.sq-btn:hover { background: #e8f5e9; }
-.sq-num { font-size: 14px; font-weight: 700; min-width: 18px; text-align: center; }
+/* CHECK LIST */
+.check-list{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+.check-item{border:1.5px solid var(--mint-border);border-radius:12px;padding:12px 16px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px;}
+.check-item:hover{border-color:var(--purple);}
+.check-item.on{border-color:var(--purple);background:var(--purple-pale);}
+.chk-box{width:20px;height:20px;border-radius:6px;border:2px solid var(--mint-border);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
+.check-item.on .chk-box{background:var(--purple);border-color:var(--purple);color:#fff;}
+.check-icon{font-size:18px;flex-shrink:0;}
+.check-info{flex:1;}
+.check-name{font-size:13px;font-weight:700;color:var(--text);}
+.check-note{font-size:12px;color:var(--muted);}
+.check-price{font-size:13px;font-weight:700;color:var(--purple);text-align:right;}
+.check-unit{font-size:11px;color:var(--muted);}
+.qty-ctrl{display:flex;align-items:center;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--mint-border);}
+.qty-ctrl span{font-size:12px;color:var(--muted);}
 
-/* 호텔 요금 직접 입력 */
-.custom-price-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 10px;
-  background: #f8f5f0;
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-}
-.custom-price-row label { font-size: 12px; color: var(--text-muted); white-space: nowrap; font-weight: 600; }
-.custom-price-row input {
-  flex: 1;
-  border: none;
-  background: transparent;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--green);
-  outline: none;
-}
-.custom-price-row input::placeholder { color: #aaa; font-weight: 400; }
+/* DATE */
+.date-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.date-box{background:var(--bg);border-radius:10px;padding:12px;text-align:center;}
+.date-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:4px;}
+.date-val{font-size:16px;font-weight:800;color:var(--text);}
+.date-inputs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;}
+.date-inputs input{border:1.5px solid var(--mint-border);border-radius:10px;padding:10px 12px;font-family:'Nunito',sans-serif;font-size:13px;color:var(--text);outline:none;width:100%;}
+.date-inputs input:focus{border-color:var(--purple);}
+.nights-pill{display:inline-block;background:var(--purple-pale);color:var(--purple);font-size:13px;font-weight:700;padding:6px 16px;border-radius:100px;}
 
-/* 체크 아이템 */
-.item-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-  cursor: pointer;
-  transition: background .12s;
-  border-radius: 4px;
-}
-.item-row:last-child { border-bottom: none; }
-.item-row:hover { background: #fafff8; }
-.chk-box {
-  width: 20px; height: 20px;
-  border: 2px solid var(--border);
-  border-radius: 5px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  transition: all .15s;
-}
-.chk-box.on { background: var(--green); border-color: var(--green); }
-.chk-box.on svg { display: block; }
-.chk-box svg { width: 11px; height: 11px; stroke: #fff; stroke-width: 3; fill: none; display: none; }
-.item-icon { font-size: 18px; width: 24px; text-align: center; flex-shrink: 0; }
-.item-info { flex: 1; min-width: 0; }
-.item-name { font-size: 14px; font-weight: 700; color: var(--text); }
-.item-note { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
-.item-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.item-price-tag { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; }
-.item-unit { font-size: 10px; color: var(--text-muted); }
-.sq-ctrl { display: flex; align-items: center; gap: 4px; }
+/* PAX */
+.pax-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--mint-border);}
+.pax-row:last-child{border-bottom:none;}
+.pax-label{font-size:14px;font-weight:700;color:var(--text);}
+.pax-sub{font-size:12px;color:var(--muted);margin-left:6px;}
+.qty-row{display:flex;align-items:center;gap:10px;}
+.qty-btn{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--purple-border);background:var(--purple-pale);color:var(--purple);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:800;}
+.qty-n{font-size:16px;font-weight:800;color:var(--text);min-width:24px;text-align:center;}
 
-/* 사이드바 */
-.sidebar {
-  background: var(--white);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  padding: 20px;
-  position: sticky;
-  top: 70px;
-}
-.cart-title {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.cart-title svg { width: 18px; height: 18px; stroke: var(--green); stroke-width: 2; fill: none; }
-.c-sec-label {
-  font-size: 10px;
-  color: var(--text-muted);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .07em;
-  margin: 10px 0 5px;
-}
-.c-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  font-size: 12px;
-  padding: 3px 0;
-  gap: 6px;
-}
-.c-name { color: var(--text-muted); flex: 1; line-height: 1.4; }
-.c-amt { font-weight: 700; color: var(--text); white-space: nowrap; }
-.c-divider {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 14px 0 10px;
-}
-.total-block { margin-bottom: 16px; }
-.total-info { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
-.total-row { display: flex; justify-content: space-between; align-items: baseline; }
-.total-label { font-size: 14px; color: var(--text-muted); font-weight: 600; }
-.total-amt { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--green); letter-spacing: 1px; }
-.per-person { font-size: 11px; color: var(--text-muted); text-align: right; margin-top: 2px; }
+/* SIDEBAR */
+.sidebar{position:sticky;top:80px;height:fit-content;}
+.cart-box{background:var(--white);border-radius:var(--radius);border:1.5px solid var(--purple-border);padding:20px;}
+.cart-title{font-size:15px;font-weight:800;color:var(--text);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--mint-border);display:flex;align-items:center;gap:8px;}
+.cart-empty{text-align:center;padding:28px 0;font-size:13px;color:var(--muted);line-height:2;}
+.c-label{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:10px 0 5px;}
+.c-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;gap:6px;}
+.c-name{color:var(--muted);flex:1;line-height:1.5;}
+.c-amt{font-weight:700;color:var(--text);white-space:nowrap;}
+.c-divider{border:none;border-top:1px solid var(--mint-border);margin:12px 0;}
+.total-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
+.total-label{font-size:14px;color:var(--muted);font-weight:700;}
+.total-amt{font-family:'Bebas Neue',sans-serif;font-size:38px;color:var(--purple);letter-spacing:1px;}
+.per-person{font-size:11px;color:var(--muted);text-align:right;margin-bottom:14px;}
+.kakao-btn{width:100%;padding:14px;background:#FEE500;color:#1b1b1b;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;transition:all .15s;}
+.kakao-btn:hover{background:#f0d800;}
+.qr-box{text-align:center;padding:14px;background:#fffde7;border-radius:10px;border:1px solid #f4e040;}
+.qr-box div{font-size:11px;font-weight:700;color:#5c4a00;margin-bottom:8px;}
+.cta-note{font-size:11px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.6;}
 
-/* 카카오 버튼 */
-.kakao-btn {
-  width: 100%;
-  padding: 13px 16px;
-  background: #FEE500;
-  color: #1b1b1b;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  letter-spacing: .02em;
-  transition: background .15s, transform .1s;
-}
-.kakao-btn:hover { background: #f0d800; }
-.kakao-btn:active { transform: scale(0.98); }
-.kakao-icon { width: 20px; height: 20px; }
-.cta-note { font-size: 11px; color: var(--text-muted); text-align: center; line-height: 1.6; }
-.cart-empty {
-  text-align: center;
-  padding: 28px 0;
-  font-size: 13px;
-  color: var(--text-muted);
-  line-height: 1.8;
-}
-.cart-empty svg { width: 32px; height: 32px; stroke: #d1d5db; stroke-width: 1.5; fill: none; margin-bottom: 8px; }
+/* FIXED BAR (모바일) */
+.fixed-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--mint-border);padding:12px 16px;gap:10px;z-index:200;}
+.fixed-total{font-size:13px;font-weight:700;color:var(--purple);}
+.fixed-total span{font-size:20px;font-weight:800;}
 
-/* FOOTER */
-.local-badge {
-  display:inline-block;
-  background:#534AB7;
-  color:#fff;
-  font-size:10px;
-  font-weight:700;
-  padding:2px 8px;
-  border-radius:100px;
-  margin-left:6px;
-}
-.purpose-card {
-  border:1.5px solid #c8edd9;
-  border-radius:12px;
-  padding:12px 14px;
-  cursor:pointer;
-  transition:all .2s;
-  background:#fff;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-bottom:8px;
-}
-.purpose-card:hover { border-color:#534AB7; }
-.purpose-card.selected { border-color:#534AB7; background:#EEEDFE; }
-.purpose-icon { font-size:22px; flex-shrink:0; }
-.purpose-name { font-size:14px; font-weight:700; color:#26215C; }
-.purpose-desc { font-size:12px; color:#6b7280; }
-footer {
-  background: #26215C;
-  color: rgba(255,255,255,.6);
-  text-align: center;
-  padding: 20px;
-  font-size: 12px;
-}
-footer a { color: rgba(255,255,255,.8); text-decoration: none; }
+footer{background:#26215C;color:rgba(255,255,255,.6);text-align:center;padding:20px;font-size:12px;}
+footer a{color:rgba(255,255,255,.8);}
 </style>
 </head>
 <body>
 
 <nav>
   <a href="https://iclarkgolf.com" class="nav-logo">iClark Golf</a>
-  <a href="https://iclarkgolf.com" class="nav-back">
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg>
-    홈으로 돌아가기
-  </a>
+  <a href="https://iclarkgolf.com" class="nav-back">← 홈으로 돌아가기</a>
 </nav>
 
 <div class="hero">
-  <div class="hero-badge">트랙 2 — 맞춤 견적</div>
+  <div class="hero-badge">맞춤 견적</div>
   <h1>나만의 <span>골프 여행</span><br>직접 설계하기</h1>
   <p>원하는 항목을 골라 담으면 자동으로 견적이 계산됩니다</p>
 </div>
@@ -526,152 +181,164 @@ footer a { color: rgba(255,255,255,.8); text-decoration: none; }
 
   <!-- 0. 방문 목적 -->
   <div class="sec-card">
-    <div class="sec-head">
-      <div class="step-num" style="background:var(--mint);">0</div>
+    <div class="sec-head" onclick="toggleSec('purpose')">
+      <div class="step-num mint">0</div>
       <span class="sec-title">방문 목적 선택</span>
       <span class="sec-sub">목적에 맞는 숙소를 추천해 드려요</span>
+      <span class="sec-arrow open" id="arr-purpose">▾</span>
     </div>
-    <div class="pick-grid" id="purpose-grid"></div>
-    <div id="purpose-hint" style="display:none;margin-top:10px;padding:10px 14px;background:var(--mint-light);border-radius:8px;font-size:13px;color:#085041;border-left:3px solid var(--mint);"></div>
+    <div class="sec-body open" id="body-purpose">
+      <div class="purpose-list" id="purpose-list"></div>
+      <div class="purpose-hint" id="purpose-hint"></div>
+    </div>
   </div>
 
   <!-- 1. 날짜 -->
   <div class="sec-card">
-    <div class="sec-head">
+    <div class="sec-head" onclick="toggleSec('date')">
       <div class="step-num">1</div>
       <span class="sec-title">여행 날짜</span>
+      <span class="sec-sub" id="date-summary"></span>
+      <span class="sec-arrow open" id="arr-date-sec">▾</span>
     </div>
-    <div class="date-grid">
-      <div class="date-box">
-        <div class="date-label">도착일 Arrival</div>
-        <div class="date-val" id="arr-disp">—</div>
+    <div class="sec-body open" id="body-date">
+      <div class="date-grid">
+        <div class="date-box"><div class="date-label">도착일 Arrival</div><div class="date-val" id="arr-disp">—</div></div>
+        <div class="date-box"><div class="date-label">출발일 Departure</div><div class="date-val" id="dep-disp">—</div></div>
       </div>
-      <div class="date-box">
-        <div class="date-label">출발일 Departure</div>
-        <div class="date-val" id="dep-disp">—</div>
+      <div class="date-inputs">
+        <input type="date" id="arr-date" oninput="updateDates()">
+        <input type="date" id="dep-date" oninput="updateDates()">
       </div>
-    </div>
-    <div class="date-inputs">
-      <input type="date" id="arr-date" oninput="updateDates()">
-      <input type="date" id="dep-date" oninput="updateDates()">
-    </div>
-    <div class="nights-pill">
-      🌙 <span id="nights-num">—</span>박 <span id="days-num">—</span>일
+      <div class="nights-pill">🌙 <span id="nights-num">—</span>박 <span id="days-num">—</span>일</div>
     </div>
   </div>
 
   <!-- 2. 인원 -->
   <div class="sec-card">
-    <div class="sec-head">
+    <div class="sec-head" onclick="toggleSec('pax')">
       <div class="step-num">2</div>
       <span class="sec-title">참가 인원</span>
+      <span class="sec-sub" id="pax-summary">골퍼 2명</span>
+      <span class="sec-arrow open" id="arr-pax">▾</span>
     </div>
-    <div class="pax-row">
-      <div class="pax-label">골퍼 <span class="pax-sub">Golfer</span></div>
-      <div class="qty-ctrl">
-        <button class="qty-btn" onclick="changePax('g',-1)">−</button>
-        <span class="qty-num" id="pax-g">2</span>
-        <button class="qty-btn" onclick="changePax('g',1)">+</button>
-        <span style="font-size:12px;color:var(--text-muted)">명</span>
+    <div class="sec-body open" id="body-pax">
+      <div class="pax-row">
+        <div><span class="pax-label">골퍼</span><span class="pax-sub">Golfer</span></div>
+        <div class="qty-row">
+          <button class="qty-btn" onclick="changePax('g',-1)">−</button>
+          <span class="qty-n" id="pax-g">2</span>
+          <button class="qty-btn" onclick="changePax('g',1)">+</button>
+          <span style="font-size:12px;color:var(--muted)">명</span>
+        </div>
       </div>
-    </div>
-    <div class="pax-row">
-      <div class="pax-label">동반자 <span class="pax-sub">Non-golfer</span></div>
-      <div class="qty-ctrl">
-        <button class="qty-btn" onclick="changePax('n',-1)">−</button>
-        <span class="qty-num" id="pax-n">0</span>
-        <button class="qty-btn" onclick="changePax('n',1)">+</button>
-        <span style="font-size:12px;color:var(--text-muted)">명</span>
+      <div class="pax-row">
+        <div><span class="pax-label">동반자</span><span class="pax-sub">Non-golfer</span></div>
+        <div class="qty-row">
+          <button class="qty-btn" onclick="changePax('n',-1)">−</button>
+          <span class="qty-n" id="pax-n">0</span>
+          <button class="qty-btn" onclick="changePax('n',1)">+</button>
+          <span style="font-size:12px;color:var(--muted)">명</span>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- 3. 호텔 -->
+  <!-- 3. 숙소 -->
   <div class="sec-card">
-    <div class="sec-head">
+    <div class="sec-head" onclick="toggleSec('hotel')">
       <div class="step-num">3</div>
-      <span class="sec-title">호텔 선택</span>
-      <span class="sec-sub">아고다 기준 참고 요금 · 날짜마다 변동됨</span>
+      <span class="sec-title">숙소 선택</span>
+      <span class="sec-sub" id="hotel-summary">호텔 또는 iClark 전용숙소</span>
+      <span class="sec-arrow open" id="arr-hotel">▾</span>
     </div>
-    <div class="pick-grid" id="hotel-grid"></div>
-    <div class="custom-price-row" id="custom-price-row" style="display:none">
-      <label>아고다에서 확인한 요금 입력 (1박 1인 $)</label>
-      <input type="number" id="custom-hotel-price" placeholder="예: 65" min="0" oninput="renderCart()">
+    <div class="sec-body open" id="body-hotel">
+      <div class="hotel-list" id="hotel-list"></div>
+      <div class="custom-price" id="custom-price-row">
+        <label>아고다에서 확인한 요금 입력 (1박 1인 $)</label>
+        <input type="number" id="custom-hotel-price" placeholder="예: 65" min="0" oninput="renderCart()">
+      </div>
     </div>
   </div>
 
   <!-- 4. 골프장 -->
   <div class="sec-card">
-    <div class="sec-head">
+    <div class="sec-head" onclick="toggleSec('golf')">
       <div class="step-num">4</div>
       <span class="sec-title">골프장 선택</span>
       <span class="sec-sub">18홀 기준 · 복수 선택 가능</span>
+      <span class="sec-arrow open" id="arr-golf">▾</span>
     </div>
-    <div class="pick-grid" id="golf-grid"></div>
+    <div class="sec-body open" id="body-golf">
+      <div class="golf-list" id="golf-list"></div>
+    </div>
   </div>
 
-  <!-- 5. 이동 -->
+  <!-- 5. 이동 서비스 -->
   <div class="sec-card">
-    <div class="sec-head">
+    <div class="sec-head" onclick="toggleSec('transfer')">
       <div class="step-num">5</div>
       <span class="sec-title">이동 서비스</span>
+      <span class="sec-sub">공항 픽업 · 전용 차량</span>
+      <span class="sec-arrow" id="arr-transfer">▾</span>
     </div>
-    <div id="transfer-grid"></div>
+    <div class="sec-body" id="body-transfer">
+      <div class="check-list" id="transfer-list"></div>
+    </div>
   </div>
 
   <!-- 6. 레슨 -->
   <div class="sec-card">
-    <div class="sec-head">
+    <div class="sec-head" onclick="toggleSec('lesson')">
       <div class="step-num">6</div>
       <span class="sec-title">레슨</span>
+      <span class="sec-sub">필드 레슨 · 연습장 레슨</span>
+      <span class="sec-arrow" id="arr-lesson">▾</span>
     </div>
-    <div id="lesson-grid"></div>
+    <div class="sec-body" id="body-lesson">
+      <div class="check-list" id="lesson-list"></div>
+    </div>
   </div>
 
   <!-- 7. 식사·기타 -->
   <div class="sec-card">
-    <div class="sec-head">
+    <div class="sec-head" onclick="toggleSec('extra')">
       <div class="step-num">7</div>
       <span class="sec-title">식사 · 기타 서비스</span>
+      <span class="sec-sub">조식 · 석식 · 통역 가이드</span>
+      <span class="sec-arrow" id="arr-extra">▾</span>
     </div>
-    <div id="extra-grid"></div>
+    <div class="sec-body" id="body-extra">
+      <div class="check-list" id="extra-list"></div>
+    </div>
   </div>
 
 </div>
 
 <!-- 사이드바 견적 -->
 <div class="sidebar">
-  <div class="cart-title">
-    <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-    내 견적
-  </div>
-  <div id="cart-body">
-    <div class="cart-empty">
-      <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.97-1.67L23 6H6"/></svg>
-      <br>항목을 선택하면<br>여기에 견적이 표시됩니다
+  <div class="cart-box">
+    <div class="cart-title">📋 내 견적</div>
+    <div id="cart-body">
+      <div class="cart-empty">항목을 선택하면<br>여기에 견적이 표시됩니다</div>
     </div>
-  </div>
-
-  <button class="kakao-btn" id="kakao-btn" onclick="goKakao()">
-    <svg class="kakao-icon" viewBox="0 0 24 24" fill="#3C1E1E">
-      <ellipse cx="12" cy="11.5" rx="10" ry="8" fill="#FEE500"/>
-      <path d="M8 10.5c0 2 1.8 3.5 4 3.5.6 0 1.1-.1 1.6-.3l2 1.3-.7-2.1c.7-.7 1.1-1.5 1.1-2.4 0-2-1.8-3.5-4-3.5S8 8.5 8 10.5z" fill="#3C1E1E"/>
-    </svg>
-    카카오 채널로 문의하기
-  </button>
-
-  <div style="text-align:center;margin:14px 0 10px;padding:14px;background:#fffde7;border-radius:10px;border:1px solid #f4e040">
-    <div style="font-size:11px;font-weight:700;color:#5c4a00;margin-bottom:8px;letter-spacing:.03em">카카오 채널 QR코드</div>
-    <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://pf.kakao.com/_nbHKX/chat&color=3C1E1E&bgcolor=FEE500&margin=6"
-         alt="카카오 채널 QR코드"
-         style="width:110px;height:110px;border-radius:8px;display:block;margin:0 auto">
-    <div style="font-size:10px;color:#856a00;margin-top:8px">스캔하면 바로 채널 연결</div>
-  </div>
-
-  <div class="cta-note">
-    견적은 참고용이며 최종 금액은<br>협의 후 확정됩니다
+    <button class="kakao-btn" onclick="goKakao()">
+      💬 카카오 채널로 문의하기
+    </button>
+    <div class="qr-box">
+      <div>카카오 채널 QR코드</div>
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://pf.kakao.com/_nbHKX/chat&color=26215C&bgcolor=FEE500&margin=6" alt="QR" style="width:100px;height:100px;border-radius:8px;display:block;margin:0 auto;">
+      <div style="font-size:10px;color:#856a00;margin-top:6px;">스캔하면 바로 채널 연결</div>
+    </div>
+    <div class="cta-note">견적은 참고용이며 최종 금액은<br>협의 후 확정됩니다</div>
   </div>
 </div>
+</div>
+
+<!-- 모바일 하단 고정 -->
+<div class="fixed-bar" id="fixed-bar">
+  <div class="fixed-total">예상 총액<br><span id="fixed-total-amt">$0</span></div>
+  <button class="kakao-btn" style="flex:1;margin:0;" onclick="goKakao()">💬 카카오 문의</button>
 </div>
 
 <footer>
@@ -679,407 +346,308 @@ footer a { color: rgba(255,255,255,.8); text-decoration: none; }
 </footer>
 
 <script>
+/* ── 데이터 ── */
 const PURPOSES = [
-  { id:'p1', icon:'⛳', name:'골프 여행',  desc:'골프 + 관광·쇼핑·휴식', recHotel:true },
-  { id:'p2', icon:'🌴', name:'골프 휴식',  desc:'여유로운 골프 + 리조트 휴가', recHotel:true },
-  { id:'p3', icon:'🏋️', name:'전지훈련',   desc:'집중 훈련 · 스코어 향상', recLocal:true },
-  { id:'p4', icon:'👨‍👩‍👧', name:'가족 동반', desc:'가족과 함께하는 클락 여행', recHotel:true },
-  { id:'p5', icon:'🤝', name:'단체 투어',  desc:'동호회·팀 단체 골프 여행', recHotel:true },
+  {id:'p1',emoji:'⛳',name:'골프 여행',  desc:'골프 + 관광·쇼핑·휴식',       recLocal:false},
+  {id:'p2',emoji:'🌴',name:'골프 휴식',  desc:'여유로운 골프 + 리조트 휴가', recLocal:false},
+  {id:'p3',emoji:'🏋️',name:'전지훈련',   desc:'집중 훈련 · 스코어 향상',     recLocal:true},
+  {id:'p4',emoji:'👨‍👩‍👧',name:'가족 동반', desc:'가족과 함께하는 클락 여행',  recLocal:false},
+  {id:'p5',emoji:'🤝',name:'단체 투어',  desc:'동호회·팀 단체 골프 여행',    recLocal:false},
 ];
 
 const HOTELS = [
-  { id:'local', icon:'🏠', name:'iClark 전용숙소', note:'프라데라 골프장 5분 · 조·중·석식+픽업+세탁 ALL포함', price:45, tag:'전지훈련 추천', local:true },
-  { id:'h1', icon:'🏨', name:'망고 스위트 (Mango Suites)', note:'앙헬레스 시티 센터 · ⭐⭐⭐⭐ · 평점 8.7', price:25, agoda:'https://www.agoda.com/ko-kr/mango-suites-angeles/hotel/angeles-ph.html' },
-  { id:'h2', icon:'🏨', name:'클락턴 호텔 (Clarkton Hotel)', note:'앙헬레스 도심 · ⭐⭐⭐ · 수영장 · 평점 8.3', price:40, agoda:'https://www.agoda.com/ko-kr/clarkton-hotel/hotel/angeles-ph.html' },
-  { id:'h3', icon:'🏨', name:'오아시스 호텔 (Oasis Hotel)', note:'앙헬레스 도심 · ⭐⭐⭐ · 수영장 · 평점 8.6', price:55, agoda:'https://www.agoda.com/ko-kr/oasis-hotel-angeles/hotel/angeles-ph.html' },
-  { id:'h5', icon:'🏨', name:'엠마우스 콘도텔 (Emmaus Condotel)', note:'클락 도심 0.1km · ⭐⭐⭐ · 평점 8.9', price:23, agoda:'https://www.agoda.com' },
-  { id:'h4', icon:'🔍', name:'아고다에서 직접 선택', note:'날짜 확인 후 요금 직접 입력', price:0, agoda:'', custom:true },
+  {id:'local',icon:'🏠',name:'iClark 전용숙소',note:'프라데라 골프장 5분 · 조·중·석식+픽업+세탁 ALL포함',price:45,tag:'전지훈련 추천',local:true},
+  {id:'h1',icon:'🏨',name:'망고 스위트 (Mango Suites)',note:'앙헬레스 시티 센터 · ⭐⭐⭐⭐ · 평점 8.7',price:25},
+  {id:'h2',icon:'🏨',name:'클락턴 호텔 (Clarkton Hotel)',note:'앙헬레스 도심 · ⭐⭐⭐ · 수영장 · 평점 8.3',price:40},
+  {id:'h3',icon:'🏨',name:'오아시스 호텔 (Oasis Hotel)',note:'앙헬레스 도심 · ⭐⭐⭐ · 수영장 · 평점 8.6',price:55},
+  {id:'h5',icon:'🏨',name:'엠마우스 콘도텔 (Emmaus Condotel)',note:'클락 도심 0.1km · ⭐⭐⭐ · 평점 8.9',price:23},
+  {id:'h4',icon:'🔍',name:'아고다에서 직접 선택',note:'날짜 확인 후 요금 직접 입력',price:0,custom:true},
 ];
 
 const GOLF = [
-  { id:'g1',  icon:'⛳', name:'프라데라 베르데',     note:'36홀 챔피언십 · iClark 전용 코스', price:75 },
-  { id:'g2',  icon:'⛳', name:'코리아 CC',           note:'한국인 운영 · 한국어 서비스', price:55 },
-  { id:'g3',  icon:'⛳', name:'루이시타',            note:'월요일 휴장 · 18홀', price:50 },
-  { id:'g4',  icon:'⛳', name:'디하이츠 (구선밸리)', note:'18홀 · 앙헬레스 근교', price:72 },
-  { id:'g5',  icon:'⛳', name:'미모사',              note:'클락 내 위치 · 접근 편리', price:95 },
-  { id:'g6',  icon:'⛳', name:'뉴 아시아',           note:'가성비 최고 코스', price:35 },
-  { id:'g7',  icon:'⛳', name:'베벌리',              note:'클락 지역 인기 코스', price:35 },
-  { id:'g8',  icon:'⛳', name:'로얄 센트럴',         note:'18홀 · 클락 지역', price:55 },
-  { id:'g9',  icon:'⛳', name:'레이크우드',          note:'가성비 코스', price:30 },
-  { id:'g10', icon:'⛳', name:'비스타 오전 (6:30~)', note:'고급 코스 · 오전 티타임', price:88 },
-  { id:'g11', icon:'⛳', name:'비스타 오후 (10:30~)',note:'고급 코스 · 오후 티타임', price:80 },
-  { id:'g12', icon:'⛳', name:'한 리저브',           note:'프리미엄 코스 · 최고급', price:195 },
-  { id:'g13', icon:'⛳', name:'수빅 인터내셔널',     note:'수빅만 전망 · 명품 코스', price:145 },
-  { id:'g14', icon:'⛳', name:'푸닝',               note:'화산 지형 독특한 코스 · 최소 2인', price:110 },
+  {id:'g1', icon:'⛳',name:'프라데라 베르데',      note:'36홀 챔피언십 · iClark 전용 코스',  price:75},
+  {id:'g2', icon:'⛳',name:'코리아 CC',            note:'한국인 운영 · 한국어 서비스',       price:55},
+  {id:'g3', icon:'⛳',name:'루이시타',             note:'월요일 휴장 · 18홀',               price:50},
+  {id:'g4', icon:'⛳',name:'디하이츠 (구선밸리)',  note:'18홀 · 앙헬레스 근교',             price:72},
+  {id:'g5', icon:'⛳',name:'미모사',               note:'클락 내 위치 · 접근 편리',         price:95},
+  {id:'g6', icon:'⛳',name:'뉴 아시아',            note:'가성비 최고 코스',                 price:35},
+  {id:'g7', icon:'⛳',name:'베벌리',               note:'클락 지역 인기 코스',              price:35},
+  {id:'g8', icon:'⛳',name:'로얄 센트럴',          note:'18홀 · 클락 지역',                 price:55},
+  {id:'g9', icon:'⛳',name:'레이크우드',           note:'가성비 코스',                      price:30},
+  {id:'g10',icon:'⛳',name:'비스타 오전 (6:30~)',  note:'고급 코스 · 오전 티타임',          price:88},
+  {id:'g11',icon:'⛳',name:'비스타 오후 (10:30~)', note:'고급 코스 · 오후 티타임',          price:80},
+  {id:'g12',icon:'⛳',name:'한 리저브',            note:'프리미엄 코스 · 최고급',           price:195},
+  {id:'g13',icon:'⛳',name:'수빅 인터내셔널',      note:'수빅만 전망 · 명품 코스',          price:145},
+  {id:'g14',icon:'⛳',name:'푸닝',                 note:'화산 지형 독특한 코스 · 최소 2인', price:110},
 ];
 
 const TRANSFERS = [
-  { id:'t1', icon:'✈️', name:'클락 공항 → 호텔 픽업', note:'클락(CRK) 도착 편도 픽업', price:35, unit:'회' },
-  { id:'t2', icon:'✈️', name:'마닐라 공항 → 호텔 픽업', note:'NAIA 도착 편도 (2시간+)', price:80, unit:'회' },
-  { id:'t3', icon:'🚗', name:'전용 차량 + 기사 포함', note:'8시간 기준', price:90, unit:'일' },
+  {id:'t1',icon:'✈️',name:'클락 공항 → 숙소 픽업',note:'클락(CRK) 도착 편도',price:35,unit:'회'},
+  {id:'t2',icon:'✈️',name:'마닐라 공항 → 숙소 픽업',note:'NAIA 도착 편도 (2시간+)',price:80,unit:'회'},
+  {id:'t3',icon:'🚗',name:'전용 차량 + 기사',note:'8시간 기준',price:90,unit:'일'},
 ];
 
 const LESSONS = [
-  { id:'l1', icon:'🏌️', name:'필드 레슨', note:'18홀 라운드 중 프로 동반 지도', price:90, unit:'회' },
-  { id:'l2', icon:'🎯', name:'연습장 레슨', note:'2시간 기준 · 1:1 개인 지도', price:60, unit:'회' },
+  {id:'l1',icon:'🏌️',name:'필드 레슨',note:'18홀 라운드 중 프로 동반 지도',price:90,unit:'회'},
+  {id:'l2',icon:'🎯',name:'연습장 레슨',note:'2시간 기준 · 1:1 개인 지도',price:60,unit:'회'},
 ];
 
 const EXTRAS = [
-  { id:'e1', icon:'🍳', name:'조식', note:'숙소 조식 · 1인 기준', price:12, unit:'일×인', perPerson:true },
-  { id:'e2', icon:'🍽️', name:'석식', note:'현지 식당 석식 · 1인 기준', price:20, unit:'일×인', perPerson:true },
-  { id:'e3', icon:'🗣️', name:'한국어 통역 가이드', note:'통역 동행 · 8시간 기준', price:80, unit:'일' },
+  {id:'e1',icon:'🍳',name:'조식',note:'숙소 조식 · 1인 기준',price:12,unit:'일×인',perPerson:true},
+  {id:'e2',icon:'🍽️',name:'석식',note:'현지 식당 석식 · 1인 기준',price:20,unit:'일×인',perPerson:true},
+  {id:'e3',icon:'🗣️',name:'한국어 통역 가이드',note:'통역 동행 · 8시간 기준',price:80,unit:'일'},
 ];
 
-let selPurpose = null;
+/* ── 상태 ── */
+let selPurpose=null, selHotel=null, selGolf={}, selCheck={}, pax={g:2,n:0};
 
+/* ── 아코디언 ── */
+function toggleSec(name) {
+  const body = document.getElementById('body-'+name);
+  const arr  = document.getElementById('arr-'+name);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  arr.classList.toggle('open', !isOpen);
+}
+
+/* ── 방문 목적 ── */
 function renderPurposes() {
-  const el = document.getElementById('purpose-grid');
-  el.innerHTML = '';
-  PURPOSES.forEach(p => {
-    const on = selPurpose === p.id;
-    const div = document.createElement('div');
-    div.className = 'purpose-card' + (on ? ' selected' : '');
-    div.innerHTML = `
-      <div class="purpose-icon">${p.icon}</div>
+  const el = document.getElementById('purpose-list');
+  el.innerHTML = PURPOSES.map(p => `
+    <div class="purpose-item${selPurpose===p.id?' on':''}" onclick="selectPurpose('${p.id}')">
+      <div class="purpose-emoji">${p.emoji}</div>
       <div>
         <div class="purpose-name">${p.name}</div>
         <div class="purpose-desc">${p.desc}</div>
-      </div>`;
-    div.addEventListener('click', () => {
-      selPurpose = on ? null : p.id;
-      renderPurposes();
-      showPurposeHint();
-      renderHotels();
-    });
-    el.appendChild(div);
-  });
-}
-
-function showPurposeHint() {
+      </div>
+    </div>`).join('');
   const hint = document.getElementById('purpose-hint');
-  if (!selPurpose) { hint.style.display='none'; return; }
-  const p = PURPOSES.find(x => x.id === selPurpose);
-  if (!p) return;
-  hint.style.display = 'block';
-  if (p.recLocal) {
-    hint.innerHTML = '🏠 <b>전지훈련</b>에는 <b>iClark 전용숙소</b>를 강력 추천해요! 골프장 5분 거리 + 조·중·석식 ALL포함 $45/일';
-  } else {
-    hint.innerHTML = '🏨 <b>' + p.name + '</b>에는 클락 시내 호텔을 추천해요. 편의시설과 관광 접근성이 우수해요.';
-  }
+  if (!selPurpose) { hint.className='purpose-hint'; return; }
+  const p = PURPOSES.find(x=>x.id===selPurpose);
+  hint.className = 'purpose-hint show';
+  hint.innerHTML = p.recLocal
+    ? '🏠 <b>전지훈련</b>에는 <b>iClark 전용숙소</b>를 강력 추천해요!<br>골프장 5분 거리 + 조·중·석식 ALL포함 <b>$45/일</b>'
+    : '🏨 <b>'+p.name+'</b>에는 클락 시내 호텔을 추천해요. 편의시설과 관광 접근성이 우수해요.';
 }
 
-let selGolf = {};
-let selCheck = {};
-let pax = { g:2, n:0 };
-
-function getNights() {
-  const v = parseInt(document.getElementById('nights-num').textContent);
-  return isNaN(v) ? 0 : v;
+function selectPurpose(id) {
+  selPurpose = selPurpose===id ? null : id;
+  renderPurposes();
 }
-function getTotalPax() { return pax.g + pax.n; }
 
-// 날짜 초기값 설정
-(function() {
-  const today = new Date();
-  const arr = new Date(today); arr.setDate(arr.getDate() + 30);
-  const dep = new Date(arr); dep.setDate(dep.getDate() + 4);
-  const fmt = d => d.toISOString().slice(0,10);
-  document.getElementById('arr-date').value = fmt(arr);
-  document.getElementById('dep-date').value = fmt(dep);
+/* ── 날짜 ── */
+(function(){
+  const today=new Date();
+  const arr=new Date(today); arr.setDate(arr.getDate()+30);
+  const dep=new Date(arr);   dep.setDate(dep.getDate()+4);
+  const fmt=d=>d.toISOString().slice(0,10);
+  document.getElementById('arr-date').value=fmt(arr);
+  document.getElementById('dep-date').value=fmt(dep);
   updateDates();
 })();
 
 function updateDates() {
-  const a = document.getElementById('arr-date').value;
-  const d = document.getElementById('dep-date').value;
-  if (!a || !d) return;
-  document.getElementById('arr-disp').textContent = a;
-  document.getElementById('dep-disp').textContent = d;
-  const nights = Math.max(1, Math.round((new Date(d) - new Date(a)) / 86400000));
-  document.getElementById('nights-num').textContent = nights;
-  document.getElementById('days-num').textContent = nights + 1;
-  updateAgodaLinks();
+  const a=document.getElementById('arr-date').value;
+  const d=document.getElementById('dep-date').value;
+  if(!a||!d) return;
+  document.getElementById('arr-disp').textContent=a;
+  document.getElementById('dep-disp').textContent=d;
+  const nights=Math.max(1,Math.round((new Date(d)-new Date(a))/86400000));
+  document.getElementById('nights-num').textContent=nights;
+  document.getElementById('days-num').textContent=nights+1;
+  document.getElementById('date-summary').textContent=nights+'박 '+(nights+1)+'일';
   renderCart();
 }
 
-function updateAgodaLinks() {
-  const a = document.getElementById('arr-date').value;
-  const d = document.getElementById('dep-date').value;
-  HOTELS.forEach(h => {
-    if (!h.custom && a && d) {
-      h._agodaUrl = `https://www.agoda.com/ko-kr/search?city=18875&checkIn=${a}&checkOut=${d}&rooms=1&adults=${pax.g}&children=0&locale=ko-kr&currency=KRW`;
-    }
-  });
+function getNights() {
+  const v=parseInt(document.getElementById('nights-num').textContent);
+  return isNaN(v)?0:v;
 }
 
-function changePax(type, delta) {
-  if (type === 'g') pax.g = Math.max(1, pax.g + delta);
-  else pax.n = Math.max(0, pax.n + delta);
-  document.getElementById('pax-' + type).textContent = pax[type];
-  updateAgodaLinks();
-  renderGolf();
+/* ── 인원 ── */
+function changePax(type,delta) {
+  if(type==='g') pax.g=Math.max(1,pax.g+delta);
+  else pax.n=Math.max(0,pax.n+delta);
+  document.getElementById('pax-'+type).textContent=pax[type];
+  document.getElementById('pax-summary').textContent='골퍼 '+pax.g+'명'+(pax.n?'+동반 '+pax.n+'명':'');
   renderCart();
 }
 
-/* ── 호텔 렌더 ── */
+/* ── 숙소 ── */
 function renderHotels() {
-  const el = document.getElementById('hotel-grid');
-  el.innerHTML = '';
-  const a = document.getElementById('arr-date').value;
-  const d = document.getElementById('dep-date').value;
-  HOTELS.forEach(h => {
-    const on = selHotel === h.id;
-    const agodaUrl = h.custom
-      ? `https://www.agoda.com/ko-kr/search?city=18875${a?'&checkIn='+a:''}${d?'&checkOut='+d:''}&rooms=1&adults=${pax.g}&locale=ko-kr&currency=KRW`
-      : `https://www.agoda.com/ko-kr/search?city=18875${a?'&checkIn='+a:''}${d?'&checkOut='+d:''}&rooms=1&adults=${pax.g}&locale=ko-kr&currency=KRW`;
-
-    const div = document.createElement('div');
-    div.className = 'pick-card' + (on ? ' selected' : '');
-    div.innerHTML = `
-      <div class="pick-top">
-        <div class="pick-icon">${h.icon}</div>
-        <div class="pick-info">
-          <div class="pick-name">${h.name}</div>
-          <div class="pick-note">${h.note}</div>
-          ${!h.custom ? `<div class="pick-price">참고 $${h.price} ~ / 1박 1인 <span style="font-size:10px;color:#888;font-weight:400">(아고다 기준·변동됨)</span></div>` : ''}
-          <a class="ext-link" href="${agodaUrl}" target="_blank" onclick="event.stopPropagation()">
-            <svg viewBox="0 0 12 12"><path d="M7 1h4v4M11 1L5 7M2 3H1v8h8V9"/></svg>
-            아고다에서 요금 확인
-          </a>
+  const a=document.getElementById('arr-date').value;
+  const d=document.getElementById('dep-date').value;
+  document.getElementById('hotel-list').innerHTML = HOTELS.map(h=>`
+    <div class="hotel-item${selHotel===h.id?' on':''}" onclick="selectHotel('${h.id}')">
+      <div class="hotel-top">
+        <div class="hotel-icon">${h.icon}</div>
+        <div class="hotel-info">
+          <div class="hotel-name">${h.name}${h.tag?'<span class="hotel-tag">'+h.tag+'</span>':''}</div>
+          <div class="hotel-note">${h.note}</div>
+          ${!h.custom?'<div class="hotel-price">'+(h.local?'$'+h.price+'/일 (올인클루시브)':'참고 $'+h.price+'~ / 1박 1인')+'</div>':''}
+          ${!h.local&&!h.custom?'<a href="https://www.agoda.com/ko-kr/search?city=18875'+(a?'&checkIn='+a:'')+(d?'&checkOut='+d:'')+'&rooms=1&adults='+pax.g+'&locale=ko-kr&currency=KRW" target="_blank" onclick="event.stopPropagation()" style="font-size:12px;color:#534AB7;font-weight:700;">아고다에서 요금 확인 →</a>':''}
         </div>
-        <div class="pick-check">
-          <svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg>
-        </div>
-      </div>`;
-    div.addEventListener('click', () => {
-      selHotel = on ? null : h.id;
-      renderHotels();
-      document.getElementById('custom-price-row').style.display =
-        (selHotel && HOTELS.find(x=>x.id===selHotel)?.custom) ? 'flex' : 'none';
-      renderCart();
-    });
-    el.appendChild(div);
-  });
+        <div class="hotel-check">${selHotel===h.id?'✓':''}</div>
+      </div>
+    </div>`).join('');
+  document.getElementById('custom-price-row').style.display =
+    selHotel&&HOTELS.find(x=>x.id===selHotel)?.custom ? 'block' : 'none';
 }
 
-/* ── 골프장 렌더 ── */
+function selectHotel(id) {
+  selHotel = selHotel===id ? null : id;
+  const h = HOTELS.find(x=>x.id===selHotel);
+  document.getElementById('hotel-summary').textContent = h ? h.name : '호텔 또는 iClark 전용숙소';
+  renderHotels();
+  renderCart();
+}
+
+/* ── 골프장 ── */
 function renderGolf() {
-  const el = document.getElementById('golf-grid');
-  el.innerHTML = '';
-  GOLF.forEach(g => {
-    const qty = selGolf[g.id] || 0;
-    const on = qty > 0;
-    const div = document.createElement('div');
-    div.className = 'pick-card' + (on ? ' selected' : '');
-    const sub = g.price * qty * pax.g;
-    div.innerHTML = `
-      <div class="pick-top">
-        <div class="pick-icon">${g.icon}</div>
-        <div class="pick-info">
-          <div class="pick-name">${g.name}</div>
-          <div class="pick-note">${g.note}</div>
-          <div class="pick-price">$${g.price} / 18홀 · 1인</div>
-          <a class="ext-link" href="${g.info}" target="_blank" onclick="event.stopPropagation()">
-            <svg viewBox="0 0 12 12"><path d="M7 1h4v4M11 1L5 7M2 3H1v8h8V9"/></svg>
-            골프장 정보 보기
-          </a>
+  document.getElementById('golf-list').innerHTML = GOLF.map(g=>{
+    const qty=selGolf[g.id]||0;
+    const on=qty>0;
+    return `<div class="golf-item${on?' on':''}" onclick="selectGolf('${g.id}')">
+      <div class="golf-top">
+        <div class="golf-icon">${g.icon}</div>
+        <div style="flex:1;">
+          <div class="golf-name">${g.name}</div>
+          <div class="golf-note">${g.note}</div>
         </div>
-        <div class="pick-check">
-          <svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg>
-        </div>
+        <div class="golf-price">$${g.price}/인</div>
+        <div class="golf-check">${on?'✓':''}</div>
       </div>
-      ${on ? `<div class="rounds-ctrl">
+      ${on?`<div class="rounds-ctrl">
         <span class="rounds-label">라운드 횟수</span>
         <button class="sq-btn" onclick="changeRounds('${g.id}',-1);event.stopPropagation()">−</button>
         <span class="sq-num">${qty}</span>
         <button class="sq-btn" onclick="changeRounds('${g.id}',1);event.stopPropagation()">+</button>
-        <span style="font-size:11px;color:var(--text-muted)">회</span>
-        <span class="rounds-price">$${sub}</span>
-      </div>` : ''}`;
-    div.addEventListener('click', () => {
-      selGolf[g.id] = on ? 0 : 1;
-      renderGolf();
-      renderCart();
-    });
-    el.appendChild(div);
-  });
+        <span style="font-size:11px;color:var(--muted)">회</span>
+        <span class="rounds-price">$${g.price*qty*pax.g}</span>
+      </div>`:''}
+    </div>`;
+  }).join('');
 }
 
-function changeRounds(id, delta) {
-  selGolf[id] = Math.max(1, (selGolf[id] || 1) + delta);
+function selectGolf(id) {
+  selGolf[id] = selGolf[id]>0 ? 0 : 1;
   renderGolf();
   renderCart();
 }
 
-/* ── 체크 리스트 렌더 ── */
-function renderCheckList(containerId, items) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
-  el.innerHTML = '';
-  items.forEach(item => {
-    const s = selCheck[item.id];
-    const on = !!(s && s.qty > 0);
-    const qty = s ? s.qty : 0;
-    const row = document.createElement('div');
-    row.className = 'item-row';
-    row.innerHTML = `
-      <div class="chk-box ${on ? 'on' : ''}">
-        <svg viewBox="0 0 12 12"><polyline points="1,6 4,10 11,2"/></svg>
-      </div>
-      <div class="item-icon">${item.icon}</div>
-      <div class="item-info">
-        <div class="item-name">${item.name}</div>
-        <div class="item-note">${item.note}</div>
-      </div>
-      <div class="item-right">
-        <div>
-          <span class="item-price-tag">$${item.price}</span>
-          <span class="item-unit">/${item.unit}</span>
-        </div>
-        ${on ? `<div class="sq-ctrl">
-          <button class="sq-btn" onclick="changeQty('${item.id}',-1);event.stopPropagation()">−</button>
-          <span class="sq-num">${qty}</span>
-          <button class="sq-btn" onclick="changeQty('${item.id}',1);event.stopPropagation()">+</button>
-        </div>` : ''}
-      </div>`;
-    row.addEventListener('click', () => toggleCheck(item.id, item));
-    el.appendChild(row);
-  });
+function changeRounds(id,delta) {
+  selGolf[id]=Math.max(1,(selGolf[id]||1)+delta);
+  renderGolf();
+  renderCart();
 }
 
-function toggleCheck(id, item) {
-  if (selCheck[id] && selCheck[id].qty > 0) delete selCheck[id];
-  else selCheck[id] = { item, qty: 1 };
+/* ── 체크 리스트 ── */
+function renderCheckList(listId, items) {
+  document.getElementById(listId).innerHTML = items.map(item=>{
+    const s=selCheck[item.id];
+    const on=!!(s&&s.qty>0);
+    const qty=s?s.qty:0;
+    return `<div class="check-item${on?' on':''}" onclick="toggleCheck('${item.id}')">
+      <div class="chk-box">${on?'✓':''}</div>
+      <div class="check-icon">${item.icon}</div>
+      <div class="check-info">
+        <div class="check-name">${item.name}</div>
+        <div class="check-note">${item.note}</div>
+        ${on?`<div class="qty-ctrl" onclick="event.stopPropagation()">
+          <span>횟수:</span>
+          <button class="sq-btn" style="width:24px;height:24px;font-size:14px;" onclick="changeQty('${item.id}',-1)">−</button>
+          <span class="sq-num" style="font-size:14px;">${qty}</span>
+          <button class="sq-btn" style="width:24px;height:24px;font-size:14px;" onclick="changeQty('${item.id}',1)">+</button>
+        </div>`:''}
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div class="check-price">$${item.price}</div>
+        <div class="check-unit">/${item.unit}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCheck(id) {
+  const item=[...TRANSFERS,...LESSONS,...EXTRAS].find(x=>x.id===id);
+  if(!item) return;
+  if(selCheck[id]&&selCheck[id].qty>0) delete selCheck[id];
+  else selCheck[id]={item,qty:1};
   renderAll();
 }
 
-function changeQty(id, delta) {
-  if (!selCheck[id]) return;
-  selCheck[id].qty = Math.max(1, selCheck[id].qty + delta);
+function changeQty(id,delta) {
+  if(!selCheck[id]) return;
+  selCheck[id].qty=Math.max(1,selCheck[id].qty+delta);
   renderAll();
 }
 
 /* ── 견적 계산 ── */
-function calcHotelTotal() {
-  if (!selHotel) return 0;
-  const h = HOTELS.find(x => x.id === selHotel);
-  if (!h) return 0;
-  const nights = getNights();
-  const totalPax = getTotalPax();
-  if (h.custom) {
-    const v = parseFloat(document.getElementById('custom-hotel-price').value) || 0;
-    return v * nights * totalPax;
-  }
-  return h.price * nights * totalPax;
-}
-
-function calcGolfTotal() {
-  return GOLF.reduce((sum, g) => {
-    const qty = selGolf[g.id] || 0;
-    return sum + (qty > 0 ? g.price * qty * pax.g : 0);
-  }, 0);
-}
-
 function renderCart() {
-  const el = document.getElementById('cart-body');
-  const nights = getNights();
-  const totalPax = getTotalPax();
-  const hotelAmt = calcHotelTotal();
-  const golfAmt = calcGolfTotal();
-  const checkEntries = Object.values(selCheck).filter(s => s.qty > 0);
-  const hasAny = selHotel || GOLF.some(g => selGolf[g.id] > 0) || checkEntries.length > 0;
+  const nights=getNights();
+  const totalPax=pax.g+pax.n;
+  const el=document.getElementById('cart-body');
+  const checkEntries=Object.values(selCheck).filter(s=>s.qty>0);
+  const hasAny=selHotel||GOLF.some(g=>selGolf[g.id]>0)||checkEntries.length>0;
 
-  if (!hasAny) {
-    el.innerHTML = `<div class="cart-empty">
-      <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.97-1.67L23 6H6"/></svg>
-      <br>항목을 선택하면<br>여기에 견적이 표시됩니다</div>`;
+  if(!hasAny){
+    el.innerHTML='<div class="cart-empty">항목을 선택하면<br>여기에 견적이 표시됩니다</div>';
+    document.getElementById('fixed-total-amt').textContent='$0';
     return;
   }
 
-  let html = '';
-  let total = 0;
+  let html='', total=0;
 
-  // 호텔
-  if (selHotel) {
-    const h = HOTELS.find(x => x.id === selHotel);
-    html += `<div class="c-sec-label">숙박</div>`;
-    html += `<div class="c-row">
-      <span class="c-name">${h.icon} ${h.name}<br><span style="font-size:10px">${nights}박 × ${totalPax}명</span></span>
-      <span class="c-amt">$${hotelAmt}</span>
-    </div>`;
-    total += hotelAmt;
+  if(selHotel){
+    const h=HOTELS.find(x=>x.id===selHotel);
+    let amt=0;
+    if(h.custom){amt=(parseFloat(document.getElementById('custom-hotel-price').value)||0)*nights*totalPax;}
+    else if(h.local){amt=h.price*nights*pax.g;}
+    else{amt=h.price*nights*totalPax;}
+    html+=`<div class="c-label">숙박</div>
+    <div class="c-row"><span class="c-name">${h.icon} ${h.name}<br><span style="font-size:10px">${nights}박${h.local?' × 골퍼 '+pax.g+'명':' × '+totalPax+'명'}</span></span><span class="c-amt">$${amt}</span></div>`;
+    total+=amt;
   }
 
-  // 골프장
-  const activeGolf = GOLF.filter(g => (selGolf[g.id] || 0) > 0);
-  if (activeGolf.length) {
-    html += `<div class="c-sec-label">골프장</div>`;
-    activeGolf.forEach(g => {
-      const qty = selGolf[g.id];
-      const sub = g.price * qty * pax.g;
-      html += `<div class="c-row">
-        <span class="c-name">${g.icon} ${g.name}<br><span style="font-size:10px">${qty}회 × ${pax.g}명</span></span>
-        <span class="c-amt">$${sub}</span>
-      </div>`;
-      total += sub;
+  const activeGolf=GOLF.filter(g=>(selGolf[g.id]||0)>0);
+  if(activeGolf.length){
+    html+=`<div class="c-label">골프장</div>`;
+    activeGolf.forEach(g=>{
+      const qty=selGolf[g.id];
+      const sub=g.price*qty*pax.g;
+      html+=`<div class="c-row"><span class="c-name">${g.icon} ${g.name}<br><span style="font-size:10px">${qty}회 × ${pax.g}명</span></span><span class="c-amt">$${sub}</span></div>`;
+      total+=sub;
     });
   }
 
-  // 나머지 카테고리
-  const catGroups = [
-    { label:'이동', items: TRANSFERS },
-    { label:'레슨', items: LESSONS },
-    { label:'식사·기타', items: EXTRAS },
-  ];
-  catGroups.forEach(cat => {
-    const rows = checkEntries.filter(e => cat.items.find(i => i.id === e.item.id));
-    if (!rows.length) return;
-    html += `<div class="c-sec-label">${cat.label}</div>`;
-    rows.forEach(({ item, qty }) => {
-      let sub = item.price * qty;
-      if (item.perPerson) sub *= totalPax;
-      total += sub;
-      html += `<div class="c-row">
-        <span class="c-name">${item.icon} ${item.name} ×${qty}</span>
-        <span class="c-amt">$${sub}</span>
-      </div>`;
+  const cats=[{label:'이동',items:TRANSFERS},{label:'레슨',items:LESSONS},{label:'식사·기타',items:EXTRAS}];
+  cats.forEach(cat=>{
+    const rows=checkEntries.filter(e=>cat.items.find(i=>i.id===e.item.id));
+    if(!rows.length) return;
+    html+=`<div class="c-label">${cat.label}</div>`;
+    rows.forEach(({item,qty})=>{
+      let sub=item.price*qty;
+      if(item.perPerson) sub*=totalPax;
+      total+=sub;
+      html+=`<div class="c-row"><span class="c-name">${item.icon} ${item.name} ×${qty}</span><span class="c-amt">$${sub}</span></div>`;
     });
   });
 
-  const perPerson = totalPax > 0 ? Math.round(total / totalPax) : total;
-  html += `<hr class="c-divider">
-  <div class="total-block">
-    <div class="total-info">${nights}박 · 골퍼 ${pax.g}명${pax.n ? ' + 동반 ' + pax.n + '명' : ''}</div>
-    <div class="total-row">
-      <span class="total-label">총 견적</span>
-      <span class="total-amt">$${total}</span>
-    </div>
-    <div class="per-person">1인 약 $${perPerson}</div>
-  </div>`;
-  el.innerHTML = html;
+  const perPerson=totalPax>0?Math.round(total/totalPax):total;
+  html+=`<hr class="c-divider">
+  <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">${nights}박 · 골퍼 ${pax.g}명${pax.n?' + 동반 '+pax.n+'명':''}</div>
+  <div class="total-row"><span class="total-label">총 견적</span><span class="total-amt">$${total}</span></div>
+  <div class="per-person">1인 약 $${perPerson}</div>`;
+  el.innerHTML=html;
+  document.getElementById('fixed-total-amt').textContent='$'+total;
 }
 
-/* ── 카카오 연결 ── */
+/* ── 카카오 ── */
 function goKakao() {
-  const checkEntries = Object.values(selCheck).filter(s => s.qty > 0);
-  const hasAny = selHotel || GOLF.some(g => selGolf[g.id] > 0) || checkEntries.length > 0;
-  if (!hasAny) { alert('항목을 하나 이상 선택해 주세요'); return; }
-
-  const arr = document.getElementById('arr-date').value;
-  const dep = document.getElementById('dep-date').value;
-  const nights = getNights();
-  const totalPax = getTotalPax();
-  const hotelAmt = calcHotelTotal();
-  const golfAmt = calcGolfTotal();
-  const checkAmt = checkEntries.reduce((sum, {item, qty}) => {
-    let s = item.price * qty;
-    if (item.perPerson) s *= totalPax;
-    return sum + s;
-  }, 0);
-  const total = hotelAmt + golfAmt + checkAmt;
-
-  // 카카오 채널로 연결
-  window.open('https://pf.kakao.com/_nbHKX/chat', '_blank');
+  const checkEntries=Object.values(selCheck).filter(s=>s.qty>0);
+  const hasAny=selHotel||GOLF.some(g=>selGolf[g.id]>0)||checkEntries.length>0;
+  if(!hasAny){alert('항목을 하나 이상 선택해 주세요');return;}
+  window.open('https://pf.kakao.com/_nbHKX/chat','_blank');
 }
 
 /* ── 전체 렌더 ── */
@@ -1087,9 +655,9 @@ function renderAll() {
   renderPurposes();
   renderHotels();
   renderGolf();
-  renderCheckList('transfer-grid', TRANSFERS);
-  renderCheckList('lesson-grid', LESSONS);
-  renderCheckList('extra-grid', EXTRAS);
+  renderCheckList('transfer-list',TRANSFERS);
+  renderCheckList('lesson-list',LESSONS);
+  renderCheckList('extra-list',EXTRAS);
   renderCart();
 }
 
