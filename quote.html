@@ -179,20 +179,6 @@ footer a{color:rgba(255,255,255,.8);}
 <div class="main">
 <div class="left-col">
 
-  <!-- 0. 방문 목적 -->
-  <div class="sec-card">
-    <div class="sec-head" onclick="toggleSec('purpose')">
-      <div class="step-num mint">0</div>
-      <span class="sec-title">방문 목적 선택</span>
-      <span class="sec-sub">목적에 맞는 숙소를 추천해 드려요</span>
-      <span class="sec-arrow open" id="arr-purpose">▾</span>
-    </div>
-    <div class="sec-body open" id="body-purpose">
-      <div class="purpose-list" id="purpose-list"></div>
-      <div class="purpose-hint" id="purpose-hint"></div>
-    </div>
-  </div>
-
   <!-- 1. 날짜 -->
   <div class="sec-card">
     <div class="sec-head" onclick="toggleSec('date')">
@@ -347,14 +333,6 @@ footer a{color:rgba(255,255,255,.8);}
 
 <script>
 /* ── 데이터 ── */
-const PURPOSES = [
-  {id:'p1',emoji:'⛳',name:'골프 여행',  desc:'골프 + 관광·쇼핑·휴식',       recLocal:false},
-  {id:'p2',emoji:'🌴',name:'골프 휴식',  desc:'여유로운 골프 + 리조트 휴가', recLocal:false},
-  {id:'p3',emoji:'🏋️',name:'전지훈련',   desc:'집중 훈련 · 스코어 향상',     recLocal:true},
-  {id:'p4',emoji:'👨‍👩‍👧',name:'가족 동반', desc:'가족과 함께하는 클락 여행',  recLocal:false},
-  {id:'p5',emoji:'🤝',name:'단체 투어',  desc:'동호회·팀 단체 골프 여행',    recLocal:false},
-];
-
 const HOTELS = [
   {id:'local',icon:'🏠',name:'iClark 전용숙소',note:'프라데라 골프장 5분 · 조·중·석식+픽업+세탁 ALL포함',price:45,tag:'전지훈련 추천',local:true},
   {id:'h1',icon:'🏨',name:'망고 스위트 (Mango Suites)',note:'앙헬레스 시티 센터 · ⭐⭐⭐⭐ · 평점 8.7',price:25},
@@ -652,7 +630,6 @@ function goKakao() {
 
 /* ── 전체 렌더 ── */
 function renderAll() {
-  renderPurposes();
   renderHotels();
   renderGolf();
   renderCheckList('transfer-list',TRANSFERS);
