@@ -1294,5 +1294,80 @@ document.querySelectorAll('.lang-btn').forEach(btn => {
 });
 </script>
 <script src="i18n.js"></script>
+<!-- ✅ iClarkGolf 공사중 팝업 -->
+<style>
+  #ick-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; padding: 1rem; box-sizing: border-box;
+  }
+  #ick-popup {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem 1.5rem 1.5rem;
+    max-width: 340px; width: 100%;
+    position: relative; text-align: center;
+    box-sizing: border-box;
+  }
+  #ick-close {
+    position: absolute; top: 12px; right: 12px;
+    background: none; border: none; cursor: pointer;
+    font-size: 22px; color: #888; line-height: 1;
+  }
+  #ick-popup h2 {
+    font-size: 17px; font-weight: 500;
+    color: #111; margin: 0 0 1rem; line-height: 1.6;
+  }
+  #ick-popup p {
+    font-size: 14px; color: #555;
+    line-height: 1.8; margin: 0 0 1.25rem;
+  }
+  #ick-kakao {
+    display: block; background: #FEE500; color: #3A1D1D;
+    border-radius: 10px; padding: 0.75rem;
+    font-size: 15px; font-weight: 600;
+    text-decoration: none; margin-bottom: 0.75rem;
+  }
+  #ick-noshow {
+    display: flex; align-items: center;
+    gap: 8px; justify-content: center;
+    margin-top: 0.5rem;
+  }
+  #ick-noshow label {
+    font-size: 13px; color: #888; cursor: pointer;
+  }
+</style>
+
+<div id="ick-overlay">
+  <div id="ick-popup">
+    <button id="ick-close" onclick="ickClose()" aria-label="닫기">✕</button>
+    <div style="font-size:32px; margin-bottom:0.75rem;">⛳</div>
+    <h2>클락 골프 전지훈련의 전당<br><span style="color:#185FA5;">iClarkGolf</span>에 오신 것을 환영합니다!</h2>
+    <p>저희는 잠깐 비수기를 맞아<br>홈페이지를 확장 공사 중입니다.<br><br>클락 최초 맞춤식 골프 훈련과<br>캐디 선정 시스템을 구축 중입니다.<br><br>곧 완비하여 회원님들께 인사드리겠습니다. 🙏</p>
+    <div style="background:#f0f7ff; border-radius:10px; padding:0.75rem 1rem; margin-bottom:1.25rem; font-size:14px; color:#185FA5; font-weight:500;">✅ 공사 중에도 예약 시스템은 정상 운영 중입니다.<br><span style="color:#333; font-weight:400;">지금 바로 예약해 주세요!</span></div>
+    <a id="ick-kakao" href="http://pf.kakao.com/_nbHKX/chat" target="_blank">💬 카카오톡 채널 바로가기</a>
+    <div id="ick-noshow">
+      <input type="checkbox" id="ick-cb" style="width:16px;height:16px;cursor:pointer;">
+      <label for="ick-cb">오늘 하루 보지 않기</label>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    var val = localStorage.getItem("ick_popup_hide");
+    if (val && new Date().toDateString() === val) {
+      document.getElementById("ick-overlay").style.display = "none";
+    }
+  })();
+  function ickClose() {
+    if (document.getElementById("ick-cb").checked) {
+      localStorage.setItem("ick_popup_hide", new Date().toDateString());
+    }
+    document.getElementById("ick-overlay").style.display = "none";
+  }
+</script>
+
 </body>
 </html>
