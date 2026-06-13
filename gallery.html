@@ -40,8 +40,8 @@ a{text-decoration:none;color:inherit;}
 /* ── 2줄 가로스크롤 ── */
 .g-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0 16px 8px;}
 .g-scroll::-webkit-scrollbar{display:none;}
-.g-row{display:flex;flex-direction:row;flex-wrap:nowrap;gap:12px;margin-bottom:12px;width:max-content;}
-.g-row:last-child{margin-bottom:0;}
+.g-rows-wrap{display:inline-flex;flex-direction:column;gap:12px;min-width:100%;}
+.g-row{display:flex;flex-direction:row;flex-wrap:nowrap;gap:12px;}
 .g-card{width:220px;flex:0 0 220px;background:#fff;border:1.5px solid var(--gray-200);
   border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:all .2s;}
 .g-card:hover{border-color:var(--green-border);transform:translateY(-2px);}
@@ -268,8 +268,11 @@ window.loadPosts = async function() {
       else row2.appendChild(makeCard(p));
     });
     scrl.innerHTML = '';
-    scrl.appendChild(row1);
-    if(row2.children.length > 0) scrl.appendChild(row2);
+    const rowsWrap = document.createElement('div');
+    rowsWrap.className = 'g-rows-wrap';
+    rowsWrap.appendChild(row1);
+    if(row2.children.length > 0) rowsWrap.appendChild(row2);
+    scrl.appendChild(rowsWrap);
 
   } catch(e) {
     scrl.innerHTML = '<div class="g-empty">불러오기 실패. <button onclick="loadPosts()" style="padding:8px 16px;border-radius:100px;border:1.5px solid #c8edd9;background:#E1F5EE;color:#085041;font-weight:700;cursor:pointer;margin-top:8px;">다시 시도</button></div>';

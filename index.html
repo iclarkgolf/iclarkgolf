@@ -1225,24 +1225,20 @@ async function loadMainGallery(){
   if(!wrap) return;
   wrap.innerHTML = '<div style="padding:20px;font-size:12px;color:#a1a1aa;">불러오는 중...</div>';
   try {
-    // Firebase SDK 동적 로드
-    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
     const { getFirestore, collection, getDocs, query, orderBy, limit }
       = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    const app = initializeApp({
-      apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU",
-      authDomain:"iclarkgolf.firebaseapp.com",
-      projectId:"iclarkgolf"
-    }, 'gallery-preview');
+    const cfg = {apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU",authDomain:"iclarkgolf.firebaseapp.com",projectId:"iclarkgolf"};
+    const apps = getApps();
+    const app = apps.find(a=>a.name==='gallery-preview') || initializeApp(cfg,'gallery-preview');
     const db = getFirestore(app);
-    const previewCount = window.innerWidth >= 1024 ? 8 : window.innerWidth >= 640 ? 6 : 4;
+    // 데스크탑 8개, 모바일 4개
+    const previewCount = window.innerWidth >= 640 ? 8 : 4;
     let snap;
     try {
-      const q = query(collection(db,'gallery'), orderBy('createdAt','desc'), limit(previewCount));
-      snap = await getDocs(q);
+      snap = await getDocs(query(collection(db,'gallery'), orderBy('createdAt','desc'), limit(previewCount)));
     } catch(e) {
-      const q = query(collection(db,'gallery'), limit(previewCount));
-      snap = await getDocs(q);
+      snap = await getDocs(query(collection(db,'gallery'), limit(previewCount)));
     }
     if(snap.empty){
       wrap.innerHTML = '<div style="padding:20px;font-size:13px;color:#a1a1aa;">아직 게시물이 없어요. 첫 번째 사진을 올려보세요!</div>';
@@ -1250,14 +1246,15 @@ async function loadMainGallery(){
     }
     const posts = [];
     snap.forEach(d => posts.push({...d.data()}));
-    const recent = posts.slice(0,4);
+    posts.sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
+    const recent = posts; // slice 없이 전체 사용
     if(!recent.length){
       wrap.innerHTML = '<div style="padding:20px;font-size:13px;color:#a1a1aa;">아직 게시물이 없어요. 첫 번째 사진을 올려보세요!</div>';
       return;
     }
   wrap.innerHTML = recent.map(p=>`
-    <a href="gallery.html" style="display:block;width:clamp(120px,18vw,180px);flex-shrink:0;background:#fff;border:1.5px solid #e4e4e7;border-radius:16px;overflow:hidden;text-decoration:none;">
-      <div style="height:110px;overflow:hidden;background:#f4faf7;display:flex;align-items:center;justify-content:center;">
+    <a href="gallery.html" style="display:block;width:200px;flex-shrink:0;background:#fff;border:1.5px solid #e4e4e7;border-radius:16px;overflow:hidden;text-decoration:none;">
+      <div style="height:130px;overflow:hidden;background:#f4faf7;display:flex;align-items:center;justify-content:center;">
         ${p.imgUrl
           ? `<img src="${p.imgUrl}" alt="${p.title}" style="width:100%;height:100%;object-fit:cover;" loading="lazy" onerror="this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:32px;\'>📷</div>'">`
           : `<div style="font-size:36px">${p.emoji||'📷'}</div>`
