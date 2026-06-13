@@ -38,11 +38,12 @@ a{text-decoration:none;color:inherit;}
 .gallery-count-label span{color:var(--green);}
 
 /* ── 2줄 가로스크롤 ── */
-.g-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0 16px 8px;}
-.g-scroll::-webkit-scrollbar{display:none;}
-.g-rows-wrap{display:inline-flex;flex-direction:column;gap:12px;min-width:100%;}
-.g-row{display:flex;flex-direction:row;flex-wrap:nowrap;gap:12px;}
-.g-card{width:220px;flex:0 0 220px;background:#fff;border:1.5px solid var(--gray-200);
+.g-scroll{padding:0 16px 8px;}
+.g-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+@media(min-width:480px){.g-grid{grid-template-columns:repeat(3,1fr);}}
+@media(min-width:768px){.g-grid{grid-template-columns:repeat(4,1fr);}}
+@media(min-width:1100px){.g-grid{grid-template-columns:repeat(5,1fr);}}
+.g-card{background:#fff;border:1.5px solid var(--gray-200);
   border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:all .2s;}
 .g-card:hover{border-color:var(--green-border);transform:translateY(-2px);}
 .g-thumb{height:160px;overflow:hidden;background:var(--gray-100);display:flex;align-items:center;justify-content:center;}
@@ -104,7 +105,7 @@ a{text-decoration:none;color:inherit;}
 <body>
 
 <nav class="nav">
-  <a href="index.html" class="logo">CLARKGO</a>
+  <a href="index.html" class="logo"><span style="color:#ff4444!important;font-family:'Nunito',sans-serif;font-weight:800;font-size:22px;letter-spacing:0;vertical-align:middle;-webkit-text-fill-color:#ff4444!important;background:none;">i</span>CLARKGOLF</a>
   <a href="index.html" class="nav-back">← 홈으로</a>
 </nav>
 
@@ -258,21 +259,12 @@ window.loadPosts = async function() {
       }
     }
 
-    // 2줄 row로 렌더링
-    const row1 = document.createElement('div');
-    const row2 = document.createElement('div');
-    row1.className = 'g-row';
-    row2.className = 'g-row';
-    list.forEach((p,i) => {
-      if(i%2===0) row1.appendChild(makeCard(p));
-      else row2.appendChild(makeCard(p));
-    });
+    // 그리드 렌더링
     scrl.innerHTML = '';
-    const rowsWrap = document.createElement('div');
-    rowsWrap.className = 'g-rows-wrap';
-    rowsWrap.appendChild(row1);
-    if(row2.children.length > 0) rowsWrap.appendChild(row2);
-    scrl.appendChild(rowsWrap);
+    const grid = document.createElement('div');
+    grid.className = 'g-grid';
+    list.forEach(p => grid.appendChild(makeCard(p)));
+    scrl.appendChild(grid);
 
   } catch(e) {
     scrl.innerHTML = '<div class="g-empty">불러오기 실패. <button onclick="loadPosts()" style="padding:8px 16px;border-radius:100px;border:1.5px solid #c8edd9;background:#E1F5EE;color:#085041;font-weight:700;cursor:pointer;margin-top:8px;">다시 시도</button></div>';
