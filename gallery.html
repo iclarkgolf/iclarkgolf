@@ -54,7 +54,16 @@
       snap.forEach(docSnap => docs.push({ id: docSnap.id, ...docSnap.data() }));
       docs.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
       wrap.innerHTML = '';
-      docs.forEach(p => {
+      const isMobile = window.innerWidth < 640;
+      const previewCount = isMobile ? 4 : 10;
+      const preview = window._showAll ? docs : docs.slice(0, previewCount);
+      // 전체 건수 표시
+      const countEl = document.getElementById('gallery-count');
+      if (countEl) countEl.textContent = docs.length + '개';
+      // 전체보기 버튼 표시 여부
+      const moreBtn = document.getElementById('gallery-more-btn');
+      if (moreBtn) moreBtn.style.display = (!window._showAll && docs.length > previewCount) ? 'flex' : 'none';
+      preview.forEach(p => {
         const id = p.id;
         const card = document.createElement('div');
         card.className = 'g-card';
@@ -168,7 +177,10 @@
     } catch(e) {}
   };
 
-  document.addEventListener('DOMContentLoaded', loadPosts);
+  document.addEventListener('DOMContentLoaded', () => {
+  window._showAll = false;
+  loadPosts();
+});
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -202,8 +214,8 @@ a{text-decoration:none;color:inherit;}
 /* Grid */
 .gallery-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:0 10px;}
 @media(min-width:480px){.gallery-grid{grid-template-columns:repeat(3,1fr);gap:10px;padding:0 14px;}}
-@media(min-width:768px){.gallery-grid{grid-template-columns:repeat(4,1fr);}}
-@media(min-width:1100px){.gallery-grid{grid-template-columns:repeat(5,1fr);max-width:1200px;margin:0 auto;padding:0 20px;}}
+@media(min-width:768px){.gallery-grid{grid-template-columns:repeat(4,1fr);gap:12px;}}
+@media(min-width:1100px){.gallery-grid{grid-template-columns:repeat(5,1fr);max-width:1200px;margin:0 auto;padding:0 20px;gap:14px;}}
 .g-card{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--radius);
   overflow:hidden;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
 .g-card:hover{border-color:var(--pink-border);box-shadow:0 4px 16px rgba(29,158,117,0.15);transform:translateY(-2px);}
@@ -280,8 +292,17 @@ a{text-decoration:none;color:inherit;}
   <button class="upload-btn" onclick="openUpload()">📸 사진 올리기 · 커뮤니티 참여하기</button>
 </div>
 
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px 4px;">
+  <div style="font-size:13px;font-weight:700;color:#52525b;">최신 사진 <span id="gallery-count" style="color:#1D9E75;"></span></div>
+</div>
 <div class="gallery-grid" id="gallery-grid">
   <div class="loading">불러오는 중...</div>
+</div>
+<div id="gallery-more-btn" onclick="showAllGallery()"
+  style="display:none;margin:12px 14px 0;align-items:center;justify-content:center;gap:6px;
+  background:#fff;border:1.5px solid #c8edd9;border-radius:100px;padding:13px 20px;
+  font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:#1D9E75;cursor:pointer;">
+  📸 전체 사진 보기 →
 </div>
 
 <!-- 사진 올리기 모달 -->
@@ -358,6 +379,11 @@ a{text-decoration:none;color:inherit;}
 </div>
 
 <script>
+function showAllGallery() {
+  window._showAll = true;
+  loadPosts();
+}
+
 function escHtml(s){ return String(s||'').replace(/'/g,"&#39;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
 function previewFile(input) {
