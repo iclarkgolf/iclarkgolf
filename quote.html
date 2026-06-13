@@ -33,6 +33,13 @@ nav{background:linear-gradient(135deg,#26215C,#534AB7);padding:14px 24px;display
 .hero h1 span{color:var(--mint-mid);}
 .hero p{font-size:15px;opacity:.8;max-width:480px;margin:0 auto;}
 
+/* 환율 배너 */
+.rate-banner{background:#fff;border-bottom:1.5px solid var(--mint-border);padding:8px 20px;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;font-size:12px;}
+.rate-item{display:flex;align-items:center;gap:5px;color:var(--muted);}
+.rate-val{font-weight:800;color:var(--mint);}
+.rate-warn{font-size:11px;color:#f97316;font-weight:700;}
+.rate-badge{background:var(--mint-light);color:var(--mint);font-size:10px;font-weight:800;padding:2px 8px;border-radius:100px;}
+
 /* LAYOUT */
 .main{display:grid;grid-template-columns:1fr 340px;gap:24px;max-width:1100px;margin:0 auto;padding:24px 20px;}
 @media(max-width:800px){.main{grid-template-columns:1fr;}.sidebar{display:none;}.fixed-bar{display:flex!important;}}
@@ -98,6 +105,22 @@ nav{background:linear-gradient(135deg,#26215C,#534AB7);padding:14px 24px;display
 .sq-btn{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--purple-border);background:var(--purple-pale);color:var(--purple);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:800;}
 .sq-num{font-size:15px;font-weight:800;color:var(--text);min-width:20px;text-align:center;}
 .rounds-price{font-size:13px;font-weight:700;color:var(--purple);margin-left:auto;}
+
+/* GOLF 요금 정보 박스 */
+.golf-fee-box{display:none;margin-top:10px;padding:10px 12px;background:var(--bg);border-radius:10px;border:1px solid var(--mint-border);}
+.golf-item.on .golf-fee-box{display:block;}
+.golf-fee-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:8px;}
+.golf-fee-cell{background:var(--white);border-radius:8px;padding:7px 6px;text-align:center;border:1px solid var(--mint-border);}
+.golf-fee-cell.sell{background:var(--mint-light);border-color:var(--mint-border);}
+.golf-fee-lbl{font-size:9px;color:var(--muted);font-weight:700;margin-bottom:3px;}
+.golf-fee-val{font-size:13px;font-weight:800;color:var(--text);}
+.golf-fee-val.sell-c{color:var(--mint);}
+.golf-fee-unit{font-size:9px;color:var(--muted);}
+.golf-extras{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;}
+.golf-extra-tag{background:var(--white);border:1px solid var(--mint-border);border-radius:100px;padding:3px 9px;font-size:11px;color:var(--muted);}
+.golf-extra-tag b{color:var(--text);}
+.golf-remark{font-size:11px;color:#085041;background:var(--mint-light);border-radius:6px;padding:6px 10px;line-height:1.6;}
+.golf-remark.closed{color:#b91c1c;background:#fef2f2;}
 
 /* CHECK LIST */
 .check-list{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
@@ -332,6 +355,36 @@ footer a{color:rgba(255,255,255,.8);}
 </footer>
 
 <script>
+/* ── 환율 시스템 ── */
+function getExchangeRate() {
+  const saved = localStorage.getItem('iclark_exchange');
+  if (saved) {
+    const d = JSON.parse(saved);
+    return { appliedUsdPhp: d.appliedUsdPhp || 53.2, marketUsdPhp: d.marketUsdPhp || 56, marginPct: d.marginPct || 5, updatedAt: d.updatedAt };
+  }
+  // 기본값 (관리자 미설정 시)
+  return { appliedUsdPhp: 53.2, marketUsdPhp: 56, marginPct: 5, updatedAt: null };
+}
+
+function phpToUsd(php) {
+  const r = getExchangeRate();
+  return Math.ceil(php / r.appliedUsdPhp * 100) / 100; // 올림 처리 (손해 방지)
+}
+
+function usdToPhp(usd) {
+  const r = getExchangeRate();
+  return Math.round(usd * r.appliedUsdPhp);
+}
+
+function initRateBanner() {
+  const r = getExchangeRate();
+  const safeSet = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  safeSet('banner-rate', '$1 = ' + r.appliedUsdPhp.toFixed(2) + ' PHP');
+  safeSet('banner-usd', '$' + (1000 / r.appliedUsdPhp).toFixed(2));
+  safeSet('banner-margin', '마진 ' + r.marginPct + '% 적용');
+  safeSet('banner-updated', r.updatedAt ? r.updatedAt + ' 기준' : '관리자 설정 필요');
+}
+
 /* ── 데이터 ── */
 const HOTELS = [
   {id:'local',icon:'🏠',name:'iClark 전용숙소',note:'프라데라 골프장 5분 · 조·중·석식+픽업+세탁 ALL포함',price:45,tag:'전지훈련 추천',local:true},
@@ -343,20 +396,58 @@ const HOTELS = [
 ];
 
 const GOLF = [
-  {id:'g1', icon:'⛳',name:'프라데라 베르데',      note:'36홀 챔피언십 · iClark 전용 코스',  price:75},
-  {id:'g2', icon:'⛳',name:'코리아 CC',            note:'한국인 운영 · 한국어 서비스',       price:55},
-  {id:'g3', icon:'⛳',name:'루이시타',             note:'월요일 휴장 · 18홀',               price:50},
-  {id:'g4', icon:'⛳',name:'디하이츠 (구선밸리)',  note:'18홀 · 앙헬레스 근교',             price:72},
-  {id:'g5', icon:'⛳',name:'미모사',               note:'클락 내 위치 · 접근 편리',         price:95},
-  {id:'g6', icon:'⛳',name:'뉴 아시아',            note:'가성비 최고 코스',                 price:35},
-  {id:'g7', icon:'⛳',name:'베벌리',               note:'클락 지역 인기 코스',              price:35},
-  {id:'g8', icon:'⛳',name:'로얄 센트럴',          note:'18홀 · 클락 지역',                 price:55},
-  {id:'g9', icon:'⛳',name:'레이크우드',           note:'가성비 코스',                      price:30},
-  {id:'g10',icon:'⛳',name:'비스타 오전 (6:30~)',  note:'고급 코스 · 오전 티타임',          price:88},
-  {id:'g11',icon:'⛳',name:'비스타 오후 (10:30~)', note:'고급 코스 · 오후 티타임',          price:80},
-  {id:'g12',icon:'⛳',name:'한 리저브',            note:'프리미엄 코스 · 최고급',           price:195},
-  {id:'g13',icon:'⛳',name:'수빅 인터내셔널',      note:'수빅만 전망 · 명품 코스',          price:145},
-  {id:'g14',icon:'⛳',name:'푸닝',                 note:'화산 지형 독특한 코스 · 최소 2인', price:110},
+  {id:'g1', icon:'⛳',name:'프라데라 베르데',      note:'36홀 챔피언십 · iClark 전용 코스',  price:75,
+   fee:{wd_walk:'3,000',we_walk:'3,500',wd_sell:'2,500',we_sell:'3,000'},
+   extras:[{k:'카트',v:'1,500'},{k:'캐디',v:'600'},{k:'컨섬',v:'300'},{k:'보험',v:'150'}],
+   remark:'7일 옵션 데이트 · 5/1~10/31',closed:false},
+  {id:'g2', icon:'⛳',name:'코리아 CC',            note:'한국인 운영 · 한국어 서비스',       price:55,
+   fee:{wd_walk:'2,000',we_walk:'2,500',wd_sell:'1,800',we_sell:'2,200'},
+   extras:[{k:'카트',v:'2,000'},{k:'캐디',v:'700'},{k:'보험',v:'150'}],
+   remark:'3일 옵션 데이트 · 3/9~',closed:false},
+  {id:'g3', icon:'⛳',name:'루이시타',             note:'월요일 휴장 · 18홀',               price:50,
+   fee:{wd_walk:'2,000',we_walk:'2,500',wd_sell:'1,600',we_sell:'1,800'},
+   extras:[{k:'카트',v:'1,600'},{k:'캐디',v:'600'},{k:'컨섬',v:'300'},{k:'보험',v:'100'}],
+   remark:'⚠️ 월요일 휴장 · 7일 옵션',closed:true},
+  {id:'g4', icon:'⛳',name:'디하이츠 (구선밸리)',  note:'18홀 · 앙헬레스 근교',             price:72,
+   fee:{wd_walk:'3,000',we_walk:'3,500',wd_sell:'2,900',we_sell:'3,400'},
+   extras:[{k:'카트',v:'1,500'},{k:'캐디',v:'700'},{k:'보험',v:'150'}],
+   remark:'7일 옵션 데이트 · 4/25~10/31',closed:false},
+  {id:'g5', icon:'⛳',name:'미모사',               note:'클락 내 위치 · 접근 편리',         price:95,
+   fee:{wd_walk:'—',we_walk:'—',wd_sell:'3,900',we_sell:'4,400'},
+   extras:[{k:'카트',v:'1,600'},{k:'캐디',v:'600'},{k:'컨섬',v:'400'}],
+   remark:'⚠️ 금요일 주말 요금 적용 · 15일 옵션',closed:true},
+  {id:'g6', icon:'⛳',name:'뉴 아시아',            note:'가성비 최고 코스',                 price:35,
+   fee:{wd_walk:'2,000',we_walk:'2,500',wd_sell:'1,000',we_sell:'1,000'},
+   extras:[{k:'카트',v:'1,500'},{k:'캐디',v:'600'},{k:'컨섬',v:'300'},{k:'보험',v:'150'}],
+   remark:'7일 옵션 데이트 · 3/16~10/31',closed:false},
+  {id:'g7', icon:'⛳',name:'베벌리',               note:'클락 지역 인기 코스',              price:35,
+   fee:{wd_walk:'1,500',we_walk:'1,500',wd_sell:'1,000',we_sell:'1,000'},
+   extras:[{k:'카트',v:'1,500'},{k:'캐디',v:'600'},{k:'컨섬',v:'300'},{k:'보험',v:'200'}],
+   remark:'7일 옵션 데이트 · 5/7~10/31',closed:false},
+  {id:'g8', icon:'⛳',name:'로얄 센트럴',          note:'18홀 · 클락 지역',                 price:55,
+   fee:{wd_walk:'2,000',we_walk:'2,500',wd_sell:'1,500',we_sell:'2,000'},
+   extras:[{k:'카트',v:'1,600'},{k:'캐디',v:'600'},{k:'컨섬',v:'300'},{k:'보험',v:'150'}],
+   remark:'12일 옵션 데이트 · 3/16~',closed:false},
+  {id:'g9', icon:'⛳',name:'레이크우드',           note:'가성비 코스',                      price:30,
+   fee:{wd_walk:'1,400',we_walk:'1,400',wd_sell:'800',we_sell:'800'},
+   extras:[{k:'카트',v:'1,600'},{k:'캐디',v:'600'},{k:'컨섬',v:'300'},{k:'보험',v:'150'}],
+   remark:'7일 옵션 데이트 · 3/1~',closed:false},
+  {id:'g10',icon:'⛳',name:'비스타 오전 (6:30~)',  note:'고급 코스 · 오전 티타임',          price:88,
+   fee:{wd_walk:'4,000',we_walk:'4,400',wd_sell:'3,600',we_sell:'4,000'},
+   extras:[],
+   remark:'F&B 200 포함 · 7일 옵션 · 5/1~7/31',closed:false},
+  {id:'g11',icon:'⛳',name:'비스타 오후 (10:30~)', note:'고급 코스 · 오후 티타임',          price:80,
+   fee:{wd_walk:'4,000',we_walk:'4,400',wd_sell:'3,200',we_sell:'3,600'},
+   extras:[],
+   remark:'F&B 200 포함 · 7일 옵션 · 5/1~7/31',closed:false},
+  {id:'g12',icon:'⛳',name:'한 리저브',            note:'프리미엄 코스 · 최고급',           price:195,
+   fee:{wd_walk:'9,600',we_walk:'12,000',wd_sell:'5,900',we_sell:'7,300'},
+   extras:[{k:'카트',v:'1,700'},{k:'캐디',v:'1,000'}],
+   remark:'12일 옵션 · 7/1~8/31',closed:false},
+  {id:'g13',icon:'⛳',name:'수빅 인터내셔널',      note:'수빅만 전망 · 명품 코스',          price:145,
+   fee:{wd_walk:'8,000',we_walk:'12,000',wd_sell:'6,000',we_sell:'10,000'},
+   extras:[],
+   remark:'⚠️ 수요일 휴장 · 2인 추가 3,000씩 · 6/1~10/31',closed:true},
 ];
 
 const TRANSFERS = [
@@ -485,6 +576,16 @@ function renderGolf() {
   document.getElementById('golf-list').innerHTML = GOLF.map(g=>{
     const qty=selGolf[g.id]||0;
     const on=qty>0;
+    const feeBox = g.fee ? `<div class="golf-fee-box">
+      <div class="golf-fee-row">
+        <div class="golf-fee-cell"><div class="golf-fee-lbl">주중 워크인</div><div class="golf-fee-val">${g.fee.wd_walk}</div><div class="golf-fee-unit">PHP</div></div>
+        <div class="golf-fee-cell"><div class="golf-fee-lbl">주말 워크인</div><div class="golf-fee-val">${g.fee.we_walk}</div><div class="golf-fee-unit">PHP</div></div>
+        <div class="golf-fee-cell sell"><div class="golf-fee-lbl">주중 판매가</div><div class="golf-fee-val sell-c">${g.fee.wd_sell}</div><div class="golf-fee-unit">PHP</div></div>
+        <div class="golf-fee-cell sell"><div class="golf-fee-lbl">주말 판매가</div><div class="golf-fee-val sell-c">${g.fee.we_sell}</div><div class="golf-fee-unit">PHP</div></div>
+      </div>
+      ${g.extras&&g.extras.length?'<div class="golf-extras">'+g.extras.map(e=>`<div class="golf-extra-tag">${e.k} <b>${e.v}</b></div>`).join('')+'</div>':''}
+      ${g.remark?`<div class="golf-remark${g.closed?' closed':''}">${g.remark}</div>`:''}
+    </div>` : '';
     return `<div class="golf-item${on?' on':''}" onclick="selectGolf('${g.id}')">
       <div class="golf-top">
         <div class="golf-icon">${g.icon}</div>
@@ -492,9 +593,10 @@ function renderGolf() {
           <div class="golf-name">${g.name}</div>
           <div class="golf-note">${g.note}</div>
         </div>
-        <div class="golf-price">$${g.price}/인</div>
+        <div class="golf-price">$${g.price}/인 <span style="font-size:10px;color:var(--muted);">(≈PHP ${usdToPhp(g.price).toLocaleString()})</span></div>
         <div class="golf-check">${on?'✓':''}</div>
       </div>
+      ${feeBox}
       ${on?`<div class="rounds-ctrl">
         <span class="rounds-label">라운드 횟수</span>
         <button class="sq-btn" onclick="changeRounds('${g.id}',-1);event.stopPropagation()">−</button>
@@ -552,12 +654,14 @@ function toggleCheck(id) {
   if(selCheck[id]&&selCheck[id].qty>0) delete selCheck[id];
   else selCheck[id]={item,qty:1};
   renderAll();
+initRateBanner();
 }
 
 function changeQty(id,delta) {
   if(!selCheck[id]) return;
   selCheck[id].qty=Math.max(1,selCheck[id].qty+delta);
   renderAll();
+initRateBanner();
 }
 
 /* ── 견적 계산 ── */
@@ -639,6 +743,7 @@ function renderAll() {
 }
 
 renderAll();
+initRateBanner();
 </script>
 </body>
 </html>

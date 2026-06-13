@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>클락 골프장 요금표 2026 | iClark Golf Academy</title>
+<meta name="description" content="필리핀 클락 지역 골프장 2026년 그린피 요금 현황. 프라데라, 미모사, 코리아CC 등 전체 골프장 주중·주말 요금 비교.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://iclarkgolf.com/greenfee.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{font-family:'Nunito',sans-serif;background:#f4faf7;color:#1a1a2e;min-height:100vh;padding-bottom:40px;}
+a{text-decoration:none;color:inherit;}
+:root{
+  --green:#1D9E75;--green2:#9FE1CB;--green-pale:#E1F5EE;--green-border:#c8edd9;
+  --purple:#534AB7;--white:#ffffff;
+  --gray-100:#f4f4f5;--gray-200:#e4e4e7;--gray-400:#a1a1aa;--gray-600:#52525b;--gray-900:#18181b;
+  --red:#ef4444;--orange:#f97316;
+  --radius:16px;--radius-sm:10px;--radius-full:100px;
+  --shadow:0 2px 12px rgba(29,158,117,0.10);--shadow-lg:0 8px 32px rgba(29,158,117,0.15);
+}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:200;background:var(--white);border-bottom:1px solid var(--green-border);padding:0 16px;height:56px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;background:linear-gradient(135deg,var(--green),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;flex-shrink:0;}
+.nav-back{font-size:13px;font-weight:700;color:var(--gray-400);display:flex;align-items:center;gap:4px;}
+.nav-back:active{color:var(--green);}
+
+/* HERO */
+.hero{background:linear-gradient(160deg,#E1F5EE 0%,#f0f4ff 60%,#E1F5EE 100%);padding:28px 20px 24px;text-align:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:5px;background:var(--white);border:1.5px solid var(--green-border);border-radius:var(--radius-full);padding:5px 14px;font-size:11px;font-weight:700;color:var(--green);margin-bottom:14px;}
+.hero h1{font-size:26px;font-weight:800;line-height:1.25;color:var(--gray-900);margin-bottom:8px;}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--green),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-size:13px;color:var(--gray-400);font-weight:600;margin-bottom:16px;}
+.season-tag{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--green),var(--purple));color:#fff;font-size:12px;font-weight:700;padding:7px 18px;border-radius:var(--radius-full);}
+
+/* 안내박스 */
+.notice{margin:16px 16px 0;background:var(--white);border-radius:var(--radius);border:1.5px solid var(--green-border);padding:16px 18px;}
+.notice p{font-size:12px;color:var(--gray-600);line-height:1.9;}
+.notice b{color:var(--green);}
+
+/* 섹션 */
+.main{max-width:960px;margin:0 auto;padding:0 16px;}
+.sec-head-wrap{display:flex;align-items:center;justify-content:space-between;padding:22px 0 12px;}
+.sec-title{font-size:17px;font-weight:800;color:var(--gray-900);display:flex;align-items:center;gap:7px;}
+
+/* 골프장 카드 그리드 */
+.course-grid{display:flex;flex-direction:column;gap:12px;margin-bottom:8px;}
+.course-card{background:var(--white);border:1.5px solid var(--green-border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+.course-card.premium{border-color:var(--purple);}
+.course-card.special{border-color:var(--orange);opacity:.9;}
+
+/* 카드 헤더 */
+.cc-head{padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;}
+.cc-icon{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.cc-info{flex:1;min-width:0;}
+.cc-name{font-size:15px;font-weight:800;color:var(--gray-900);margin-bottom:2px;}
+.cc-sub{font-size:11px;color:var(--gray-400);}
+.cc-price-wrap{text-align:right;flex-shrink:0;}
+.cc-price-main{font-size:16px;font-weight:800;color:var(--green);}
+.cc-price-label{font-size:10px;color:var(--gray-400);}
+.cc-arrow{font-size:14px;color:var(--gray-400);transition:transform .25s;flex-shrink:0;margin-left:6px;}
+.cc-arrow.open{transform:rotate(180deg);}
+
+/* 카드 바디 */
+.cc-body{display:none;border-top:1px solid var(--green-border);padding:14px 16px;}
+.cc-body.open{display:block;}
+
+/* 요금 테이블 */
+.fee-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:10px;}
+.fee-cell{background:var(--gray-100);border-radius:var(--radius-sm);padding:10px 8px;text-align:center;}
+.fee-cell.sell{background:var(--green-pale);}
+.fee-cell.premium-bg{background:#EEEDFE;}
+.fee-label{font-size:10px;color:var(--gray-400);font-weight:700;margin-bottom:4px;}
+.fee-val{font-size:15px;font-weight:800;color:var(--gray-900);}
+.fee-val.sell-color{color:var(--green);}
+.fee-val.premium-color{color:var(--purple);}
+.fee-unit{font-size:10px;color:var(--gray-400);}
+
+/* 추가 요금 행 */
+.extra-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+.extra-tag{background:var(--gray-100);border-radius:var(--radius-full);padding:5px 12px;font-size:12px;color:var(--gray-600);}
+.extra-tag b{color:var(--gray-900);}
+
+/* 비고 */
+.remark-box{margin-top:10px;background:var(--green-pale);border-radius:var(--radius-sm);padding:10px 12px;font-size:12px;color:#085041;line-height:1.7;}
+.remark-box.closed{background:#fef2f2;color:var(--red);}
+.remark-box.premium{background:#EEEDFE;color:var(--purple);}
+
+/* 맞춤견적 버튼 */
+.quote-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:linear-gradient(135deg,var(--green),var(--purple));color:#fff;border:none;border-radius:var(--radius-full);padding:13px 20px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;text-decoration:none;min-height:48px;margin-top:10px;}
+
+/* 소스 */
+.source-box{background:var(--white);border-radius:var(--radius);border:1.5px solid var(--green-border);padding:16px 18px;margin:16px 0;font-size:12px;color:var(--gray-600);line-height:2;}
+.source-box b{color:var(--green);}
+
+/* 하단 문의 */
+.contact-box{background:linear-gradient(135deg,#26215C,var(--purple));border-radius:var(--radius);padding:22px 20px;margin:16px 0;color:#fff;}
+.contact-box h3{font-size:15px;font-weight:800;color:var(--green2);margin-bottom:12px;}
+.contact-box p{font-size:12px;line-height:2;color:rgba(255,255,255,.8);}
+.contact-box b{color:#fff;}
+
+/* 범례 */
+.legend{display:flex;gap:12px;flex-wrap:wrap;padding:12px 0 4px;}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--gray-600);}
+.legend-dot{width:10px;height:10px;border-radius:50%;}
+
+/* 환율 배너 */
+.rate-banner{background:linear-gradient(135deg,#26215C,#534AB7);padding:10px 20px;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;}
+.rate-item{display:flex;align-items:center;gap:5px;color:rgba(255,255,255,.8);font-size:12px;}
+.rate-val{font-weight:800;color:#9FE1CB;font-size:14px;}
+.rate-margin{background:rgba(255,255,255,.15);border-radius:100px;padding:3px 10px;font-size:11px;color:#fff;font-weight:700;}
+.rate-time{font-size:10px;color:rgba(255,255,255,.5);}
+/* PHP/USD 토글 */
+.unit-toggle{display:flex;background:rgba(255,255,255,.15);border-radius:100px;padding:3px;gap:2px;margin-left:8px;}
+.unit-btn{font-size:11px;font-weight:800;padding:4px 12px;border-radius:100px;border:none;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .2s;}
+.unit-btn.on{background:#fff;color:#26215C;}
+.unit-btn.off{background:transparent;color:rgba(255,255,255,.7);}
+
+@media(min-width:640px){
+  .fee-row{grid-template-columns:repeat(4,1fr);}
+  .course-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .course-card.wide{grid-column:1/3;}
+}
+@media(min-width:1024px){
+  .main{padding:0 24px;}
+  .course-grid{grid-template-columns:1fr 1fr 1fr;}
+  .course-card.wide{grid-column:1/4;}
+}
+</style>
+</head>
+<body>
+
+<!-- 네비 -->
+<div class="nav">
+  <a href="index.html" class="logo">CLARKGO</a>
+  <a href="index.html" class="nav-back">← 홈으로</a>
+</div>
+
+<!-- 환율 배너 -->
+<div class="rate-banner" id="rate-banner">
+  <div class="rate-item">💱 적용 환율: <span class="rate-val" id="banner-rate">로딩중...</span></div>
+  <div class="rate-item">PHP 1,000 → <span class="rate-val" id="banner-usd">—</span></div>
+  <span class="rate-margin" id="banner-margin">마진 —%</span>
+  <span class="rate-time" id="banner-time"></span>
+  <div class="unit-toggle">
+    <button class="unit-btn on" onclick="setUnit('php')" id="btn-php">PHP</button>
+    <button class="unit-btn off" onclick="setUnit('usd')" id="btn-usd">USD</button>
+  </div>
+</div>
+
+<!-- 히어로 -->
+<div class="hero">
+  <div class="hero-badge">⛳ BBK Golf & Tour Agency 제공</div>
+  <h1>클락 골프장<br><em>요금 현황</em></h1>
+  <div class="hero-sub">필리핀 클락(Angeles City) 전체 골프장 그린피</div>
+  <div class="season-tag">🌧 2026년 6월 ~ 9월 린 시즌</div>
+</div>
+
+<!-- 안내 -->
+<div class="notice">
+  <p>
+    · 모든 요금 단위는 <b>페소(PHP)</b>입니다.<br>
+    · <b>판매가(예약)</b>는 BBK를 통한 예약 요금 / <b>워크인</b>은 현장 직접 결제 요금입니다.<br>
+    · 요금은 시즌 및 골프장 사정에 따라 변경될 수 있습니다. 각 카드를 탭하면 상세 요금을 확인할 수 있어요.
+  </p>
+</div>
+
+<div class="main">
+
+  <!-- 범례 -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> 판매가(예약)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--gray-400)"></div> 워크인(현장)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div> 프리미엄</div>
+  </div>
+
+  <!-- ── 일반 골프장 ── -->
+  <div class="sec-head-wrap">
+    <div class="sec-title">⛳ 클락 지역 골프장</div>
+  </div>
+  <div class="course-grid">
+
+    <!-- 프라데라 -->
+    <div class="course-card">
+      <div class="cc-head" onclick="toggleCard(this)">
+        <div class="cc-icon" style="background:#E1F5EE">⛳</div>
+        <div class="cc-info">
+          <div class="cc-name">프라데라 베르데</div>
+          <div class="cc-sub">5/1~10/31 2026 · 36홀 챔피언십</div>
+        </div>
+        <div class="cc-price-wrap">
+          <div class="cc-price-main">2,500</div>
+          <div class="cc-price-label">주중 판매가</div>
+        </div>
+        <div class="cc-arrow">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="fee-row">
+          <div class="fee-cell"><div class="fee-label">주중 워크인</div><div class="fee-val">3,000</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell"><div class="fee-label">주말 워크인</div><div class="fee-val">3,500</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주중 판매가</div><div class="fee-val sell-color">2,500</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주말 판매가</div><div class="fee-val sell-color">3,000</div><div class="fee-unit">PHP</div></div>
+        </div>
+        <div class="extra-row">
+          <div class="extra-tag">카트 <b>1,500</b></div>
+          <div class="extra-tag">캐디 <b>600</b></div>
+          <div class="extra-tag">컨섬 <b>300</b></div>
+          <div class="extra-tag">보험 <b>150</b></div>
+        </div>
+        <div class="remark-box">📌 7일 옵션 데이트 · iClark 전용 코스</div>
+        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+      </div>
+    </div>
+
+    <!-- 미모사 -->
+    <div class="course-card">
+      <div class="cc-head" onclick="toggleCard(this)">
+        <div class="cc-icon" style="background:#f0fdf4">⛳</div>
+        <div class="cc-info">
+          <div class="cc-name">미모사 G&CC</div>
+          <div class="cc-sub">4/1~10/31 2026 · 클락 내 위치</div>
+        </div>
+        <div class="cc-price-wrap">
+          <div class="cc-price-main">3,900</div>
+          <div class="cc-price-label">주중 판매가</div>
+        </div>
+        <div class="cc-arrow">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="fee-row">
+          <div class="fee-cell"><div class="fee-label">주중 워크인</div><div class="fee-val">—</div></div>
+          <div class="fee-cell"><div class="fee-label">주말 워크인</div><div class="fee-val">—</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주중 판매가</div><div class="fee-val sell-color">3,900</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주말 판매가</div><div class="fee-val sell-color">4,400</div><div class="fee-unit">PHP</div></div>
+        </div>
+        <div class="extra-row">
+          <div class="extra-tag">카트 <b>1,600</b></div>
+          <div class="extra-tag">캐디 <b>600</b></div>
+          <div class="extra-tag">컨섬 <b>400</b></div>
+        </div>
+        <div class="remark-box closed">⚠️ 금요일 주말 요금 적용 · 15일 옵션 데이트</div>
+        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+      </div>
+    </div>
+
+    <!-- 코리아CC -->
+    <div class="course-card">
+      <div class="cc-head" onclick="toggleCard(this)">
+        <div class="cc-icon" style="background:#fff7ed">🇰🇷</div>
+        <div class="cc-info">
+          <div class="cc-name">코리아 CC</div>
+          <div class="cc-sub">3/9~ 2026 · 한국인 운영</div>
+        </div>
+        <div class="cc-price-wrap">
+          <div class="cc-price-main">1,800</div>
+          <div class="cc-price-label">주중 판매가</div>
+        </div>
+        <div class="cc-arrow">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="fee-row">
+          <div class="fee-cell"><div class="fee-label">주중 워크인</div><div class="fee-val">2,000</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell"><div class="fee-label">주말 워크인</div><div class="fee-val">2,500</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주중 판매가</div><div class="fee-val sell-color">1,800</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주말 판매가</div><div class="fee-val sell-color">2,200</div><div class="fee-unit">PHP</div></div>
+        </div>
+        <div class="extra-row">
+          <div class="extra-tag">카트 <b>2,000</b></div>
+          <div class="extra-tag">캐디 <b>700</b></div>
+          <div class="extra-tag">보험 <b>150</b></div>
+        </div>
+        <div class="remark-box">📌 3일 옵션 데이트 · 한국어 서비스</div>
+        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+      </div>
+    </div>
+
+    <!-- 루이시타 -->
+    <div class="course-card">
+      <div class="cc-head" onclick="toggleCard(this)">
+        <div class="cc-icon" style="background:#E1F5EE">⛳</div>
+        <div class="cc-info">
+          <div class="cc-name">루이시타 G&CC</div>
+          <div class="cc-sub">3/16~10/31 2026</div>
+        </div>
+        <div class="cc-price-wrap">
+          <div class="cc-price-main">1,600</div>
+          <div class="cc-price-label">주중 판매가</div>
+        </div>
+        <div class="cc-arrow">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="fee-row">
+          <div class="fee-cell"><div class="fee-label">주중 워크인</div><div class="fee-val">2,000</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell"><div class="fee-label">주말 워크인</div><div class="fee-val">2,500</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주중 판매가</div><div class="fee-val sell-color">1,600</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주말 판매가</div><div class="fee-val sell-color">1,800</div><div class="fee-unit">PHP</div></div>
+        </div>
+        <div class="extra-row">
+          <div class="extra-tag">카트 <b>1,600</b></div>
+          <div class="extra-tag">캐디 <b>600</b></div>
+          <div class="extra-tag">컨섬 <b>300</b></div>
+          <div class="extra-tag">보험 <b>100</b></div>
+        </div>
+        <div class="remark-box closed">⚠️ 월요일 휴장 · 7일 옵션 데이트</div>
+        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+      </div>
+    </div>
+
+    <!-- 디하이츠 -->
+    <div class="course-card">
+      <div class="cc-head" onclick="toggleCard(this)">
+        <div class="cc-icon" style="background:#faf5ff">⛳</div>
+        <div class="cc-info">
+          <div class="cc-name">D' HEIGHTS (구선밸리)</div>
+          <div class="cc-sub">4/25~10/31 2026</div>
+        </div>
+        <div class="cc-price-wrap">
+          <div class="cc-price-main">2,900</div>
+          <div class="cc-price-label">주중 판매가</div>
+        </div>
+        <div class="cc-arrow">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="fee-row">
+          <div class="fee-cell"><div class="fee-label">주중 워크인</div><div class="fee-val">3,000</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell"><div class="fee-label">주말 워크인</div><div class="fee-val">3,500</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주중 판매가</div><div class="fee-val sell-color">2,900</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주말 판매가</div><div class="fee-val sell-color">3,400</div><div class="fee-unit">PHP</div></div>
+        </div>
+        <div class="extra-row">
+          <div class="extra-tag">카트 <b>1,500</b></div>
+          <div class="extra-tag">캐디 <b>700</b></div>
+          <div class="extra-tag">보험 <b>150</b></div>
+        </div>
+        <div class="remark-box">📌 7일 옵션 데이트</div>
+        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+      </div>
+    </div>
+
+    <!-- 뉴아시아 -->
+    <div class="course-card">
+      <div class="cc-head" onclick="toggleCard(this)">
+        <div class="cc-icon" style="background:#f0fdf4">⛳</div>
+        <div class="cc-info">
+          <div class="cc-name">뉴 아시아</div>
+          <div class="cc-sub">3/16~10/31 2026 · 가성비 최고</div>
+        </div>
+        <div class="cc-price-wrap">
+          <div class="cc-price-main">1,000</div>
+          <div class="cc-price-label">주중 판매가</div>
+        </div>
+        <div class="cc-arrow">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="fee-row">
+          <div class="fee-cell"><div class="fee-label">주중 워크인</div><div class="fee-val">2,000</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell"><div class="fee-label">주말 워크인</div><div class="fee-val">2,500</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주중 판매가</div><div class="fee-val sell-color">1,000</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주말 판매가</div><div class="fee-val sell-color">1,000</div><div class="fee-unit">PHP</div></div>
+        </div>
+        <div class="extra-row">
+          <div class="extra-tag">카트 <b>1,500</b></div>
+          <div class="extra-tag">캐디 <b>600</b></div>
+          <div class="extra-tag">컨섬 <b>300</b></div>
+          <div class="extra-tag">보험 <b>150</b></div>
+        </div>
+        <div class="remark-box">📌 7일 옵션 데이트</div>
+        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+      </div>
+    </div>
+
+    <!-- 베벌리 -->
+    <div class="course-card">
+      <div class="cc-head" onclick="toggleCard(this)">
+        <div class="cc-icon" style="background:#eff6ff">⛳</div>
+        <div class="cc-info">
+          <div class="cc-name">베벌리 G&CC</div>
+          <div class="cc-sub">5/7~10/31 2026 · 클락 인기</div>
+        </div>
+        <div class="cc-price-wrap">
+          <div class="cc-price-main">1,000</div>
+          <div class="cc-price-label">주중 판매가</div>
+        </div>
+        <div class="cc-arrow">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="fee-row">
+          <div class="fee-cell"><div class="fee-label">주중 워크인</div><div class="fee-val">1,500</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell"><div class="fee-label">주말 워크인</div><div class="fee-val">1,500</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주중 판매가</div><div class="fee-val sell-color">1,000</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주말 판매가</div><div class="fee-val sell-color">1,000</div><div class="fee-unit">PHP</div></div>
+        </div>
+        <div class="extra-row">
+          <div class="extra-tag">카트 <b>1,500</b></div>
+          <div class="extra-tag">캐디 <b>600</b></div>
+          <div class="extra-tag">컨섬 <b>300</b></div>
+          <div class="extra-tag">보험 <b>200</b></div>
+        </div>
+        <div class="remark-box">📌 7일 옵션 데이트</div>
+        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+      </div>
+    </div>
+
+    <!-- 로얄센트럴 -->
+    <div class="course-card">
+      <div class="cc-head" onclick="toggleCard(this)">
+        <div class="cc-icon" style="background:#E1F5EE">⛳</div>
+        <div class="cc-info">
+          <div class="cc-name">로얄 센트럴</div>
+          <div class="cc-sub">3/16~ 2026</div>
+        </div>
+        <div class="cc-price-wrap">
+          <div class="cc-price-main">1,500</div>
+          <div class="cc-price-label">주중 판매가</div>
+        </div>
+        <div class="cc-arrow">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="fee-row">
+          <div class="fee-cell"><div class="fee-label">주중 워크인</div><div class="fee-val">2,000</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell"><div class="fee-label">주말 워크인</div><div class="fee-val">2,500</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주중 판매가</div><div class="fee-val sell-color">1,500</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주말 판매가</div><div class="fee-val sell-color">2,000</div><div class="fee-unit">PHP</div></div>
+        </div>
+        <div class="extra-row">
+          <div class="extra-tag">카트 <b>1,600</b></div>
+          <div class="extra-tag">캐디 <b>600</b></div>
+          <div class="extra-tag">컨섬 <b>300</b></div>
+          <div class="extra-tag">보험 <b>150</b></div>
+        </div>
+        <div class="remark-box">📌 12일 옵션 데이트</div>
+        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+      </div>
+    </div>
+
+    <!-- 레이크우드 -->
+    <div class="course-card">
+      <div class="cc-head" onclick="toggleCard(this)">
+        <div class="cc-icon" style="background:#f0fdf4">⛳</div>
+        <div class="cc-info">
+          <div class="cc-name">레이크우드</div>
+          <div class="cc-sub">3/1~ 2026 · 가성비 코스</div>
+        </div>
+        <div class="cc-price-wrap">
+          <div class="cc-price-main">800</div>
+          <div class="cc-price-label">주중 판매가</div>
+        </div>
+        <div class="cc-arrow">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="fee-row">
+          <div class="fee-cell"><div class="fee-label">주중 워크인</div><div class="fee-val">1,400</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell"><div class="fee-label">주말 워크인</div><div class="fee-val">1,400</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주중 판매가</div><div class="fee-val sell-color">800</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주말 판매가</div><div class="fee-val sell-color">800</div><div class="fee-unit">PHP</div></div>
+        </div>
+        <div class="extra-row">
+          <div class="extra-tag">카트 <b>1,600</b></div>
+          <div class="extra-tag">캐디 <b>600</b></div>
+          <div class="extra-tag">컨섬 <b>300</b></div>
+          <div class="extra-tag">보험 <b>150</b></div>
+        </div>
+        <div class="remark-box">📌 7일 옵션 데이트</div>
+        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+      </div>
+    </div>
+
+  </div><!-- /course-grid -->
+
+  <!-- ── VISTA ── -->
+  <div class="sec-head-wrap">
+    <div class="sec-title">⛳ VISTA (시간대별 요금)</div>
+  </div>
+  <div class="course-grid">
+
+    <div class="course-card">
+      <div class="cc-head" onclick="toggleCard(this)">
+        <div class="cc-icon" style="background:#EEEDFE">🌅</div>
+        <div class="cc-info">
+          <div class="cc-name">비스타 — 오전 (6:30~9:10AM)</div>
+          <div class="cc-sub">5/1~7/31 2026</div>
+        </div>
+        <div class="cc-price-wrap">
+          <div class="cc-price-main">3,600</div>
+          <div class="cc-price-label">주중 판매가</div>
+        </div>
+        <div class="cc-arrow">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="fee-row">
+          <div class="fee-cell"><div class="fee-label">주중 워크인</div><div class="fee-val">4,000</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell"><div class="fee-label">주말 워크인</div><div class="fee-val">4,400</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주중 판매가</div><div class="fee-val sell-color">3,600</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주말 판매가</div><div class="fee-val sell-color">4,000</div><div class="fee-unit">PHP</div></div>
+        </div>
+        <div class="remark-box">📌 F&B 200 포함 · 7일 옵션</div>
+        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+      </div>
+    </div>
+
+    <div class="course-card">
+      <div class="cc-head" onclick="toggleCard(this)">
+        <div class="cc-icon" style="background:#EEEDFE">🌤️</div>
+        <div class="cc-info">
+          <div class="cc-name">비스타 — 오후 (10:30~1:18PM)</div>
+          <div class="cc-sub">5/1~7/31 2026</div>
+        </div>
+        <div class="cc-price-wrap">
+          <div class="cc-price-main">3,200</div>
+          <div class="cc-price-label">주중 판매가</div>
+        </div>
+        <div class="cc-arrow">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="fee-row">
+          <div class="fee-cell"><div class="fee-label">주중 워크인</div><div class="fee-val">4,000</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell"><div class="fee-label">주말 워크인</div><div class="fee-val">4,400</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주중 판매가</div><div class="fee-val sell-color">3,200</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주말 판매가</div><div class="fee-val sell-color">3,600</div><div class="fee-unit">PHP</div></div>
+        </div>
+        <div class="remark-box">📌 F&B 200 포함 · 7일 옵션</div>
+        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+      </div>
+    </div>
+
+    <div class="course-card">
+      <div class="cc-head" onclick="toggleCard(this)">
+        <div class="cc-icon" style="background:#EEEDFE">🌅</div>
+        <div class="cc-info">
+          <div class="cc-name">비스타 — 오전 (6:30~9:10AM)</div>
+          <div class="cc-sub">8/1~10/31 2026</div>
+        </div>
+        <div class="cc-price-wrap">
+          <div class="cc-price-main">3,000</div>
+          <div class="cc-price-label">주중 판매가</div>
+        </div>
+        <div class="cc-arrow">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="fee-row">
+          <div class="fee-cell"><div class="fee-label">주중 워크인</div><div class="fee-val">3,500</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell"><div class="fee-label">주말 워크인</div><div class="fee-val">4,500</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주중 판매가</div><div class="fee-val sell-color">3,000</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주말 판매가</div><div class="fee-val sell-color">4,000</div><div class="fee-unit">PHP</div></div>
+        </div>
+        <div class="extra-row">
+          <div class="extra-tag">카트 <b>1,600</b></div>
+          <div class="extra-tag">캐디 <b>700</b></div>
+        </div>
+        <div class="remark-box">📌 7일 옵션</div>
+        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+      </div>
+    </div>
+
+    <div class="course-card">
+      <div class="cc-head" onclick="toggleCard(this)">
+        <div class="cc-icon" style="background:#EEEDFE">🌤️</div>
+        <div class="cc-info">
+          <div class="cc-name">비스타 — 오후 (10:30~1:18PM)</div>
+          <div class="cc-sub">8/1~10/31 2026</div>
+        </div>
+        <div class="cc-price-wrap">
+          <div class="cc-price-main">2,000</div>
+          <div class="cc-price-label">주중 판매가</div>
+        </div>
+        <div class="cc-arrow">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="fee-row">
+          <div class="fee-cell"><div class="fee-label">주중 워크인</div><div class="fee-val">2,500</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell"><div class="fee-label">주말 워크인</div><div class="fee-val">3,500</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주중 판매가</div><div class="fee-val sell-color">2,000</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주말 판매가</div><div class="fee-val sell-color">3,000</div><div class="fee-unit">PHP</div></div>
+        </div>
+        <div class="extra-row">
+          <div class="extra-tag">카트 <b>1,600</b></div>
+          <div class="extra-tag">캐디 <b>700</b></div>
+        </div>
+        <div class="remark-box">📌 7일 옵션</div>
+        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── HANN RESERVE ── -->
+  <div class="sec-head-wrap">
+    <div class="sec-title">👑 HANN RESERVE (프리미엄)</div>
+  </div>
+  <div class="course-grid">
+
+    <div class="course-card premium">
+      <div class="cc-head" onclick="toggleCard(this)">
+        <div class="cc-icon" style="background:#EEEDFE">👑</div>
+        <div class="cc-info">
+          <div class="cc-name">한 리저브 — 일반</div>
+          <div class="cc-sub">5/1~6/30 2026</div>
+        </div>
+        <div class="cc-price-wrap">
+          <div class="cc-price-main" style="color:var(--purple)">8,600</div>
+          <div class="cc-price-label">판매가</div>
+        </div>
+        <div class="cc-arrow">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="fee-row">
+          <div class="fee-cell"><div class="fee-label">워크인</div><div class="fee-val">9,600</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell"><div class="fee-label">워크인(주말)</div><div class="fee-val">9,600</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell premium-bg"><div class="fee-label">판매가(주중)</div><div class="fee-val premium-color">8,600</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell premium-bg"><div class="fee-label">판매가(주말)</div><div class="fee-val premium-color">8,600</div><div class="fee-unit">PHP</div></div>
+        </div>
+        <div class="remark-box premium">📌 12일 옵션 데이트 · 최고급 코스</div>
+        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+      </div>
+    </div>
+
+    <div class="course-card premium">
+      <div class="cc-head" onclick="toggleCard(this)">
+        <div class="cc-icon" style="background:#EEEDFE">🌙</div>
+        <div class="cc-info">
+          <div class="cc-name">한 리저브 — 나이트골프</div>
+          <div class="cc-sub">5/1~6/30 2026 · 1:30~2:00AM</div>
+        </div>
+        <div class="cc-price-wrap">
+          <div class="cc-price-main" style="color:var(--purple)">8,300</div>
+          <div class="cc-price-label">판매가</div>
+        </div>
+        <div class="cc-arrow">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="fee-row">
+          <div class="fee-cell"><div class="fee-label">워크인</div><div class="fee-val">9,520</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell"><div class="fee-label">워크인(주말)</div><div class="fee-val">9,520</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell premium-bg"><div class="fee-label">판매가(주중)</div><div class="fee-val premium-color">8,300</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell premium-bg"><div class="fee-label">판매가(주말)</div><div class="fee-val premium-color">8,300</div><div class="fee-unit">PHP</div></div>
+        </div>
+        <div class="remark-box premium">📌 12일 옵션 · 심야 나이트골프</div>
+        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+      </div>
+    </div>
+
+    <div class="course-card premium">
+      <div class="cc-head" onclick="toggleCard(this)">
+        <div class="cc-icon" style="background:#EEEDFE">👑</div>
+        <div class="cc-info">
+          <div class="cc-name">한 리저브 — 성수기</div>
+          <div class="cc-sub">7/1~8/31 2026</div>
+        </div>
+        <div class="cc-price-wrap">
+          <div class="cc-price-main" style="color:var(--purple)">5,900</div>
+          <div class="cc-price-label">주중 판매가</div>
+        </div>
+        <div class="cc-arrow">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="fee-row">
+          <div class="fee-cell"><div class="fee-label">주중 워크인</div><div class="fee-val">9,600</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell"><div class="fee-label">주말 워크인</div><div class="fee-val">12,000</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell premium-bg"><div class="fee-label">주중 판매가</div><div class="fee-val premium-color">5,900</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell premium-bg"><div class="fee-label">주말 판매가</div><div class="fee-val premium-color">7,300</div><div class="fee-unit">PHP</div></div>
+        </div>
+        <div class="extra-row">
+          <div class="extra-tag">카트 <b>1,700</b></div>
+          <div class="extra-tag">캐디 <b>1,000</b></div>
+        </div>
+        <div class="remark-box premium">📌 12일 옵션</div>
+        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── SUBIC ── -->
+  <div class="sec-head-wrap">
+    <div class="sec-title">✈️ 원정 코스 (수빅 인터내셔널)</div>
+  </div>
+  <div class="course-grid">
+
+    <div class="course-card special">
+      <div class="cc-head" onclick="toggleCard(this)">
+        <div class="cc-icon" style="background:#fff7ed">🌊</div>
+        <div class="cc-info">
+          <div class="cc-name">수빅 인터내셔널 — 오전</div>
+          <div class="cc-sub">6/1~10/31 2026 · 6:00~11:50AM</div>
+        </div>
+        <div class="cc-price-wrap">
+          <div class="cc-price-main" style="color:var(--orange)">6,000</div>
+          <div class="cc-price-label">주중 판매가</div>
+        </div>
+        <div class="cc-arrow">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="fee-row">
+          <div class="fee-cell"><div class="fee-label">주중 워크인</div><div class="fee-val">8,000</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell"><div class="fee-label">주말 워크인</div><div class="fee-val">12,000</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주중 판매가</div><div class="fee-val sell-color">6,000</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주말 판매가</div><div class="fee-val sell-color">10,000</div><div class="fee-unit">PHP</div></div>
+        </div>
+        <div class="remark-box closed">⚠️ 수요일 휴장 (3pax/4pax) · 2인 추가 3,000씩</div>
+        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+      </div>
+    </div>
+
+    <div class="course-card special">
+      <div class="cc-head" onclick="toggleCard(this)">
+        <div class="cc-icon" style="background:#fff7ed">🌊</div>
+        <div class="cc-info">
+          <div class="cc-name">수빅 인터내셔널 — 오후</div>
+          <div class="cc-sub">6/1~10/31 2026 · 12:00~1:30PM</div>
+        </div>
+        <div class="cc-price-wrap">
+          <div class="cc-price-main" style="color:var(--orange)">5,500</div>
+          <div class="cc-price-label">주중 판매가</div>
+        </div>
+        <div class="cc-arrow">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="fee-row">
+          <div class="fee-cell"><div class="fee-label">주중 워크인</div><div class="fee-val">—</div></div>
+          <div class="fee-cell"><div class="fee-label">주말 워크인</div><div class="fee-val">—</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주중 판매가</div><div class="fee-val sell-color">5,500</div><div class="fee-unit">PHP</div></div>
+          <div class="fee-cell sell"><div class="fee-label">주말 판매가</div><div class="fee-val sell-color">7,500</div><div class="fee-unit">PHP</div></div>
+        </div>
+        <div class="remark-box closed">⚠️ 수요일 휴장</div>
+        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 출처 -->
+  <div class="source-box">
+    📋 <b>자료 출처:</b> BBK Golf & Tour Agency (클락 현지 에이전시)<br>
+    📞 한국인 (G) 0917 502 2962 / (S) 0999 881 8010<br>
+    📞 현지인 (G) 0917 393 0082 / (S) 0919 003 2142<br>
+    💬 카카오 ID: <b>bongbong306</b> &nbsp;|&nbsp; 현지인: <b>dyansotiangco</b>
+  </div>
+
+  <!-- 문의 -->
+  <div class="contact-box">
+    <h3>📩 iClark Golf Academy 예약 문의</h3>
+    <p>클락 골프 전지훈련 패키지 및 골프장 예약 문의는<br>
+    <b>카카오채널:</b> <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" style="color:#9FE1CB;">I Clark Golf Academy</a> 로 연락주세요.</p>
+    <a href="quote.html" style="display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:#1D9E75;color:#fff;border-radius:var(--radius-full);padding:11px 22px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;text-decoration:none;">🛒 맞춤 견적 구성하기</a>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+/* ── 환율 ── */
+let currentUnit = 'php';
+let appliedRate = 53.2;
+
+function getExchangeRate() {
+  const saved = localStorage.getItem('iclark_exchange');
+  if (saved) return JSON.parse(saved);
+  return { appliedUsdPhp: 53.2, marketUsdPhp: 56, marginPct: 5, updatedAt: null };
+}
+
+function initRateBanner() {
+  const r = getExchangeRate();
+  appliedRate = r.appliedUsdPhp || 53.2;
+  const safeSet = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  safeSet('banner-rate', '$1 = ' + appliedRate.toFixed(2) + ' PHP');
+  safeSet('banner-usd', '$' + (1000 / appliedRate).toFixed(2));
+  safeSet('banner-margin', '마진 ' + (r.marginPct || 5) + '% 적용');
+  safeSet('banner-time', r.updatedAt ? r.updatedAt + ' 기준' : '관리자 설정 필요');
+}
+
+function setUnit(unit) {
+  currentUnit = unit;
+  document.getElementById('btn-php').className = 'unit-btn ' + (unit==='php'?'on':'off');
+  document.getElementById('btn-usd').className = 'unit-btn ' + (unit==='usd'?'on':'off');
+  // 모든 요금 값 변환
+  document.querySelectorAll('.fee-val').forEach(el => {
+    const php = parseFloat(el.dataset.php);
+    if (!php || isNaN(php)) return;
+    if (unit === 'usd') {
+      el.textContent = '$' + (php / appliedRate).toFixed(1);
+    } else {
+      el.textContent = php.toLocaleString();
+    }
+  });
+  document.querySelectorAll('.fee-unit').forEach(el => {
+    if (el.dataset.isUnit) el.textContent = unit === 'usd' ? 'USD' : 'PHP';
+  });
+  // 카드 헤더 주요 금액도 변환
+  document.querySelectorAll('.cc-price-main').forEach(el => {
+    const php = parseFloat(el.dataset.php);
+    if (!php || isNaN(php)) return;
+    el.textContent = unit === 'usd' ? '$' + (php / appliedRate).toFixed(1) : php.toLocaleString();
+  });
+}
+
+function toggleCard(headEl) {
+  const body = headEl.nextElementSibling;
+  const arrow = headEl.querySelector('.cc-arrow');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  arrow.classList.toggle('open', !isOpen);
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  initRateBanner();
+  // data-php 속성 자동 설정 (숫자 텍스트를 data 속성으로)
+  document.querySelectorAll('.fee-val').forEach(el => {
+    const txt = el.textContent.replace(/[^0-9.]/g,'');
+    if (txt && !isNaN(txt)) el.dataset.php = txt;
+  });
+  document.querySelectorAll('.cc-price-main').forEach(el => {
+    const txt = el.textContent.replace(/[^0-9.]/g,'');
+    if (txt && !isNaN(txt)) el.dataset.php = txt;
+  });
+  document.querySelectorAll('.fee-unit').forEach(el => {
+    if (el.textContent === 'PHP') el.dataset.isUnit = '1';
+  });
+});
+</script>
+</body>
+</html>

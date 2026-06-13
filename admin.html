@@ -190,19 +190,101 @@ body { background:#f4faf7; padding-bottom:40px; }
     </div>
   </div>
 
-  <div class="mgmt-card">
-    <div class="mgmt-title">💱 환율 설정</div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>PHP → USD 환율</label>
-        <input type="number" id="php-usd" value="0.018" step="0.001">
+  <div class="mgmt-card" id="exchange-card">
+    <div class="mgmt-title">💱 환율 · 마진 설정
+      <span style="font-size:12px;font-weight:400;color:#6b7280;">고객에게 적용되는 달러 환율을 관리합니다</span>
+    </div>
+
+    <!-- 실시간 환율 -->
+    <div style="background:#f4faf7;border-radius:12px;padding:14px 16px;margin-bottom:16px;border:1.5px solid #c8edd9;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:12px;font-weight:800;color:#085041;">📡 실시간 시장 환율</span>
+        <button class="btn-edit" onclick="fetchLiveRate()" style="font-size:11px;padding:4px 12px;">새로고침</button>
       </div>
-      <div class="form-group">
-        <label>USD → KRW 환율</label>
-        <input type="number" id="usd-krw" value="1380" step="1">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div style="text-align:center;background:#fff;border-radius:8px;padding:10px;border:1px solid #c8edd9;">
+          <div style="font-size:10px;color:#6b7280;margin-bottom:4px;">USD → PHP (시장)</div>
+          <div style="font-size:20px;font-weight:800;color:#085041;" id="live-usd-php">—</div>
+          <div style="font-size:10px;color:#9ca3af;" id="live-updated">업데이트 중...</div>
+        </div>
+        <div style="text-align:center;background:#fff;border-radius:8px;padding:10px;border:1px solid #c8edd9;">
+          <div style="font-size:10px;color:#6b7280;margin-bottom:4px;">USD → KRW (시장)</div>
+          <div style="font-size:20px;font-weight:800;color:#534AB7;" id="live-usd-krw">—</div>
+          <div style="font-size:10px;color:#9ca3af;">참고용</div>
+        </div>
       </div>
     </div>
-    <button class="btn-save" onclick="saveExchange()">환율 저장</button>
+
+    <!-- 마진 슬라이더 -->
+    <div style="background:#fff8f0;border-radius:12px;padding:14px 16px;margin-bottom:16px;border:1.5px solid #fed7aa;">
+      <div style="font-size:12px;font-weight:800;color:#92400e;margin-bottom:10px;">🛡️ 안전 마진 설정</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+        <span style="font-size:13px;color:#374151;flex-shrink:0;">마진:</span>
+        <input type="range" id="margin-slider" min="0" max="15" step="0.5" value="5"
+          oninput="updateMarginDisplay()" style="flex:1;accent-color:#f97316;">
+        <span style="font-size:16px;font-weight:800;color:#f97316;min-width:40px;text-align:right;" id="margin-pct">5%</span>
+      </div>
+      <div style="font-size:11px;color:#6b7280;line-height:1.7;">
+        마진이란? 시장 환율보다 낮게 고객에게 적용해 환전 수수료·변동 위험을 커버합니다.<br>
+        예) 시장 56 PHP/$ × (1 - 5%) = <b>고객 적용 <span id="margin-example">53.2</span> PHP/$</b>
+      </div>
+    </div>
+
+    <!-- 적용 환율 결과 -->
+    <div style="background:linear-gradient(135deg,#26215C,#534AB7);border-radius:12px;padding:16px;margin-bottom:16px;color:#fff;">
+      <div style="font-size:11px;color:#AFA9EC;margin-bottom:8px;font-weight:700;">✅ 현재 고객 적용 환율</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div style="text-align:center;">
+          <div style="font-size:10px;color:#AFA9EC;margin-bottom:4px;">$1 = PHP</div>
+          <div style="font-size:24px;font-weight:800;color:#9FE1CB;" id="applied-php">—</div>
+          <div style="font-size:10px;color:#AFA9EC;">(마진 적용)</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:10px;color:#AFA9EC;margin-bottom:4px;">PHP 1,000 = $</div>
+          <div style="font-size:24px;font-weight:800;color:#fff;" id="applied-usd">—</div>
+          <div style="font-size:10px;color:#AFA9EC;">(고객이 낼 달러)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 수동 입력 (시장 환율 못 불러올 때) -->
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:6px;">✏️ 수동 입력 (실시간 실패 시)</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>시장 환율 USD → PHP</label>
+          <input type="number" id="manual-usd-php" placeholder="예: 56.5" step="0.1" oninput="updateMarginDisplay()">
+        </div>
+        <div class="form-group">
+          <label>USD → KRW (참고)</label>
+          <input type="number" id="usd-krw" value="1380" step="1">
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;">
+      <button class="btn-save" onclick="saveExchange()" style="flex:1;">💾 환율 설정 저장</button>
+      <button class="btn-add" onclick="fetchLiveRate()" style="flex:1;">📡 실시간 불러오기</button>
+    </div>
+
+    <!-- 환산 계산기 -->
+    <div style="margin-top:16px;padding-top:14px;border-top:1px solid #c8edd9;">
+      <div style="font-size:12px;font-weight:800;color:#374151;margin-bottom:10px;">🧮 빠른 환산 계산기</div>
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;">
+        <div>
+          <div style="font-size:10px;color:#6b7280;margin-bottom:3px;">PHP 금액</div>
+          <input type="number" id="calc-php" placeholder="예: 2500" oninput="calcConvert('php')"
+            style="width:100%;border:1.5px solid #c8edd9;border-radius:8px;padding:8px 10px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:#26215C;outline:none;">
+        </div>
+        <div style="font-size:18px;color:#534AB7;font-weight:800;padding-top:16px;">⇄</div>
+        <div>
+          <div style="font-size:10px;color:#6b7280;margin-bottom:3px;">고객 USD</div>
+          <input type="number" id="calc-usd" placeholder="예: 44.6" oninput="calcConvert('usd')"
+            style="width:100%;border:1.5px solid #c8edd9;border-radius:8px;padding:8px 10px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:#534AB7;outline:none;">
+        </div>
+      </div>
+      <div style="font-size:11px;color:#6b7280;margin-top:6px;text-align:center;" id="calc-note">위에서 환율을 저장하면 자동 계산됩니다</div>
+    </div>
   </div>
 </div>
 
@@ -562,7 +644,7 @@ const DEFAULT_GREENFEE = [
   { id:'vista-pm',  name:'비스타 오후',    weekday:3200, weekend:3600, caddy:700, cart:0    },
   { id:'hann',      name:'한 리저브',      weekday:8600, weekend:8600, caddy:1000,cart:1700 },
   { id:'subic',     name:'수빅 인터내셔널', weekday:6000, weekend:10000,caddy:0,   cart:0    },
-  { id:'puning',    name:'푸닝',           weekday:4800, weekend:4800, caddy:0,   cart:0    }
+
 ];
 
 function getGreenfee() {
@@ -597,10 +679,86 @@ function saveOneGF(id) {
   }
 }
 
+/* ── 환율 시스템 ── */
+function getAppliedRate() {
+  const saved = localStorage.getItem('iclark_exchange');
+  if (saved) return JSON.parse(saved);
+  return { marketUsdPhp: 56, marginPct: 5, appliedUsdPhp: 53.2, usdKrw: 1380, updatedAt: null };
+}
+
+async function fetchLiveRate() {
+  const btn = document.querySelector('[onclick="fetchLiveRate()"]');
+  if (btn) btn.textContent = '로딩...';
+  try {
+    // 무료 환율 API (CORS 허용)
+    const res = await fetch('https://open.er-api.com/v6/latest/USD');
+    const data = await res.json();
+    const phpRate = data.rates.PHP;
+    const krwRate = data.rates.KRW;
+    document.getElementById('live-usd-php').textContent = phpRate.toFixed(2);
+    document.getElementById('live-usd-krw').textContent = Math.round(krwRate).toLocaleString();
+    document.getElementById('live-updated').textContent = '방금 업데이트';
+    document.getElementById('manual-usd-php').value = phpRate.toFixed(2);
+    document.getElementById('usd-krw').value = Math.round(krwRate);
+    updateMarginDisplay();
+    if (btn) btn.textContent = '새로고침';
+  } catch(e) {
+    document.getElementById('live-updated').textContent = '실패 — 수동 입력 사용';
+    if (btn) btn.textContent = '새로고침';
+    updateMarginDisplay();
+  }
+}
+
+function updateMarginDisplay() {
+  const marketRate = parseFloat(document.getElementById('manual-usd-php').value) || 0;
+  const margin = parseFloat(document.getElementById('margin-slider').value) || 5;
+  document.getElementById('margin-pct').textContent = margin + '%';
+  if (marketRate > 0) {
+    const applied = marketRate * (1 - margin / 100);
+    document.getElementById('margin-example').textContent = applied.toFixed(2);
+    document.getElementById('applied-php').textContent = applied.toFixed(2);
+    document.getElementById('applied-usd').textContent = (1000 / applied).toFixed(2);
+  } else {
+    document.getElementById('applied-php').textContent = '—';
+    document.getElementById('applied-usd').textContent = '—';
+  }
+}
+
+function calcConvert(from) {
+  const rate = getAppliedRate();
+  if (!rate.appliedUsdPhp) return;
+  if (from === 'php') {
+    const php = parseFloat(document.getElementById('calc-php').value) || 0;
+    document.getElementById('calc-usd').value = php > 0 ? (php / rate.appliedUsdPhp).toFixed(2) : '';
+    document.getElementById('calc-note').textContent = 'PHP ' + php.toLocaleString() + ' ÷ ' + rate.appliedUsdPhp.toFixed(2) + ' = $' + (php / rate.appliedUsdPhp).toFixed(2);
+  } else {
+    const usd = parseFloat(document.getElementById('calc-usd').value) || 0;
+    document.getElementById('calc-php').value = usd > 0 ? (usd * rate.appliedUsdPhp).toFixed(0) : '';
+    document.getElementById('calc-note').textContent = '$' + usd + ' × ' + rate.appliedUsdPhp.toFixed(2) + ' = PHP ' + (usd * rate.appliedUsdPhp).toLocaleString();
+  }
+}
+
 function saveExchange() {
-  localStorage.setItem('iclark_php_usd', document.getElementById('php-usd').value);
-  localStorage.setItem('iclark_usd_krw', document.getElementById('usd-krw').value);
-  alert('✅ 환율 저장됐어요!');
+  const marketRate = parseFloat(document.getElementById('manual-usd-php').value) || 0;
+  const margin = parseFloat(document.getElementById('margin-slider').value) || 5;
+  const usdKrw = parseFloat(document.getElementById('usd-krw').value) || 1380;
+  if (!marketRate) {
+    alert('⚠️ 먼저 실시간 불러오기 또는 수동 입력을 해주세요');
+    return;
+  }
+  const applied = marketRate * (1 - margin / 100);
+  const data = {
+    marketUsdPhp: marketRate,
+    marginPct: margin,
+    appliedUsdPhp: applied,
+    usdKrw: usdKrw,
+    updatedAt: new Date().toLocaleString('ko-KR')
+  };
+  localStorage.setItem('iclark_exchange', JSON.stringify(data));
+  // 구버전 키도 업데이트 (quote.html 호환)
+  localStorage.setItem('iclark_php_usd', (1 / applied).toFixed(6));
+  localStorage.setItem('iclark_usd_krw', usdKrw);
+  alert('✅ 환율 저장 완료!\n적용 환율: $1 = ' + applied.toFixed(2) + ' PHP (마진 ' + margin + '%)');
 }
 
 function savePkgSettings() {
@@ -705,6 +863,18 @@ function filterInquiry(f) { loadInquiries(f); }
 window.addEventListener('DOMContentLoaded', () => {
   loadInquiries();
   document.getElementById('stat-accom').textContent = getAccoms().length;
+  // 환율 초기화
+  const saved = getAppliedRate();
+  if (saved.marketUsdPhp) {
+    document.getElementById('manual-usd-php').value = saved.marketUsdPhp;
+    document.getElementById('margin-slider').value = saved.marginPct;
+    document.getElementById('usd-krw').value = saved.usdKrw;
+    document.getElementById('live-usd-php').textContent = saved.marketUsdPhp.toFixed(2);
+    document.getElementById('live-updated').textContent = saved.updatedAt ? saved.updatedAt + ' 저장됨' : '저장된 값';
+    updateMarginDisplay();
+  }
+  // 자동 실시간 환율 불러오기
+  fetchLiveRate();
 });
 </script>
 </body>
