@@ -9,28 +9,28 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --green: #1b4332;
-  --green-mid: #2d6a4f;
-  --lime: #74c69d;
-  --gold: #f4a261;
-  --gold-light: #fde8d3;
+  --green: #1D9E75;
+  --green-mid: #0F6E56;
+  --lime: #9FE1CB;
+  --gold: #534AB7;
+  --gold-light: #EEEDFE;
   --white: #ffffff;
-  --cream: #f8f5f0;
-  --dark: #0d1f17;
-  --gray: #6c757d;
+  --cream: #f4faf7;
+  --dark: #26215C;
+  --gray: #6b7280;
   --card-bg: #ffffff;
-  --shadow: 0 4px 24px rgba(13,31,23,0.10);
+  --shadow: 0 4px 24px rgba(29,158,117,0.10);
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior:smooth; }
-body { font-family:'Noto Sans KR',sans-serif; background:var(--cream); color:var(--dark); min-height:100vh; }
+body { font-family:'Noto Sans KR',sans-serif; background:#f4faf7; color:var(--dark); min-height:100vh; }
 
 /* ── NAV ── */
 nav {
   position:fixed; top:0; left:0; right:0; z-index:200;
   display:flex; justify-content:space-between; align-items:center;
   padding:14px 40px;
-  background:rgba(13,31,23,0.95);
+  background:linear-gradient(135deg,#26215C,#534AB7);
   backdrop-filter:blur(12px);
 }
 .nav-logo { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:3px; color:#fff; text-decoration:none; }
@@ -47,13 +47,13 @@ nav {
   cursor:pointer; border:none; background:transparent; color:rgba(255,255,255,0.6);
   font-family:'Barlow Condensed',sans-serif; transition:all 0.2s;
 }
-.lang-btn.active { background:var(--gold); color:var(--dark); }
+.lang-btn.active { background:var(--green); color:#fff; }
 
 /* ── HERO ── */
 .hero {
-  padding-top:80px;
-  background: linear-gradient(135deg, var(--dark) 0%, var(--green) 60%, var(--green-mid) 100%);
-  padding-bottom:60px;
+  padding-top:72px;
+  background: linear-gradient(135deg, #26215C 0%, #1D9E75 60%, #0F6E56 100%);
+  padding-bottom:20px;
   text-align:center;
   position:relative;
   overflow:hidden;
@@ -75,21 +75,21 @@ nav {
 }
 .hero h1 {
   font-family:'Bebas Neue',sans-serif;
-  font-size:clamp(48px,8vw,90px);
+  font-size:clamp(36px,6vw,64px);
   color:#fff; letter-spacing:4px;
   line-height:1;
-  margin-bottom:16px;
+  margin-bottom:10px;
   position:relative;
 }
 .hero h1 span { color:var(--gold); }
 .hero p {
   color:rgba(255,255,255,0.75);
-  font-size:16px; line-height:1.7;
-  max-width:500px; margin:0 auto 32px;
+  font-size:14px; line-height:1.6;
+  max-width:500px; margin:0 auto 18px;
 }
 .hero-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
 .btn-primary {
-  padding:14px 32px; background:var(--gold); color:var(--dark);
+  padding:14px 32px; background:var(--green); color:#fff;
   border:none; border-radius:4px; font-weight:700; font-size:14px;
   cursor:pointer; font-family:'Noto Sans KR',sans-serif;
   letter-spacing:0.5px; transition:all 0.2s;
@@ -106,21 +106,21 @@ nav {
 /* ── STATS ── */
 .stats {
   display:flex; justify-content:center; gap:0;
-  background:var(--green); padding:20px 0;
+  background:linear-gradient(135deg,#1D9E75,#534AB7); padding:12px 0;
 }
 .stat-item {
-  text-align:center; padding:0 40px;
+  text-align:center; padding:0 24px;
   border-right:1px solid rgba(255,255,255,0.15);
 }
 .stat-item:last-child { border-right:none; }
-.stat-num { font-family:'Bebas Neue',sans-serif; font-size:36px; color:var(--gold); letter-spacing:2px; }
+.stat-num { font-family:'Bebas Neue',sans-serif; font-size:28px; color:#9FE1CB; letter-spacing:2px; }
 .stat-label { font-size:11px; color:rgba(255,255,255,0.6); letter-spacing:1px; text-transform:uppercase; }
 
 /* ── SECTION ── */
-.section { padding:60px 20px; max-width:1100px; margin:0 auto; }
+.section { padding:32px 20px; max-width:1100px; margin:0 auto; }
 .section-title {
   font-family:'Bebas Neue',sans-serif;
-  font-size:36px; letter-spacing:2px; color:var(--green);
+  font-size:28px; letter-spacing:2px; color:var(--dark);
   margin-bottom:8px;
 }
 .section-sub { color:var(--gray); font-size:14px; margin-bottom:36px; }
@@ -137,7 +137,7 @@ nav {
   font-family:'Noto Sans KR',sans-serif;
 }
 .filter-btn.active, .filter-btn:hover {
-  border-color:var(--green); background:var(--green); color:#fff;
+  border-color:var(--green); background:linear-gradient(135deg,var(--green),#534AB7); color:#fff;
 }
 
 /* ── CADDY CARDS ── */
@@ -168,7 +168,7 @@ nav {
 
 .caddy-badge-ko {
   position:absolute; top:12px; left:12px;
-  background:var(--gold); color:var(--dark);
+  background:var(--green); color:#fff;
   font-size:10px; font-weight:700; letter-spacing:1px;
   padding:3px 10px; border-radius:12px;
   font-family:'Barlow Condensed',sans-serif;
@@ -206,8 +206,8 @@ nav {
 }
 .caddy-actions { display:flex; gap:8px; }
 .btn-msg {
-  flex:1; padding:10px; background:var(--green); color:#fff;
-  border:none; border-radius:6px; font-size:13px; font-weight:600;
+  flex:1; padding:10px; background:linear-gradient(135deg,var(--green),#534AB7); color:#fff;
+  border:none; border-radius:var(--radius-full,100px); font-size:13px; font-weight:700;
   cursor:pointer; font-family:'Noto Sans KR',sans-serif; transition:background 0.2s;
 }
 .btn-msg:hover { background:var(--green-mid); }
@@ -345,7 +345,7 @@ nav {
 /* ── CADDY REGISTER ── */
 .register-section {
   background:linear-gradient(135deg,var(--green),var(--green-mid));
-  padding:60px 20px; text-align:center; color:#fff;
+  padding:28px 20px; text-align:center; color:#fff;
 }
 .register-section h2 { font-family:'Bebas Neue',sans-serif; font-size:40px; letter-spacing:2px; margin-bottom:12px; }
 .register-section p { color:rgba(255,255,255,0.8); margin-bottom:28px; font-size:15px; }
