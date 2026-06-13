@@ -128,6 +128,7 @@ body { background:#f4faf7; padding-bottom:40px; }
   <button class="tab-btn" onclick="showTab('caddy')">🤝 캐디 관리</button>
   <button class="tab-btn" onclick="showTab('package')">💰 패키지/견적</button>
   <button class="tab-btn" onclick="showTab('inquiry')">📩 문의 내역</button>
+  <button class="tab-btn" onclick="showTab('gallery')">📸 갤러리 관리</button>
 </div>
 
 <!-- ========== 대시보드 ========== -->
@@ -397,6 +398,27 @@ body { background:#f4faf7; padding-bottom:40px; }
   </div>
 </div>
 
+<!-- ========== 갤러리 관리 ========== -->
+<div class="panel" id="panel-gallery">
+  <div class="mgmt-card">
+    <div class="mgmt-title">📸 갤러리 사진 관리
+      <span style="font-size:12px;font-weight:400;color:#6b7280;">삭제는 관리자만 가능합니다</span>
+    </div>
+
+    <!-- 통계 -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
+      <div class="stat-card"><div class="stat-num" id="g-stat-total">0</div><div class="stat-label">전체 사진</div></div>
+      <div class="stat-card"><div class="stat-num" id="g-stat-likes">0</div><div class="stat-label">총 좋아요</div></div>
+      <div class="stat-card"><div class="stat-num" id="g-stat-today">0</div><div class="stat-label">오늘 등록</div></div>
+    </div>
+
+    <!-- 갤러리 그리드 -->
+    <div id="gallery-admin-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;">
+      <div style="grid-column:1/-1;text-align:center;padding:30px;color:#9ca3af;">불러오는 중...</div>
+    </div>
+  </div>
+</div>
+
 <!-- ========== 숙소 모달 ========== -->
 <div class="modal-bg" id="accom-modal">
   <div class="modal">
@@ -499,6 +521,7 @@ function showTab(name) {
   if (name === 'greenfee') renderGreenfeeTbl();
   if (name === 'caddy') loadCaddyData();
   if (name === 'inquiry') loadInquiries();
+  if (name === 'gallery') loadGalleryAdmin();
 }
 
 /* ── 숙소 데이터 (localStorage 기반, Firebase 연동 준비) ── */
@@ -676,6 +699,110 @@ function saveOneGF(id) {
     data[idx].cart    = parseInt(document.getElementById('gf-ct-'+id).value) || 0;
     localStorage.setItem('iclark_greenfee', JSON.stringify(data));
     alert('✅ ' + data[idx].name + ' 요금 저장됐어요!');
+  }
+}
+
+/* ── 갤러리 관리 (Firebase) ── */
+let _galleryDB = null;
+
+async function initGalleryDB() {
+  if (_galleryDB) return _galleryDB;
+  try {
+    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const cfg = {
+      apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU",
+      authDomain:"iclarkgolf.firebaseapp.com",
+      projectId:"iclarkgolf"
+    };
+    const apps = getApps();
+    const app = apps.find(a=>a.name==='admin-gallery') || initializeApp(cfg,'admin-gallery');
+    _galleryDB = getFirestore(app);
+    return _galleryDB;
+  } catch(e) {
+    console.error('Firebase 초기화 실패:', e);
+    return null;
+  }
+}
+
+async function loadGalleryAdmin() {
+  const grid = document.getElementById('gallery-admin-grid');
+  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:#9ca3af;">불러오는 중...</div>';
+  try {
+    const db = await initGalleryDB();
+    const { collection, getDocs, query, orderBy, deleteDoc, doc } =
+      await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    let snap;
+    try {
+      const q = query(collection(db,'gallery'), orderBy('createdAt','desc'));
+      snap = await getDocs(q);
+    } catch(e) {
+      snap = await getDocs(collection(db,'gallery'));
+    }
+    if (snap.empty) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:#9ca3af;">등록된 사진이 없습니다</div>';
+      document.getElementById('g-stat-total').textContent = 0;
+      document.getElementById('g-stat-likes').textContent = 0;
+      document.getElementById('g-stat-today').textContent = 0;
+      return;
+    }
+    const posts = [];
+    snap.forEach(d => posts.push({ id: d.id, ...d.data() }));
+    posts.sort((a,b) => (b.createdAt||'').localeCompare(a.createdAt||''));
+
+    // 통계
+    const today = new Date().toISOString().slice(0,10);
+    document.getElementById('g-stat-total').textContent = posts.length;
+    document.getElementById('g-stat-likes').textContent = posts.reduce((s,p)=>s+(p.likes||0),0);
+    document.getElementById('g-stat-today').textContent = posts.filter(p=>(p.createdAt||'').startsWith(today)).length;
+
+    // 카드 렌더링
+    grid.innerHTML = '';
+    posts.forEach(p => {
+      const card = document.createElement('div');
+      card.id = 'gcard-' + p.id;
+      card.style.cssText = 'background:#fff;border-radius:14px;border:1.5px solid #c8edd9;overflow:hidden;';
+      card.innerHTML = `
+        <div style="height:160px;overflow:hidden;background:#f4faf7;position:relative;">
+          <img src="${p.imgUrl}" alt="${p.title||''}"
+            style="width:100%;height:100%;object-fit:cover;"
+            onerror="this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:36px;\'>📷</div>'">
+        </div>
+        <div style="padding:10px 12px;">
+          <div style="font-size:13px;font-weight:800;color:#26215C;margin-bottom:3px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${p.title||'제목 없음'}</div>
+          <div style="font-size:11px;color:#6b7280;margin-bottom:6px;">👤 ${p.nickname||'익명'} · ❤️ ${p.likes||0} · ${(p.createdAt||'').slice(0,10)}</div>
+          ${p.desc ? `<div style="font-size:11px;color:#9ca3af;margin-bottom:8px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${p.desc}</div>` : ''}
+          <button onclick="deleteGalleryPost('${p.id}')"
+            style="width:100%;background:#fee2e2;color:#b91c1c;border:none;border-radius:100px;padding:8px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">
+            🗑️ 삭제
+          </button>
+        </div>`;
+      grid.appendChild(card);
+    });
+  } catch(e) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:#e74c3c;">로드 실패: ' + e.message + '</div>';
+  }
+}
+
+async function deleteGalleryPost(id) {
+  if (!confirm('이 사진을 삭제할까요? 복구할 수 없습니다.')) return;
+  try {
+    const db = await initGalleryDB();
+    const { deleteDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await deleteDoc(doc(db, 'gallery', id));
+    // 카드 제거
+    const card = document.getElementById('gcard-' + id);
+    if (card) {
+      card.style.opacity = '0';
+      card.style.transition = 'opacity .3s';
+      setTimeout(() => card.remove(), 300);
+    }
+    // 통계 업데이트
+    const total = document.getElementById('g-stat-total');
+    if (total) total.textContent = Math.max(0, parseInt(total.textContent) - 1);
+    alert('✅ 삭제됐어요!');
+  } catch(e) {
+    alert('삭제 실패: ' + e.message);
   }
 }
 
