@@ -33,8 +33,14 @@ nav {
   background:linear-gradient(135deg,#26215C,#534AB7);
   backdrop-filter:blur(12px);
 }
-.nav-logo { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:3px; color:#fff; text-decoration:none; }
-.nav-logo span { color:var(--gold); }
+.nav-logo {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:22px; letter-spacing:3px;
+  color:#fff; text-decoration:none;
+  display:flex; align-items:center; gap:0;
+}
+.nav-logo .logo-i { color:#ff4444; font-size:20px; font-family:'Nunito',sans-serif; font-weight:800; vertical-align:middle; letter-spacing:0; }
+.nav-logo .logo-golf { color:#9FE1CB; }
 .nav-back { color:rgba(255,255,255,0.7); font-size:13px; font-family:'Barlow Condensed',sans-serif; font-weight:600; letter-spacing:1px; text-decoration:none; text-transform:uppercase; transition:color 0.2s; }
 .nav-back:hover { color:var(--gold); }
 
@@ -143,9 +149,12 @@ nav {
 /* ── CADDY CARDS ── */
 .caddy-grid {
   display:grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap:24px;
+  grid-template-columns: repeat(2, 1fr);
+  gap:12px;
 }
+@media(min-width:480px){ .caddy-grid{ grid-template-columns:repeat(3,1fr); } }
+@media(min-width:768px){ .caddy-grid{ grid-template-columns:repeat(4,1fr); gap:14px; } }
+@media(min-width:1100px){ .caddy-grid{ grid-template-columns:repeat(5,1fr); gap:16px; } }
 .caddy-card {
   background:var(--card-bg);
   border-radius:12px;
@@ -158,7 +167,7 @@ nav {
 .caddy-card:hover { transform:translateY(-4px); box-shadow:0 12px 40px rgba(13,31,23,0.15); }
 
 .caddy-card-img {
-  width:100%; height:220px; object-fit:cover;
+  width:100%; height:160px; object-fit:cover;
   background: linear-gradient(135deg, var(--green-mid), var(--lime));
   display:flex; align-items:center; justify-content:center;
   font-size:60px; color:rgba(255,255,255,0.4);
@@ -182,38 +191,38 @@ nav {
 }
 .caddy-likes:hover, .caddy-likes.liked { background:rgba(244,162,97,0.9); color:var(--dark); }
 
-.caddy-info { padding:20px; }
+.caddy-info { padding:12px; }
 .caddy-name {
-  font-size:18px; font-weight:700; color:var(--dark);
-  margin-bottom:4px;
+  font-size:14px; font-weight:700; color:var(--dark);
+  margin-bottom:3px;
 }
 .caddy-course {
-  font-size:12px; color:var(--green-mid); font-weight:600;
-  letter-spacing:0.5px; margin-bottom:12px;
+  font-size:11px; color:var(--green-mid); font-weight:600;
+  letter-spacing:0.5px; margin-bottom:8px;
   font-family:'Barlow Condensed',sans-serif;
   text-transform:uppercase;
 }
-.caddy-tags { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+.caddy-tags { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:8px; }
 .tag {
   font-size:11px; padding:3px 10px; border-radius:12px;
   background:var(--cream); color:var(--gray);
   font-weight:500;
 }
 .caddy-bio {
-  font-size:13px; color:var(--gray); line-height:1.6;
-  margin-bottom:16px;
+  font-size:12px; color:var(--gray); line-height:1.5;
+  margin-bottom:10px;
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
 }
 .caddy-actions { display:flex; gap:8px; }
 .btn-msg {
-  flex:1; padding:10px; background:linear-gradient(135deg,var(--green),#534AB7); color:#fff;
-  border:none; border-radius:var(--radius-full,100px); font-size:13px; font-weight:700;
+  flex:1; padding:8px; background:linear-gradient(135deg,var(--green),#534AB7); color:#fff;
+  border:none; border-radius:var(--radius-full,100px); font-size:12px; font-weight:700;
   cursor:pointer; font-family:'Noto Sans KR',sans-serif; transition:background 0.2s;
 }
 .btn-msg:hover { background:var(--green-mid); }
 .btn-trans {
-  padding:10px 14px; background:var(--cream); color:var(--green);
-  border:1.5px solid var(--lime); border-radius:6px; font-size:12px;
+  padding:8px 10px; background:var(--cream); color:var(--green);
+  border:1.5px solid var(--lime); border-radius:6px; font-size:11px;
   font-weight:700; cursor:pointer; font-family:'Barlow Condensed',sans-serif;
   letter-spacing:1px; transition:all 0.2s;
 }
@@ -401,7 +410,7 @@ nav {
 
 <!-- NAV -->
 <nav>
-  <a href="https://iclarkgolf.com" class="nav-logo">i<span>Clark</span></a>
+  <a href="https://iclarkgolf.com" class="nav-logo"><span class="logo-i">i</span>CLARK<span class="logo-golf">GOLF</span></a>
   <a href="https://iclarkgolf.com" class="nav-back">← Main Site</a>
   <div style="display:flex;align-items:center;gap:16px;">
     <div class="lang-toggle">
