@@ -1026,7 +1026,7 @@ body { background:#f4faf7; padding-bottom:40px; }
 <script>
 const FIREBASE_CONFIG={apiKey:"AIzaSyClarkGolfAcademyKey",authDomain:"iclarkgolf.firebaseapp.com",projectId:"iclarkgolf",storageBucket:"iclarkgolf.appspot.com",messagingSenderId:"123456789",appId:"1:123456789:web:abcdef"};
 const DB={BLOGS:'blogs',ACCOMMODATIONS:'accommodations',GREENFEE:'greenfee',CADDIES:'caddies',QUOTES:'quotes',PACKAGES:'packages',SETTINGS:'settings'};
-const ADMIN_PW='iclark2024!';
+const ADMIN_PW='admin0115';
 function checkAdmin(){const pw=localStorage.getItem('iclark_admin');if(pw!==ADMIN_PW){const input=prompt('관리자 비밀번호를 입력하세요:');if(input!==ADMIN_PW){alert('비밀번호가 틀렸습니다.');window.location.href='index.html';return false;}localStorage.setItem('iclark_admin',input);}return true;}
 function formatDate(date){if(!date)return '';const d=date instanceof Date?date:new Date(date);return d.toLocaleDateString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'});}
 function formatDateRange(start,end){if(!start||!end)return '';const s=new Date(start),e=new Date(end);const nights=Math.round((e-s)/(1000*60*60*24));return formatDate(s)+' ~ '+formatDate(e)+' ('+nights+'박 '+(nights+1)+'일)';}
@@ -1052,7 +1052,7 @@ function goAdmin(e){if(e)e.preventDefault();window.location.href='admin.html';}
 </script>
 <script>
 /* ── 관리자 인증 ── */
-const ADMIN_PASSWORD = 'iclark2024!';
+const ADMIN_PASSWORD = 'admin0115';
 (function() {
   const saved = localStorage.getItem('iclark_admin_auth');
   if (saved !== ADMIN_PASSWORD) {
