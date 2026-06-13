@@ -347,7 +347,21 @@ footer a{color:rgba(255,255,255,.8);}
 <!-- 모바일 하단 고정 -->
 <div class="fixed-bar" id="fixed-bar">
   <div class="fixed-total">예상 총액<br><span id="fixed-total-amt">$0</span></div>
+  <button onclick="openCartModal()" style="flex:1;padding:13px;background:var(--purple);color:#fff;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;">📋 견적 보기</button>
   <button class="kakao-btn" style="flex:1;margin:0;" onclick="goKakao()">💬 카카오 문의</button>
+</div>
+
+<!-- 모바일 견적 상세 모달 -->
+<div id="cart-modal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);align-items:flex-end;justify-content:center;">
+  <div style="background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:480px;max-height:80vh;overflow-y:auto;padding:24px 20px 40px;">
+    <div style="width:40px;height:4px;background:#e4e4e7;border-radius:10px;margin:0 auto 16px;"></div>
+    <div style="font-size:16px;font-weight:800;color:#26215C;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #c8edd9;">📋 내 견적 상세</div>
+    <div id="cart-modal-body">
+      <div style="text-align:center;padding:20px;font-size:13px;color:#a1a1aa;">항목을 선택하면 여기에 견적이 표시됩니다</div>
+    </div>
+    <button onclick="goKakao();closeCartModal();" style="width:100%;margin-top:16px;padding:14px;background:#FEE500;color:#1b1b1b;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;">💬 카카오 채널로 문의하기</button>
+    <button onclick="closeCartModal()" style="width:100%;margin-top:10px;padding:12px;background:#f4f4f5;color:#52525b;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">닫기</button>
+  </div>
 </div>
 
 <footer>
@@ -722,7 +736,25 @@ function renderCart() {
   <div class="per-person">1인 약 $${perPerson}</div>`;
   el.innerHTML=html;
   document.getElementById('fixed-total-amt').textContent='$'+total;
+  // 모달 body도 동일하게 업데이트
+  const modalBody = document.getElementById('cart-modal-body');
+  if(modalBody) modalBody.innerHTML = html || '<div style="text-align:center;padding:20px;font-size:13px;color:#a1a1aa;">항목을 선택하면 여기에 견적이 표시됩니다</div>';
 }
+
+/* ── 모바일 견적 모달 ── */
+function openCartModal() {
+  const modal = document.getElementById('cart-modal');
+  if(modal){ modal.style.display='flex'; document.body.style.overflow='hidden'; }
+}
+function closeCartModal() {
+  const modal = document.getElementById('cart-modal');
+  if(modal){ modal.style.display='none'; document.body.style.overflow=''; }
+}
+// 모달 바깥 탭하면 닫기
+document.addEventListener('DOMContentLoaded', function(){
+  const modal = document.getElementById('cart-modal');
+  if(modal) modal.addEventListener('click', function(e){ if(e.target===modal) closeCartModal(); });
+});
 
 /* ── 카카오 ── */
 function goKakao() {
