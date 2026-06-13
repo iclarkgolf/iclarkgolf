@@ -122,13 +122,13 @@ body { background:#f4faf7; padding-bottom:40px; }
 
 <!-- 탭 -->
 <div class="tab-bar">
-  <button class="tab-btn on" onclick="showTab('dashboard')">📊 대시보드</button>
-  <button class="tab-btn" onclick="showTab('accommodation')">🏨 숙소 관리</button>
-  <button class="tab-btn" onclick="showTab('greenfee')">⛳ 요금표</button>
-  <button class="tab-btn" onclick="showTab('caddy')">🤝 캐디 관리</button>
-  <button class="tab-btn" onclick="showTab('package')">💰 패키지/견적</button>
-  <button class="tab-btn" onclick="showTab('inquiry')">📩 문의 내역</button>
-  <button class="tab-btn" onclick="showTab('gallery')">📸 갤러리 관리</button>
+  <button class="tab-btn on" onclick="showTab('dashboard',this)">📊 대시보드</button>
+  <button class="tab-btn" onclick="showTab('accommodation',this)">🏨 숙소 관리</button>
+  <button class="tab-btn" onclick="showTab('greenfee',this)">⛳ 요금표</button>
+  <button class="tab-btn" onclick="showTab('caddy',this)">🤝 캐디 관리</button>
+  <button class="tab-btn" onclick="showTab('package',this)">💰 패키지/견적</button>
+  <button class="tab-btn" onclick="showTab('inquiry',this)">📩 문의 내역</button>
+  <button class="tab-btn" onclick="showTab('gallery',this)">📸 갤러리 관리</button>
 </div>
 
 <!-- ========== 대시보드 ========== -->
@@ -512,11 +512,11 @@ function logout() {
 }
 
 /* ── 탭 전환 ── */
-function showTab(name) {
+function showTab(name, el) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('on'));
   document.getElementById('panel-' + name).classList.add('on');
-  event.target.classList.add('on');
+  if (el) el.classList.add('on');
   if (name === 'accommodation') renderAccomList();
   if (name === 'greenfee') renderGreenfeeTbl();
   if (name === 'caddy') loadCaddyData();
@@ -766,7 +766,7 @@ async function loadGalleryAdmin() {
         <div style="height:160px;overflow:hidden;background:#f4faf7;position:relative;">
           <img src="${p.imgUrl}" alt="${p.title||''}"
             style="width:100%;height:100%;object-fit:cover;"
-            onerror="this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:36px;\'>📷</div>'">
+            onerror="this.style.opacity=0">
         </div>
         <div style="padding:10px 12px;">
           <div style="font-size:13px;font-weight:800;color:#26215C;margin-bottom:3px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${p.title||'제목 없음'}</div>
@@ -933,7 +933,7 @@ function loadCaddyData() {
           <td>${c.exp}년</td>
           <td>${c.korean}</td>
           <td><span class="badge-pending">대기</span></td>
-          <td><button class="btn-edit">승인</button> <button class="btn-del">거절</button></td>
+          <td><button class="btn-edit" onclick="alert('승인 기능은 구글 시트에서 직접 상태를 변경해주세요.')">승인</button> <button class="btn-del" onclick="alert('거절 기능은 구글 시트에서 직접 상태를 변경해주세요.')">거절</button></td>
         </tr>`).join('') :
         '<tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:20px;">승인 대기 없음</td></tr>';
       document.getElementById('caddy-approved-body').innerHTML = approved.length ?
@@ -967,7 +967,7 @@ function loadInquiries(filter = 'all') {
       <td>${q.golfers || 0}명</td>
       <td style="font-weight:700;color:#534AB7;">$${q.totalUSD || 0}</td>
       <td><span class="badge-pending">${q.status || 'pending'}</span></td>
-      <td><button class="btn-edit">확인</button></td>
+      <td><button class="btn-edit" onclick="markInquiry(this)">확인</button></td>
     </tr>
   `).join('') : '<tr><td colspan="8" style="text-align:center;color:#9ca3af;padding:20px;">문의 내역이 없습니다</td></tr>';
 
@@ -985,6 +985,21 @@ function loadInquiries(filter = 'all') {
 }
 
 function filterInquiry(f) { loadInquiries(f); }
+
+
+/* ── 문의 확인 처리 ── */
+function markInquiry(btn) {
+  const row = btn.closest('tr');
+  const badge = row.querySelector('.badge-pending');
+  if (badge) {
+    badge.textContent = '확인완료';
+    badge.style.background = '#d1fae5';
+    badge.style.color = '#065f46';
+  }
+  btn.textContent = '완료';
+  btn.disabled = true;
+  btn.style.opacity = '0.5';
+}
 
 /* ── 초기화 ── */
 window.addEventListener('DOMContentLoaded', () => {
