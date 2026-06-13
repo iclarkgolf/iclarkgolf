@@ -1,3 +1,35 @@
+<!--
+================================================
+  iClark Golf 블로그 표준 템플릿
+  마지막 업데이트: 2026-05-28
+================================================
+
+  ★ 새 글 작업 표준 순서 ★
+
+  1. 이 파일을 Claude 채팅창에 올리며 요청
+     "이 템플릿으로 p16 써주세요. 주제는 ___"
+
+  2. Claude가 blog-p16.html + blog.html 2개 드림
+     → 아직 GitHub에 올리지 말 것!
+
+  3. 사진을 채팅창에 올림
+     → Claude가 사진 경로 넣어 최종 파일 드림
+
+  4. GitHub 1번째 (images 폴더)
+     → blog-p16-hero.jpg 업로드
+
+  5. GitHub 2번째 (루트 폴더)
+     → blog-p16.html + blog.html 2개 동시 업로드
+
+  ★ 총 GitHub Commit 2번으로 완료! ★
+
+================================================
+  ★ 템플릿 수정 규칙 ★
+  - ★...★ 표시된 부분만 교체
+  - CSS 절대 수정 금지 (추가만 허용)
+  - nav, footer 절대 수정 금지
+================================================
+-->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -45,7 +77,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--cream);color:var(--d
 /* 네비게이션 — 고정 */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:16px 40px;background:rgba(13,31,23,0.93);backdrop-filter:blur(12px);}
 .nav-logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;color:#fff;text-decoration:none;}
-.nav-logo span{color:var(--gold);}
 .nav-links{display:flex;gap:24px;}
 .nav-links a{color:rgba(255,255,255,0.8);text-decoration:none;font-size:13px;letter-spacing:1px;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;font-weight:600;}
 .nav-links a:hover{color:var(--gold);}
@@ -139,7 +170,7 @@ footer a{color:var(--gold);text-decoration:none;}
 
 <!-- 네비게이션 — 수정 금지 -->
 <nav>
-  <a href="/" class="nav-logo">i<span>Clark</span> Golf</a>
+  <a href="/" class="nav-logo"><span style="color:#ff4444;font-family:'Nunito',sans-serif;font-weight:800;font-size:22px;letter-spacing:0;vertical-align:middle;">i</span>CLARKGOLF</a>
   <div class="nav-links">
     <a href="/">홈</a>
     <a href="/blog.html">블로그</a>
