@@ -1479,7 +1479,7 @@ function loadCaddyData() {
       const rows = json.table.rows;
       let pending = [], approved = [];
       rows.forEach((row, i) => {
-        if (i === 0 || !row.c[1]) return;
+        if (!row.c || !row.c[1] || !row.c[1].v) return;
         const caddy = {
           idx: i,
           name: row.c[1]?.v || '',
