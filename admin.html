@@ -1483,12 +1483,17 @@ function loadCaddyData() {
         const caddy = {
           idx: i,
           name: row.c[1]?.v || '',
+          email: row.c[2]?.v || '',
+          phone: row.c[3]?.v || '',
+          caddyId: row.c[4]?.v || '',
           course: row.c[5]?.v || '',
           exp: row.c[6]?.v || 0,
           korean: row.c[7]?.v || '',
-          status: row.c[3]?.v || 'pending'
+          desc: row.c[8]?.v || '',
+          kakao: row.c[9]?.v || '',
+          status: row.c[10]?.v || 'pending'
         };
-        if (caddy.status === 'approved') approved.push(caddy);
+        if (caddy.status === '승인' || caddy.status === 'approved') approved.push(caddy);
         else pending.push(caddy);
       });
       document.getElementById('caddy-pending-count').textContent = pending.length + '명';
