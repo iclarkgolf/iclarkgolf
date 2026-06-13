@@ -458,9 +458,21 @@ img { max-width: 100%; }
   border: 1.5px solid var(--gray-200);
   border-radius: var(--radius); padding: 14px;
   display: block; text-decoration: none;
-  transition: all .2s;
+  transition: all .2s; position: relative;
 }
 .golf-card:active { border-color: var(--pink-border); transform: scale(0.98); }
+.golf-card.main-course {
+  border-color: var(--pink-border);
+  background: linear-gradient(160deg, var(--pink-pale) 0%, var(--white) 60%);
+}
+.golf-badge {
+  display: inline-block;
+  font-size: 9px; font-weight: 800; letter-spacing: .04em;
+  padding: 2px 8px; border-radius: var(--radius-full);
+  margin-bottom: 6px;
+}
+.golf-badge.training { background: var(--pink); color: #fff; }
+.golf-badge.tour { background: var(--gray-100); color: var(--gray-600); }
 .golf-icon {
   width: 42px; height: 42px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
@@ -907,34 +919,51 @@ footer {
 <div class="section" id="golf">
   <div class="sec-head">
     <div class="sec-title" data-i18n="sec.golf">🗺️ 클락 골프장</div>
-    <a href="#golf" class="sec-more"><span data-i18n="sec.more">전체보기</span> <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    <a href="greenfee.html" class="sec-more"><span data-i18n="sec.more">전체보기</span> <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
   </div>
   <div class="golf-grid">
-    <a href="#" class="golf-card">
+
+    <!-- 1. 프라데라 — 전지훈련 메인 코스 -->
+    <a href="greenfee.html" class="golf-card main-course">
+      <div class="golf-badge training">🏆 전지훈련 추천</div>
       <div class="golf-icon" style="background:#E1F5EE">⛳</div>
-      <div class="golf-name" data-i18n="golf.pradera.name">프라데라 베르데</div>
-      <div class="golf-info" data-i18n="golf.pradera.desc">36홀 챔피언십 · 캐디+카트 포함</div>
+      <div class="golf-name">프라데라 베르데</div>
+      <div class="golf-info">36홀 챔피언십 · iClark 전용 코스</div>
       <div class="golf-price">$75~ <span>/ 18홀</span></div>
     </a>
-    <a href="#" class="golf-card">
-      <div class="golf-icon" style="background:#eff6ff">⛳</div>
-      <div class="golf-name" data-i18n="golf.beverly.name">베버리 G&CC</div>
-      <div class="golf-info" data-i18n="golf.beverly.desc">클락 인기 코스</div>
-      <div class="golf-price">$65~ <span>/ 18홀</span></div>
+
+    <!-- 2. 베버리 — 전지훈련 메인 코스 -->
+    <a href="greenfee.html" class="golf-card main-course">
+      <div class="golf-badge training">🏆 전지훈련 추천</div>
+      <div class="golf-icon" style="background:#E1F5EE">⛳</div>
+      <div class="golf-name">베버리 G&CC</div>
+      <div class="golf-info">클락 전지훈련 최적 코스</div>
+      <div class="golf-price">$35~ <span>/ 18홀</span></div>
     </a>
-    <a href="#" class="golf-card">
+
+    <!-- 3. 미모사 — 관광 코스 -->
+    <a href="greenfee.html" class="golf-card">
+      <div class="golf-badge tour">관광 코스</div>
       <div class="golf-icon" style="background:#f0fdf4">⛳</div>
-      <div class="golf-name" data-i18n="golf.mimosa.name">미모사 G&CC</div>
-      <div class="golf-info" data-i18n="golf.mimosa.desc">접근 편리 · 시내 인접</div>
-      <div class="golf-price">$60~ <span>/ 18홀</span></div>
+      <div class="golf-name">미모사 G&CC</div>
+      <div class="golf-info">접근 편리 · 시내 인접</div>
+      <div class="golf-price">$95~ <span>/ 18홀</span></div>
     </a>
-    <a href="#" class="golf-card">
-      <div class="golf-icon" style="background:#fff7ed">⛳</div>
-      <div class="golf-name" data-i18n="golf.koreana.name">코리아나 GC</div>
-      <div class="golf-info" data-i18n="golf.koreana.desc">한국인 운영 · 한국어 서비스</div>
+
+    <!-- 4. 코리아CC — 관광 코스 -->
+    <a href="greenfee.html" class="golf-card">
+      <div class="golf-badge tour">관광 코스</div>
+      <div class="golf-icon" style="background:#fff7ed">🇰🇷</div>
+      <div class="golf-name">코리아 CC</div>
+      <div class="golf-info">한국인 운영 · 한국어 서비스</div>
       <div class="golf-price">$55~ <span>/ 18홀</span></div>
     </a>
+
   </div>
+  <!-- 전체보기 버튼 -->
+  <a href="greenfee.html" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;background:var(--white);border:1.5px solid var(--pink-border);border-radius:var(--radius-full);padding:11px 20px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:var(--pink);text-decoration:none;">
+    ⛳ 전체 골프장 요금 보기 →
+  </a>
 </div>
 
 <!-- 캐디 매칭 -->
