@@ -62,7 +62,14 @@
       if (countEl) countEl.textContent = docs.length + '개';
       // 전체보기 버튼 표시 여부
       const moreBtn = document.getElementById('gallery-more-btn');
-      if (moreBtn) moreBtn.style.display = (!window._showAll && docs.length > previewCount) ? 'flex' : 'none';
+      if (moreBtn) {
+        if (!window._showAll && docs.length > previewCount) {
+          moreBtn.style.display = 'flex';
+          moreBtn.innerHTML = '📸 전체 ' + docs.length + '장 모두 보기 →';
+        } else {
+          moreBtn.style.display = 'none';
+        }
+      }
       preview.forEach(p => {
         const id = p.id;
         const card = document.createElement('div');
@@ -212,17 +219,18 @@ a{text-decoration:none;color:inherit;}
   font-size:14px;font-weight:800;cursor:pointer;min-height:48px;width:100%;max-width:420px;
   display:flex;align-items:center;justify-content:center;gap:8px;}
 /* Grid */
-.gallery-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:0 10px;}
-@media(min-width:480px){.gallery-grid{grid-template-columns:repeat(3,1fr);gap:10px;padding:0 14px;}}
-@media(min-width:768px){.gallery-grid{grid-template-columns:repeat(4,1fr);gap:12px;}}
-@media(min-width:1100px){.gallery-grid{grid-template-columns:repeat(5,1fr);max-width:1200px;margin:0 auto;padding:0 20px;gap:14px;}}
+.gallery-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0 10px 4px;}
+.gallery-wrap::-webkit-scrollbar{display:none;}
+.gallery-grid{display:grid;grid-template-rows:repeat(2,1fr);grid-auto-flow:column;grid-auto-columns:160px;gap:10px;width:max-content;}
+@media(min-width:640px){.gallery-grid{grid-auto-columns:200px;gap:12px;}}
+@media(min-width:1100px){.gallery-grid{grid-auto-columns:220px;gap:14px;}}
 .g-card{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--radius);
   overflow:hidden;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
 .g-card:hover{border-color:var(--pink-border);box-shadow:0 4px 16px rgba(29,158,117,0.15);transform:translateY(-2px);}
 .g-card:active{transform:scale(0.97);border-color:var(--pink-border);}
-.g-thumb{height:180px;background:var(--gray-100);overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;}
-@media(min-width:480px){.g-thumb{height:200px;}}
-@media(min-width:768px){.g-thumb{height:220px;}}
+.g-thumb{height:140px;background:var(--gray-100);overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;}
+@media(min-width:640px){.g-thumb{height:160px;}}
+@media(min-width:1100px){.g-thumb{height:170px;}}
 .g-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s ease;}
 .g-card:hover .g-thumb img{transform:scale(1.05);}
 .g-body{padding:8px 10px;}
@@ -295,8 +303,10 @@ a{text-decoration:none;color:inherit;}
 <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px 4px;">
   <div style="font-size:13px;font-weight:700;color:#52525b;">최신 사진 <span id="gallery-count" style="color:#1D9E75;"></span></div>
 </div>
-<div class="gallery-grid" id="gallery-grid">
-  <div class="loading">불러오는 중...</div>
+<div class="gallery-wrap">
+  <div class="gallery-grid" id="gallery-grid">
+    <div class="loading" style="grid-column:1/-1;grid-row:1/-1;">불러오는 중...</div>
+  </div>
 </div>
 <div id="gallery-more-btn" onclick="showAllGallery()"
   style="display:none;margin:12px 14px 0;align-items:center;justify-content:center;gap:6px;
@@ -381,6 +391,7 @@ a{text-decoration:none;color:inherit;}
 <script>
 function showAllGallery() {
   window._showAll = true;
+  // 2줄 가로스크롤 그대로 유지 — 개수 제한만 해제
   loadPosts();
 }
 
