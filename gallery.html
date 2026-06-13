@@ -36,52 +36,102 @@
     const wrap = document.getElementById('gallery-grid');
     wrap.innerHTML = '<div class="loading">불러오는 중...</div>';
     try {
-      const q = query(window._col, orderBy('createdAt', 'desc'));
-      const snap = await getDocs(q);
+      // orderBy 인덱스 없을 때를 대비해 두 방법 시도
+      let snap;
+      try {
+        const q = query(window._col, orderBy('createdAt', 'desc'));
+        snap = await getDocs(q);
+      } catch(indexErr) {
+        // 인덱스 미생성 시 정렬 없이 불러온 후 JS로 정렬
+        snap = await getDocs(window._col);
+      }
       if (snap.empty) {
         wrap.innerHTML = '<div class="empty">아직 게시물이 없어요. 첫 번째 사진을 올려보세요! 📸</div>';
         return;
       }
+      // JS 정렬 (최신순)
+      const docs = [];
+      snap.forEach(docSnap => docs.push({ id: docSnap.id, ...docSnap.data() }));
+      docs.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
       wrap.innerHTML = '';
-      snap.forEach(docSnap => {
-        const p = docSnap.data();
-        const id = docSnap.id;
-        wrap.innerHTML += `
-          <div class="g-card" onclick="openModal('${id}','${escHtml(p.imgUrl)}','${escHtml(p.title)}','${escHtml(p.nickname)}','${p.likes||0}','${escHtml(p.desc||'')}')">
-            <div class="g-thumb">
-              <img src="${p.imgUrl}" alt="${escHtml(p.title)}" loading="lazy" onerror="this.style.display='none'">
-            </div>
-            <div class="g-body">
-              <div class="g-title">${escHtml(p.title)}</div>
-              <div class="g-meta">
-                <span>👤 ${escHtml(p.nickname)}</span>
-                <span>❤️ <span id="likes-${id}">${p.likes||0}</span></span>
-              </div>
+      docs.forEach(p => {
+        const id = p.id;
+        const card = document.createElement('div');
+        card.className = 'g-card';
+        card.onclick = () => openModal(id, p.imgUrl, p.title, p.nickname, p.likes||0, p.desc||'');
+        card.innerHTML = `
+          <div class="g-thumb">
+            <img src="${p.imgUrl}" alt="${escHtml(p.title)}" loading="lazy"
+              onerror="this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:36px;\'>📷</div>'">
+          </div>
+          <div class="g-body">
+            <div class="g-title">${escHtml(p.title)}</div>
+            <div class="g-meta">
+              <span>👤 ${escHtml(p.nickname)}</span>
+              <span>❤️ <span id="likes-${id}">${p.likes||0}</span></span>
             </div>
           </div>`;
+        wrap.appendChild(card);
       });
     } catch(e) {
-      wrap.innerHTML = '<div class="empty">불러오기 실패. 잠시 후 다시 시도해주세요.</div>';
+      console.error('갤러리 로드 실패:', e);
+      document.getElementById('gallery-grid').innerHTML =
+        '<div class="empty">불러오기 실패: ' + e.message + '<br><br><button onclick="loadPosts()" style="padding:10px 20px;border-radius:100px;border:1.5px solid #c8edd9;background:#E1F5EE;color:#085041;font-weight:700;cursor:pointer;">다시 시도</button></div>';
     }
   };
 
   // 게시물 저장
   window.submitPost = async function() {
     const title    = document.getElementById('f-title').value.trim();
-    const imgUrl   = document.getElementById('f-imgurl').value.trim();
     const nickname = document.getElementById('f-nick').value.trim();
     const desc     = document.getElementById('f-desc').value.trim();
-    if (!title || !imgUrl || !nickname) {
-      alert('제목, 사진 URL, 닉네임은 필수입니다.');
-      return;
-    }
-    if (!imgUrl.startsWith('http')) {
-      alert('사진 URL은 http:// 또는 https://로 시작해야 합니다.');
-      return;
-    }
+    let imgUrl     = document.getElementById('f-imgurl').value.trim();
+    const fileInput = document.getElementById('f-file');
     const btn = document.getElementById('submit-btn');
-    btn.textContent = '올리는 중...';
+
+    if (!title || !nickname) {
+      alert('제목과 닉네임은 필수입니다.');
+      return;
+    }
+
     btn.disabled = true;
+
+    // 파일이 선택된 경우 ImgBB 업로드
+    if (fileInput.files && fileInput.files[0]) {
+      btn.textContent = '사진 업로드 중...';
+      document.getElementById('upload-status').textContent = '⏳ ImgBB에 업로드 중...';
+      try {
+        const formData = new FormData();
+        formData.append('image', fileInput.files[0]);
+        const res = await fetch('https://api.imgbb.com/1/upload?key=b59ca0d334f2bbbc8e26c620c0936cf5', {
+          method: 'POST', body: formData
+        });
+        const data = await res.json();
+        if (data.success) {
+          imgUrl = data.data.url;
+          document.getElementById('upload-status').textContent = '✅ 업로드 완료!';
+        } else {
+          alert('사진 업로드 실패. URL을 직접 입력해주세요.');
+          btn.textContent = '📸 사진 올리기';
+          btn.disabled = false;
+          return;
+        }
+      } catch(e) {
+        alert('업로드 오류. URL을 직접 입력해주세요.');
+        btn.textContent = '📸 사진 올리기';
+        btn.disabled = false;
+        return;
+      }
+    }
+
+    if (!imgUrl || !imgUrl.startsWith('http')) {
+      alert('사진을 선택하거나 URL을 입력해주세요.');
+      btn.textContent = '📸 사진 올리기';
+      btn.disabled = false;
+      return;
+    }
+
+    btn.textContent = '저장 중...';
     try {
       await addDoc(window._col, {
         title, imgUrl, nickname, desc,
@@ -89,13 +139,18 @@
         createdAt: new Date().toISOString()
       });
       closeUpload();
+      // 폼 초기화
       document.getElementById('f-title').value = '';
       document.getElementById('f-imgurl').value = '';
       document.getElementById('f-nick').value = '';
       document.getElementById('f-desc').value = '';
+      document.getElementById('f-file').value = '';
+      document.getElementById('img-preview-wrap').style.display = 'none';
+      document.getElementById('img-placeholder').style.display = 'block';
+      document.getElementById('upload-status').textContent = '💡 사진을 선택하면 자동으로 업로드됩니다';
       await loadPosts();
     } catch(e) {
-      alert('저장 실패. Firebase 설정을 확인해주세요.');
+      alert('저장 실패: ' + e.message);
     }
     btn.textContent = '📸 사진 올리기';
     btn.disabled = false;
@@ -118,14 +173,14 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{font-family:'Nunito',sans-serif;background:#f9f0f5;color:#1a1a2e;min-height:100vh;padding-bottom:80px;}
+body{font-family:'Nunito',sans-serif;background:#f4faf7;color:#1a1a2e;min-height:100vh;padding-bottom:80px;}
 a{text-decoration:none;color:inherit;}
 :root{
-  --pink:#e8498a;--pink2:#f472b6;--pink-pale:#fdf2f8;--pink-border:#fbcfe8;
-  --purple:#9333ea;--white:#ffffff;
+  --pink:#1D9E75;--pink2:#9FE1CB;--pink-pale:#E1F5EE;--pink-border:#c8edd9;
+  --purple:#534AB7;--white:#ffffff;
   --gray-100:#f4f4f5;--gray-200:#e4e4e7;--gray-400:#a1a1aa;--gray-600:#52525b;--gray-900:#18181b;
   --radius:16px;--radius-sm:10px;--radius-full:100px;
-  --shadow:0 2px 12px rgba(232,73,138,0.10);
+  --shadow:0 2px 12px rgba(29,158,117,0.10);
 }
 /* Nav */
 .nav{position:sticky;top:0;z-index:200;background:var(--white);border-bottom:1px solid var(--pink-border);
@@ -135,7 +190,7 @@ a{text-decoration:none;color:inherit;}
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .nav-back{font-size:13px;font-weight:700;color:var(--gray-600);display:flex;align-items:center;gap:5px;}
 /* Header */
-.page-header{background:linear-gradient(135deg,#ff6bac,#9333ea);padding:28px 20px 24px;text-align:center;}
+.page-header{background:linear-gradient(135deg,#1D9E75,#534AB7);padding:28px 20px 24px;text-align:center;}
 .page-header h1{font-size:24px;font-weight:800;color:#fff;margin-bottom:6px;}
 .page-header p{font-size:13px;color:rgba(255,255,255,.85);font-weight:600;}
 /* Upload btn */
@@ -236,9 +291,24 @@ a{text-decoration:none;color:inherit;}
       <input id="f-title" class="form-input" placeholder="예: 프라데라 베르데 18번홀 파4">
     </div>
     <div class="form-group">
-      <label class="form-label">사진 URL *</label>
-      <input id="f-imgurl" class="form-input" type="url" placeholder="https://i.ibb.co/...">
-      <div class="form-hint">💡 <a href="https://imgbb.com" target="_blank" style="color:var(--pink)">ImgBB</a>에 업로드 후 URL을 붙여넣으세요</div>
+      <label class="form-label">사진 선택 *</label>
+      <input type="file" id="f-file" accept="image/*" onchange="previewFile(this)"
+        style="display:none">
+      <div id="img-upload-box" onclick="document.getElementById('f-file').click()"
+        style="border:2px dashed var(--pink-border);border-radius:12px;padding:20px;text-align:center;cursor:pointer;background:var(--pink-pale);margin-bottom:8px;transition:all .2s;"
+        onmouseover="this.style.borderColor='var(--pink)'" onmouseout="this.style.borderColor='var(--pink-border)'">
+        <div id="img-preview-wrap" style="display:none;">
+          <img id="img-preview" style="max-height:160px;border-radius:8px;object-fit:cover;">
+        </div>
+        <div id="img-placeholder">
+          <div style="font-size:32px;margin-bottom:6px;">📷</div>
+          <div style="font-size:13px;font-weight:700;color:var(--pink);">사진을 탭해서 선택하세요</div>
+          <div style="font-size:11px;color:var(--gray-400);margin-top:3px;">JPG, PNG (최대 5MB)</div>
+        </div>
+      </div>
+      <input id="f-imgurl" class="form-input" type="url" placeholder="또는 URL 직접 입력 (https://...)"
+        style="font-size:12px;" oninput="clearFileSelect()">
+      <div class="form-hint" id="upload-status">💡 사진을 선택하면 자동으로 업로드됩니다</div>
     </div>
     <div class="form-group">
       <label class="form-label">닉네임 *</label>
@@ -282,6 +352,32 @@ a{text-decoration:none;color:inherit;}
 
 <script>
 function escHtml(s){ return String(s||'').replace(/'/g,"&#39;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function previewFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) {
+    alert('파일 크기는 5MB 이하로 해주세요.');
+    input.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('img-preview').src = e.target.result;
+    document.getElementById('img-preview-wrap').style.display = 'block';
+    document.getElementById('img-placeholder').style.display = 'none';
+    document.getElementById('f-imgurl').value = '';
+    document.getElementById('upload-status').textContent = '✅ 사진 선택됨 — 올리기 버튼을 누르면 업로드됩니다';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearFileSelect() {
+  document.getElementById('f-file').value = '';
+  document.getElementById('img-preview-wrap').style.display = 'none';
+  document.getElementById('img-placeholder').style.display = 'block';
+  document.getElementById('upload-status').textContent = '💡 또는 사진을 탭해서 선택하세요';
+}
 function openUpload(){ document.getElementById('upload-overlay').classList.add('open'); }
 function closeUpload(){ document.getElementById('upload-overlay').classList.remove('open'); }
 function overlayClose(e){ if(e.target===document.getElementById('upload-overlay')) closeUpload(); }
