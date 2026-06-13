@@ -1205,6 +1205,11 @@ footer {
 
 <script>
 /* ── 햄버거 메뉴 ── */
+function goAdmin(e) {
+  if (e) e.preventDefault();
+  window.location.href = 'admin.html';
+}
+
 function toggleDrawer() {
   const drawer = document.getElementById('drawer');
   const overlay = document.getElementById('drawer-overlay');
