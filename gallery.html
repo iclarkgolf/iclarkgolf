@@ -8,280 +8,164 @@
 <meta name="robots" content="index, follow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
-<!-- Firebase -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, orderBy, query, updateDoc, doc, increment }
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU",
-    authDomain: "iclarkgolf.firebaseapp.com",
-    projectId: "iclarkgolf",
-    storageBucket: "iclarkgolf.firebasestorage.app",
-    messagingSenderId: "503239213724",
-    appId: "1:503239213724:web:c136e25e0cd22c170e6359",
-    measurementId: "G-8S6Z4PD9VZ"
-  };
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // 전역에 db 노출
-  window._db = db;
-  window._col = collection(db, 'gallery');
-  window._firestore = { collection, addDoc, getDocs, orderBy, query, updateDoc, doc, increment };
-
-  // 게시물 불러오기
-  window.loadPosts = async function() {
-    const wrap = document.getElementById('gallery-grid');
-    wrap.innerHTML = '<div class="loading">불러오는 중...</div>';
-    try {
-      // orderBy 인덱스 없을 때를 대비해 두 방법 시도
-      let snap;
-      try {
-        const q = query(window._col, orderBy('createdAt', 'desc'));
-        snap = await getDocs(q);
-      } catch(indexErr) {
-        // 인덱스 미생성 시 정렬 없이 불러온 후 JS로 정렬
-        snap = await getDocs(window._col);
-      }
-      if (snap.empty) {
-        wrap.innerHTML = '<div class="empty">아직 게시물이 없어요. 첫 번째 사진을 올려보세요! 📸</div>';
-        return;
-      }
-      // JS 정렬 (최신순)
-      const docs = [];
-      snap.forEach(docSnap => docs.push({ id: docSnap.id, ...docSnap.data() }));
-      docs.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
-      wrap.innerHTML = '';
-      const isMobile = window.innerWidth < 640;
-      const previewCount = isMobile ? 4 : 10;
-      const preview = window._showAll ? docs : docs.slice(0, previewCount);
-      // 전체 건수 표시
-      const countEl = document.getElementById('gallery-count');
-      if (countEl) countEl.textContent = docs.length + '개';
-      // 전체보기 버튼 표시 여부
-      const moreBtn = document.getElementById('gallery-more-btn');
-      if (moreBtn) {
-        if (!window._showAll && docs.length > previewCount) {
-          moreBtn.style.display = 'flex';
-          moreBtn.innerHTML = '📸 전체 ' + docs.length + '장 모두 보기 →';
-        } else {
-          moreBtn.style.display = 'none';
-        }
-      }
-      preview.forEach(p => {
-        const id = p.id;
-        const card = document.createElement('div');
-        card.className = 'g-card';
-        card.onclick = () => openModal(id, p.imgUrl, p.title, p.nickname, p.likes||0, p.desc||'');
-        card.innerHTML = `
-          <div class="g-thumb">
-            <img src="${p.imgUrl}" alt="${escHtml(p.title)}" loading="lazy"
-              onerror="this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:40px;background:#f4faf7;\'>📷</div>'">
-          </div>
-          <div class="g-body">
-            <div class="g-title">${escHtml(p.title)}</div>
-            <div class="g-meta">
-              <span>👤 ${escHtml(p.nickname)}</span>
-              <span>❤️ <span id="likes-${id}">${p.likes||0}</span></span>
-            </div>
-          </div>`;
-        wrap.appendChild(card);
-      });
-    } catch(e) {
-      console.error('갤러리 로드 실패:', e);
-      document.getElementById('gallery-grid').innerHTML =
-        '<div class="empty">불러오기 실패: ' + e.message + '<br><br><button onclick="loadPosts()" style="padding:10px 20px;border-radius:100px;border:1.5px solid #c8edd9;background:#E1F5EE;color:#085041;font-weight:700;cursor:pointer;">다시 시도</button></div>';
-    }
-  };
-
-  // 게시물 저장
-  window.submitPost = async function() {
-    const title    = document.getElementById('f-title').value.trim();
-    const nickname = document.getElementById('f-nick').value.trim();
-    const desc     = document.getElementById('f-desc').value.trim();
-    let imgUrl     = document.getElementById('f-imgurl').value.trim();
-    const fileInput = document.getElementById('f-file');
-    const btn = document.getElementById('submit-btn');
-
-    if (!title || !nickname) {
-      alert('제목과 닉네임은 필수입니다.');
-      return;
-    }
-
-    btn.disabled = true;
-
-    // 파일이 선택된 경우 ImgBB 업로드
-    if (fileInput.files && fileInput.files[0]) {
-      btn.textContent = '사진 업로드 중...';
-      document.getElementById('upload-status').textContent = '⏳ ImgBB에 업로드 중...';
-      try {
-        const formData = new FormData();
-        formData.append('image', fileInput.files[0]);
-        const res = await fetch('https://api.imgbb.com/1/upload?key=b59ca0d334f2bbbc8e26c620c0936cf5', {
-          method: 'POST', body: formData
-        });
-        const data = await res.json();
-        if (data.success) {
-          imgUrl = data.data.url;
-          document.getElementById('upload-status').textContent = '✅ 업로드 완료!';
-        } else {
-          alert('사진 업로드 실패. URL을 직접 입력해주세요.');
-          btn.textContent = '📸 사진 올리기';
-          btn.disabled = false;
-          return;
-        }
-      } catch(e) {
-        alert('업로드 오류. URL을 직접 입력해주세요.');
-        btn.textContent = '📸 사진 올리기';
-        btn.disabled = false;
-        return;
-      }
-    }
-
-    if (!imgUrl || !imgUrl.startsWith('http')) {
-      alert('사진을 선택하거나 URL을 입력해주세요.');
-      btn.textContent = '📸 사진 올리기';
-      btn.disabled = false;
-      return;
-    }
-
-    btn.textContent = '저장 중...';
-    try {
-      await addDoc(window._col, {
-        title, imgUrl, nickname, desc,
-        likes: 0,
-        createdAt: new Date().toISOString()
-      });
-      closeUpload();
-      // 폼 초기화
-      document.getElementById('f-title').value = '';
-      document.getElementById('f-imgurl').value = '';
-      document.getElementById('f-nick').value = '';
-      document.getElementById('f-desc').value = '';
-      document.getElementById('f-file').value = '';
-      document.getElementById('img-preview-wrap').style.display = 'none';
-      document.getElementById('img-placeholder').style.display = 'block';
-      document.getElementById('upload-status').textContent = '💡 사진을 선택하면 자동으로 업로드됩니다';
-      await loadPosts();
-    } catch(e) {
-      alert('저장 실패: ' + e.message);
-    }
-    btn.textContent = '📸 사진 올리기';
-    btn.disabled = false;
-  };
-
-  // 좋아요
-  window.likePost = async function(id) {
-    try {
-      const { doc, updateDoc, increment } = window._firestore;
-      await updateDoc(doc(window._db, 'gallery', id), { likes: increment(1) });
-      const el = document.getElementById('likes-'+id);
-      if (el) el.textContent = parseInt(el.textContent||0) + 1;
-      const ml = document.getElementById('modal-likes');
-      if (ml) ml.textContent = parseInt(ml.textContent||0) + 1;
-    } catch(e) {}
-  };
-
-  document.addEventListener('DOMContentLoaded', () => {
-  window._showAll = false;
-  loadPosts();
-});
-</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 body{font-family:'Nunito',sans-serif;background:#f4faf7;color:#1a1a2e;min-height:100vh;padding-bottom:80px;}
 a{text-decoration:none;color:inherit;}
 :root{
-  --pink:#1D9E75;--pink2:#9FE1CB;--pink-pale:#E1F5EE;--pink-border:#c8edd9;
+  --green:#1D9E75;--green2:#9FE1CB;--green-pale:#E1F5EE;--green-border:#c8edd9;
   --purple:#534AB7;--white:#ffffff;
   --gray-100:#f4f4f5;--gray-200:#e4e4e7;--gray-400:#a1a1aa;--gray-600:#52525b;--gray-900:#18181b;
   --radius:16px;--radius-sm:10px;--radius-full:100px;
   --shadow:0 2px 12px rgba(29,158,117,0.10);
 }
+
 /* Nav */
-.nav{position:sticky;top:0;z-index:200;background:var(--white);border-bottom:1px solid var(--pink-border);
+.nav{position:sticky;top:0;z-index:200;background:var(--white);border-bottom:1px solid var(--green-border);
   padding:0 16px;height:52px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
 .logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;
-  background:linear-gradient(135deg,var(--pink),var(--purple));
+  background:linear-gradient(135deg,var(--green),var(--purple));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .nav-back{font-size:13px;font-weight:700;color:var(--gray-600);display:flex;align-items:center;gap:5px;}
+
 /* Header */
-.page-header{background:linear-gradient(135deg,#1D9E75,#534AB7);padding:28px 20px 24px;text-align:center;}
-.page-header h1{font-size:24px;font-weight:800;color:#fff;margin-bottom:6px;}
-.page-header p{font-size:13px;color:rgba(255,255,255,.85);font-weight:600;}
+.page-header{background:linear-gradient(135deg,#1D9E75,#534AB7);padding:28px 20px 24px;text-align:center;overflow:hidden;}
+.page-header h1{font-size:22px;font-weight:800;color:#fff;margin-bottom:6px;word-break:keep-all;}
+.page-header p{font-size:13px;color:rgba(255,255,255,.85);font-weight:600;word-break:keep-all;}
+
 /* Upload btn */
-.upload-bar{padding:10px;display:flex;justify-content:center;}
-.upload-btn{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;border:none;
+.upload-bar{padding:12px 16px;display:flex;justify-content:center;}
+.upload-btn{background:linear-gradient(135deg,var(--green),var(--purple));color:#fff;border:none;
   border-radius:var(--radius-full);padding:13px 28px;font-family:'Nunito',sans-serif;
   font-size:14px;font-weight:800;cursor:pointer;min-height:48px;width:100%;max-width:420px;
   display:flex;align-items:center;justify-content:center;gap:8px;}
-/* Grid */
-.gallery-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0 10px 4px;}
-.gallery-wrap::-webkit-scrollbar{display:none;}
-.gallery-grid{display:grid;grid-template-rows:repeat(2,1fr);grid-auto-flow:column;grid-auto-columns:160px;gap:10px;width:max-content;}
-@media(min-width:640px){.gallery-grid{grid-auto-columns:200px;gap:12px;}}
-@media(min-width:1100px){.gallery-grid{grid-auto-columns:220px;gap:14px;}}
-.g-card{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--radius);
-  overflow:hidden;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
-.g-card:hover{border-color:var(--pink-border);box-shadow:0 4px 16px rgba(29,158,117,0.15);transform:translateY(-2px);}
-.g-card:active{transform:scale(0.97);border-color:var(--pink-border);}
-.g-thumb{height:140px;background:var(--gray-100);overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;}
-@media(min-width:640px){.g-thumb{height:160px;}}
-@media(min-width:1100px){.g-thumb{height:170px;}}
-.g-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s ease;}
+
+/* 갤러리 헤더 */
+.gallery-header{display:flex;align-items:center;justify-content:space-between;padding:4px 16px 8px;}
+.gallery-count-label{font-size:13px;font-weight:700;color:var(--gray-600);}
+.gallery-count-label span{color:var(--green);}
+
+/* ── 2줄 가로 스크롤 ── */
+.gallery-scroll-wrap{
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  padding:0 16px 8px;
+}
+.gallery-scroll-wrap::-webkit-scrollbar{display:none;}
+
+/* 2줄 컨테이너 */
+.gallery-grid{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  width:max-content;
+  min-width:calc(100% - 32px);
+}
+/* 각 행 */
+.gallery-row{
+  display:flex;
+  flex-direction:row;
+  gap:10px;
+}
+.gallery-grid .g-card{
+  width:155px;
+  flex:0 0 155px;
+}
+@media(min-width:640px){
+  .gallery-grid{gap:12px;}
+  .gallery-row{gap:12px;}
+  .gallery-grid .g-card{width:200px;flex:0 0 200px;}
+}
+@media(min-width:1100px){
+  .gallery-grid{gap:14px;}
+  .gallery-row{gap:14px;}
+  .gallery-grid .g-card{width:220px;flex:0 0 220px;}
+}
+
+/* 카드 */
+.g-card{
+  background:#fff;border:1.5px solid var(--gray-200);
+  border-radius:var(--radius);overflow:hidden;cursor:pointer;
+  transition:all .2s;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+.g-card:hover{border-color:var(--green-border);box-shadow:0 4px 16px rgba(29,158,117,0.15);transform:translateY(-2px);}
+.g-card:active{transform:scale(0.97);}
+
+.g-thumb{
+  height:150px;background:var(--gray-100);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+@media(min-width:640px){.g-thumb{height:165px;}}
+@media(min-width:1100px){.g-thumb{height:180px;}}
+
+.g-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;}
 .g-card:hover .g-thumb img{transform:scale(1.05);}
 .g-body{padding:8px 10px;}
-.g-title{font-size:13px;font-weight:700;color:var(--gray-900);margin-bottom:4px;
+.g-title{font-size:12px;font-weight:700;color:var(--gray-900);margin-bottom:4px;
   overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
-.g-meta{font-size:11px;color:var(--gray-400);display:flex;justify-content:space-between;}
-.loading,.empty{grid-column:1/-1;padding:40px;text-align:center;color:var(--gray-400);font-size:14px;}
+.g-meta{font-size:11px;color:var(--gray-400);display:flex;justify-content:space-between;align-items:center;}
+
+.loading,.empty{padding:40px;text-align:center;color:var(--gray-400);font-size:14px;
+  grid-row:1/3;grid-column:1/3;}
+
+/* 전체보기 버튼 */
+.more-btn{
+  display:none;margin:12px 16px 0;
+  align-items:center;justify-content:center;gap:6px;
+  background:#fff;border:1.5px solid var(--green-border);
+  border-radius:var(--radius-full);padding:13px 20px;
+  font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;
+  color:var(--green);cursor:pointer;
+}
+
 /* Upload modal */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:flex-end;justify-content:center;}
 .overlay.open{display:flex;}
 .upload-sheet{background:#fff;border-radius:24px 24px 0 0;padding:24px 20px 40px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;}
 .sheet-handle{width:40px;height:4px;background:var(--gray-200);border-radius:10px;margin:0 auto 20px;}
-.sheet-title{font-size:17px;font-weight:800;color:var(--gray-900);margin-bottom:18px;}
+.sheet-title{font-size:17px;font-weight:800;color:var(--gray-900);margin-bottom:10px;}
 .form-group{margin-bottom:14px;}
 .form-label{font-size:12px;font-weight:700;color:var(--gray-600);margin-bottom:6px;display:block;}
 .form-input{width:100%;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);
   padding:12px 14px;font-family:'Nunito',sans-serif;font-size:14px;color:var(--gray-900);
   outline:none;transition:border-color .2s;}
-.form-input:focus{border-color:var(--pink);}
+.form-input:focus{border-color:var(--green);}
 .form-hint{font-size:11px;color:var(--gray-400);margin-top:4px;}
 .sheet-btns{display:flex;gap:10px;margin-top:20px;}
 .btn-cancel{flex:1;padding:13px;border:1.5px solid var(--gray-200);border-radius:var(--radius-full);
   background:#fff;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--gray-600);cursor:pointer;}
-.btn-submit{flex:2;padding:13px;background:linear-gradient(135deg,var(--pink),var(--purple));
+.btn-submit{flex:2;padding:13px;background:linear-gradient(135deg,var(--green),var(--purple));
   border:none;border-radius:var(--radius-full);font-family:'Nunito',sans-serif;
   font-size:14px;font-weight:800;color:#fff;cursor:pointer;}
+
 /* Detail modal */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:600;
   align-items:center;justify-content:center;padding:16px;}
 .modal-overlay.open{display:flex;}
 .modal-box{background:#fff;border-radius:var(--radius);width:100%;max-width:480px;overflow:hidden;}
-.modal-img{width:100%;height:240px;object-fit:cover;background:var(--gray-100);}
+.modal-img{width:100%;height:280px;object-fit:cover;background:var(--gray-100);}
 .modal-body{padding:20px;}
 .modal-title{font-size:18px;font-weight:800;color:var(--gray-900);margin-bottom:6px;}
 .modal-nick{font-size:12px;color:var(--gray-400);margin-bottom:10px;}
 .modal-desc{font-size:14px;color:var(--gray-600);line-height:1.7;margin-bottom:16px;}
 .modal-actions{display:flex;gap:10px;}
-.modal-like{flex:1;padding:12px;background:var(--pink-pale);border:1.5px solid var(--pink-border);
+.modal-like{flex:1;padding:12px;background:var(--green-pale);border:1.5px solid var(--green-border);
   border-radius:var(--radius-full);font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;
-  color:var(--pink);cursor:pointer;}
-.modal-close{flex:1;padding:12px;background:var(--gray-100);border:none;
+  color:var(--green);cursor:pointer;}
+.modal-close-btn{flex:1;padding:12px;background:var(--gray-100);border:none;
   border-radius:var(--radius-full);font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;
   color:var(--gray-600);cursor:pointer;}
+
 /* Fixed bottom */
-.fixed-kakao{position:fixed;bottom:0;left:0;right:0;z-index:400;
+.fixed-bottom{position:fixed;bottom:0;left:0;right:0;z-index:400;
   display:flex;padding:10px 16px 16px;gap:8px;background:#fff;
-  border-top:1px solid var(--pink-border);}
-.fixed-kakao-btn{display:flex;align-items:center;justify-content:center;gap:6px;
+  border-top:1px solid var(--green-border);}
+.fixed-btn{display:flex;align-items:center;justify-content:center;gap:6px;flex:1;
   padding:13px;border-radius:var(--radius-full);font-family:'Nunito',sans-serif;
-  font-size:13px;font-weight:800;text-decoration:none;min-height:48px;
-  background:#fee500;color:#1a1a1a;}
+  font-size:13px;font-weight:800;text-decoration:none;min-height:48px;border:none;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -300,19 +184,20 @@ a{text-decoration:none;color:inherit;}
   <button class="upload-btn" onclick="openUpload()">📸 사진 올리기 · 커뮤니티 참여하기</button>
 </div>
 
-<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px 4px;">
-  <div style="font-size:13px;font-weight:700;color:#52525b;">최신 사진 <span id="gallery-count" style="color:#1D9E75;"></span></div>
+<div class="gallery-header">
+  <div class="gallery-count-label">최신 사진 <span id="gallery-count"></span></div>
 </div>
-<div class="gallery-wrap">
+
+<!-- 2줄 가로 스크롤 -->
+<div class="gallery-scroll-wrap">
   <div class="gallery-grid" id="gallery-grid">
-    <div class="loading" style="grid-column:1/-1;grid-row:1/-1;">불러오는 중...</div>
+    <div class="loading">불러오는 중...</div>
   </div>
 </div>
-<div id="gallery-more-btn" onclick="showAllGallery()"
-  style="display:none;margin:12px 14px 0;align-items:center;justify-content:center;gap:6px;
-  background:#fff;border:1.5px solid #c8edd9;border-radius:100px;padding:13px 20px;
-  font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:#1D9E75;cursor:pointer;">
-  📸 전체 사진 보기 →
+
+<!-- 전체보기 버튼 -->
+<div class="more-btn" id="gallery-more-btn" onclick="showAllGallery()">
+  📸 전체 사진 모두 보기 →
 </div>
 
 <!-- 사진 올리기 모달 -->
@@ -326,21 +211,19 @@ a{text-decoration:none;color:inherit;}
     </div>
     <div class="form-group">
       <label class="form-label">제목 *</label>
-      <input id="f-title" class="form-input" placeholder="예: 프라데라 베르데 18번홀 파4">
+      <input id="f-title" class="form-input" placeholder="예: 프라데라 베르데 라운드">
     </div>
     <div class="form-group">
       <label class="form-label">사진 선택 *</label>
-      <input type="file" id="f-file" accept="image/*" onchange="previewFile(this)"
-        style="display:none">
+      <input type="file" id="f-file" accept="image/*" onchange="previewFile(this)" style="display:none">
       <div id="img-upload-box" onclick="document.getElementById('f-file').click()"
-        style="border:2px dashed var(--pink-border);border-radius:12px;padding:20px;text-align:center;cursor:pointer;background:var(--pink-pale);margin-bottom:8px;transition:all .2s;"
-        onmouseover="this.style.borderColor='var(--pink)'" onmouseout="this.style.borderColor='var(--pink-border)'">
+        style="border:2px dashed var(--green-border);border-radius:12px;padding:20px;text-align:center;cursor:pointer;background:var(--green-pale);margin-bottom:8px;">
         <div id="img-preview-wrap" style="display:none;">
           <img id="img-preview" style="max-height:160px;border-radius:8px;object-fit:cover;">
         </div>
         <div id="img-placeholder">
           <div style="font-size:32px;margin-bottom:6px;">📷</div>
-          <div style="font-size:13px;font-weight:700;color:var(--pink);">사진을 탭해서 선택하세요</div>
+          <div style="font-size:13px;font-weight:700;color:var(--green);">사진을 탭해서 선택하세요</div>
           <div style="font-size:11px;color:var(--gray-400);margin-top:3px;">JPG, PNG (최대 5MB)</div>
         </div>
       </div>
@@ -373,38 +256,205 @@ a{text-decoration:none;color:inherit;}
       <div class="modal-desc" id="modal-desc"></div>
       <div class="modal-actions">
         <button class="modal-like" onclick="likePost(window._modalId)">❤️ 좋아요 <span id="modal-likes">0</span></button>
-        <button class="modal-close" onclick="closeModal()">닫기</button>
+        <button class="modal-close-btn" onclick="closeModal()">닫기</button>
       </div>
     </div>
   </div>
 </div>
 
-<div class="fixed-kakao">
-  <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="fixed-kakao-btn" style="flex:1">
+<div class="fixed-bottom">
+  <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="fixed-btn" style="background:#FEE500;color:#1a1a1a;">
     💬 카카오 문의
   </a>
-  <a href="index.html" class="fixed-kakao-btn" style="flex:1;background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;">
+  <a href="index.html" class="fixed-btn" style="background:linear-gradient(135deg,var(--green),var(--purple));color:#fff;">
     🏠 홈으로
   </a>
 </div>
 
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, orderBy, query, updateDoc, doc, increment, deleteDoc }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU",
+    authDomain: "iclarkgolf.firebaseapp.com",
+    projectId: "iclarkgolf",
+    storageBucket: "iclarkgolf.firebasestorage.app",
+    messagingSenderId: "503239213724",
+    appId: "1:503239213724:web:c136e25e0cd22c170e6359"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const col = collection(db, 'gallery');
+
+  window._db = db;
+  window._col = col;
+  window._firestore = { collection, addDoc, getDocs, orderBy, query, updateDoc, doc, increment, deleteDoc };
+
+  // ── 게시물 불러오기 ──
+  window.loadPosts = async function() {
+    const grid = document.getElementById('gallery-grid');
+    const moreBtn = document.getElementById('gallery-more-btn');
+    const countEl = document.getElementById('gallery-count');
+    grid.innerHTML = '<div class="loading">불러오는 중...</div>';
+
+    try {
+      let snap;
+      try {
+        const q = query(col, orderBy('createdAt', 'desc'));
+        snap = await getDocs(q);
+      } catch(e) {
+        snap = await getDocs(col);
+      }
+
+      if (snap.empty) {
+        grid.innerHTML = '<div class="empty">아직 게시물이 없어요. 첫 번째 사진을 올려보세요! 📸</div>';
+        if (countEl) countEl.textContent = '0개';
+        if (moreBtn) moreBtn.style.display = 'none';
+        return;
+      }
+
+      // 전체 목록 정렬
+      const all = [];
+      snap.forEach(d => all.push({ id: d.id, ...d.data() }));
+      all.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+
+      // 총 개수 표시
+      if (countEl) countEl.textContent = all.length + '개';
+
+      // 표시 개수 결정
+      const isMobile = window.innerWidth < 640;
+      const limit = isMobile ? 4 : 10; // 모바일 4개(2줄×2열), 데스크탑 10개(2줄×5열)
+      const list = window._showAll ? all : all.slice(0, limit);
+
+      // 전체보기 버튼
+      if (moreBtn) {
+        if (!window._showAll && all.length > limit) {
+          moreBtn.style.display = 'flex';
+          moreBtn.textContent = '📸 전체 ' + all.length + '장 모두 보기 →';
+        } else {
+          moreBtn.style.display = 'none';
+        }
+      }
+
+      // 카드 렌더링
+      grid.innerHTML = '';
+      list.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'g-card';
+        card.onclick = () => openModal(p.id, p.imgUrl, p.title, p.nickname, p.likes||0, p.desc||'');
+        card.innerHTML = `
+          <div class="g-thumb">
+            <img src="${p.imgUrl}" alt="${escHtml(p.title)}" loading="lazy"
+              onerror="this.parentElement.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100%;font-size:36px;background:#f4faf7;\\'>📷</div>'">
+          </div>
+          <div class="g-body">
+            <div class="g-title">${escHtml(p.title)}</div>
+            <div class="g-meta">
+              <span>👤 ${escHtml(p.nickname)}</span>
+              <span>❤️ <span id="likes-${p.id}">${p.likes||0}</span></span>
+            </div>
+          </div>`;
+        grid.appendChild(card);
+      });
+
+    } catch(e) {
+      grid.innerHTML = `<div class="empty">불러오기 실패<br><br>
+        <button onclick="loadPosts()" style="padding:10px 20px;border-radius:100px;border:1.5px solid #c8edd9;background:#E1F5EE;color:#085041;font-weight:700;cursor:pointer;">다시 시도</button>
+      </div>`;
+    }
+  };
+
+  // ── 게시물 저장 ──
+  window.submitPost = async function() {
+    const title    = document.getElementById('f-title').value.trim();
+    const nickname = document.getElementById('f-nick').value.trim();
+    const desc     = document.getElementById('f-desc').value.trim();
+    let imgUrl     = document.getElementById('f-imgurl').value.trim();
+    const fileInput = document.getElementById('f-file');
+    const btn = document.getElementById('submit-btn');
+
+    if (!title || !nickname) { alert('제목과 닉네임은 필수입니다.'); return; }
+
+    btn.disabled = true;
+
+    if (fileInput.files && fileInput.files[0]) {
+      btn.textContent = '업로드 중...';
+      document.getElementById('upload-status').textContent = '⏳ 업로드 중...';
+      try {
+        const fd = new FormData();
+        fd.append('image', fileInput.files[0]);
+        const res = await fetch('https://api.imgbb.com/1/upload?key=b59ca0d334f2bbbc8e26c620c0936cf5', { method:'POST', body:fd });
+        const data = await res.json();
+        if (data.success) {
+          imgUrl = data.data.url;
+          document.getElementById('upload-status').textContent = '✅ 업로드 완료!';
+        } else {
+          alert('사진 업로드 실패. URL을 직접 입력해주세요.');
+          btn.textContent = '📸 사진 올리기'; btn.disabled = false; return;
+        }
+      } catch(e) {
+        alert('업로드 오류. URL을 직접 입력해주세요.');
+        btn.textContent = '📸 사진 올리기'; btn.disabled = false; return;
+      }
+    }
+
+    if (!imgUrl || !imgUrl.startsWith('http')) {
+      alert('사진을 선택하거나 URL을 입력해주세요.');
+      btn.textContent = '📸 사진 올리기'; btn.disabled = false; return;
+    }
+
+    btn.textContent = '저장 중...';
+    try {
+      await addDoc(col, { title, imgUrl, nickname, desc, likes:0, createdAt: new Date().toISOString() });
+      closeUpload();
+      document.getElementById('f-title').value = '';
+      document.getElementById('f-imgurl').value = '';
+      document.getElementById('f-nick').value = '';
+      document.getElementById('f-desc').value = '';
+      document.getElementById('f-file').value = '';
+      document.getElementById('img-preview-wrap').style.display = 'none';
+      document.getElementById('img-placeholder').style.display = 'block';
+      document.getElementById('upload-status').textContent = '💡 사진을 선택하면 자동으로 업로드됩니다';
+      await loadPosts();
+    } catch(e) {
+      alert('저장 실패: ' + e.message);
+    }
+    btn.textContent = '📸 사진 올리기';
+    btn.disabled = false;
+  };
+
+  // ── 좋아요 ──
+  window.likePost = async function(id) {
+    try {
+      await updateDoc(doc(db, 'gallery', id), { likes: increment(1) });
+      const el = document.getElementById('likes-'+id);
+      if (el) el.textContent = parseInt(el.textContent||0) + 1;
+      const ml = document.getElementById('modal-likes');
+      if (ml) ml.textContent = parseInt(ml.textContent||0) + 1;
+    } catch(e) {}
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    window._showAll = false;
+    loadPosts();
+  });
+</script>
+
 <script>
+function escHtml(s){ return String(s||'').replace(/'/g,"&#39;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
 function showAllGallery() {
   window._showAll = true;
-  // 2줄 가로스크롤 그대로 유지 — 개수 제한만 해제
   loadPosts();
 }
-
-function escHtml(s){ return String(s||'').replace(/'/g,"&#39;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
 function previewFile(input) {
   const file = input.files[0];
   if (!file) return;
-  if (file.size > 5 * 1024 * 1024) {
-    alert('파일 크기는 5MB 이하로 해주세요.');
-    input.value = '';
-    return;
-  }
+  if (file.size > 5*1024*1024) { alert('파일 크기는 5MB 이하로 해주세요.'); input.value=''; return; }
   const reader = new FileReader();
   reader.onload = e => {
     document.getElementById('img-preview').src = e.target.result;
@@ -422,9 +472,11 @@ function clearFileSelect() {
   document.getElementById('img-placeholder').style.display = 'block';
   document.getElementById('upload-status').textContent = '💡 또는 사진을 탭해서 선택하세요';
 }
-function openUpload(){ document.getElementById('upload-overlay').classList.add('open'); }
-function closeUpload(){ document.getElementById('upload-overlay').classList.remove('open'); }
+
+function openUpload(){ document.getElementById('upload-overlay').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeUpload(){ document.getElementById('upload-overlay').classList.remove('open'); document.body.style.overflow=''; }
 function overlayClose(e){ if(e.target===document.getElementById('upload-overlay')) closeUpload(); }
+
 function openModal(id, imgUrl, title, nick, likes, desc){
   window._modalId = id;
   document.getElementById('modal-img').src = imgUrl;
@@ -433,8 +485,12 @@ function openModal(id, imgUrl, title, nick, likes, desc){
   document.getElementById('modal-likes').textContent = likes;
   document.getElementById('modal-desc').textContent = desc || '';
   document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
 }
-function closeModal(){ document.getElementById('modal-overlay').classList.remove('open'); }
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
 function modalOverlayClose(e){ if(e.target===document.getElementById('modal-overlay')) closeModal(); }
 </script>
 </body>
