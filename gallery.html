@@ -62,7 +62,7 @@
         card.innerHTML = `
           <div class="g-thumb">
             <img src="${p.imgUrl}" alt="${escHtml(p.title)}" loading="lazy"
-              onerror="this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:36px;\'>📷</div>'">
+              onerror="this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:40px;background:#f4faf7;\'>📷</div>'">
           </div>
           <div class="g-body">
             <div class="g-title">${escHtml(p.title)}</div>
@@ -205,11 +205,14 @@ a{text-decoration:none;color:inherit;}
 @media(min-width:768px){.gallery-grid{grid-template-columns:repeat(4,1fr);}}
 @media(min-width:1100px){.gallery-grid{grid-template-columns:repeat(5,1fr);max-width:1200px;margin:0 auto;padding:0 20px;}}
 .g-card{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--radius);
-  overflow:hidden;cursor:pointer;transition:all .2s;}
+  overflow:hidden;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.g-card:hover{border-color:var(--pink-border);box-shadow:0 4px 16px rgba(29,158,117,0.15);transform:translateY(-2px);}
 .g-card:active{transform:scale(0.97);border-color:var(--pink-border);}
-.g-thumb{height:200px;background:var(--gray-100);overflow:hidden;display:flex;align-items:center;justify-content:center;}
-@media(min-width:768px){.g-thumb{height:240px;}}
-.g-thumb img{width:100%;height:100%;object-fit:cover;}
+.g-thumb{height:180px;background:var(--gray-100);overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;}
+@media(min-width:480px){.g-thumb{height:200px;}}
+@media(min-width:768px){.g-thumb{height:220px;}}
+.g-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s ease;}
+.g-card:hover .g-thumb img{transform:scale(1.05);}
 .g-body{padding:8px 10px;}
 .g-title{font-size:13px;font-weight:700;color:var(--gray-900);margin-bottom:4px;
   overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}

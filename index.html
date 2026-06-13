@@ -1219,24 +1219,57 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// 메인 갤러리 미리보기
-function loadMainGallery(){
-  const posts = JSON.parse(localStorage.getItem('cg_posts')||'[]');
+// 메인 갤러리 미리보기 — Firebase 연동
+async function loadMainGallery(){
   const wrap = document.getElementById('main-gallery');
   if(!wrap) return;
-  const recent = posts.slice(0,4);
-  if(!recent.length){
-    wrap.innerHTML = '<div style="padding:20px;font-size:13px;color:#a1a1aa;">아직 게시물이 없어요. 첫 번째 사진을 올려보세요!</div>';
-    return;
-  }
+  wrap.innerHTML = '<div style="padding:20px;font-size:12px;color:#a1a1aa;">불러오는 중...</div>';
+  try {
+    // Firebase SDK 동적 로드
+    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    const { getFirestore, collection, getDocs, query, orderBy, limit }
+      = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const app = initializeApp({
+      apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU",
+      authDomain:"iclarkgolf.firebaseapp.com",
+      projectId:"iclarkgolf"
+    }, 'gallery-preview');
+    const db = getFirestore(app);
+    let snap;
+    try {
+      const q = query(collection(db,'gallery'), orderBy('createdAt','desc'), limit(4));
+      snap = await getDocs(q);
+    } catch(e) {
+      const q = query(collection(db,'gallery'), limit(4));
+      snap = await getDocs(q);
+    }
+    if(snap.empty){
+      wrap.innerHTML = '<div style="padding:20px;font-size:13px;color:#a1a1aa;">아직 게시물이 없어요. 첫 번째 사진을 올려보세요!</div>';
+      return;
+    }
+    const posts = [];
+    snap.forEach(d => posts.push({...d.data()}));
+    const recent = posts.slice(0,4);
+    if(!recent.length){
+      wrap.innerHTML = '<div style="padding:20px;font-size:13px;color:#a1a1aa;">아직 게시물이 없어요. 첫 번째 사진을 올려보세요!</div>';
+      return;
+    }
   wrap.innerHTML = recent.map(p=>`
-    <a href="gallery.html" style="display:block;width:150px;flex-shrink:0;background:#fff;border:1.5px solid #e4e4e7;border-radius:16px;overflow:hidden;text-decoration:none">
-      <div style="height:100px;background:${p.avatarColor}22;display:flex;align-items:center;justify-content:center;font-size:36px">${p.emoji||'📷'}</div>
+    <a href="gallery.html" style="display:block;width:150px;flex-shrink:0;background:#fff;border:1.5px solid #e4e4e7;border-radius:16px;overflow:hidden;text-decoration:none;">
+      <div style="height:110px;overflow:hidden;background:#f4faf7;display:flex;align-items:center;justify-content:center;">
+        ${p.imgUrl
+          ? `<img src="${p.imgUrl}" alt="${p.title}" style="width:100%;height:100%;object-fit:cover;" loading="lazy" onerror="this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:32px;\'>📷</div>'">`
+          : `<div style="font-size:36px">${p.emoji||'📷'}</div>`
+        }
+      </div>
       <div style="padding:10px 12px">
         <div style="font-size:12px;font-weight:700;color:#18181b;margin-bottom:4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${p.title}</div>
-        <div style="font-size:11px;color:#a1a1aa">❤️ ${p.likes} · 💬 ${p.comments.length}</div>
+        <div style="font-size:11px;color:#a1a1aa">❤️ ${p.likes||0}</div>
       </div>
     </a>`).join('');
+  } catch(e) {
+    wrap.innerHTML = '<div style="padding:20px;font-size:12px;color:#a1a1aa;">갤러리를 불러올 수 없어요.</div>';
+  }
 }
 loadMainGallery();
 
