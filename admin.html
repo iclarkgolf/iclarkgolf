@@ -1008,6 +1008,10 @@ body { background:#f4faf7; padding-bottom:40px; }
         <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">사진 3 URL (Pradera 사원증)</label>
         <input id="pf-lic3" type="text" placeholder="https://iclarkgolf.com/images/license-pradera.jpg" style="width:100%;padding:11px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:14px;box-sizing:border-box;">
       </div>
+      <div>
+        <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">사진 4 URL (Barangay Licence)</label>
+        <input id="pf-lic4" type="text" placeholder="https://iclarkgolf.com/images/license-barangay.jpg" style="width:100%;padding:11px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:14px;box-sizing:border-box;">
+      </div>
       <!-- 미리보기 -->
       <div id="pf-preview" style="display:none;display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;"></div>
     </div>
@@ -1202,6 +1206,7 @@ function loadProfile() {
   document.getElementById('pf-lic1').value     = pf.lic1     || '';
   document.getElementById('pf-lic2').value     = pf.lic2     || '';
   document.getElementById('pf-lic3').value     = pf.lic3     || '';
+  document.getElementById('pf-lic4').value     = pf.lic4     || '';
   document.getElementById('pf-kakao').value    = pf.kakao    || 'https://pf.kakao.com/_nbHKX/chat';
   document.getElementById('pf-naver').value    = pf.naver    || 'https://cafe.naver.com/polajang';
   document.getElementById('pf-insta').value    = pf.insta    || '';
@@ -1219,6 +1224,7 @@ function saveProfile() {
     lic1:     document.getElementById('pf-lic1').value.trim(),
     lic2:     document.getElementById('pf-lic2').value.trim(),
     lic3:     document.getElementById('pf-lic3').value.trim(),
+    lic4:     document.getElementById('pf-lic4').value.trim(),
     kakao:    document.getElementById('pf-kakao').value.trim(),
     naver:    document.getElementById('pf-naver').value.trim(),
     insta:    document.getElementById('pf-insta').value.trim(),
