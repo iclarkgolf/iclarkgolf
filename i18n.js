@@ -1,9 +1,7 @@
 // ClarkGo i18n — 한국어 / English
 const TRANSLATIONS = {
   kr: {
-    // Nav
     'nav.search': '골프장, 호텔, 캐디...',
-    // Hero
     'hero.badge': '📍 필리핀 팜팡가 · 앙헬레스 · 클락',
     'hero.title1': '클락의 모든 것,',
     'hero.title2': '한 곳에서',
@@ -15,7 +13,6 @@ const TRANSLATIONS = {
     'hero.tag3': '캐디 매칭',
     'hero.tag4': '레슨 패키지',
     'hero.tag5': '나 홀로 여행',
-    // Quick menu
     'quick.packages': '골프 패키지',
     'quick.packages.sub': '기획 상품',
     'quick.quote': '맞춤 견적',
@@ -28,7 +25,6 @@ const TRANSLATIONS = {
     'quick.blog.sub': '여행 정보',
     'quick.shop': '쇼핑',
     'quick.shop.sub': '준비중',
-    // Banner
     'banner.main.badge': '✨ 지금 인기',
     'banner.main.title1': '나만의 골프 여행',
     'banner.main.title2': '직접 설계하기',
@@ -43,14 +39,12 @@ const TRANSLATIONS = {
     'banner.blog.title2': '정보 블로그',
     'banner.blog.desc1': '클락 여행 팁',
     'banner.blog.desc2': '최신 정보',
-    // Section titles
     'sec.packages': '⛳ 골프 패키지',
     'sec.golf': '🏌️ 클락 골프장',
     'sec.caddy': '🤝 캐디 매칭',
     'sec.blog': '📝 여행 블로그',
     'sec.gallery': '📸 갤러리',
     'sec.more': '전체보기',
-    // Packages
     'pkg.tag.starter': '입문',
     'pkg.name.starter': '입문 패키지 3박 4일',
     'pkg.desc.starter': '연습장 레슨 3회 · 9홀 1회 · 조식 포함',
@@ -64,21 +58,16 @@ const TRANSLATIONS = {
     'pkg.tag.longstay': '장기',
     'pkg.name.longstay': '장기 체류 30박',
     'pkg.desc.longstay': '집중 훈련 · 숙식 포함 · 라운드 무제한',
-    // CTA
     'cta.title': '패키지가 딱 안 맞으세요?',
     'cta.desc': '원하는 것만 골라서 나만의 견적을 만들어보세요',
     'cta.quote': '견적 만들기',
     'cta.kakao': '카카오 문의',
-    // Caddy
     'caddy.hot': '인기',
     'caddy.new': '신규',
     'caddy.btn': '매칭 요청',
-    // Blog
     'blog.more': '블로그 전체보기',
-    // Gallery
     'gallery.title': '📸 클락 골프 갤러리',
     'gallery.btn': '📸 사진 올리기 · 커뮤니티 참여하기',
-    // Coming soon
     'coming.shop.title': '한국 상품 쇼핑',
     'coming.shop.desc1': '클락 로컬용',
     'coming.shop.desc2': '한국 인기 상품',
@@ -88,9 +77,17 @@ const TRANSLATIONS = {
     'coming.hotel.title': '호텔 예약',
     'coming.hotel.desc1': '실시간 요금',
     'coming.hotel.desc2': '아고다 연동',
-    // Profile
     'profile.btn': '문의하기',
-    // Sitemap
+    'profile.tag': 'PGAP 멤버 · 클럽 프로',
+    'profile.location': '📍 필리핀 팜팡가 클락',
+    'profile.cert': '🏆 PGAP #0507 · GAB 시니어 투어링 프로',
+    'profile.career': '⛳ 베벌리 C.C (2017–2023) · 프라데라 베르데 (2023–2025)',
+    'profile.lang': '💬 한국어 · English',
+    'profile.sns.kakao': '💛 카카오 채널',
+    'profile.sns.naver': '🟢 네이버 카페',
+    'profile.sns.insta': '📷 Instagram',
+    'profile.sns.youtube': '▶️ YouTube',
+    'profile.sns.openchat': '💬 오픈채팅',
     'sitemap.title': '🗂️ 사이트맵',
     'sitemap.cat1': '⛳ 골프 여행',
     'sitemap.packages': '→ 골프 패키지',
@@ -111,21 +108,18 @@ const TRANSLATIONS = {
     'sitemap.privacy': '→ 개인정보처리방침',
     'sitemap.disclaimer': '→ 면책조항',
     'sitemap.pradera.desc': '필리핀 팜팡가 클락 지역 최고의 36홀 챔피언십 골프장',
-    // Footer
     'footer.home': '홈',
     'footer.packages': '패키지',
     'footer.quote': '맞춤 견적',
     'footer.caddy': '캐디 매칭',
     'footer.blog': '블로그',
     'footer.privacy': '개인정보처리방침',
-
     'fixed.kakao': '카카오',
     'fixed.messenger': '메신저',
-    'fixed.quote': '견적',  },
+    'fixed.quote': '견적',
+  },
   en: {
-    // Nav
     'nav.search': 'Golf course, hotel, caddy...',
-    // Hero
     'hero.badge': '📍 Pampanga · Angeles · Clark, Philippines',
     'hero.title1': 'Everything in Clark,',
     'hero.title2': 'All in One Place',
@@ -137,7 +131,6 @@ const TRANSLATIONS = {
     'hero.tag3': 'Caddy Matching',
     'hero.tag4': 'Lesson Package',
     'hero.tag5': 'Solo Travel',
-    // Quick menu
     'quick.packages': 'Golf Packages',
     'quick.packages.sub': 'Deals',
     'quick.quote': 'Custom Quote',
@@ -150,7 +143,6 @@ const TRANSLATIONS = {
     'quick.blog.sub': 'Travel tips',
     'quick.shop': 'Shopping',
     'quick.shop.sub': 'Coming soon',
-    // Banner
     'banner.main.badge': '✨ Popular Now',
     'banner.main.title1': 'Your Custom Golf Trip',
     'banner.main.title2': 'Design It Yourself',
@@ -165,14 +157,12 @@ const TRANSLATIONS = {
     'banner.blog.title2': 'Info Blog',
     'banner.blog.desc1': 'Clark travel tips',
     'banner.blog.desc2': 'Latest updates',
-    // Section titles
     'sec.packages': '⛳ Golf Packages',
     'sec.golf': '🏌️ Clark Golf Courses',
     'sec.caddy': '🤝 Caddy Matching',
     'sec.blog': '📝 Travel Blog',
     'sec.gallery': '📸 Gallery',
     'sec.more': 'View All',
-    // Packages
     'pkg.tag.starter': 'Starter',
     'pkg.name.starter': 'Starter Package 3N4D',
     'pkg.desc.starter': '3 range lessons · 9 holes × 1 · Breakfast incl.',
@@ -186,21 +176,16 @@ const TRANSLATIONS = {
     'pkg.tag.longstay': 'Long Stay',
     'pkg.name.longstay': 'Long Stay 30 Nights',
     'pkg.desc.longstay': 'Intensive training · Meals & accommodation · Unlimited rounds',
-    // CTA
     'cta.title': "Packages don't quite fit?",
     'cta.desc': 'Pick exactly what you want and build your own quote',
     'cta.quote': 'Build a Quote',
     'cta.kakao': 'KakaoTalk Inquiry',
-    // Caddy
     'caddy.hot': 'Popular',
     'caddy.new': 'New',
     'caddy.btn': 'Request Match',
-    // Blog
     'blog.more': 'View All Blog Posts',
-    // Gallery
     'gallery.title': '📸 Clark Golf Gallery',
     'gallery.btn': '📸 Upload Photos · Join Community',
-    // Coming soon
     'coming.shop.title': 'Korean Shopping',
     'coming.shop.desc1': 'Korean products',
     'coming.shop.desc2': 'for Clark locals',
@@ -210,9 +195,17 @@ const TRANSLATIONS = {
     'coming.hotel.title': 'Hotel Booking',
     'coming.hotel.desc1': 'Live rates',
     'coming.hotel.desc2': 'Agoda integration',
-    // Profile
     'profile.btn': 'Contact Us',
-    // Sitemap
+    'profile.tag': 'PGAP Member · Club Pro',
+    'profile.location': '📍 Clark, Pampanga, Philippines',
+    'profile.cert': '🏆 PGAP #0507 · GAB Senior Touring Pro',
+    'profile.career': '⛳ Beverly C.C (2017–2023) · Pradera Verde (2023–2025)',
+    'profile.lang': '💬 Korean · English',
+    'profile.sns.kakao': '💛 KakaoTalk',
+    'profile.sns.naver': '🟢 Naver Cafe',
+    'profile.sns.insta': '📷 Instagram',
+    'profile.sns.youtube': '▶️ YouTube',
+    'profile.sns.openchat': '💬 Open Chat',
     'sitemap.title': '🗂️ Sitemap',
     'sitemap.cat1': '⛳ Golf Travel',
     'sitemap.packages': '→ Golf Packages',
@@ -233,7 +226,6 @@ const TRANSLATIONS = {
     'sitemap.privacy': '→ Privacy Policy',
     'sitemap.disclaimer': '→ Disclaimer',
     'sitemap.pradera.desc': 'Best 36-hole championship course in Clark, Pampanga',
-    // Footer
     'footer.home': 'Home',
     'footer.packages': 'Packages',
     'footer.quote': 'Custom Quote',
@@ -246,14 +238,12 @@ const TRANSLATIONS = {
   }
 };
 
-// 현재 언어 설정
 let currentLang = localStorage.getItem('clarkgo_lang') || 'kr';
 
 function setLang(lang) {
   currentLang = lang;
   localStorage.setItem('clarkgo_lang', lang);
   applyTranslations();
-  // 버튼 활성화 업데이트
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.classList.toggle('on', btn.textContent.trim().toLowerCase().startsWith(lang));
   });
@@ -261,22 +251,18 @@ function setLang(lang) {
 
 function applyTranslations() {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS['kr'];
-  // 텍스트 번역
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     if (t[key]) el.textContent = t[key];
   });
-  // placeholder 번역
   document.querySelectorAll('[data-i18n-ph]').forEach(el => {
     const key = el.getAttribute('data-i18n-ph');
     if (t[key]) el.placeholder = t[key];
   });
 }
 
-// 페이지 로드 시 적용
 document.addEventListener('DOMContentLoaded', () => {
   applyTranslations();
-  // 현재 언어에 맞게 버튼 활성화
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.classList.toggle('on', btn.textContent.trim().toLowerCase().startsWith(currentLang));
   });
