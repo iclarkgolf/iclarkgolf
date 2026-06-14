@@ -1095,56 +1095,93 @@ footer {
 </div>
 
 <!-- 프로필 섹션 -->
-<div style="margin:28px 16px 0;background:#fff;border-radius:16px;border:1.5px solid #c8edd9;padding:20px;max-width:1100px;margin-left:auto;margin-right:auto;">
-  <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
-    <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#1D9E75,#534AB7);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">🏌️</div>
+<div id="profile-section" style="margin:28px 16px 0;background:#fff;border-radius:16px;border:1.5px solid #c8edd9;padding:20px;max-width:1100px;margin-left:auto;margin-right:auto;box-sizing:border-box;">
+  <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;">
+    <div id="pf-photo-wrap" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#1D9E75,#534AB7);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;overflow:hidden;">🏌️</div>
     <div style="flex:1;min-width:0;">
-      <div style="font-size:11px;font-weight:700;color:#1D9E75;margin-bottom:3px;letter-spacing:.05em;">SITE OWNER · INSTRUCTOR</div>
-      <div style="font-size:16px;font-weight:800;color:#18181b;margin-bottom:3px;">PJ (박종원)</div>
-      <div style="font-size:12px;color:#6b7280;line-height:1.6;">
-        📍 Pradera Verde Golf Club, Pampanga, Philippines<br>
-        🏌️ Golf Instructor · Clark Golf Specialist<br>
-        💬 한국어 · English
+      <div id="pf-title-el" style="font-size:11px;font-weight:700;color:#1D9E75;margin-bottom:3px;letter-spacing:.05em;" data-i18n="profile.tag">PGAP MEMBER · CLUB PRO</div>
+      <div id="pf-name-el" style="font-size:17px;font-weight:800;color:#18181b;margin-bottom:6px;">장수남 · Paulo Jang</div>
+      <div style="font-size:12px;color:#6b7280;line-height:1.9;">
+        <div data-i18n="profile.location">📍 Clark, Pampanga, Philippines</div>
+        <div data-i18n="profile.cert">🏆 PGAP Member #0507 · GAB Senior Touring Pro</div>
+        <div data-i18n="profile.career">⛳ Beverly C.C (2017–2023) · Pradera Verde (2023–2025)</div>
+        <div data-i18n="profile.lang">💬 한국어 · English</div>
       </div>
+      <div id="pf-bio-el" style="font-size:13px;color:#374151;margin-top:8px;line-height:1.7;"></div>
     </div>
   </div>
-  <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank"
-     style="display:flex;align-items:center;justify-content:center;width:100%;background:linear-gradient(135deg,#1D9E75,#534AB7);color:#fff;border:none;border-radius:100px;padding:13px 20px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;min-height:48px;">
+
+  <!-- 자격증 사진 (가로 스크롤) -->
+  <div id="pf-licenses" style="display:none;gap:10px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;scrollbar-width:none;"></div>
+
+  <!-- 문의하기 버튼 -->
+  <a id="pf-kakao-btn" href="https://pf.kakao.com/_nbHKX/chat" target="_blank"
+     style="display:flex;align-items:center;justify-content:center;width:100%;background:linear-gradient(135deg,#1D9E75,#534AB7);color:#fff;border:none;border-radius:100px;padding:14px 20px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;text-decoration:none;min-height:50px;box-sizing:border-box;">
     <span data-i18n="profile.btn">💬 문의하기</span>
   </a>
 
   <!-- SNS 링크 -->
-  <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">
-    <!-- 카카오 채널 -->
-    <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank"
-       style="flex:1;min-width:100px;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 12px;background:#FEE500;color:#3A1D1D;border-radius:10px;text-decoration:none;font-size:12px;font-weight:800;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="#3A1D1D"><path d="M12 3C6.477 3 2 6.806 2 11.5c0 2.9 1.636 5.468 4.146 7.118L5.2 21.4a.5.5 0 0 0 .7.6l3.9-2.6A11.6 11.6 0 0 0 12 20c5.523 0 10-3.806 10-8.5S17.523 3 12 3z"/></svg>
-      카카오 채널
-    </a>
-    <!-- 네이버 카페 -->
-    <a href="https://cafe.naver.com/polajang" target="_blank"
-       style="flex:1;min-width:100px;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 12px;background:#03C75A;color:#fff;border-radius:10px;text-decoration:none;font-size:12px;font-weight:800;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z"/></svg>
-      네이버 카페
-    </a>
-    <!-- 인스타그램 (준비중) -->
-    <a href="#" onclick="alert('인스타그램 준비중입니다 😊');return false;"
-       style="flex:1;min-width:100px;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 12px;background:#f0f0f0;color:#aaa;border-radius:10px;text-decoration:none;font-size:12px;font-weight:800;">
-      📷 Instagram
-    </a>
-    <!-- 유튜브 (준비중) -->
-    <a href="#" onclick="alert('유튜브 채널 준비중입니다 😊');return false;"
-       style="flex:1;min-width:100px;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 12px;background:#f0f0f0;color:#aaa;border-radius:10px;text-decoration:none;font-size:12px;font-weight:800;">
-      ▶️ YouTube
-    </a>
-    <!-- 카카오톡 오픈채팅 (준비중) -->
-    <a href="#" onclick="alert('카카오톡 오픈채팅 준비중입니다 😊');return false;"
-       style="flex:1;min-width:100px;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 12px;background:#f0f0f0;color:#aaa;border-radius:10px;text-decoration:none;font-size:12px;font-weight:800;">
-      💬 오픈채팅
-    </a>
-  </div>
+  <div id="pf-sns" style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;"></div>
 </div>
 
+<script>
+(function() {
+  const pf = JSON.parse(localStorage.getItem('iclark_profile') || '{}');
+  const isEn = (localStorage.getItem('clarkgo_lang') || 'kr') === 'en';
+
+  // 이름
+  if (pf.nameKo || pf.nameEn) {
+    const n = isEn
+      ? [pf.nameEn, pf.nameKo].filter(Boolean).join(' · ')
+      : [pf.nameKo, pf.nameEn].filter(Boolean).join(' · ');
+    document.getElementById('pf-name-el').textContent = n;
+  }
+  // 직책
+  if (pf.title) document.getElementById('pf-title-el').textContent = pf.title;
+  // 소개글
+  if (pf.bio) document.getElementById('pf-bio-el').textContent = pf.bio;
+  // 프로필 사진
+  if (pf.photo) {
+    const wrap = document.getElementById('pf-photo-wrap');
+    wrap.innerHTML = `<img src="${pf.photo}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">`;
+  }
+  // 자격증 사진 (가로 스크롤)
+  const lics = [pf.lic1, pf.lic2, pf.lic3].filter(Boolean);
+  if (lics.length) {
+    const box = document.getElementById('pf-licenses');
+    box.style.display = 'flex';
+    box.innerHTML = lics.map(u =>
+      `<img src="${u}" style="height:130px;width:auto;border-radius:10px;object-fit:cover;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.12);" loading="lazy" onerror="this.style.display='none'">`
+    ).join('');
+  }
+  // 카카오 버튼
+  if (pf.kakao) document.getElementById('pf-kakao-btn').href = pf.kakao;
+
+  // SNS 버튼 (URL 있는 것만 표시)
+  const TRANS = {
+    kr: { kakao:'💛 카카오 채널', naver:'🟢 네이버 카페', insta:'📷 Instagram', youtube:'▶️ YouTube', openchat:'💬 오픈채팅' },
+    en: { kakao:'💛 KakaoTalk',   naver:'🟢 Naver Cafe',  insta:'📷 Instagram', youtube:'▶️ YouTube', openchat:'💬 Open Chat' }
+  };
+  const lang = isEn ? 'en' : 'kr';
+  const T = TRANS[lang];
+  const snsList = [
+    { key:'kakao',    url: pf.kakao    || 'https://pf.kakao.com/_nbHKX/chat', bg:'#FEE500', color:'#3A1D1D' },
+    { key:'naver',    url: pf.naver    || 'https://cafe.naver.com/polajang',  bg:'#03C75A', color:'#fff' },
+    { key:'insta',    url: pf.insta,    bg:'#E1306C', color:'#fff' },
+    { key:'youtube',  url: pf.youtube,  bg:'#FF0000', color:'#fff' },
+    { key:'openchat', url: pf.openchat, bg:'#FEE500', color:'#3A1D1D' },
+  ];
+  const sns = document.getElementById('pf-sns');
+  snsList.forEach(b => {
+    if (!b.url) return;
+    const a = document.createElement('a');
+    a.href = b.url; a.target = '_blank';
+    a.textContent = T[b.key];
+    a.style.cssText = `flex:1;min-width:calc(50% - 4px);display:flex;align-items:center;justify-content:center;padding:10px 8px;background:${b.bg};color:${b.color};border-radius:10px;text-decoration:none;font-size:12px;font-weight:800;box-sizing:border-box;`;
+    sns.appendChild(a);
+  });
+})();
+</script>
 <!-- 사이트맵 -->
 <div style="margin:20px 16px 0;background:#fff;border-radius:16px;border:1.5px solid #e4e4e7;padding:20px;max-width:1100px;margin-left:auto;margin-right:auto;">
   <div style="font-size:15px;font-weight:800;color:#18181b;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
