@@ -331,7 +331,10 @@ footer a{color:rgba(255,255,255,.8);}
     <div id="cart-body">
       <div class="cart-empty">항목을 선택하면<br>여기에 견적이 표시됩니다</div>
     </div>
-    <button class="kakao-btn" onclick="goKakao()">
+    <button class="kakao-btn" onclick="openInquiryModal()" style="background:#534AB7;color:#fff;">
+      📩 견적 신청하기
+    </button>
+    <button class="kakao-btn" onclick="goKakao()" style="margin-top:8px;">
       💬 카카오 채널로 문의하기
     </button>
     <div class="qr-box">
@@ -348,7 +351,7 @@ footer a{color:rgba(255,255,255,.8);}
 <div class="fixed-bar" id="fixed-bar">
   <div class="fixed-total">예상 총액<br><span id="fixed-total-amt">$0</span></div>
   <button onclick="openCartModal()" style="flex:1;padding:13px;background:var(--purple);color:#fff;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;">📋 견적 보기</button>
-  <button class="kakao-btn" style="flex:1;margin:0;" onclick="goKakao()">💬 카카오 문의</button>
+  <button onclick="openInquiryModal()" style="flex:1;padding:13px;background:#534AB7;color:#fff;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;">📩 견적 신청</button>
 </div>
 
 <!-- 모바일 견적 상세 모달 -->
@@ -359,7 +362,8 @@ footer a{color:rgba(255,255,255,.8);}
     <div id="cart-modal-body">
       <div style="text-align:center;padding:20px;font-size:13px;color:#a1a1aa;">항목을 선택하면 여기에 견적이 표시됩니다</div>
     </div>
-    <button onclick="goKakao();closeCartModal();" style="width:100%;margin-top:16px;padding:14px;background:#FEE500;color:#1b1b1b;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;">💬 카카오 채널로 문의하기</button>
+    <button onclick="openInquiryModal();closeCartModal();" style="width:100%;margin-top:16px;padding:14px;background:#534AB7;color:#fff;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;">📩 견적 신청하기</button>
+    <button onclick="goKakao();closeCartModal();" style="width:100%;margin-top:8px;padding:14px;background:#FEE500;color:#1b1b1b;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;">💬 카카오 채널로 문의하기</button>
     <button onclick="closeCartModal()" style="width:100%;margin-top:10px;padding:12px;background:#f4f4f5;color:#52525b;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">닫기</button>
   </div>
 </div>
@@ -776,6 +780,150 @@ function renderAll() {
 
 renderAll();
 initRateBanner();
+</script>
+<!-- ========== 견적 신청 모달 ========== -->
+<div id="inquiry-modal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.6);align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:20px;width:90%;max-width:400px;padding:28px 24px;box-shadow:0 20px 60px rgba(0,0,0,.25);">
+    <div style="font-size:18px;font-weight:800;color:#26215C;margin-bottom:6px;">📩 견적 신청</div>
+    <div style="font-size:12px;color:#6b7280;margin-bottom:20px;">담당자가 24시간 내 연락드립니다</div>
+    <div style="margin-bottom:14px;">
+      <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">이름 *</label>
+      <input id="inq-name" type="text" placeholder="홍길동" style="width:100%;padding:12px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:14px;font-family:'Nunito',sans-serif;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='#534AB7'" onblur="this.style.borderColor='#e5e7eb'">
+    </div>
+    <div style="margin-bottom:14px;">
+      <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">카카오 ID / 전화번호 *</label>
+      <input id="inq-contact" type="text" placeholder="카카오ID 또는 010-xxxx-xxxx" style="width:100%;padding:12px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:14px;font-family:'Nunito',sans-serif;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='#534AB7'" onblur="this.style.borderColor='#e5e7eb'">
+    </div>
+    <div style="margin-bottom:20px;">
+      <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">메모 (선택)</label>
+      <textarea id="inq-memo" placeholder="추가 요청사항이 있으면 적어주세요" style="width:100%;padding:12px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:13px;font-family:'Nunito',sans-serif;box-sizing:border-box;outline:none;resize:none;height:70px;" onfocus="this.style.borderColor='#534AB7'" onblur="this.style.borderColor='#e5e7eb'"></textarea>
+    </div>
+    <div id="inq-msg" style="display:none;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:700;margin-bottom:14px;"></div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="closeInquiryModal()" style="flex:1;padding:13px;background:#f4f4f5;color:#52525b;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;">취소</button>
+      <button onclick="submitInquiry()" id="inq-submit-btn" style="flex:2;padding:13px;background:#534AB7;color:#fff;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;">신청하기 ✨</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Firebase 견적 신청 ── */
+const FB_API_KEY = 'AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU';
+const FB_PROJECT = 'iclarkgolf';
+let fbApp = null, fbDb = null;
+
+async function initFirebase() {
+  if (fbDb) return fbDb;
+  try {
+    const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const { getFirestore, addDoc, collection, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const cfg = { apiKey: FB_API_KEY, authDomain: `${FB_PROJECT}.firebaseapp.com`, projectId: FB_PROJECT };
+    fbApp = getApps().length ? getApps()[0] : initializeApp(cfg);
+    fbDb = getFirestore(fbApp);
+    return { db: fbDb, addDoc, collection, serverTimestamp };
+  } catch(e) { console.error('Firebase 초기화 실패:', e); return null; }
+}
+
+function openInquiryModal() {
+  const checkEntries = Object.values(selCheck).filter(s=>s.qty>0);
+  const hasAny = selHotel || GOLF.some(g=>selGolf[g.id]>0) || checkEntries.length>0;
+  if (!hasAny) { alert('항목을 하나 이상 선택해 주세요'); return; }
+  const modal = document.getElementById('inquiry-modal');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  document.getElementById('inq-name').value = '';
+  document.getElementById('inq-contact').value = '';
+  document.getElementById('inq-memo').value = '';
+  document.getElementById('inq-msg').style.display = 'none';
+  document.getElementById('inq-submit-btn').disabled = false;
+  document.getElementById('inq-submit-btn').textContent = '신청하기 ✨';
+}
+
+function closeInquiryModal() {
+  document.getElementById('inquiry-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+document.getElementById('inquiry-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeInquiryModal();
+});
+
+async function submitInquiry() {
+  const name = document.getElementById('inq-name').value.trim();
+  const contact = document.getElementById('inq-contact').value.trim();
+  const memo = document.getElementById('inq-memo').value.trim();
+  const msgEl = document.getElementById('inq-msg');
+  const btn = document.getElementById('inq-submit-btn');
+
+  if (!name || !contact) {
+    msgEl.style.display = 'block';
+    msgEl.style.background = '#fef2f2';
+    msgEl.style.color = '#dc2626';
+    msgEl.textContent = '⚠️ 이름과 연락처를 입력해 주세요';
+    return;
+  }
+
+  // 현재 견적 데이터 수집
+  const nights = getNights();
+  const totalPax = pax.g + pax.n;
+  const totalAmt = parseInt(document.getElementById('fixed-total-amt').textContent.replace('$','')) || 0;
+
+  const hotelObj = selHotel ? HOTELS.find(x=>x.id===selHotel) : null;
+  const activeGolf = GOLF.filter(g=>(selGolf[g.id]||0)>0).map(g=>({ name:g.name, rounds:selGolf[g.id] }));
+  const checkItems = Object.values(selCheck).filter(s=>s.qty>0).map(s=>({ name:s.item.name, qty:s.qty }));
+
+  const quoteData = {
+    name,
+    contact,
+    memo,
+    nights,
+    golfers: pax.g,
+    nonGolfers: pax.n,
+    totalUSD: totalAmt,
+    hotel: hotelObj ? hotelObj.name : '미선택',
+    golfCourses: activeGolf,
+    extras: checkItems,
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+    source: 'quote.html'
+  };
+
+  btn.disabled = true;
+  btn.textContent = '저장 중...';
+
+  try {
+    const fb = await initFirebase();
+    if (fb) {
+      const { db, addDoc, collection, serverTimestamp } = fb;
+      await addDoc(collection(db, 'inquiries'), {
+        ...quoteData,
+        createdAt: serverTimestamp()
+      });
+    }
+
+    // 성공 메시지
+    msgEl.style.display = 'block';
+    msgEl.style.background = '#f0fdf4';
+    msgEl.style.color = '#16a34a';
+    msgEl.textContent = '✅ 견적 신청이 완료됐어요! 곧 연락드릴게요 😊';
+    btn.textContent = '신청 완료 ✅';
+
+    // 3초 후 카카오 열고 모달 닫기
+    setTimeout(() => {
+      closeInquiryModal();
+      if (confirm('카카오 채널로도 연결하시겠어요?')) goKakao();
+    }, 2500);
+
+  } catch(e) {
+    console.error('견적 저장 실패:', e);
+    btn.disabled = false;
+    btn.textContent = '신청하기 ✨';
+    msgEl.style.display = 'block';
+    msgEl.style.background = '#fef2f2';
+    msgEl.style.color = '#dc2626';
+    msgEl.textContent = '⚠️ 저장 실패. 카카오로 직접 문의해 주세요';
+  }
+}
 </script>
 </body>
 </html>
