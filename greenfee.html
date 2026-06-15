@@ -762,6 +762,23 @@ function getExchangeRate() {
   return { appliedUsdPhp: 53.2, marketUsdPhp: 56, marginPct: 5, updatedAt: null };
 }
 
+async function loadRateFromFirebase() {
+  try {
+    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+    const app = getApps().find(a=>a.name==='gf-exchange') || initializeApp(cfg,'gf-exchange');
+    const db = getFirestore(app);
+    const snap = await getDoc(doc(db, 'settings', 'exchange'));
+    if (snap.exists()) {
+      const data = snap.data();
+      localStorage.setItem('iclark_exchange', JSON.stringify(data));
+      return data;
+    }
+  } catch(e) {}
+  return getExchangeRate();
+}
+
 function initRateBanner() {
   const r = getExchangeRate();
   appliedRate = r.appliedUsdPhp || 53.2;
@@ -770,6 +787,14 @@ function initRateBanner() {
   safeSet('banner-usd', '$' + (1000 / appliedRate).toFixed(2));
   safeSet('banner-margin', '마진 ' + (r.marginPct || 5) + '% 적용');
   safeSet('banner-time', r.updatedAt ? r.updatedAt + ' 기준' : '관리자 설정 필요');
+  // Firebase에서 최신 환율 불러와서 재적용
+  loadRateFromFirebase().then(fr => {
+    appliedRate = fr.appliedUsdPhp || appliedRate;
+    safeSet('banner-rate', '$1 = ' + appliedRate.toFixed(2) + ' PHP');
+    safeSet('banner-usd', '$' + (1000 / appliedRate).toFixed(2));
+    safeSet('banner-margin', '마진 ' + (fr.marginPct || 5) + '% 적용');
+    safeSet('banner-time', fr.updatedAt ? fr.updatedAt + ' 기준' : '관리자 설정 필요');
+  });
 }
 
 function setUnit(unit) {
@@ -805,9 +830,66 @@ function toggleCard(headEl) {
   arrow.classList.toggle('open', !isOpen);
 }
 
+// 골프장 ID → 카드 매핑
+const GF_ID_MAP = {
+  'pradera':  '.cc-name:first-of-type',  // 아래 함수에서 이름으로 찾음
+};
+
+async function loadGreenfeeFromFirebase() {
+  try {
+    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+    const app = getApps().find(a=>a.name==='gf-load') || initializeApp(cfg,'gf-load');
+    const db = getFirestore(app);
+    const snap = await getDoc(doc(db, 'settings', 'greenfee'));
+    if (!snap.exists()) return;
+    const list = snap.data().data || [];
+    // localStorage에도 캐시
+    localStorage.setItem('iclark_greenfee', JSON.stringify(list));
+    // 각 골프장 카드 요금 업데이트
+    list.forEach(g => {
+      // cc-name으로 카드 찾기
+      document.querySelectorAll('.cc-name').forEach(nameEl => {
+        if (!nameEl.textContent.includes(g.name.replace(' CC','').replace(' G&CC',''))) return;
+        const card = nameEl.closest('.course-card');
+        if (!card) return;
+        // cc-price-main (주중 판매가)
+        const mainPrice = card.querySelector('.cc-price-main');
+        if (mainPrice) {
+          mainPrice.textContent = g.weekday.toLocaleString();
+          mainPrice.dataset.php = g.weekday;
+        }
+        // fee-val들 업데이트 (순서: 주중워크인, 주말워크인, 주중판매가, 주말판매가)
+        const feeVals = card.querySelectorAll('.fee-val');
+        const feeData = [null, null, g.weekday, g.weekend]; // 워크인은 건드리지 않음
+        feeData.forEach((val, i) => {
+          if (val && feeVals[i]) {
+            feeVals[i].textContent = val.toLocaleString();
+            feeVals[i].dataset.php = val;
+          }
+        });
+        // extra-tag 캐디/카트 업데이트
+        card.querySelectorAll('.extra-tag').forEach(tag => {
+          if (tag.textContent.includes('카트') && g.cart) {
+            tag.innerHTML = '카트 <b>' + g.cart.toLocaleString() + '</b>';
+          }
+          if (tag.textContent.includes('캐디') && g.caddy) {
+            tag.innerHTML = '캐디 <b>' + g.caddy.toLocaleString() + '</b>';
+          }
+        });
+      });
+    });
+    // 현재 USD 단위면 재변환
+    if (currentUnit === 'usd') setUnit('usd');
+  } catch(e) {
+    console.log('Firebase 요금 로드 실패, localStorage 사용');
+  }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   initRateBanner();
-  // data-php 속성 자동 설정 (숫자 텍스트를 data 속성으로)
+  // data-php 속성 자동 설정
   document.querySelectorAll('.fee-val').forEach(el => {
     const txt = el.textContent.replace(/[^0-9.]/g,'');
     if (txt && !isNaN(txt)) el.dataset.php = txt;
@@ -819,6 +901,8 @@ window.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.fee-unit').forEach(el => {
     if (el.textContent === 'PHP') el.dataset.isUnit = '1';
   });
+  // Firebase에서 최신 요금 불러와서 카드 업데이트
+  loadGreenfeeFromFirebase();
 });
 </script>
 </body>

@@ -1730,7 +1730,20 @@ function saveOneGF(id) {
     data[idx].caddy   = parseInt(document.getElementById('gf-cd-'+id).value) || 0;
     data[idx].cart    = parseInt(document.getElementById('gf-ct-'+id).value) || 0;
     localStorage.setItem('iclark_greenfee', JSON.stringify(data));
-    alert('✅ ' + data[idx].name + ' 요금 저장됐어요!');
+    // Firebase에도 저장
+    (async () => {
+      try {
+        const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+        const { getFirestore, doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+        const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+        const app = getApps().find(a=>a.name==='gf-save') || initializeApp(cfg,'gf-save');
+        const db = getFirestore(app);
+        await setDoc(doc(db, 'settings', 'greenfee'), { data: data, updatedAt: new Date().toLocaleString('ko-KR') });
+        alert('✅ ' + data[idx].name + ' 요금 저장됐어요!\n(모든 기기에 반영됩니다)');
+      } catch(e) {
+        alert('✅ ' + data[idx].name + ' 요금 저장됐어요! (로컬 저장)');
+      }
+    })();
   }
 }
 
@@ -1913,11 +1926,25 @@ function saveExchange() {
     usdKrw: usdKrw,
     updatedAt: new Date().toLocaleString('ko-KR')
   };
+  // localStorage 저장 (기존 유지)
   localStorage.setItem('iclark_exchange', JSON.stringify(data));
-  // 구버전 키도 업데이트 (quote.html 호환)
   localStorage.setItem('iclark_php_usd', (1 / applied).toFixed(6));
   localStorage.setItem('iclark_usd_krw', usdKrw);
-  alert('✅ 환율 저장 완료!\n적용 환율: $1 = ' + applied.toFixed(2) + ' PHP (마진 ' + margin + '%)');
+
+  // Firebase에도 저장 (모든 기기에서 동일 환율 적용)
+  (async () => {
+    try {
+      const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+      const { getFirestore, doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+      const app = getApps().find(a=>a.name==='exchange') || initializeApp(cfg,'exchange');
+      const db = getFirestore(app);
+      await setDoc(doc(db, 'settings', 'exchange'), data);
+      alert('✅ 환율 저장 완료!\n적용 환율: $1 = ' + applied.toFixed(2) + ' PHP (마진 ' + margin + '%)\n\n모든 기기에 동일하게 적용됩니다.');
+    } catch(e) {
+      alert('✅ 환율 저장 완료!\n적용 환율: $1 = ' + applied.toFixed(2) + ' PHP (마진 ' + margin + '%)\n(Firebase 저장 실패 — 로컬에만 저장됨)');
+    }
+  })();
 }
 
 function savePkgSettings() {
