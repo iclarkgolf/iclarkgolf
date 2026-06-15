@@ -714,6 +714,7 @@ body { background:#f4faf7; padding-bottom:40px; }
 <div class="panel" id="panel-greenfee">
   <div class="mgmt-card">
     <div class="mgmt-title">⛳ 골프장 요금 관리 <span>변경 후 저장 클릭</span></div>
+    <button onclick="saveAllGF()" style="width:100%;padding:12px;background:#1D9E75;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;margin-bottom:12px;">💾 전체 골프장 요금 한번에 저장 (Firebase 반영)</button>
     <div class="tbl-wrap">
       <table class="tbl" id="greenfee-tbl">
         <thead>
@@ -1719,6 +1720,33 @@ function renderGreenfeeTbl() {
       <td><button class="btn-edit" onclick="saveOneGF('${g.id}')">저장</button></td>
     </tr>
   `).join('');
+}
+
+async function saveAllGF() {
+  const data = getGreenfee();
+  // 화면에 입력된 값으로 전체 업데이트
+  data.forEach(g => {
+    const wd = document.getElementById('gf-wd-'+g.id);
+    const we = document.getElementById('gf-we-'+g.id);
+    const cd = document.getElementById('gf-cd-'+g.id);
+    const ct = document.getElementById('gf-ct-'+g.id);
+    if (wd) g.weekday = parseInt(wd.value) || g.weekday;
+    if (we) g.weekend = parseInt(we.value) || g.weekend;
+    if (cd) g.caddy   = parseInt(cd.value) || g.caddy;
+    if (ct) g.cart    = parseInt(ct.value) || g.cart;
+  });
+  localStorage.setItem('iclark_greenfee', JSON.stringify(data));
+  try {
+    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    const { getFirestore, doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+    const app = getApps().find(a=>a.name==='gf-all') || initializeApp(cfg,'gf-all');
+    const db = getFirestore(app);
+    await setDoc(doc(db, 'settings', 'greenfee'), { data: data, updatedAt: new Date().toLocaleString('ko-KR') });
+    alert('✅ 전체 골프장 요금이 Firebase에 저장됐어요!\n모든 기기에 즉시 반영됩니다.');
+  } catch(e) {
+    alert('❌ Firebase 저장 실패: ' + e.message);
+  }
 }
 
 function saveOneGF(id) {

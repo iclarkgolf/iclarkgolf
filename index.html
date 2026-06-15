@@ -1680,26 +1680,44 @@ try {
   const app = getApps().find(a=>a.name==='idx-rate') || initializeApp(cfg,'idx-rate');
   const db = getFirestore(app);
 
-  const [rateSnap, gfSnap] = await Promise.all([
-    getDoc(doc(db, 'settings', 'exchange')),
-    getDoc(doc(db, 'settings', 'greenfee'))
-  ]);
-
-  if (!rateSnap.exists() || !gfSnap.exists()) throw new Error('데이터 없음');
-
+  // 환율 먼저 로드
+  const rateSnap = await getDoc(doc(db, 'settings', 'exchange'));
+  if (!rateSnap.exists()) { console.warn('환율 데이터 없음'); throw new Error('환율 없음'); }
   const appliedRate = rateSnap.data().appliedUsdPhp || 53.2;
-  const gfList = gfSnap.data().data || [];
+  console.log('✅ 환율 로드:', appliedRate);
+
+  // 요금 로드
+  const gfSnap = await getDoc(doc(db, 'settings', 'greenfee'));
+  console.log('greenfee 존재:', gfSnap.exists());
 
   const MAP = { 'pradera':'gp-pradera', 'beverly':'gp-beverly', 'mimosa':'gp-mimosa', 'korea-cc':'gp-korea-cc' };
 
-  gfList.forEach(g => {
-    const el = document.getElementById(MAP[g.id]);
-    if (!el) return;
-    const usd = Math.ceil(g.weekday / appliedRate);
-    el.innerHTML = '$' + usd + '~ <span>/ 18홀</span>';
-  });
+  if (gfSnap.exists()) {
+    const gfList = gfSnap.data().data || [];
+    console.log('요금 목록:', gfList.length, '개');
+    gfList.forEach(g => {
+      const el = document.getElementById(MAP[g.id]);
+      if (!el) return;
+      const usd = Math.ceil(g.weekday / appliedRate);
+      console.log(g.id, g.weekday, 'PHP →', usd, 'USD');
+      el.innerHTML = '$' + usd + '~ <span>/ 18홀</span>';
+    });
+  } else {
+    // greenfee 없으면 localStorage에서 시도
+    console.warn('Firebase greenfee 없음 — localStorage 시도');
+    const saved = localStorage.getItem('iclark_greenfee');
+    if (saved) {
+      const gfList = JSON.parse(saved);
+      gfList.forEach(g => {
+        const el = document.getElementById(MAP[g.id]);
+        if (!el) return;
+        const usd = Math.ceil(g.weekday / appliedRate);
+        el.innerHTML = '$' + usd + '~ <span>/ 18홀</span>';
+      });
+    }
+  }
 } catch(e) {
-  // Firebase 실패 시 기존 하드코딩값 유지
+  console.error('골프 요금 업데이트 실패:', e);
 }
 </script>
 </body>
