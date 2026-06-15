@@ -1513,7 +1513,7 @@ function ceInsertImg() {
   document.execCommand('insertHTML', false, `<img src="${url}" style="max-width:100%;border-radius:10px;margin:10px 0;" loading="lazy">`);
 }
 
-
+function saveProfile() {
   const pf = {
     nameKo:   document.getElementById('pf-name-ko').value.trim(),
     nameEn:   document.getElementById('pf-name-en').value.trim(),
