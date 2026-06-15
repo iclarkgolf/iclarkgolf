@@ -21,7 +21,7 @@
 html { scroll-behavior: smooth; }
 body {
   font-family: 'Nunito', sans-serif;
-  background: #f4faf7;
+  background: #e4f5ed;
   color: #1a1a2e;
   min-height: 100vh;
   padding-bottom: 80px; /* 하단 고정 버튼 공간 */
@@ -194,7 +194,7 @@ img { max-width: 100%; }
 
 /* ── 히어로 ── */
 .hero {
-  background: linear-gradient(160deg, #f4faf7 0%, #f0f7ff 50%, #f4faf7 100%);
+  background: linear-gradient(160deg, #d4f0e4 0%, #daeeff 50%, #d4f0e4 100%);
   padding: 28px 20px 24px;
   text-align: center;
 }
@@ -262,6 +262,7 @@ img { max-width: 100%; }
   border-radius: var(--radius-full);
   cursor: pointer; transition: all .2s;
   min-height: 36px; display: flex; align-items: center;
+  text-decoration: none;
 }
 .hero-tag:active { background: var(--pink); color: var(--white); }
 
@@ -802,11 +803,11 @@ footer {
     <button data-i18n="hero.search.btn">검색</button>
   </div>
   <div class="hero-tags">
-    <span class="hero-tag" data-i18n="hero.tag1">골프 전지훈련</span>
-    <span class="hero-tag" data-i18n="hero.tag2">주말 라운드</span>
-    <span class="hero-tag" data-i18n="hero.tag3" data-i18n="footer.caddy">캐디 매칭</span>
-    <span class="hero-tag" data-i18n="hero.tag4">레슨 패키지</span>
-    <span class="hero-tag" data-i18n="hero.tag5">나 홀로 여행</span>
+    <a href="package-detail.html?id=card1" class="hero-tag" data-i18n="hero.tag1">골프 패키지</a>
+    <a href="greenfee.html" class="hero-tag" data-i18n="hero.tag2">골프장 정보</a>
+    <a href="caddy.html" class="hero-tag" data-i18n="hero.tag3">캐디 매칭</a>
+    <a href="quote.html" class="hero-tag" data-i18n="hero.tag4">맞춤 견적</a>
+    <a href="quote.html" class="hero-tag" data-i18n="hero.tag5">나 홀로 골프</a>
   </div>
 </div>
 
