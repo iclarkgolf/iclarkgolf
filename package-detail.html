@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iClark Golf — 패키지 상세</title>
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://iclarkgolf.com/package-detail.html">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Noto Sans KR',sans-serif; background:#f8f9fa; color:#18181b; }
+
+/* 네비 */
+nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; justify-content:space-between; align-items:center; padding:14px 20px; background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); border-bottom:1px solid #e5e7eb; }
+.nav-logo { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:2px; color:#18181b; text-decoration:none; }
+.nav-logo span { color:#1D9E75; }
+.nav-back { font-size:13px; color:#6b7280; text-decoration:none; display:flex; align-items:center; gap:4px; }
+.nav-back:hover { color:#1D9E75; }
+
+/* 히어로 */
+#hero { min-height:280px; display:flex; align-items:flex-end; padding:80px 20px 28px; position:relative; overflow:hidden; }
+#hero-bg { position:absolute; inset:0; background:linear-gradient(135deg,#054535,#1D9E75); transition:background .5s; }
+#hero-glow1 { position:absolute; right:-20px; top:-20px; width:160px; height:160px; border-radius:50%; background:rgba(255,255,255,0.08); }
+#hero-glow2 { position:absolute; right:20px; top:20px; width:80px; height:80px; border-radius:50%; background:rgba(255,255,255,0.1); }
+#hero-line { position:absolute; left:0; top:0; bottom:0; width:4px; background:rgba(255,255,255,0.4); }
+.hero-content { position:relative; z-index:1; }
+#hero-tag { font-size:11px; color:rgba(255,255,255,0.7); letter-spacing:.08em; margin-bottom:8px; }
+#hero-title { font-family:'Bebas Neue',sans-serif; font-size:48px; color:#fff; line-height:.9; letter-spacing:.02em; text-shadow:0 2px 16px rgba(0,0,0,0.2); }
+#hero-sub { display:flex; align-items:center; gap:8px; margin-top:6px; }
+#hero-sub1 { font-size:20px; font-weight:700; color:#fff; }
+#hero-dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.6); }
+#hero-sub2 { font-size:20px; font-weight:300; color:rgba(255,255,255,0.85); }
+#hero-copy { font-size:13px; color:rgba(255,255,255,0.7); line-height:1.9; margin-top:14px; border-left:2px solid rgba(255,255,255,0.4); padding-left:12px; }
+
+/* 가격 바 */
+#price-bar { background:#fff; padding:14px 20px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #e5e7eb; }
+#price-label { font-size:10px; color:#9ca3af; margin-bottom:2px; }
+#price-value { font-family:'Bebas Neue',sans-serif; font-size:26px; color:#18181b; }
+#inquiry-btn { background:linear-gradient(135deg,#1D9E75,#534AB7); color:#fff; padding:11px 20px; border-radius:10px; font-size:13px; font-weight:700; text-decoration:none; border:none; cursor:pointer; font-family:'Noto Sans KR',sans-serif; }
+
+/* 본문 */
+#content-area { max-width:720px; margin:0 auto; padding:28px 20px 100px; }
+#content-body { font-size:15px; line-height:1.9; color:#374151; }
+#content-body h2 { font-size:22px; font-weight:700; color:#18181b; margin:28px 0 12px; }
+#content-body h3 { font-size:18px; font-weight:700; color:#18181b; margin:20px 0 10px; }
+#content-body img { max-width:100%; border-radius:12px; margin:12px 0; }
+#content-body hr { border:none; border-top:1.5px solid #e5e7eb; margin:20px 0; }
+#content-body b, #content-body strong { font-weight:700; color:#18181b; }
+
+/* 빈 페이지 */
+#empty-state { text-align:center; padding:60px 20px; color:#9ca3af; }
+#empty-state div:first-child { font-size:48px; margin-bottom:12px; }
+#empty-state p { font-size:14px; line-height:1.8; }
+
+/* 하단 문의 */
+#bottom-cta { position:fixed; bottom:0; left:0; right:0; background:#fff; padding:14px 20px; border-top:1px solid #e5e7eb; display:flex; gap:10px; }
+#bottom-kakao { flex:1; padding:13px; background:#FEE500; color:#3A1D1D; border:none; border-radius:10px; font-size:14px; font-weight:800; cursor:pointer; font-family:'Noto Sans KR',sans-serif; text-decoration:none; display:flex; align-items:center; justify-content:center; }
+#bottom-quote { flex:1; padding:13px; background:linear-gradient(135deg,#1D9E75,#534AB7); color:#fff; border:none; border-radius:10px; font-size:14px; font-weight:800; cursor:pointer; font-family:'Noto Sans KR',sans-serif; text-decoration:none; display:flex; align-items:center; justify-content:center; }
+
+/* 로딩 */
+#loading { text-align:center; padding:80px 20px; color:#9ca3af; font-size:14px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">i<span>Clark</span> Golf</a>
+  <a href="index.html" class="nav-back">← 홈으로</a>
+</nav>
+
+<!-- 히어로 -->
+<div id="hero">
+  <div id="hero-bg"></div>
+  <div id="hero-glow1"></div>
+  <div id="hero-glow2"></div>
+  <div id="hero-line"></div>
+  <div class="hero-content">
+    <div id="hero-tag"></div>
+    <div id="hero-title"></div>
+    <div id="hero-sub">
+      <span id="hero-sub1"></span>
+      <span id="hero-dot"></span>
+      <span id="hero-sub2"></span>
+    </div>
+    <div id="hero-copy"></div>
+  </div>
+</div>
+
+<!-- 가격 바 -->
+<div id="price-bar">
+  <div>
+    <div id="price-label">1인 기준</div>
+    <div id="price-value">—</div>
+  </div>
+  <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" id="inquiry-btn">💬 지금 문의하기</a>
+</div>
+
+<!-- 본문 -->
+<div id="content-area">
+  <div id="loading">⏳ 불러오는 중...</div>
+  <div id="content-body" style="display:none;"></div>
+  <div id="empty-state" style="display:none;">
+    <div>✍️</div>
+    <p>아직 내용이 준비 중이에요.<br>곧 멋진 내용으로 채워질 거예요!</p>
+  </div>
+</div>
+
+<!-- 하단 고정 버튼 -->
+<div id="bottom-cta">
+  <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" id="bottom-kakao">💬 카카오 문의</a>
+  <a href="quote.html" id="bottom-quote">📋 맞춤 견적 만들기</a>
+</div>
+
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+const app = getApps().find(a=>a.name==='detail') || initializeApp(cfg,'detail');
+const db = getFirestore(app);
+
+// URL에서 카드 ID 가져오기
+const params = new URLSearchParams(location.search);
+const cardId = params.get('id') || 'card1';
+
+try {
+  const snap = await getDoc(doc(db, 'package_cards', cardId));
+  if (snap.exists()) {
+    const c = snap.data();
+
+    // 히어로 채우기
+    document.getElementById('hero-bg').style.background = `linear-gradient(135deg,${c.color1||'#054535'},${c.color2||'#1D9E75'})`;
+    document.getElementById('hero-tag').textContent = c.tag || '';
+    document.getElementById('hero-title').textContent = c.titleEn || '';
+    document.getElementById('hero-sub1').textContent = c.sub1 || '';
+    document.getElementById('hero-sub2').textContent = c.sub2 || '';
+    document.getElementById('hero-dot').style.display = (c.sub1 && c.sub2) ? 'block' : 'none';
+    document.getElementById('hero-copy').innerHTML = (c.copy||'').replace(/\n/g,'<br>');
+    document.getElementById('price-value').textContent = c.price || '—';
+    document.title = `${c.titleEn} ${c.sub1} — iClark Golf`;
+
+    // 본문
+    document.getElementById('loading').style.display = 'none';
+    if (c.content && c.content.trim()) {
+      document.getElementById('content-body').innerHTML = c.content;
+      document.getElementById('content-body').style.display = 'block';
+    } else {
+      document.getElementById('empty-state').style.display = 'block';
+    }
+  }
+} catch(e) {
+  document.getElementById('loading').textContent = '⚠️ 불러오기 실패';
+}
+</script>
+</body>
+</html>
