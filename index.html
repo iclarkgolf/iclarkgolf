@@ -865,12 +865,68 @@ footer {
   <div class="sec-head">
     <div class="sec-title" data-i18n="sec.packages">⛳ 골프 패키지</div>
   </div>
-  <!-- 카드 컨테이너 — Firebase에서 동적 로드 -->
-  <div id="pkg-cards" style="display:grid;gap:14px;padding:0 16px 4px;">
-    <!-- 로딩 -->
-    <div style="text-align:center;padding:40px;color:#9ca3af;font-size:14px;">⏳ 불러오는 중...</div>
+  <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:4px 16px 16px;">
+    <div id="pkg-cards" style="display:flex;gap:12px;width:max-content;">
+      <div style="width:240px;text-align:center;padding:40px 0;color:#9ca3af;font-size:13px;">⏳ 불러오는 중...</div>
+    </div>
   </div>
 </div>
+
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+const app = getApps().find(a=>a.name==='pkg') || initializeApp(cfg,'pkg');
+const db = getFirestore(app);
+
+const DEFAULT_CARDS = [
+  { id:'card1', tag:'먹 · 자 · 골', titleEn:'PRADERA', sub1:'로컬숙소', sub2:'라이프', copy:'로컬 숙소에서\n먹고 · 자고 · 골프만\n나 홀로 전지훈련을 오픈합니다', price:'$99', priceUnit:'/ day', btn:'자세히 보기', color1:'#054535', color2:'#1D9E75', order:1 },
+  { id:'card2', tag:'힐링 친목 / 럭셔리 골프', titleEn:'PRADERA', sub1:'풀 빌라', sub2:'라이프', copy:'골프와 힐링을 동시에\n4인 이상 풀빌라 단독 사용', price:'가격 문의', priceUnit:'', btn:'자세히 보기', color1:'#72243E', color2:'#D4537E', order:2 },
+  { id:'card3', tag:'자격증을 위한 / 휴양 휴식을 위한', titleEn:'PRADERA', sub1:'장기 하숙형', sub2:'전지훈련', copy:'프라데라에서 오래 머물수록\n실력도 자격증도 휴식도 완성', price:'가격 문의', priceUnit:'', btn:'자세히 보기', color1:'#2D5A27', color2:'#7DC274', order:3 },
+  { id:'card4', tag:'내 마음 가는 대로', titleEn:'CLARK GOLF', sub1:'맘대로', sub2:'선택하기', copy:'클락의 골프 모든 것을\n골프장 · 숙소 · 레슨 · 캐디\n직접 골라보세요', price:'내 견적', priceUnit:'만들기', btn:'선택하러 가기', color1:'#1a1a2e', color2:'#8B5CF6', order:4 },
+];
+
+function renderCards(cards) {
+  const box = document.getElementById('pkg-cards');
+  box.innerHTML = cards.map(c => `
+    <a href="package-detail.html?id=${c.id}" style="width:220px;flex-shrink:0;border-radius:14px;overflow:hidden;text-decoration:none;display:block;box-shadow:0 4px 16px rgba(0,0,0,0.15);">
+      <!-- 썸네일 상단 -->
+      <div style="background:linear-gradient(135deg,${c.color1},${c.color2});padding:18px 16px 16px;position:relative;height:160px;">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,rgba(255,255,255,0.5),rgba(255,255,255,0.1));"></div>
+        <div style="position:absolute;right:-10px;top:-10px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.07);"></div>
+        <div style="position:absolute;right:8px;top:8px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.1);"></div>
+        <div style="font-size:9px;color:rgba(255,255,255,0.65);letter-spacing:.06em;margin-bottom:8px;line-height:1.4;">${c.tag||''}</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:#fff;line-height:.9;letter-spacing:.02em;text-shadow:0 2px 8px rgba(0,0,0,0.2);margin-bottom:4px;">${c.titleEn||''}</div>
+        <div style="display:flex;align-items:center;gap:5px;margin-bottom:10px;">
+          <span style="font-size:13px;font-weight:700;color:#fff;">${c.sub1||''}</span>
+          ${c.sub1&&c.sub2 ? '<span style="width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.5);display:inline-block;flex-shrink:0;"></span>' : ''}
+          <span style="font-size:13px;font-weight:300;color:rgba(255,255,255,0.85);">${c.sub2||''}</span>
+        </div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.65);line-height:1.7;border-left:2px solid rgba(255,255,255,0.3);padding-left:8px;">${(c.copy||'').replace(/\n/g,'<br>')}</div>
+      </div>
+      <!-- 하단 가격 -->
+      <div style="background:#fff;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:9px;color:#9ca3af;margin-bottom:1px;">1인 기준</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:#18181b;line-height:1;">${c.price||'—'}<span style="font-size:10px;font-weight:400;color:#9ca3af;"> ${c.priceUnit||''}</span></div>
+        </div>
+        <div style="background:linear-gradient(135deg,${c.color1},${c.color2});color:#fff;padding:6px 12px;border-radius:6px;font-size:10px;font-weight:700;white-space:nowrap;">${c.btn||'보기'} →</div>
+      </div>
+    </a>
+  `).join('');
+}
+
+try {
+  const snap = await getDocs(collection(db, 'package_cards'));
+  let cards = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  if (cards.length === 0) cards = DEFAULT_CARDS;
+  cards.sort((a,b) => (a.order||0) - (b.order||0));
+  renderCards(cards);
+} catch(e) {
+  renderCards(DEFAULT_CARDS);
+}
+</script>
 
 <script type="module">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
