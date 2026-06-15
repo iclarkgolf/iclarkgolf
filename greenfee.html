@@ -845,13 +845,28 @@ async function loadGreenfeeFromFirebase() {
     const snap = await getDoc(doc(db, 'settings', 'greenfee'));
     if (!snap.exists()) return;
     const list = snap.data().data || [];
-    // localStorage에도 캐시
     localStorage.setItem('iclark_greenfee', JSON.stringify(list));
-    // 각 골프장 카드 요금 업데이트
+
+    // admin ID → greenfee.html cc-name 키워드 매핑
+    const NAME_MAP = {
+      'pradera':  '프라데라',
+      'mimosa':   '미모사',
+      'korea-cc': '코리아',
+      'luisita':  '루이시타',
+      'dheights': 'HEIGHTS',
+      'new-asia': '뉴 아시아',
+      'beverly':  '베벌리',
+      'royal':    '로얄',
+      'lakewood': '레이크우드',
+      'subic':    '수빅',
+      'hann':     '한 리저브',
+    };
+
     list.forEach(g => {
-      // cc-name으로 카드 찾기
+      const keyword = NAME_MAP[g.id];
+      if (!keyword) return;
       document.querySelectorAll('.cc-name').forEach(nameEl => {
-        if (!nameEl.textContent.includes(g.name.replace(' CC','').replace(' G&CC',''))) return;
+        if (!nameEl.textContent.includes(keyword)) return;
         const card = nameEl.closest('.course-card');
         if (!card) return;
         // cc-price-main (주중 판매가)
@@ -860,30 +875,21 @@ async function loadGreenfeeFromFirebase() {
           mainPrice.textContent = g.weekday.toLocaleString();
           mainPrice.dataset.php = g.weekday;
         }
-        // fee-val들 업데이트 (순서: 주중워크인, 주말워크인, 주중판매가, 주말판매가)
+        // fee-val 중 3번째(주중판매가), 4번째(주말판매가) 업데이트
         const feeVals = card.querySelectorAll('.fee-val');
-        const feeData = [null, null, g.weekday, g.weekend]; // 워크인은 건드리지 않음
-        feeData.forEach((val, i) => {
-          if (val && feeVals[i]) {
-            feeVals[i].textContent = val.toLocaleString();
-            feeVals[i].dataset.php = val;
-          }
-        });
-        // extra-tag 캐디/카트 업데이트
+        if (feeVals[2]) { feeVals[2].textContent = g.weekday.toLocaleString(); feeVals[2].dataset.php = g.weekday; }
+        if (feeVals[3]) { feeVals[3].textContent = g.weekend.toLocaleString(); feeVals[3].dataset.php = g.weekend; }
+        // 카트/캐디 업데이트
         card.querySelectorAll('.extra-tag').forEach(tag => {
-          if (tag.textContent.includes('카트') && g.cart) {
-            tag.innerHTML = '카트 <b>' + g.cart.toLocaleString() + '</b>';
-          }
-          if (tag.textContent.includes('캐디') && g.caddy) {
-            tag.innerHTML = '캐디 <b>' + g.caddy.toLocaleString() + '</b>';
-          }
+          if (tag.textContent.includes('카트') && g.cart) tag.innerHTML = '카트 <b>' + g.cart.toLocaleString() + '</b>';
+          if (tag.textContent.includes('캐디') && g.caddy) tag.innerHTML = '캐디 <b>' + g.caddy.toLocaleString() + '</b>';
         });
       });
     });
-    // 현재 USD 단위면 재변환
+    // USD 단위면 재변환
     if (currentUnit === 'usd') setUnit('usd');
   } catch(e) {
-    console.log('Firebase 요금 로드 실패, localStorage 사용');
+    console.log('Firebase 요금 로드 실패, 기존값 유지');
   }
 }
 

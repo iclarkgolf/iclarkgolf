@@ -981,7 +981,7 @@ try {
       <div class="golf-icon" style="background:#E1F5EE">⛳</div>
       <div class="golf-name">프라데라 베르데</div>
       <div class="golf-info">36홀 챔피언십 · iClark 전용 코스</div>
-      <div class="golf-price">$75~ <span>/ 18홀</span></div>
+      <div class="golf-price" id="gp-pradera">$75~ <span>/ 18홀</span></div>
     </a>
 
     <!-- 2. 베버리 — 전지훈련 메인 코스 -->
@@ -990,7 +990,7 @@ try {
       <div class="golf-icon" style="background:#E1F5EE">⛳</div>
       <div class="golf-name">베버리 G&CC</div>
       <div class="golf-info">클락 전지훈련 최적 코스</div>
-      <div class="golf-price">$35~ <span>/ 18홀</span></div>
+      <div class="golf-price" id="gp-beverly">$35~ <span>/ 18홀</span></div>
     </a>
 
     <!-- 3. 미모사 — 관광 코스 -->
@@ -999,7 +999,7 @@ try {
       <div class="golf-icon" style="background:#f0fdf4">⛳</div>
       <div class="golf-name">미모사 G&CC</div>
       <div class="golf-info">접근 편리 · 시내 인접</div>
-      <div class="golf-price">$95~ <span>/ 18홀</span></div>
+      <div class="golf-price" id="gp-mimosa">$95~ <span>/ 18홀</span></div>
     </a>
 
     <!-- 4. 코리아CC — 관광 코스 -->
@@ -1008,7 +1008,7 @@ try {
       <div class="golf-icon" style="background:#fff7ed">🇰🇷</div>
       <div class="golf-name">코리아 CC</div>
       <div class="golf-info">한국인 운영 · 한국어 서비스</div>
-      <div class="golf-price">$55~ <span>/ 18홀</span></div>
+      <div class="golf-price" id="gp-korea-cc">$55~ <span>/ 18홀</span></div>
     </a>
 
   </div>
@@ -1668,6 +1668,39 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.classList.toggle('on', btn.textContent.trim().toLowerCase().startsWith(currentLang));
   });
 });
+</script>
+
+<script type="module">
+// ── 골프장 카드 요금 Firebase 자동 업데이트 ──
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+try {
+  const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+  const app = getApps().find(a=>a.name==='idx-rate') || initializeApp(cfg,'idx-rate');
+  const db = getFirestore(app);
+
+  const [rateSnap, gfSnap] = await Promise.all([
+    getDoc(doc(db, 'settings', 'exchange')),
+    getDoc(doc(db, 'settings', 'greenfee'))
+  ]);
+
+  if (!rateSnap.exists() || !gfSnap.exists()) throw new Error('데이터 없음');
+
+  const appliedRate = rateSnap.data().appliedUsdPhp || 53.2;
+  const gfList = gfSnap.data().data || [];
+
+  const MAP = { 'pradera':'gp-pradera', 'beverly':'gp-beverly', 'mimosa':'gp-mimosa', 'korea-cc':'gp-korea-cc' };
+
+  gfList.forEach(g => {
+    const el = document.getElementById(MAP[g.id]);
+    if (!el) return;
+    const usd = Math.ceil(g.weekday / appliedRate);
+    el.innerHTML = '$' + usd + '~ <span>/ 18홀</span>';
+  });
+} catch(e) {
+  // Firebase 실패 시 기존 하드코딩값 유지
+}
 </script>
 </body>
 </html>
