@@ -436,7 +436,7 @@
     <ul class="bank-list">
       <li>
         <span class="bank-tag">하나은행</span>
-        인터넷뱅킹 → 외환 → 해외송금 → 국가: 필리핀 / 통화: PHP
+        하나원큐 앱 → 해외송금 → 수취인 정보 입력
       </li>
       <li>
         <span class="bank-tag">국민은행</span>
@@ -455,12 +455,83 @@
         토스 → 해외송금 → 필리핀 → PHP 선택 (수수료 저렴)
       </li>
     </ul>
+
+    <!-- 하나은행 앱 스타일 입력 가이드 -->
+    <div style="margin-top:20px; background:#f0f4ff; border-radius:12px; padding:18px 16px; border:1px solid #c7d2fe;">
+      <div style="font-size:13px; font-weight:700; color:#3730a3; margin-bottom:14px; display:flex; align-items:center; gap:6px;">
+        📱 하나은행 앱 — 수취인 정보 입력 가이드
+      </div>
+
+      <!-- 입력 필드 스타일 -->
+      <div style="display:flex; flex-direction:column; gap:10px;">
+
+        <div style="background:#fff; border:1px solid #d1d5db; border-radius:8px; padding:12px 14px;">
+          <div style="font-size:11px; color:#9ca3af; margin-bottom:3px;">받는분 영문이름</div>
+          <div style="font-size:15px; font-weight:700; color:#111; display:flex; justify-content:space-between; align-items:center;">
+            SHUNAM JHANG
+            <button class="copy-btn" onclick="copyText('SHUNAM JHANG')">복사</button>
+          </div>
+        </div>
+
+        <div style="background:#fff; border:1px solid #d1d5db; border-radius:8px; padding:12px 14px;">
+          <div style="font-size:11px; color:#9ca3af; margin-bottom:3px;">연락처 (Phone No)</div>
+          <div style="font-size:15px; font-weight:700; color:#111; display:flex; justify-content:space-between; align-items:center;">
+            639083633792
+            <button class="copy-btn" onclick="copyText('639083633792')">복사</button>
+          </div>
+        </div>
+
+        <div style="background:#fff; border:1px solid #d1d5db; border-radius:8px; padding:12px 14px;">
+          <div style="font-size:11px; color:#9ca3af; margin-bottom:3px;">상세주소 (Building Name, Floor)</div>
+          <div style="font-size:15px; font-weight:700; color:#111; display:flex; justify-content:space-between; align-items:center;">
+            248 SM CITY PAMPANGA B
+            <button class="copy-btn" onclick="copyText('248 SM CITY PAMPANGA B')">복사</button>
+          </div>
+        </div>
+
+        <div style="background:#fff; border:1px solid #d1d5db; border-radius:8px; padding:12px 14px;">
+          <div style="font-size:11px; color:#9ca3af; margin-bottom:3px;">거리명 (Street)</div>
+          <div style="font-size:15px; font-weight:700; color:#111; display:flex; justify-content:space-between; align-items:center;">
+            FRIENDSHIP HIGHWAY
+            <button class="copy-btn" onclick="copyText('FRIENDSHIP HIGHWAY')">복사</button>
+          </div>
+        </div>
+
+        <div style="background:#fff; border:1px solid #d1d5db; border-radius:8px; padding:12px 14px;">
+          <div style="font-size:11px; color:#9ca3af; margin-bottom:3px;">도시명 (Town, City)</div>
+          <div style="font-size:15px; font-weight:700; color:#111; display:flex; justify-content:space-between; align-items:center;">
+            ANGELES
+            <button class="copy-btn" onclick="copyText('ANGELES')">복사</button>
+          </div>
+        </div>
+
+        <div style="background:#fff; border:1px solid #d1d5db; border-radius:8px; padding:12px 14px;">
+          <div style="font-size:11px; color:#9ca3af; margin-bottom:3px;">국가</div>
+          <div style="font-size:15px; font-weight:700; color:#111;">
+            🇵🇭 필리핀 (Philippines)
+          </div>
+        </div>
+
+        <div style="background:#fff; border:1px solid #d1d5db; border-radius:8px; padding:12px 14px;">
+          <div style="font-size:11px; color:#9ca3af; margin-bottom:3px;">이메일 (선택)</div>
+          <div style="font-size:15px; font-weight:700; color:#111; display:flex; justify-content:space-between; align-items:center;">
+            tourjang@gmail.com
+            <button class="copy-btn" onclick="copyText('tourjang@gmail.com')">복사</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:14px; background:#fffbeb; border-left:3px solid #f59e0b; border-radius:0 6px 6px 0; padding:10px 12px; font-size:12px; color:#92400e;">
+        💡 각 항목 옆 <strong>복사</strong> 버튼을 눌러 앱에 붙여넣기 하세요
+      </div>
+    </div>
+
     <div class="reason-box" style="margin-top:16px;">
-      <strong>📝 송금 시 입력 항목</strong>
-      수취인 성명: SHUNAM JHANG<br>
-      수취 은행: BDO Unibank (SWIFT: BNORPHMM)<br>
-      계좌번호: 001311251888<br>
-      국가: Philippines / 통화: PHP (필리핀 페소)<br>
+      <strong>📝 SWIFT 송금 기본 정보</strong>
+      수취 은행: BDO Unibank (SWIFT: <strong>BNORPHMM</strong>)<br>
+      계좌번호: <strong>001311251888</strong><br>
+      통화: PHP (필리핀 페소)<br>
       송금 목적: 여행경비 (Travel Expenses)
     </div>
   </div>
