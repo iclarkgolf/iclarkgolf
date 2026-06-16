@@ -337,6 +337,9 @@ footer a{color:rgba(255,255,255,.8);}
     <button class="kakao-btn" onclick="goKakao()" style="margin-top:8px;">
       💬 카카오 채널로 문의하기
     </button>
+    <a href="payment.html" class="kakao-btn" style="margin-top:8px;background:#1b4332;color:#fff;text-decoration:none;">
+      💳 입금 안내 보기
+    </a>
     <div class="qr-box">
       <div>카카오 채널 QR코드</div>
       <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://pf.kakao.com/_nbHKX/chat&color=26215C&bgcolor=FEE500&margin=6" alt="QR" style="width:100px;height:100px;border-radius:8px;display:block;margin:0 auto;">
@@ -908,10 +911,12 @@ async function submitInquiry() {
     msgEl.textContent = '✅ 견적 신청이 완료됐어요! 곧 연락드릴게요 😊';
     btn.textContent = '신청 완료 ✅';
 
-    // 3초 후 카카오 열고 모달 닫기
+    // 3초 후 입금안내 페이지로 이동
     setTimeout(() => {
       closeInquiryModal();
-      if (confirm('카카오 채널로도 연결하시겠어요?')) goKakao();
+      if (confirm('입금 안내 페이지로 이동하시겠어요?')) {
+        window.location.href = 'payment.html';
+      }
     }, 2500);
 
   } catch(e) {
