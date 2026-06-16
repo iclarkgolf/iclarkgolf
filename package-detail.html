@@ -4,154 +4,724 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>iClark Golf — 패키지 상세</title>
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://iclarkgolf.com/package-detail.html">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Noto Sans KR',sans-serif; background:#f8f9fa; color:#18181b; }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans KR',sans-serif;background:#f4f4f0;color:#18181b;padding-bottom:100px;}
 
 /* 네비 */
-nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; justify-content:space-between; align-items:center; padding:14px 20px; background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); border-bottom:1px solid #e5e7eb; }
-.nav-logo { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:2px; color:#18181b; text-decoration:none; }
-.nav-logo span { color:#1D9E75; }
-.nav-back { font-size:13px; color:#6b7280; text-decoration:none; display:flex; align-items:center; gap:4px; }
-.nav-back:hover { color:#1D9E75; }
+nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);border-bottom:1px solid #e5e7eb;}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#18181b;text-decoration:none;}
+.nav-logo .i{color:#e03131;}
+.nav-logo .clark{color:#1b4332;}
+.nav-back{font-size:13px;color:#6b7280;text-decoration:none;}
+.nav-back:hover{color:#1b4332;}
 
 /* 히어로 */
-#hero { min-height:280px; display:flex; align-items:flex-end; padding:80px 20px 28px; position:relative; overflow:hidden; }
-#hero-bg { position:absolute; inset:0; background:linear-gradient(135deg,#054535,#1D9E75); transition:background .5s; }
-#hero-glow1 { position:absolute; right:-20px; top:-20px; width:160px; height:160px; border-radius:50%; background:rgba(255,255,255,0.08); }
-#hero-glow2 { position:absolute; right:20px; top:20px; width:80px; height:80px; border-radius:50%; background:rgba(255,255,255,0.1); }
-#hero-line { position:absolute; left:0; top:0; bottom:0; width:4px; background:rgba(255,255,255,0.4); }
-.hero-content { position:relative; z-index:1; }
-#hero-tag { font-size:11px; color:rgba(255,255,255,0.7); letter-spacing:.08em; margin-bottom:8px; }
-#hero-title { font-family:'Bebas Neue',sans-serif; font-size:48px; color:#fff; line-height:.9; letter-spacing:.02em; text-shadow:0 2px 16px rgba(0,0,0,0.2); }
-#hero-sub { display:flex; align-items:center; gap:8px; margin-top:6px; }
-#hero-sub1 { font-size:20px; font-weight:700; color:#fff; }
-#hero-dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.6); }
-#hero-sub2 { font-size:20px; font-weight:300; color:rgba(255,255,255,0.85); }
-#hero-copy { font-size:13px; color:rgba(255,255,255,0.7); line-height:1.9; margin-top:14px; border-left:2px solid rgba(255,255,255,0.4); padding-left:12px; }
+.hero{min-height:260px;display:flex;align-items:flex-end;padding:70px 20px 24px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#054535,#1D9E75);}
+.hero-img{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0.35;}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.1) 100%);}
+.hero-glow{position:absolute;right:-20px;top:-20px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.07);}
+.hero-line{position:absolute;left:0;top:0;bottom:0;width:4px;background:rgba(255,255,255,0.35);}
+.hero-content{position:relative;z-index:2;}
+.hero-tag{font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:.08em;margin-bottom:8px;}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:46px;color:#fff;line-height:.9;letter-spacing:.02em;text-shadow:0 2px 16px rgba(0,0,0,0.3);}
+.hero-subs{display:flex;align-items:center;gap:8px;margin-top:8px;}
+.hero-sub1{font-size:18px;font-weight:700;color:#fff;}
+.hero-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.6);}
+.hero-sub2{font-size:18px;font-weight:300;color:rgba(255,255,255,0.85);}
+.hero-copy{font-size:13px;color:rgba(255,255,255,0.75);line-height:1.9;margin-top:12px;border-left:2px solid rgba(255,255,255,0.4);padding-left:12px;}
 
-/* 가격 바 */
-#price-bar { background:#fff; padding:14px 20px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #e5e7eb; }
-#price-label { font-size:10px; color:#9ca3af; margin-bottom:2px; }
-#price-value { font-family:'Bebas Neue',sans-serif; font-size:26px; color:#18181b; }
-#inquiry-btn { background:linear-gradient(135deg,#1D9E75,#534AB7); color:#fff; padding:11px 20px; border-radius:10px; font-size:13px; font-weight:700; text-decoration:none; border:none; cursor:pointer; font-family:'Noto Sans KR',sans-serif; }
+/* 핵심 숫자 바 */
+.stats-bar{background:#fff;display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid #e5e7eb;}
+.stat-item{padding:14px 10px;text-align:center;border-right:1px solid #e5e7eb;}
+.stat-item:last-child{border-right:none;}
+.stat-label{font-size:10px;color:#9ca3af;margin-bottom:4px;}
+.stat-value{font-size:18px;font-weight:900;color:#1b4332;}
+.stat-unit{font-size:10px;color:#9ca3af;margin-top:2px;}
 
-/* 본문 */
-#content-area { max-width:720px; margin:0 auto; padding:28px 20px 100px; }
-#content-body { font-size:15px; line-height:1.9; color:#374151; }
-#content-body h2 { font-size:22px; font-weight:700; color:#18181b; margin:28px 0 12px; }
-#content-body h3 { font-size:18px; font-weight:700; color:#18181b; margin:20px 0 10px; }
-#content-body img { max-width:100%; border-radius:12px; margin:12px 0; }
-#content-body hr { border:none; border-top:1.5px solid #e5e7eb; margin:20px 0; }
-#content-body b, #content-body strong { font-weight:700; color:#18181b; }
+/* 섹션 공통 */
+.section{background:#fff;margin:10px 12px;border-radius:14px;overflow:hidden;border:1px solid #e5e7eb;}
+.section-header{background:#1b4332;color:#fff;padding:11px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.section-body{padding:16px;}
 
-/* 빈 페이지 */
-#empty-state { text-align:center; padding:60px 20px; color:#9ca3af; }
-#empty-state div:first-child { font-size:48px; margin-bottom:12px; }
-#empty-state p { font-size:14px; line-height:1.8; }
+/* 일정 */
+.day-row{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;}
+.day-row:last-child{margin-bottom:0;}
+.day-num{width:34px;height:34px;border-radius:50%;background:#1b4332;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px;}
+.day-title{font-size:14px;font-weight:700;color:#18181b;margin-bottom:3px;}
+.day-desc{font-size:12px;color:#6b7280;line-height:1.6;}
 
-/* 하단 문의 */
-#bottom-cta { position:fixed; bottom:0; left:0; right:0; background:#fff; padding:14px 20px; border-top:1px solid #e5e7eb; display:flex; gap:10px; }
-#bottom-kakao { flex:1; padding:13px; background:#FEE500; color:#3A1D1D; border:none; border-radius:10px; font-size:14px; font-weight:800; cursor:pointer; font-family:'Noto Sans KR',sans-serif; text-decoration:none; display:flex; align-items:center; justify-content:center; }
-#bottom-quote { flex:1; padding:13px; background:linear-gradient(135deg,#1D9E75,#534AB7); color:#fff; border:none; border-radius:10px; font-size:14px; font-weight:800; cursor:pointer; font-family:'Noto Sans KR',sans-serif; text-decoration:none; display:flex; align-items:center; justify-content:center; }
+/* 포함/불포함 */
+.inc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.inc-col-title{font-size:12px;font-weight:700;margin-bottom:8px;}
+.inc-col-title.yes{color:#1b4332;}
+.inc-col-title.no{color:#dc2626;}
+.inc-list{font-size:12px;color:#374151;line-height:2.1;}
+.inc-list span{display:flex;align-items:center;gap:5px;}
+
+/* 숙소 슬라이더 */
+.slider-wrap{position:relative;width:100%;height:200px;border-radius:10px;overflow:hidden;margin-bottom:12px;background:#f4f4f0;touch-action:pan-y;}
+.slider-track{display:flex;height:100%;transition:transform .35s ease;will-change:transform;}
+.slider-slide{min-width:100%;height:200px;flex-shrink:0;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;font-size:40px;background-color:#e5e7eb;position:relative;}
+.slider-dots{display:flex;justify-content:center;gap:6px;margin-bottom:12px;}
+.slider-dot{width:7px;height:7px;border-radius:50%;background:#d1d5db;cursor:pointer;transition:background .2s;}
+.slider-dot.on{background:#1b4332;}
+.slider-add-btn{display:none;width:100%;padding:9px;background:#f0f7f4;border:1.5px dashed #1b4332;border-radius:9px;color:#1b4332;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:10px;}
+.edit-mode .slider-add-btn{display:block;}
+.slide-del-btn{display:none;position:absolute;top:8px;right:8px;background:rgba(220,38,38,0.85);color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;z-index:5;}
+.edit-mode .slide-del-btn{display:block;}
+.accom-name{font-size:15px;font-weight:700;color:#18181b;margin-bottom:4px;}
+.accom-sub{font-size:12px;color:#6b7280;line-height:1.7;}
+
+/* 프로 */
+.pro-row{display:flex;gap:14px;align-items:center;}
+.pro-avatar{width:60px;height:60px;border-radius:50%;background:#1b4332;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;overflow:hidden;}
+.pro-avatar img{width:100%;height:100%;object-fit:cover;}
+.pro-name{font-size:15px;font-weight:700;color:#18181b;margin-bottom:3px;}
+.pro-certs{font-size:12px;color:#6b7280;line-height:1.7;}
+
+/* 가격표 */
+.price-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:9px;margin-bottom:7px;background:#f9f9f6;}
+.price-row.featured{background:#e8f4ef;border:2px solid #1b4332;}
+.price-row:last-child{margin-bottom:0;}
+.price-period{font-size:13px;color:#374151;display:flex;align-items:center;gap:8px;}
+.price-badge{font-size:10px;font-weight:700;background:#1b4332;color:#fff;padding:2px 8px;border-radius:10px;}
+.price-amount{font-size:14px;font-weight:700;color:#1b4332;}
+
+/* 자유 글 영역 */
+.free-content{font-size:14px;line-height:1.9;color:#374151;}
+.free-content h2{font-size:20px;font-weight:700;color:#18181b;margin:20px 0 10px;}
+.free-content h3{font-size:16px;font-weight:700;color:#18181b;margin:16px 0 8px;}
+.free-content img{max-width:100%;border-radius:10px;margin:10px 0;}
+.free-content hr{border:none;border-top:1.5px solid #e5e7eb;margin:16px 0;}
+.free-content p{margin-bottom:8px;}
+
+/* 하단 CTA */
+.bottom-cta{position:fixed;bottom:0;left:0;right:0;background:#fff;padding:12px 16px;border-top:1px solid #e5e7eb;display:flex;gap:10px;z-index:100;}
+.btn-kakao{flex:1;padding:13px;background:#FEE500;color:#1b1b1b;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;}
+.btn-quote{flex:1;padding:13px;background:linear-gradient(135deg,#1b4332,#534AB7);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;}
+
+/* ── 편집 모드 ── */
+.edit-fab{position:fixed;bottom:90px;right:16px;width:50px;height:50px;border-radius:50%;background:#1b4332;color:#fff;border:none;font-size:20px;cursor:pointer;z-index:300;box-shadow:0 4px 16px rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;}
+.edit-fab.active{background:#dc2626;}
+
+/* 편집 모드 필드 공통 */
+[contenteditable="true"]{outline:2px dashed #1b4332;outline-offset:3px;border-radius:4px;min-height:1em;cursor:text;}
+[contenteditable="true"]:focus{outline:2px solid #1b4332;background:rgba(27,67,50,0.04);}
+
+/* 편집 모드 이미지 교체 버튼 */
+.img-replace-btn{display:none;position:absolute;top:8px;right:8px;background:#1b4332;color:#fff;border:none;border-radius:7px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;z-index:10;}
+.edit-mode .img-replace-btn{display:block;}
+.img-wrap{position:relative;}
+
+/* 편집 툴바 */
+.edit-toolbar{display:none;position:fixed;top:56px;left:0;right:0;z-index:250;background:#1b4332;padding:8px 12px;gap:6px;flex-wrap:wrap;}
+.edit-toolbar.show{display:flex;}
+.tb-btn{padding:5px 10px;background:rgba(255,255,255,0.15);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.tb-btn:hover{background:rgba(255,255,255,0.3);}
+.tb-btn.save{background:#f4a261;color:#1b4332;}
+.tb-sep{width:1px;background:rgba(255,255,255,0.2);margin:0 4px;}
+
+/* 편집모드 섹션 추가버튼 */
+.add-row-btn{display:none;width:100%;margin-top:10px;padding:9px;background:#f0f7f4;border:1.5px dashed #1b4332;border-radius:9px;color:#1b4332;font-size:12px;font-weight:700;cursor:pointer;}
+.edit-mode .add-row-btn{display:block;}
 
 /* 로딩 */
-#loading { text-align:center; padding:80px 20px; color:#9ca3af; font-size:14px; }
+#loading{text-align:center;padding:80px 20px;color:#9ca3af;font-size:14px;}
+
+/* 비밀번호 모달 */
+.pw-modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;}
+.pw-modal.show{display:flex;}
+.pw-box{background:#fff;border-radius:16px;padding:28px 24px;width:88%;max-width:340px;}
+.pw-title{font-size:16px;font-weight:700;margin-bottom:16px;color:#18181b;}
+.pw-input{width:100%;padding:12px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:15px;margin-bottom:12px;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;}
+.pw-input:focus{outline:none;border-color:#1b4332;}
+.pw-btns{display:flex;gap:10px;}
+.pw-cancel{flex:1;padding:12px;background:#f4f4f5;color:#6b7280;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.pw-ok{flex:2;padding:12px;background:#1b4332;color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.pw-err{font-size:12px;color:#dc2626;margin-bottom:8px;display:none;}
+
+/* 저장 토스트 */
+.toast{position:fixed;bottom:110px;left:50%;transform:translateX(-50%);background:rgba(27,67,50,0.92);color:#fff;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:700;display:none;z-index:400;white-space:nowrap;}
+.toast.show{display:block;}
 </style>
 </head>
 <body>
 
+<!-- 네비 -->
 <nav>
-  <a href="index.html" class="nav-logo">i<span>Clark</span> Golf</a>
+  <a href="index.html" class="nav-logo"><span class="i">i</span><span class="clark">CLARK</span>GOLF</a>
   <a href="index.html" class="nav-back">← 홈으로</a>
 </nav>
 
-<!-- 히어로 -->
-<div id="hero">
-  <div id="hero-bg"></div>
-  <div id="hero-glow1"></div>
-  <div id="hero-glow2"></div>
-  <div id="hero-line"></div>
+<!-- 편집 툴바 (편집모드 시 노출) -->
+<div class="edit-toolbar" id="editToolbar">
+  <button class="tb-btn" onclick="tbFormat('bold')"><b>B</b></button>
+  <button class="tb-btn" onclick="tbFormat('italic')"><i>I</i></button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn" onclick="tbInsertImg()">🖼 사진 URL</button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn save" onclick="saveAll()">💾 저장</button>
+  <button class="tb-btn" onclick="exitEdit()" style="background:rgba(255,255,255,0.1);">✕ 취소</button>
+</div>
+
+<div id="loading">⏳ 불러오는 중...</div>
+
+<!-- ① 히어로 -->
+<div class="hero" id="heroSection" style="display:none;">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="img-wrap" style="position:absolute;inset:0;">
+    <div class="hero-img" id="heroImg"></div>
+    <button class="img-replace-btn" onclick="replaceHeroImg()">🖼 사진 교체</button>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-line"></div>
   <div class="hero-content">
-    <div id="hero-tag"></div>
-    <div id="hero-title"></div>
-    <div id="hero-sub">
-      <span id="hero-sub1"></span>
-      <span id="hero-dot"></span>
-      <span id="hero-sub2"></span>
+    <div class="hero-tag" id="heroTag"></div>
+    <div class="hero-title" id="heroTitle"></div>
+    <div class="hero-subs">
+      <span class="hero-sub1" id="heroSub1"></span>
+      <span class="hero-dot" id="heroDot"></span>
+      <span class="hero-sub2" id="heroSub2"></span>
     </div>
-    <div id="hero-copy"></div>
+    <div class="hero-copy" id="heroCopy"></div>
   </div>
 </div>
 
-<!-- 가격 바 -->
-<div id="price-bar">
-  <div>
-    <div id="price-label">1인 기준</div>
-    <div id="price-value">—</div>
+<!-- ② 핵심 숫자 바 -->
+<div class="stats-bar" id="statsBar" style="display:none;">
+  <div class="stat-item">
+    <div class="stat-label">시작 가격</div>
+    <div class="stat-value" id="statPrice">$99</div>
+    <div class="stat-unit">/ 1일</div>
   </div>
-  <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" id="inquiry-btn">💬 지금 문의하기</a>
+  <div class="stat-item">
+    <div class="stat-label">최소 기간</div>
+    <div class="stat-value" id="statMinDays">5일</div>
+    <div class="stat-unit">이상</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-label">인원</div>
+    <div class="stat-value" id="statPax">1인</div>
+    <div class="stat-unit">전용</div>
+  </div>
 </div>
 
-<!-- 본문 -->
-<div id="content-area">
-  <div id="loading">⏳ 불러오는 중...</div>
-  <div id="content-body" style="display:none;"></div>
-  <div id="empty-state" style="display:none;">
-    <div>✍️</div>
-    <p>아직 내용이 준비 중이에요.<br>곧 멋진 내용으로 채워질 거예요!</p>
+<!-- ③ 샘플 일정 -->
+<div class="section" id="scheduleSection" style="display:none;">
+  <div class="section-header">📅 샘플 일정</div>
+  <div class="section-body">
+    <div id="scheduleList"></div>
+    <button class="add-row-btn" onclick="addScheduleRow()">+ 일정 추가</button>
   </div>
 </div>
 
-<!-- 하단 고정 버튼 -->
-<div id="bottom-cta">
-  <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" id="bottom-kakao">💬 카카오 문의</a>
-  <a href="quote.html" id="bottom-quote">📋 맞춤 견적 만들기</a>
+<!-- ④ 포함/불포함 -->
+<div class="section" id="inclSection" style="display:none;">
+  <div class="section-header">✅ 포함 · 불포함</div>
+  <div class="section-body">
+    <div class="inc-grid">
+      <div>
+        <div class="inc-col-title yes">✅ 포함</div>
+        <div class="inc-list" id="inclYes"></div>
+      </div>
+      <div>
+        <div class="inc-col-title no">❌ 불포함</div>
+        <div class="inc-list" id="inclNo"></div>
+      </div>
+    </div>
+    <button class="add-row-btn" onclick="addIncRow()">+ 항목 추가</button>
+  </div>
 </div>
+
+<!-- ⑤ 숙소 안내 -->
+<div class="section" id="accomSection" style="display:none;">
+  <div class="section-header">🏠 숙소 안내</div>
+  <div class="section-body">
+    <!-- 슬라이더 -->
+    <div class="slider-wrap" id="sliderWrap">
+      <div class="slider-track" id="sliderTrack"></div>
+    </div>
+    <div class="slider-dots" id="sliderDots"></div>
+    <button class="slider-add-btn" onclick="addSlide()">+ 사진 추가 (ImgBB URL)</button>
+    <div class="accom-name" id="accomName" contenteditable="false">로컬 전용 숙소</div>
+    <div class="accom-sub" id="accomDesc" contenteditable="false">전용숙소는 로컬 마을에 있습니다. 프라데라 클럽하우스에서 5분 거리, 로컬의 참맛과 생생한 체험을 겸할 수 있습니다.</div>
+  </div>
+</div>
+
+<!-- ⑥ 담당 프로 -->
+<div class="section" id="proSection" style="display:none;">
+  <div class="section-header">🏌️ 담당 프로 소개</div>
+  <div class="section-body">
+    <div class="pro-row">
+      <div class="pro-avatar" id="proAvatar">
+        <img id="proImg" src="" alt="프로" style="display:none;">
+        <span id="proInitials">PJ</span>
+      </div>
+      <div>
+        <div class="pro-name" id="proName" contenteditable="false">장수남 프로 (Paulo Jang)</div>
+        <div class="pro-certs" id="proCerts" contenteditable="false">
+          PGAP Member #0507 · GAB Senior Touring Pro<br>
+          Beverly C.C (2017–2023) · Pradera Verde (2023–2025)
+        </div>
+      </div>
+    </div>
+    <div class="img-wrap" style="margin-top:10px;">
+      <button class="img-replace-btn" style="position:relative;display:none;" id="proImgBtn" onclick="replaceProImg()">🖼 프로 사진 교체</button>
+    </div>
+  </div>
+</div>
+
+<!-- ⑦ 기간별 가격표 -->
+<div class="section" id="priceSection" style="display:none;">
+  <div class="section-header">💰 기간별 가격</div>
+  <div class="section-body">
+    <div id="priceList"></div>
+    <button class="add-row-btn" onclick="addPriceRow()">+ 기간 추가</button>
+  </div>
+</div>
+
+<!-- ⑧ 자유 글/사진 영역 -->
+<div class="section" id="freeSection" style="display:none;">
+  <div class="section-header">📝 상세 안내</div>
+  <div class="section-body">
+    <div class="free-content" id="freeContent" contenteditable="false"></div>
+    <div id="freeEmpty" style="text-align:center;padding:24px;color:#9ca3af;font-size:13px;">편집 버튼을 눌러 자유롭게 글과 사진을 추가하세요</div>
+  </div>
+</div>
+
+<!-- 하단 CTA -->
+<div class="bottom-cta" id="bottomCta" style="display:none;">
+  <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="btn-kakao">💬 카카오 문의</a>
+  <a href="quote.html" class="btn-quote">📋 맞춤 견적</a>
+</div>
+
+<!-- ✏️ 편집 FAB -->
+<button class="edit-fab" id="editFab" onclick="onEditFab()" style="display:none;" title="편집">✏️</button>
+
+<!-- 비밀번호 모달 -->
+<div class="pw-modal" id="pwModal">
+  <div class="pw-box">
+    <div class="pw-title">🔒 편집 비밀번호</div>
+    <div class="pw-err" id="pwErr">비밀번호가 틀렸습니다.</div>
+    <input class="pw-input" id="pwInput" type="password" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')checkPw()">
+    <div class="pw-btns">
+      <button class="pw-cancel" onclick="closePwModal()">취소</button>
+      <button class="pw-ok" onclick="checkPw()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 저장 토스트 -->
+<div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
 const app = getApps().find(a=>a.name==='detail') || initializeApp(cfg,'detail');
-const db = getFirestore(app);
+const db  = getFirestore(app);
 
-// URL에서 카드 ID 가져오기
-const params = new URLSearchParams(location.search);
-const cardId = params.get('id') || 'card1';
+const ADMIN_PW = 'admin0115';
+const params   = new URLSearchParams(location.search);
+const cardId   = params.get('id') || 'card1';
 
+/* ── 기본 데이터 (Firebase에 없을 때 초기값) ── */
+const DEFAULT = {
+  card1: {
+    statMinDays:'5일', statPax:'1인',
+    schedule:[
+      {num:'1', title:'도착 · 체크인 · 오리엔테이션', desc:'숙소 안내, 골프장 사전 투어, 일정 협의'},
+      {num:'2~N', title:'오전 레슨 + 오후 라운드', desc:'티칭 프로 1:1 레슨 · Pradera Verde 18홀'},
+      {num:'N', title:'귀국 또는 연장', desc:'1주 체험 후 원하면 연장 가능'}
+    ],
+    inclYes:['공항 픽업 및 드롭','1인 1실','조식 · 석식','인터넷 및 심카드 (장기체류)','청소 · 세탁','매일 18홀 그린피','매일 프로 1:1 필드 레슨','매일 연습장 레슨'],
+    inclNo:['카트피 (본인)','캐디피 (본인)','보험료 (본인)','프로 동반 카트피·캐디피·보험료 (n/1 분담)','항공권','기타 개별 용도'],
+    accomName:'로컬 전용 숙소',
+    accomDesc:'전용숙소는 로컬 마을에 있습니다. 프라데라 클럽하우스에서 5분 거리, 로컬의 참맛과 생생한 체험을 겸할 수 있습니다.',
+    prices:[
+      {period:'5일', amount:'$495', featured:false},
+      {period:'7일', amount:'$693', featured:false},
+      {period:'14일', amount:'$1,386', featured:true, badge:'인기'},
+      {period:'기간 협의', amount:'문의', featured:false}
+    ],
+    freeContent:'<h2>나 홀로 전지훈련이란?</h2><p>혼자서 필리핀 클락으로 떠나는 골프 집중 훈련 프로그램입니다. 현지 티칭 프로가 1:1로 함께하며, 아침에는 레슨, 오후에는 라운드로 하루를 꽉 채웁니다.</p><hr><h3>🌟 이런 분께 추천해요</h3><p>✔ 골프 실력을 단기간에 끌어올리고 싶은 분<br>✔ 혼자 조용히 집중하고 싶은 분<br>✔ 저렴하게 많은 라운드를 경험하고 싶은 분</p>'
+  }
+};
+
+/* ── 데이터 로드 ── */
+let D = {}; // 현재 카드 데이터
 try {
   const snap = await getDoc(doc(db, 'package_cards', cardId));
   if (snap.exists()) {
-    const c = snap.data();
-
-    // 히어로 채우기
-    document.getElementById('hero-bg').style.background = `linear-gradient(135deg,${c.color1||'#054535'},${c.color2||'#1D9E75'})`;
-    document.getElementById('hero-tag').textContent = c.tag || '';
-    document.getElementById('hero-title').textContent = c.titleEn || '';
-    document.getElementById('hero-sub1').textContent = c.sub1 || '';
-    document.getElementById('hero-sub2').textContent = c.sub2 || '';
-    document.getElementById('hero-dot').style.display = (c.sub1 && c.sub2) ? 'block' : 'none';
-    document.getElementById('hero-copy').innerHTML = (c.copy||'').replace(/\n/g,'<br>');
-    document.getElementById('price-value').textContent = c.price || '—';
-    document.title = `${c.titleEn} ${c.sub1} — iClark Golf`;
-
-    // 본문
-    document.getElementById('loading').style.display = 'none';
-    if (c.content && c.content.trim()) {
-      document.getElementById('content-body').innerHTML = c.content;
-      document.getElementById('content-body').style.display = 'block';
-    } else {
-      document.getElementById('empty-state').style.display = 'block';
-    }
+    D = snap.data();
   }
-} catch(e) {
-  document.getElementById('loading').textContent = '⚠️ 불러오기 실패';
+} catch(e) { console.warn('Firebase 로드 실패, 기본값 사용'); }
+
+// 기본값 병합
+const def = DEFAULT[cardId] || {};
+D = { ...def, ...D };
+
+/* ── 렌더링 ── */
+function render() {
+  // 히어로
+  const bg = document.getElementById('heroBg');
+  bg.style.background = `linear-gradient(135deg,${D.color1||'#054535'},${D.color2||'#1D9E75'})`;
+  if (D.heroImg) {
+    const hi = document.getElementById('heroImg');
+    hi.style.backgroundImage = `url(${D.heroImg})`;
+  }
+  document.getElementById('heroTag').textContent   = D.tag   || '';
+  document.getElementById('heroTitle').textContent = D.titleEn || '';
+  document.getElementById('heroSub1').textContent  = D.sub1  || '';
+  document.getElementById('heroSub2').textContent  = D.sub2  || '';
+  document.getElementById('heroDot').style.display = (D.sub1 && D.sub2) ? 'block' : 'none';
+  document.getElementById('heroCopy').innerHTML    = (D.copy||'').replace(/\n/g,'<br>');
+  document.title = `${D.sub1||''} ${D.sub2||''} — iClark Golf`;
+
+  // 스탯 바
+  document.getElementById('statPrice').textContent   = D.price       || '$99';
+  document.getElementById('statMinDays').textContent = D.statMinDays || '5일';
+  document.getElementById('statPax').textContent     = D.statPax     || '1인';
+
+  // 일정
+  renderSchedule();
+
+  // 포함
+  renderIncl();
+
+  // 숙소
+  document.getElementById('accomName').textContent = D.accomName || '로컬 전용 숙소';
+  document.getElementById('accomDesc').innerHTML   = (D.accomDesc||'').replace(/\n/g,'<br>');
+  renderSlider();
+
+  // 프로
+  if (D.proImg) {
+    document.getElementById('proImg').src = D.proImg;
+    document.getElementById('proImg').style.display = 'block';
+    document.getElementById('proInitials').style.display = 'none';
+  }
+  document.getElementById('proName').textContent  = D.proName  || '장수남 프로 (Paulo Jang)';
+  document.getElementById('proCerts').innerHTML   = D.proCerts || 'PGAP Member #0507 · GAB Senior Touring Pro<br>Beverly C.C (2017–2023) · Pradera Verde (2023–2025)';
+
+  // 가격표
+  renderPrices();
+
+  // 자유 글
+  const fc = document.getElementById('freeContent');
+  const fe = document.getElementById('freeEmpty');
+  if (D.freeContent && D.freeContent.trim()) {
+    fc.innerHTML = D.freeContent;
+    fc.style.display = 'block';
+    fe.style.display = 'none';
+  } else {
+    fc.style.display = 'none';
+    fe.style.display = 'block';
+  }
+
+  // 전체 보이기
+  document.getElementById('loading').style.display = 'none';
+  ['heroSection','statsBar','scheduleSection','inclSection','accomSection','proSection','priceSection','freeSection','bottomCta','editFab']
+    .forEach(id => document.getElementById(id).style.display = id === 'statsBar' ? 'grid' : 'flex' === getComputedStyle(document.getElementById(id)).display ? 'flex' : 'block');
+  document.getElementById('bottomCta').style.display = 'flex';
+  document.getElementById('editFab').style.display = 'flex';
+  document.getElementById('heroSection').style.display = 'flex';
+  document.getElementById('statsBar').style.display = 'grid';
+  ['scheduleSection','inclSection','accomSection','proSection','priceSection','freeSection'].forEach(id=>document.getElementById(id).style.display='block');
 }
+
+function renderSchedule() {
+  const list = document.getElementById('scheduleList');
+  list.innerHTML = '';
+  (D.schedule||[]).forEach((s,i) => {
+    const div = document.createElement('div');
+    div.className = 'day-row';
+    div.dataset.idx = i;
+    div.innerHTML = `
+      <div class="day-num">${s.num}</div>
+      <div>
+        <div class="day-title" contenteditable="false" data-field="schedule.${i}.title">${s.title}</div>
+        <div class="day-desc" contenteditable="false" data-field="schedule.${i}.desc">${s.desc}</div>
+      </div>
+      <button class="edit-del-btn" style="display:none;margin-left:auto;padding:4px 8px;background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;border-radius:6px;font-size:11px;cursor:pointer;" onclick="delScheduleRow(${i})">✕</button>`;
+    list.appendChild(div);
+  });
+}
+
+function renderIncl() {
+  const yEl = document.getElementById('inclYes');
+  const nEl = document.getElementById('inclNo');
+  yEl.innerHTML = (D.inclYes||[]).map((t,i)=>`<span contenteditable="false" data-field="inclYes.${i}" style="display:flex;align-items:center;gap:5px;padding:2px 0;">✅ ${t}</span>`).join('');
+  nEl.innerHTML = (D.inclNo||[]).map((t,i) =>`<span contenteditable="false" data-field="inclNo.${i}"  style="display:flex;align-items:center;gap:5px;padding:2px 0;">❌ ${t}</span>`).join("") + `<div style="margin-top:10px;padding:10px 12px;background:#fff8e8;border-left:3px solid #f4a261;border-radius:0 8px 8px 0;font-size:12px;color:#92400e;line-height:1.7;">📋 골프장에서 본인 부담 비용은 <strong>견적서에 첨부</strong>해 드립니다.</div>`;
+}
+
+function renderPrices() {
+  const list = document.getElementById('priceList');
+  list.innerHTML = '';
+  (D.prices||[]).forEach((p,i) => {
+    const div = document.createElement('div');
+    div.className = 'price-row' + (p.featured ? ' featured' : '');
+    div.dataset.idx = i;
+    div.innerHTML = `
+      <div class="price-period">
+        <span contenteditable="false" data-field="prices.${i}.period">${p.period}</span>
+        ${p.badge ? `<span class="price-badge">${p.badge}</span>` : ''}
+      </div>
+      <span class="price-amount" contenteditable="false" data-field="prices.${i}.amount">${p.amount}</span>
+      <button class="edit-del-btn" style="display:none;margin-left:8px;padding:3px 7px;background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;border-radius:5px;font-size:11px;cursor:pointer;" onclick="delPriceRow(${i})">✕</button>`;
+    list.appendChild(div);
+  });
+}
+
+render();
+
+/* ── 편집 모드 ── */
+let editMode = false;
+let savedAuth = sessionStorage.getItem('pk_edit_auth') === 'yes';
+
+window.onEditFab = function() {
+  if (editMode) { exitEdit(); return; }
+  if (savedAuth) { enterEdit(); return; }
+  document.getElementById('pwModal').classList.add('show');
+  setTimeout(()=>document.getElementById('pwInput').focus(), 100);
+};
+
+window.closePwModal = function() {
+  document.getElementById('pwModal').classList.remove('show');
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwErr').style.display = 'none';
+};
+
+window.checkPw = function() {
+  const val = document.getElementById('pwInput').value;
+  if (val === ADMIN_PW) {
+    savedAuth = true;
+    sessionStorage.setItem('pk_edit_auth','yes');
+    closePwModal();
+    enterEdit();
+  } else {
+    document.getElementById('pwErr').style.display = 'block';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+};
+
+function enterEdit() {
+  editMode = true;
+  document.body.classList.add('edit-mode');
+  document.getElementById('editFab').textContent = '✕';
+  document.getElementById('editFab').classList.add('active');
+  document.getElementById('editToolbar').classList.add('show');
+
+  // contenteditable 켜기
+  document.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable','true'));
+  // 삭제 버튼 보이기
+  document.querySelectorAll('.edit-del-btn').forEach(el => el.style.display = 'inline-block');
+  // 프로 사진 버튼
+  document.getElementById('proImgBtn').style.display = 'block';
+
+  showToast('✏️ 편집 모드 — 텍스트를 직접 클릭해서 수정하세요');
+}
+
+window.exitEdit = function() {
+  editMode = false;
+  document.body.classList.remove('edit-mode');
+  document.getElementById('editFab').textContent = '✏️';
+  document.getElementById('editFab').classList.remove('active');
+  document.getElementById('editToolbar').classList.remove('show');
+  document.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable','false'));
+  document.querySelectorAll('.edit-del-btn').forEach(el => el.style.display = 'none');
+  document.getElementById('proImgBtn').style.display = 'none';
+};
+
+/* ── 툴바 포맷 ── */
+window.tbFormat = function(cmd) {
+  document.execCommand(cmd === 'bold' ? 'bold' : 'italic');
+};
+
+window.tbInsertImg = function() {
+  const url = prompt('📷 ImgBB 이미지 URL을 붙여넣으세요:');
+  if (!url) return;
+  const fc = document.getElementById('freeContent');
+  fc.focus();
+  document.execCommand('insertHTML', false, `<img src="${url}" style="max-width:100%;border-radius:10px;margin:10px 0;" alt="사진">`);
+};
+
+/* ── 히어로 사진 교체 ── */
+window.replaceHeroImg = function() {
+  const url = prompt('📷 히어로 배경 사진 URL (ImgBB):');
+  if (!url) return;
+  D.heroImg = url;
+  document.getElementById('heroImg').style.backgroundImage = `url(${url})`;
+};
+
+/* ── 숙소 슬라이더 ── */
+let sliderIdx = 0;
+let touchStartX = 0;
+
+function renderSlider() {
+  D.accomImgs = D.accomImgs || [];
+  const track = document.getElementById('sliderTrack');
+  const dots  = document.getElementById('sliderDots');
+  track.innerHTML = '';
+  dots.innerHTML  = '';
+
+  if (D.accomImgs.length === 0) {
+    // 사진 없을 때 빈 슬라이드
+    track.innerHTML = `<div class="slider-slide">🏠</div>`;
+    return;
+  }
+
+  D.accomImgs.forEach((url, i) => {
+    const slide = document.createElement('div');
+    slide.className = 'slider-slide';
+    slide.style.backgroundImage = `url(${url})`;
+    slide.innerHTML = `<button class="slide-del-btn" onclick="delSlide(${i})">✕ 삭제</button>`;
+    track.appendChild(slide);
+
+    const dot = document.createElement('div');
+    dot.className = 'slider-dot' + (i === sliderIdx ? ' on' : '');
+    dot.onclick = () => goSlide(i);
+    dots.appendChild(dot);
+  });
+
+  goSlide(sliderIdx < D.accomImgs.length ? sliderIdx : 0);
+
+  // 스와이프
+  const wrap = document.getElementById('sliderWrap');
+  wrap.ontouchstart = e => { touchStartX = e.touches[0].clientX; };
+  wrap.ontouchend   = e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 40) dx < 0 ? goSlide(sliderIdx+1) : goSlide(sliderIdx-1);
+  };
+}
+
+function goSlide(i) {
+  const imgs = D.accomImgs || [];
+  if (imgs.length === 0) return;
+  sliderIdx = Math.max(0, Math.min(i, imgs.length - 1));
+  document.getElementById('sliderTrack').style.transform = `translateX(-${sliderIdx * 100}%)`;
+  document.querySelectorAll('.slider-dot').forEach((d,j) => d.classList.toggle('on', j === sliderIdx));
+}
+
+window.addSlide = function() {
+  const url = prompt('📷 숙소 사진 URL (ImgBB):\n\n이미지를 imgbb.com에 업로드 후 URL을 복붙하세요:');
+  if (!url || !url.startsWith('http')) return;
+  D.accomImgs = D.accomImgs || [];
+  D.accomImgs.push(url);
+  renderSlider();
+  goSlide(D.accomImgs.length - 1);
+};
+
+window.delSlide = function(i) {
+  if (!confirm('이 사진을 삭제할까요?')) return;
+  D.accomImgs.splice(i, 1);
+  sliderIdx = Math.max(0, sliderIdx - 1);
+  renderSlider();
+};
+
+/* ── 프로 사진 교체 ── */
+window.replaceProImg = function() {
+  const url = prompt('📷 프로 사진 URL (ImgBB):');
+  if (!url) return;
+  D.proImg = url;
+  document.getElementById('proImg').src = url;
+  document.getElementById('proImg').style.display = 'block';
+  document.getElementById('proInitials').style.display = 'none';
+};
+
+/* ── 일정 추가/삭제 ── */
+window.addScheduleRow = function() {
+  D.schedule = D.schedule || [];
+  D.schedule.push({num: String(D.schedule.length+1), title:'새 일정 제목', desc:'설명을 입력하세요'});
+  renderSchedule();
+  if (editMode) document.querySelectorAll('#scheduleList [contenteditable]').forEach(el=>el.setAttribute('contenteditable','true'));
+  if (editMode) document.querySelectorAll('#scheduleList .edit-del-btn').forEach(el=>el.style.display='inline-block');
+};
+window.delScheduleRow = function(i) {
+  D.schedule.splice(i,1);
+  renderSchedule();
+  if (editMode) document.querySelectorAll('#scheduleList [contenteditable]').forEach(el=>el.setAttribute('contenteditable','true'));
+  if (editMode) document.querySelectorAll('#scheduleList .edit-del-btn').forEach(el=>el.style.display='inline-block');
+};
+
+/* ── 포함 추가 ── */
+window.addIncRow = function() {
+  const type = confirm('포함 항목을 추가하려면 확인, 불포함 항목은 취소') ? 'inclYes' : 'inclNo';
+  const txt = prompt('항목 이름:');
+  if (!txt) return;
+  D[type] = D[type] || [];
+  D[type].push(txt);
+  renderIncl();
+  if (editMode) document.querySelectorAll('#inclYes [contenteditable], #inclNo [contenteditable]').forEach(el=>el.setAttribute('contenteditable','true'));
+};
+
+/* ── 가격 추가/삭제 ── */
+window.addPriceRow = function() {
+  D.prices = D.prices || [];
+  D.prices.push({period:'기간 입력', amount:'$000', featured:false});
+  renderPrices();
+  if (editMode) document.querySelectorAll('#priceList [contenteditable]').forEach(el=>el.setAttribute('contenteditable','true'));
+  if (editMode) document.querySelectorAll('#priceList .edit-del-btn').forEach(el=>el.style.display='inline-block');
+};
+window.delPriceRow = function(i) {
+  D.prices.splice(i,1);
+  renderPrices();
+  if (editMode) document.querySelectorAll('#priceList [contenteditable]').forEach(el=>el.setAttribute('contenteditable','true'));
+  if (editMode) document.querySelectorAll('#priceList .edit-del-btn').forEach(el=>el.style.display='inline-block');
+};
+
+/* ── 저장 ── */
+window.saveAll = async function() {
+  showToast('💾 저장 중...');
+
+  // 텍스트 필드 수집
+  document.querySelectorAll('[data-field]').forEach(el => {
+    const path = el.dataset.field.split('.');
+    if (path.length === 1) {
+      D[path[0]] = el.innerText.trim();
+    } else if (path.length === 3) {
+      if (!D[path[0]]) D[path[0]] = [];
+      if (!D[path[0]][path[1]]) D[path[0]][path[1]] = {};
+      D[path[0]][path[1]][path[2]] = el.innerText.trim();
+    }
+  });
+
+  // 인라인 숫자 바
+  D.statMinDays = document.getElementById('statMinDays').innerText.trim();
+  D.statPax     = document.getElementById('statPax').innerText.trim();
+
+  // 숙소·프로 텍스트
+  D.accomName = document.getElementById('accomName').innerText.trim();
+  D.accomDesc = document.getElementById('accomDesc').innerText.trim();
+  D.proName   = document.getElementById('proName').innerText.trim();
+  D.proCerts  = document.getElementById('proCerts').innerHTML;
+
+  // 자유 글
+  D.freeContent = document.getElementById('freeContent').innerHTML;
+
+  try {
+    await setDoc(doc(db, 'package_cards', cardId), D, { merge: true });
+    showToast('✅ 저장 완료!');
+    exitEdit();
+  } catch(e) {
+    showToast('⚠️ 저장 실패 — 다시 시도해 주세요');
+    console.error(e);
+  }
+};
+
+/* ── 토스트 ── */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+window.showToast = showToast;
 </script>
 </body>
 </html>
