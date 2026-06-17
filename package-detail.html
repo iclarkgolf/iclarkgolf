@@ -170,6 +170,7 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
   <button class="tb-btn" onclick="tbFormat('italic')"><i>I</i></button>
   <div class="tb-sep"></div>
   <button class="tb-btn" onclick="tbInsertImg()">🖼 사진 URL</button>
+  <button class="tb-btn" onclick="replaceHeroImg()" style="background:#2d6a4f;">🏔 Hero 사진</button>
   <div class="tb-sep"></div>
   <span style="color:#fff;font-size:11px;white-space:nowrap;">📍 위치</span>
   <input type="range" id="heroPos" min="0" max="100" value="45" style="width:80px;cursor:pointer;" oninput="adjustHero()">
@@ -367,6 +368,69 @@ const DEFAULT = {
       {period:'기간 협의', amount:'문의', featured:false}
     ],
     freeContent:'<h2>나 홀로 전지훈련이란?</h2><p>혼자서 필리핀 클락으로 떠나는 골프 집중 훈련 프로그램입니다. 현지 티칭 프로가 1:1로 함께하며, 아침에는 레슨, 오후에는 라운드로 하루를 꽉 채웁니다.</p><hr><h3>🌟 이런 분께 추천해요</h3><p>✔ 골프 실력을 단기간에 끌어올리고 싶은 분<br>✔ 혼자 조용히 집중하고 싶은 분<br>✔ 저렴하게 많은 라운드를 경험하고 싶은 분</p>'
+  },
+  card2: {
+    heroImg: 'https://i.ibb.co/XxwyYydt/hero-bg.jpg',
+    accomImgs: ['https://i.ibb.co/TBMBn84y/slide-01.jpg','https://i.ibb.co/C59vCmfN/slide-02.jpg','https://i.ibb.co/YBQkhZNh/slide-06.jpg'],
+    statMinDays:'5일', statPax:'1인',
+    schedule:[
+      {num:'1', title:'도착 · 체크인 · 오리엔테이션', desc:'숙소 안내, 골프장 사전 투어, 일정 협의'},
+      {num:'2~N', title:'오전 레슨 + 오후 라운드', desc:'티칭 프로 1:1 레슨 · Pradera Verde 18홀'},
+      {num:'N', title:'귀국 또는 연장', desc:'1주 체험 후 원하면 연장 가능'}
+    ],
+    inclYes:['공항 픽업 및 드롭','1인 1실','조식 · 석식','인터넷 및 심카드 (장기체류)','청소 · 세탁','매일 18홀 그린피','매일 프로 1:1 필드 레슨','매일 연습장 레슨'],
+    inclNo:['카트피 (본인)','캐디피 (본인)','보험료 (본인)','프로 동반 카트피·캐디피·보험료 (n/1 분담)','항공권','기타 개별 용도'],
+    accomName:'풀 빌라 전용 숙소',
+    accomDesc:'4인 이상 단독 사용 풀 빌라입니다. 프라데라 클럽하우스 인근, 럭셔리한 환경에서 골프와 힐링을 동시에.',
+    trainingImgs:[],
+    prices:[
+      {period:'5일',  php:28350, featured:false},
+      {period:'7일',  php:39690, featured:false},
+      {period:'14일', php:79380, featured:true, badge:'인기'},
+      {period:'기간 협의', amount:'문의', featured:false}
+    ],
+    freeContent:'<h2>힐링 친목 / 럭셔리 골프란?</h2><p>4인 이상 단독 풀 빌라에서 즐기는 프리미엄 골프 여행입니다. 골프와 힐링을 동시에 즐기실 수 있습니다.</p><hr><h3>🌟 이런 분께 추천해요</h3><p>✔ 가족 또는 친목 모임으로 오시는 분<br>✔ 럭셔리한 환경에서 골프를 즐기고 싶은 분<br>✔ 프라이빗한 공간을 원하시는 분</p>'
+  },
+  card3: {
+    heroImg: 'https://i.ibb.co/XxwyYydt/hero-bg.jpg',
+    accomImgs: ['https://i.ibb.co/TBMBn84y/slide-01.jpg','https://i.ibb.co/C59vCmfN/slide-02.jpg','https://i.ibb.co/YBQkhZNh/slide-06.jpg'],
+    statMinDays:'30일', statPax:'1인',
+    schedule:[
+      {num:'1', title:'도착 · 체크인 · 오리엔테이션', desc:'숙소 안내, 골프장 사전 투어, 일정 협의'},
+      {num:'2~N', title:'오전 레슨 + 오후 라운드', desc:'티칭 프로 1:1 레슨 · Pradera Verde 18홀'},
+      {num:'N', title:'자격증 취득 또는 귀국', desc:'실력 향상 후 자격증 도전 또는 연장 가능'}
+    ],
+    inclYes:['공항 픽업 및 드롭','1인 1실','조식 · 석식','인터넷 및 심카드 (장기체류)','청소 · 세탁','매일 18홀 그린피','매일 프로 1:1 필드 레슨','매일 연습장 레슨'],
+    inclNo:['카트피 (본인)','캐디피 (본인)','보험료 (본인)','프로 동반 카트피·캐디피·보험료 (n/1 분담)','항공권','기타 개별 용도'],
+    accomName:'장기 하숙형 숙소',
+    accomDesc:'장기 체류에 최적화된 숙소입니다. 프라데라 클럽하우스에서 5분 거리, 편안한 장기 체류 환경을 제공합니다.',
+    trainingImgs:[],
+    prices:[
+      {period:'30일', php:170100, featured:false},
+      {period:'60일', php:340200, featured:true, badge:'인기'},
+      {period:'90일', php:510300, featured:false},
+      {period:'기간 협의', amount:'문의', featured:false}
+    ],
+    freeContent:'<h2>장기 하숙형 · 전지훈련이란?</h2><p>프라데라에서 오래 머물수록 실력도 자격증도 휴식도 완성됩니다. 장기 체류 전문 프로그램입니다.</p><hr><h3>🌟 이런 분께 추천해요</h3><p>✔ 골프 자격증 취득을 목표로 하시는 분<br>✔ 장기 체류로 완전한 휴양을 원하시는 분<br>✔ 실력을 완성하고 싶은 분</p>'
+  },
+  card4: {
+    heroImg: 'https://i.ibb.co/XxwyYydt/hero-bg.jpg',
+    accomImgs: ['https://i.ibb.co/TBMBn84y/slide-01.jpg','https://i.ibb.co/C59vCmfN/slide-02.jpg','https://i.ibb.co/YBQkhZNh/slide-06.jpg'],
+    statMinDays:'1일', statPax:'1인~',
+    schedule:[
+      {num:'1', title:'원하는 일정 선택', desc:'골프장 · 숙소 · 레슨 · 캐디 직접 선택'},
+      {num:'2~N', title:'맞춤 골프 일정 진행', desc:'클락의 모든 골프 자원을 자유롭게 활용'},
+      {num:'N', title:'귀국 또는 연장', desc:'원하는 만큼 자유롭게'}
+    ],
+    inclYes:['공항 픽업 및 드롭','선택한 숙소','선택한 골프장','선택한 레슨','선택한 캐디'],
+    inclNo:['패키지 외 추가 비용 (본인)','항공권','보험료 (본인)'],
+    accomName:'맞춤 선택 숙소',
+    accomDesc:'클락의 모든 숙소 중 원하시는 곳을 직접 선택하실 수 있습니다.',
+    trainingImgs:[],
+    prices:[
+      {period:'기간 협의', amount:'문의', featured:true, badge:'맞춤'},
+    ],
+    freeContent:'<h2>내 마음 가는 대로 클락 골프</h2><p>골프장, 숙소, 레슨, 캐디를 직접 골라서 나만의 일정을 만드세요. 클락의 골프 모든 것을 자유롭게 즐기실 수 있습니다.</p><hr><h3>🌟 이런 분께 추천해요</h3><p>✔ 패키지보다 자유로운 여행을 원하시는 분<br>✔ 골프장, 숙소를 직접 고르고 싶은 분<br>✔ 단기 또는 장기 모두 가능한 분</p>'
   }
 };
 
