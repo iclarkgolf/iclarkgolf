@@ -20,7 +20,7 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 /* 히어로 */
 .hero{min-height:260px;display:flex;align-items:flex-end;padding:70px 20px 24px;position:relative;overflow:hidden;}
 .hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#054535,#1D9E75);}
-.hero-img{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0.35;}
+.hero-img{position:absolute;inset:0;background-size:cover;background-position:center 45%;opacity:0.9;}
 .hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.1) 100%);}
 .hero-glow{position:absolute;right:-20px;top:-20px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.07);}
 .hero-line{position:absolute;left:0;top:0;bottom:0;width:4px;background:rgba(255,255,255,0.35);}
@@ -61,15 +61,17 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 .inc-list{font-size:12px;color:#374151;line-height:2.1;}
 .inc-list span{display:flex;align-items:center;gap:5px;}
 
-/* 숙소 슬라이더 */
-.slider-wrap{position:relative;width:100%;height:200px;border-radius:10px;overflow:hidden;margin-bottom:12px;background:#f4f4f0;touch-action:pan-y;}
-.slider-track{display:flex;height:100%;transition:transform .35s ease;will-change:transform;}
-.slider-slide{min-width:100%;height:200px;flex-shrink:0;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;font-size:40px;background-color:#e5e7eb;position:relative;}
-.slider-dots{display:flex;justify-content:center;gap:6px;margin-bottom:12px;}
-.slider-dot{width:7px;height:7px;border-radius:50%;background:#d1d5db;cursor:pointer;transition:background .2s;}
-.slider-dot.on{background:#1b4332;}
+/* 숙소 사진 카드 그리드 */
+.accom-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.accom-card{position:relative;border-radius:10px;overflow:hidden;background:#e5e7eb;}
+.accom-card img{width:100%;height:100%;object-fit:contain;background:#f4f4f0;display:block;max-height:280px;}
+.slide-del-btn{position:absolute;top:6px;right:6px;background:rgba(220,38,38,.85);color:#fff;border:none;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;display:none;}
+.edit-mode .slide-del-btn{display:block;}
 .slider-add-btn{display:none;width:100%;padding:9px;background:#f0f7f4;border:1.5px dashed #1b4332;border-radius:9px;color:#1b4332;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:10px;}
 .edit-mode .slider-add-btn{display:block;}
+.slider-wrap,.slider-track,.slider-dots{display:none;}
+@media(max-width:600px){.accom-grid{grid-template-columns:repeat(2,1fr);}.accom-card img{max-height:180px;}}
+@media(max-width:380px){.accom-grid{grid-template-columns:1fr;}.accom-card img{max-height:240px;}}
 .slide-del-btn{display:none;position:absolute;top:8px;right:8px;background:rgba(220,38,38,0.85);color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;z-index:5;}
 .edit-mode .slide-del-btn{display:block;}
 .accom-name{font-size:15px;font-weight:700;color:#18181b;margin-bottom:4px;}
@@ -163,6 +165,11 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
   <div class="tb-sep"></div>
   <button class="tb-btn" onclick="tbInsertImg()">🖼 사진 URL</button>
   <div class="tb-sep"></div>
+  <span style="color:#fff;font-size:11px;white-space:nowrap;">📍 위치</span>
+  <input type="range" id="heroPos" min="0" max="100" value="45" style="width:80px;cursor:pointer;" oninput="adjustHero()">
+  <span style="color:#fff;font-size:11px;white-space:nowrap;">☀️ 밝기</span>
+  <input type="range" id="heroOpacity" min="10" max="100" value="90" style="width:80px;cursor:pointer;" oninput="adjustHero()">
+  <div class="tb-sep"></div>
   <button class="tb-btn save" onclick="saveAll()">💾 저장</button>
   <button class="tb-btn" onclick="exitEdit()" style="background:rgba(255,255,255,0.1);">✕ 취소</button>
 </div>
@@ -241,11 +248,8 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 <div class="section" id="accomSection" style="display:none;">
   <div class="section-header">🏠 숙소 안내</div>
   <div class="section-body">
-    <!-- 슬라이더 -->
-    <div class="slider-wrap" id="sliderWrap">
-      <div class="slider-track" id="sliderTrack"></div>
-    </div>
-    <div class="slider-dots" id="sliderDots"></div>
+    <!-- 사진 카드 그리드 -->
+    <div class="accom-grid" id="accomGrid"></div>
     <button class="slider-add-btn" onclick="addSlide()">+ 사진 추가 (ImgBB URL)</button>
     <div class="accom-name" id="accomName" contenteditable="false">로컬 전용 숙소</div>
     <div class="accom-sub" id="accomDesc" contenteditable="false">전용숙소는 로컬 마을에 있습니다. 프라데라 클럽하우스에서 5분 거리, 로컬의 참맛과 생생한 체험을 겸할 수 있습니다.</div>
@@ -327,7 +331,7 @@ const cardId   = params.get('id') || 'card1';
 const DEFAULT = {
   card1: {
     heroImg: 'https://i.ibb.co/XxwyYydt/hero-bg.jpg',
-    accomImgs: ['https://i.ibb.co/TBMBn84y/slide-01.jpg','https://i.ibb.co/C59vCmfN/slide-02.jpg','https://i.ibb.co/PZ3g4sz3/slide-03.jpg','https://i.ibb.co/qL8HtnJ0/slide-04.jpg','https://i.ibb.co/3GTbm0j/slide-05.jpg','https://i.ibb.co/YBQkhZNh/slide-06.jpg'],
+    accomImgs: ['https://i.ibb.co/TBMBn84y/slide-01.jpg','https://i.ibb.co/C59vCmfN/slide-02.jpg','https://i.ibb.co/YBQkhZNh/slide-06.jpg'],
     statMinDays:'5일', statPax:'1인',
     schedule:[
       {num:'1', title:'도착 · 체크인 · 오리엔테이션', desc:'숙소 안내, 골프장 사전 투어, 일정 협의'},
@@ -348,8 +352,9 @@ const DEFAULT = {
   }
 };
 
-/* ── 데이터 로드 — Firebase 없이 즉시 표시 ── */
-let D = { ...(DEFAULT[cardId] || {}) };
+/* ── 데이터 로드 — localStorage 우선, 없으면 기본값 ── */
+const savedData = localStorage.getItem('pkg_' + cardId);
+let D = savedData ? { ...(DEFAULT[cardId] || {}), ...JSON.parse(savedData) } : { ...(DEFAULT[cardId] || {}) };
 window.addEventListener('DOMContentLoaded', render);
 
 /* ── 렌더링 ── */
@@ -359,7 +364,9 @@ function render() {
   bg.style.background = `linear-gradient(135deg,${D.color1||'#054535'},${D.color2||'#1D9E75'})`;
   if (D.heroImg) {
     const hi = document.getElementById('heroImg');
-    hi.style.backgroundImage = `url(${D.heroImg})`;
+    hi.style.backgroundImage    = `url(${D.heroImg})`;
+    hi.style.backgroundPosition = `center ${D.heroPos || 45}%`;
+    hi.style.opacity            = D.heroOpacity || 0.9;
   }
   document.getElementById('heroTag').textContent   = D.tag   || '';
   document.getElementById('heroTitle').textContent = D.titleEn || '';
@@ -535,6 +542,17 @@ window.tbInsertImg = function() {
   document.execCommand('insertHTML', false, `<img src="${url}" style="max-width:100%;border-radius:10px;margin:10px 0;" alt="사진">`);
 };
 
+/* ── 히어로 사진 위치/밝기 조절 ── */
+window.adjustHero = function() {
+  const pos     = document.getElementById('heroPos').value;
+  const opacity = document.getElementById('heroOpacity').value / 100;
+  const hi = document.getElementById('heroImg');
+  hi.style.backgroundPosition = `center ${pos}%`;
+  hi.style.opacity = opacity;
+  D.heroPos     = pos;
+  D.heroOpacity = opacity;
+};
+
 /* ── 히어로 사진 교체 ── */
 window.replaceHeroImg = function() {
   const url = prompt('📷 히어로 배경 사진 URL (ImgBB):');
@@ -549,62 +567,37 @@ let touchStartX = 0;
 
 function renderSlider() {
   D.accomImgs = D.accomImgs || [];
-  const track = document.getElementById('sliderTrack');
-  const dots  = document.getElementById('sliderDots');
-  track.innerHTML = '';
-  dots.innerHTML  = '';
+  const grid = document.getElementById('accomGrid');
+  grid.innerHTML = '';
 
   if (D.accomImgs.length === 0) {
-    // 사진 없을 때 빈 슬라이드
-    track.innerHTML = `<div class="slider-slide">🏠</div>`;
+    grid.innerHTML = `<div class="accom-card" style="display:flex;align-items:center;justify-content:center;font-size:40px;">🏠</div>`;
     return;
   }
 
   D.accomImgs.forEach((url, i) => {
-    const slide = document.createElement('div');
-    slide.className = 'slider-slide';
-    slide.style.backgroundImage = `url(${url})`;
-    slide.innerHTML = `<button class="slide-del-btn" onclick="delSlide(${i})">✕ 삭제</button>`;
-    track.appendChild(slide);
-
-    const dot = document.createElement('div');
-    dot.className = 'slider-dot' + (i === sliderIdx ? ' on' : '');
-    dot.onclick = () => goSlide(i);
-    dots.appendChild(dot);
+    const card = document.createElement('div');
+    card.className = 'accom-card';
+    card.innerHTML = `
+      <img src="${url}" alt="숙소 사진 ${i+1}">
+      <button class="slide-del-btn" onclick="delSlide(${i})">✕ 삭제</button>`;
+    grid.appendChild(card);
   });
-
-  goSlide(sliderIdx < D.accomImgs.length ? sliderIdx : 0);
-
-  // 스와이프
-  const wrap = document.getElementById('sliderWrap');
-  wrap.ontouchstart = e => { touchStartX = e.touches[0].clientX; };
-  wrap.ontouchend   = e => {
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(dx) > 40) dx < 0 ? goSlide(sliderIdx+1) : goSlide(sliderIdx-1);
-  };
 }
 
-function goSlide(i) {
-  const imgs = D.accomImgs || [];
-  if (imgs.length === 0) return;
-  sliderIdx = Math.max(0, Math.min(i, imgs.length - 1));
-  document.getElementById('sliderTrack').style.transform = `translateX(-${sliderIdx * 100}%)`;
-  document.querySelectorAll('.slider-dot').forEach((d,j) => d.classList.toggle('on', j === sliderIdx));
-}
+function goSlide(i) {} // 하위호환용 빈 함수
 
 window.addSlide = function() {
-  const url = prompt('📷 숙소 사진 URL (ImgBB):\n\n이미지를 imgbb.com에 업로드 후 URL을 복붙하세요:');
+  const url = prompt('📷 숙소 사진 URL (ImgBB):\n\nimgbb.com에 업로드 후 Direct link URL을 복붙하세요:');
   if (!url || !url.startsWith('http')) return;
   D.accomImgs = D.accomImgs || [];
   D.accomImgs.push(url);
   renderSlider();
-  goSlide(D.accomImgs.length - 1);
 };
 
 window.delSlide = function(i) {
   if (!confirm('이 사진을 삭제할까요?')) return;
   D.accomImgs.splice(i, 1);
-  sliderIdx = Math.max(0, sliderIdx - 1);
   renderSlider();
 };
 
@@ -688,11 +681,16 @@ window.saveAll = async function() {
   // 자유 글
   D.freeContent = document.getElementById('freeContent').innerHTML;
 
+  // 히어로 위치/밝기
+  D.heroPos     = document.getElementById('heroPos').value;
+  D.heroOpacity = document.getElementById('heroOpacity').value / 100;
+
   try {
-    showToast('✅ 저장 완료! GitHub에 파일을 업로드해주세요.');
+    localStorage.setItem('pkg_' + cardId, JSON.stringify(D));
+    showToast('✅ 저장 완료!');
     exitEdit();
   } catch(e) {
-    showToast('⚠️ 오류 발생');
+    showToast('⚠️ 저장 실패');
     console.error(e);
   }
 };
