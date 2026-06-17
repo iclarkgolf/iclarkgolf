@@ -333,6 +333,8 @@ const cardId   = params.get('id') || 'card1';
 /* ── 기본 데이터 (Firebase에 없을 때 초기값) ── */
 const DEFAULT = {
   card1: {
+    heroImg: 'https://iclarkgolf.com/images/hero-bg.jpg',
+    accomImgs: ['https://iclarkgolf.com/images/slide-01.jpg','https://iclarkgolf.com/images/slide-02.jpg','https://iclarkgolf.com/images/slide-03.jpg','https://iclarkgolf.com/images/slide-04.jpg','https://iclarkgolf.com/images/slide-05.jpg','https://iclarkgolf.com/images/slide-06.jpg'],
     statMinDays:'5일', statPax:'1인',
     schedule:[
       {num:'1', title:'도착 · 체크인 · 오리엔테이션', desc:'숙소 안내, 골프장 사전 투어, 일정 협의'},
