@@ -323,9 +323,6 @@ import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
-const app = getApps().find(a=>a.name==='detail') || initializeApp(cfg,'detail');
-const db  = getFirestore(app);
-
 const ADMIN_PW = 'admin0115';
 const params   = new URLSearchParams(location.search);
 const cardId   = params.get('id') || 'card1';
@@ -357,17 +354,25 @@ const DEFAULT = {
 
 /* ── 데이터 로드 ── */
 let D = {};
-try {
-  const timeout = new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), 4000));
-  const snap = await Promise.race([getDoc(doc(db, 'package_cards', cardId)), timeout]);
-  if (snap && snap.exists && snap.exists()) {
-    D = snap.data();
-  }
-} catch(e) { console.warn('Firebase 로드 실패 또는 타임아웃, 기본값 사용:', e.message); }
 
-// 기본값 병합
+// 1. 기본값 먼저 즉시 적용 → 화면 바로 표시
 const def = DEFAULT[cardId] || {};
-D = { ...def, ...D };
+D = { ...def };
+render();
+
+// 2. Firebase에서 추가 데이터 비동기로 불러오기 (실패해도 무관)
+(async () => {
+  try {
+    const app = getApps().find(a=>a.name==='detail') || initializeApp(cfg,'detail');
+    const db  = getFirestore(app);
+    const timeout = new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), 5000));
+    const snap = await Promise.race([getDoc(doc(db, 'package_cards', cardId)), timeout]);
+    if (snap && snap.exists && snap.exists() && snap.data()) {
+      D = { ...def, ...snap.data() };
+      render(); // Firebase 데이터로 재렌더링
+    }
+  } catch(e) { console.warn('Firebase 비동기 로드 실패:', e.message); }
+})();
 
 /* ── 렌더링 ── */
 function render() {
@@ -479,8 +484,6 @@ function renderPrices() {
     list.appendChild(div);
   });
 }
-
-render();
 
 /* ── 편집 모드 ── */
 let editMode = false;
