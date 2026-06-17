@@ -318,16 +318,12 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 <!-- 저장 토스트 -->
 <div class="toast" id="toast"></div>
 
-<script type="module">
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+<script>
 const ADMIN_PW = 'admin0115';
 const params   = new URLSearchParams(location.search);
 const cardId   = params.get('id') || 'card1';
 
-/* ── 기본 데이터 (Firebase에 없을 때 초기값) ── */
+/* ── 카드 데이터 (Firebase 없음 — 직접 수정) ── */
 const DEFAULT = {
   card1: {
     heroImg: 'https://i.ibb.co/XxwyYydt/hero-bg.jpg',
@@ -352,27 +348,9 @@ const DEFAULT = {
   }
 };
 
-/* ── 데이터 로드 ── */
-let D = {};
-
-// 1. 기본값 먼저 즉시 적용 → 화면 바로 표시
-const def = DEFAULT[cardId] || {};
-D = { ...def };
-render();
-
-// 2. Firebase에서 추가 데이터 비동기로 불러오기 (실패해도 무관)
-(async () => {
-  try {
-    const app = getApps().find(a=>a.name==='detail') || initializeApp(cfg,'detail');
-    const db  = getFirestore(app);
-    const timeout = new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), 1000));
-    const snap = await Promise.race([getDoc(doc(db, 'package_cards', cardId)), timeout]);
-    if (snap && snap.exists && snap.exists() && snap.data()) {
-      D = { ...def, ...snap.data() };
-      render(); // Firebase 데이터로 재렌더링
-    }
-  } catch(e) { console.warn('Firebase 비동기 로드 실패:', e.message); }
-})();
+/* ── 데이터 로드 — Firebase 없이 즉시 표시 ── */
+let D = { ...(DEFAULT[cardId] || {}) };
+window.addEventListener('DOMContentLoaded', render);
 
 /* ── 렌더링 ── */
 function render() {
@@ -711,11 +689,10 @@ window.saveAll = async function() {
   D.freeContent = document.getElementById('freeContent').innerHTML;
 
   try {
-    await setDoc(doc(db, 'package_cards', cardId), D, { merge: true });
-    showToast('✅ 저장 완료!');
+    showToast('✅ 저장 완료! GitHub에 파일을 업로드해주세요.');
     exitEdit();
   } catch(e) {
-    showToast('⚠️ 저장 실패 — 다시 시도해 주세요');
+    showToast('⚠️ 오류 발생');
     console.error(e);
   }
 };
