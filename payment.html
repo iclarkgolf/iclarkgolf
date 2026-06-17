@@ -172,6 +172,29 @@
     @media (max-width: 480px) {
       .row .lbl { min-width: 85px; }
       .row .val.big { font-size: 15px; }
+      .prep-item { flex-direction: column; gap: 2px; }
+      .prep-item .prep-note { font-size: 11px; }
+    }
+    /* 준비물 아이템 */
+    .prep-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 9px 4px;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 13px;
+      gap: 8px;
+    }
+    .prep-item:last-child { border-bottom: none; }
+    .prep-item .prep-label { font-weight: 500; flex-shrink: 0; }
+    .prep-item .prep-note { color: #6b7280; font-size: 12px; text-align: right; line-height: 1.5; }
+    .prep-item .prep-note.red { color: #dc2626; font-weight: 700; }
+    .prep-item .prep-note.green { color: #1b4332; font-weight: 700; }
+    .prep-sub-title {
+      padding: 16px 4px 8px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #1b4332;
     }
   </style>
 </head>
@@ -282,6 +305,52 @@
   <a href="https://pf.kakao.com/_nbHKX/chat" class="btn-kakao" target="_blank">
     💬 카카오톡으로 문의하기
   </a>
+
+  <!-- 전지훈련 준비물 체크리스트 -->
+  <div class="section" style="margin-top:24px;">
+    <div class="section-header">🎒 전지훈련 입소 준비물</div>
+
+    <!-- eTravel -->
+    <div style="background:#e8f4ef;border-radius:10px;padding:16px;margin:16px 0;">
+      <div style="font-size:13px;font-weight:800;color:#1b4332;margin-bottom:10px;">🛂 출발 전 필수 등록</div>
+      <div style="font-size:13px;line-height:2;color:#333;">
+        ⚠️ <b>필리핀 eTravel 입국신고서</b> — 필수!<br>
+        출발 <b>72시간 이내</b> 작성 → QR코드 캡처 보관<br>
+        👉 <a href="https://etravel.gov.ph" target="_blank" style="color:#1b4332;font-weight:800;">etravel.gov.ph</a>
+        <span style="font-size:11px;color:#6b7280;">(무료 — 결제 요구 유사사이트 주의!)</span><br><br>
+        <b>작성 시 아래 내용으로 입력하세요:</b><br>
+        📌 목적: <b>TOURISM (여행)</b> — 반드시 여행으로!<br>
+        📌 현지 연락처: <b>639083633792</b><br>
+        📌 체류 주소: <b>Hotel Oasis Central Luzon</b>
+        <span style="font-size:11px;color:#6b7280;">(편의상 이 주소를 씁니다)</span>
+      </div>
+    </div>
+
+    <!-- 골프 용품 -->
+    <div class="prep-sub-title">🏌️ 골프 용품</div>
+    <div class="prep-item"><span class="prep-label">🏑 골프채 세트</span><span class="prep-note">현지 렌탈 가능</span></div>
+    <div class="prep-item"><span class="prep-label">👟 골프화</span><span class="prep-note">통기성 좋은 것<br>덥고 습해요</span></div>
+    <div class="prep-item"><span class="prep-label">🧤 골프 장갑</span><span class="prep-note red">최소 3~4켤레</span></div>
+    <div class="prep-item"><span class="prep-label">⚪ 골프공</span><span class="prep-note">소량만<br>골프장 로스트볼 저렴</span></div>
+    <div class="prep-item"><span class="prep-label">🧢 골프 모자/썬캡</span><span class="prep-note">자외선 매우 강함</span></div>
+    <div class="prep-item"><span class="prep-label">👕 골프 의류 (반소매)</span><span class="prep-note">기능성 소재 권장</span></div>
+    <div class="prep-item"><span class="prep-label">🧦 골프 양말</span><span class="prep-note">여유분 준비</span></div>
+    <div class="prep-item"><span class="prep-label">☂️ 접이식 우산</span><span class="prep-note">우기엔 갑자기 비</span></div>
+    <div class="prep-item"><span class="prep-label">🎽 골프백 레인 커버</span><span class="prep-note red">인터넷 미리 주문!</span></div>
+    <div class="prep-item"><span class="prep-label">🦺 팔 토시</span><span class="prep-note">자외선 차단 권장</span></div>
+
+    <!-- 개인 용품 -->
+    <div class="prep-sub-title">🎒 개인 용품</div>
+    <div class="prep-item"><span class="prep-label">🛂 여권</span><span class="prep-note red">유효기간 6개월 이상!</span></div>
+    <div class="prep-item"><span class="prep-label">💊 개인 상비약</span><span class="prep-note">진통제·소화제<br>지사제·밴드</span></div>
+    <div class="prep-item"><span class="prep-label">🧴 선크림 SPF50+</span><span class="prep-note">매일 듬뿍 필수</span></div>
+    <div class="prep-item"><span class="prep-label">🦟 모기 기피제</span><span class="prep-note">저녁 외출 시 필수</span></div>
+    <div class="prep-item"><span class="prep-label">🔌 멀티 충전기/어댑터</span><span class="prep-note">콘센트 타입 확인</span></div>
+    <div class="prep-item"><span class="prep-label">📱 로밍</span><span class="prep-note green">출발 전 신청 권장</span></div>
+    <div class="prep-item"><span class="prep-label">💵 현금 (달러)</span><span class="prep-note">달러 준비 →<br>클락 공항 환전소<br><span style="font-size:11px;color:#9ca3af;">📍 짐 찾고 밖 나오기 전 왼쪽</span></span></div>
+    <div class="prep-item"><span class="prep-label">🩴 슬리퍼/샌들</span><span class="prep-note">숙소·저녁 외출용</span></div>
+    <div class="prep-item"><span class="prep-label">🧺 세면도구</span><span class="prep-note">개인 용품 권장</span></div>
+  </div>
 
 </main>
 
