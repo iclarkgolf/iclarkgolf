@@ -356,13 +356,14 @@ const DEFAULT = {
 };
 
 /* ── 데이터 로드 ── */
-let D = {}; // 현재 카드 데이터
+let D = {};
 try {
-  const snap = await getDoc(doc(db, 'package_cards', cardId));
-  if (snap.exists()) {
+  const timeout = new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), 4000));
+  const snap = await Promise.race([getDoc(doc(db, 'package_cards', cardId)), timeout]);
+  if (snap && snap.exists && snap.exists()) {
     D = snap.data();
   }
-} catch(e) { console.warn('Firebase 로드 실패, 기본값 사용'); }
+} catch(e) { console.warn('Firebase 로드 실패 또는 타임아웃, 기본값 사용:', e.message); }
 
 // 기본값 병합
 const def = DEFAULT[cardId] || {};
