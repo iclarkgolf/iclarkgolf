@@ -673,6 +673,8 @@ body { background:#f4faf7; padding-bottom:40px; }
     <div class="stat-card"><div class="stat-num" id="stat-caddy">0</div><div class="stat-label">등록 캐디</div></div>
     <div class="stat-card"><div class="stat-num" id="stat-accom">5</div><div class="stat-label">숙소 수</div></div>
     <div class="stat-card"><div class="stat-num" id="stat-course">14</div><div class="stat-label">골프장 수</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-today-visit">-</div><div class="stat-label">오늘 방문자</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-total-visit">-</div><div class="stat-label">누적 방문자</div></div>
   </div>
 
   <div class="mgmt-card">
@@ -2181,7 +2183,36 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   // 자동 실시간 환율 불러오기
   fetchLiveRate();
+
+  // 방문자 카운터 로드
+  loadVisitorStats();
 });
+
+async function loadVisitorStats() {
+  try {
+    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+    const app = getApps().find(a=>a.name==='admin-visit') || initializeApp(cfg,'admin-visit');
+    const db = getFirestore(app);
+    const today = new Date().toISOString().slice(0,10); // YYYY-MM-DD
+    const snap = await getDoc(doc(db, 'visitors', 'stats'));
+    if (snap.exists()) {
+      const data = snap.data();
+      const todayCount = data.daily?.[today] || 0;
+      const totalCount = data.total || 0;
+      document.getElementById('stat-today-visit').textContent = todayCount.toLocaleString();
+      document.getElementById('stat-total-visit').textContent = totalCount.toLocaleString();
+    } else {
+      document.getElementById('stat-today-visit').textContent = '0';
+      document.getElementById('stat-total-visit').textContent = '0';
+    }
+  } catch(e) {
+    console.warn('방문자 통계 로드 실패:', e.message);
+    document.getElementById('stat-today-visit').textContent = '-';
+    document.getElementById('stat-total-visit').textContent = '-';
+  }
+}
 </script>
 </body>
 </html>
