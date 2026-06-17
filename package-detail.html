@@ -167,7 +167,7 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
   <button class="tb-btn" onclick="exitEdit()" style="background:rgba(255,255,255,0.1);">✕ 취소</button>
 </div>
 
-<div id="loading">⏳ 불러오는 중...</div>
+<div id="loading" style="display:none">⏳ 불러오는 중...</div>
 
 <!-- ① 히어로 -->
 <div class="hero" id="heroSection" style="display:none;">
@@ -330,8 +330,8 @@ const cardId   = params.get('id') || 'card1';
 /* ── 기본 데이터 (Firebase에 없을 때 초기값) ── */
 const DEFAULT = {
   card1: {
-    heroImg: 'https://iclarkgolf.com/images/hero-bg.jpg',
-    accomImgs: ['https://iclarkgolf.com/images/slide-01.jpg','https://iclarkgolf.com/images/slide-02.jpg','https://iclarkgolf.com/images/slide-03.jpg','https://iclarkgolf.com/images/slide-04.jpg','https://iclarkgolf.com/images/slide-05.jpg','https://iclarkgolf.com/images/slide-06.jpg'],
+    heroImg: 'https://i.ibb.co/XxwyYydt/hero-bg.jpg',
+    accomImgs: ['https://i.ibb.co/TBMBn84y/slide-01.jpg','https://i.ibb.co/C59vCmfN/slide-02.jpg','https://i.ibb.co/PZ3g4sz3/slide-03.jpg','https://i.ibb.co/qL8HtnJ0/slide-04.jpg','https://i.ibb.co/3GTbm0j/slide-05.jpg','https://i.ibb.co/YBQkhZNh/slide-06.jpg'],
     statMinDays:'5일', statPax:'1인',
     schedule:[
       {num:'1', title:'도착 · 체크인 · 오리엔테이션', desc:'숙소 안내, 골프장 사전 투어, 일정 협의'},
@@ -365,7 +365,7 @@ render();
   try {
     const app = getApps().find(a=>a.name==='detail') || initializeApp(cfg,'detail');
     const db  = getFirestore(app);
-    const timeout = new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), 5000));
+    const timeout = new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), 1000));
     const snap = await Promise.race([getDoc(doc(db, 'package_cards', cardId)), timeout]);
     if (snap && snap.exists && snap.exists() && snap.data()) {
       D = { ...def, ...snap.data() };
