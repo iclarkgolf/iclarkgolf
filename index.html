@@ -1722,40 +1722,29 @@ try {
 } catch(e) {
   console.error('골프 요금 업데이트 실패:', e);
 }
-</script>
 
-<script type="module">
-// 방문자 카운터 — Firebase에 오늘 날짜별로 카운트 저장
-(async () => {
-  try {
+// 방문자 카운터 — 기존 Firebase 연결 재사용
+try {
+  const today = new Date().toISOString().slice(0,10);
+  if (!sessionStorage.getItem('visit_counted') && !localStorage.getItem('iclark_admin')) {
+    sessionStorage.setItem('visit_counted', 'yes');
+    const { doc, getDoc, setDoc, updateDoc, increment } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const cfg2 = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
     const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
-    const { getFirestore, doc, getDoc, setDoc, updateDoc, increment } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
-    const app = getApps().find(a=>a.name==='visit') || initializeApp(cfg,'visit');
-    const db = getFirestore(app);
-    const today = new Date().toISOString().slice(0,10); // YYYY-MM-DD
-
-    // 세션당 1회만 카운트 (새로고침 제외)
-    if (!sessionStorage.getItem('visit_counted')) {
-      sessionStorage.setItem('visit_counted', 'yes');
-      const ref = doc(db, 'visitors', 'stats');
-      const snap = await getDoc(ref);
-      if (snap.exists()) {
-        await updateDoc(ref, {
-          total: increment(1),
-          [`daily.${today}`]: increment(1)
-        });
-      } else {
-        await setDoc(ref, {
-          total: 1,
-          daily: { [today]: 1 }
-        });
-      }
+    const app2 = getApps().find(a=>a.name==='visit') || initializeApp(cfg2,'visit');
+    const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const db2 = getFirestore(app2);
+    const ref = doc(db2, 'visitors', 'stats');
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      await updateDoc(ref, { total: increment(1), [`daily.${today}`]: increment(1) });
+    } else {
+      await setDoc(ref, { total: 1, daily: { [today]: 1 } });
     }
-  } catch(e) {
-    console.warn('방문자 카운트 실패:', e.message);
   }
-})();
+} catch(e) {
+  console.warn('방문자 카운트 실패:', e.message);
+}
 </script>
 </body>
 </html>
