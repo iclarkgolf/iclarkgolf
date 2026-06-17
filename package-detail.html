@@ -262,6 +262,17 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
   </div>
 </div>
 
+<!-- ⑤-② 전지훈련 사진 -->
+<div class="section" id="trainingSection" style="display:none;">
+  <div class="section-header" data-i18n="sec.training">⛳ 전지훈련</div>
+  <div class="section-body">
+    <div class="accom-grid" id="trainingGrid"></div>
+    <button class="slider-add-btn" onclick="addTrainingSlide()">+ 사진 추가 (ImgBB URL)</button>
+    <div class="accom-name" id="trainingName" contenteditable="false">전지훈련 현장</div>
+    <div class="accom-sub" id="trainingDesc" contenteditable="false">실제 레슨과 라운드 현장 사진입니다.</div>
+  </div>
+</div>
+
 <!-- ⑥ 담당 프로 -->
 <div class="section" id="proSection" style="display:none;">
   <div class="section-header" data-i18n="sec.pro">🏌️ 담당 프로 소개</div>
@@ -348,6 +359,7 @@ const DEFAULT = {
     inclNo:['카트피 (본인)','캐디피 (본인)','보험료 (본인)','프로 동반 카트피·캐디피·보험료 (n/1 분담)','항공권','기타 개별 용도'],
     accomName:'로컬 전용 숙소',
     accomDesc:'전용숙소는 로컬 마을에 있습니다. 프라데라 클럽하우스에서 5분 거리, 로컬의 참맛과 생생한 체험을 겸할 수 있습니다.',
+    trainingImgs:[],
     prices:[
       {period:'5일',  php:28350, featured:false},
       {period:'7일',  php:39690, featured:false},
@@ -405,6 +417,11 @@ function render() {
   document.getElementById('accomName').textContent = D.accomName || '로컬 전용 숙소';
   document.getElementById('accomDesc').innerHTML   = (D.accomDesc||'').replace(/\n/g,'<br>');
   renderSlider();
+  renderTraining();
+
+  // 전지훈련 텍스트
+  document.getElementById('trainingName').textContent = D.trainingName || '전지훈련 현장';
+  document.getElementById('trainingDesc').innerHTML   = (D.trainingDesc||'실제 레슨과 라운드 현장 사진입니다.').replace(/\n/g,'<br>');
 
   // 프로
   if (D.proImg) {
@@ -438,7 +455,7 @@ function render() {
   document.getElementById('editFab').style.display = 'flex';
   document.getElementById('heroSection').style.display = 'flex';
   document.getElementById('statsBar').style.display = 'grid';
-  ['scheduleSection','inclSection','accomSection','proSection','priceSection','freeSection'].forEach(id=>document.getElementById(id).style.display='block');
+  ['scheduleSection','inclSection','accomSection','trainingSection','proSection','priceSection','freeSection'].forEach(id=>document.getElementById(id).style.display='block');
 
   // 번역 적용
   applyTranslations();
@@ -480,7 +497,7 @@ const TRANS = {
     'sec.incl':      '✅ 포함 · 불포함',
     'incl.yes':      '✅ 포함',
     'incl.no':       '❌ 불포함',
-    'sec.accom':     '🏠 숙소 안내',
+    'sec.training':  '⛳ 전지훈련',
     'sec.pro':       '🏌️ 담당 프로 소개',
     'sec.price':     '💰 기간별 가격',
     'sec.detail':    '📝 상세 안내',
@@ -496,7 +513,7 @@ const TRANS = {
     'sec.incl':      '✅ Included · Excluded',
     'incl.yes':      '✅ Included',
     'incl.no':       '❌ Not Included',
-    'sec.accom':     '🏠 Accommodation',
+    'sec.training':  '⛳ Training Photos',
     'sec.pro':       '🏌️ Your Golf Pro',
     'sec.price':     '💰 Pricing',
     'sec.detail':    '📝 Details',
@@ -647,6 +664,36 @@ window.replaceHeroImg = function() {
   document.getElementById('heroImg').style.backgroundImage = `url(${url})`;
 };
 
+/* ── 전지훈련 사진 그리드 ── */
+function renderTraining() {
+  D.trainingImgs = D.trainingImgs || [];
+  const grid = document.getElementById('trainingGrid');
+  grid.innerHTML = '';
+  if (D.trainingImgs.length === 0) return;
+  D.trainingImgs.forEach((url, i) => {
+    const card = document.createElement('div');
+    card.className = 'accom-card';
+    card.innerHTML = `
+      <img src="${url}" alt="전지훈련 사진 ${i+1}">
+      <button class="slide-del-btn" onclick="delTrainingSlide(${i})">✕ 삭제</button>`;
+    grid.appendChild(card);
+  });
+}
+
+window.addTrainingSlide = function() {
+  const url = prompt('📷 전지훈련 사진 URL (ImgBB):\n\nimgbb.com에 업로드 후 Direct link URL을 복붙하세요:');
+  if (!url || !url.startsWith('http')) return;
+  D.trainingImgs = D.trainingImgs || [];
+  D.trainingImgs.push(url);
+  renderTraining();
+};
+
+window.delTrainingSlide = function(i) {
+  if (!confirm('이 사진을 삭제할까요?')) return;
+  D.trainingImgs.splice(i, 1);
+  renderTraining();
+};
+
 /* ── 숙소 슬라이더 ── */
 let sliderIdx = 0;
 let touchStartX = 0;
@@ -761,6 +808,8 @@ window.saveAll = async function() {
   // 숙소·프로 텍스트
   D.accomName = document.getElementById('accomName').innerText.trim();
   D.accomDesc = document.getElementById('accomDesc').innerText.trim();
+  D.trainingName = document.getElementById('trainingName').innerText.trim();
+  D.trainingDesc = document.getElementById('trainingDesc').innerText.trim();
   D.proName   = document.getElementById('proName').innerText.trim();
   D.proCerts  = document.getElementById('proCerts').innerHTML;
 
