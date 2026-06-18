@@ -683,6 +683,35 @@ function enterEdit() {
   document.getElementById('proImgBtn').style.display = 'block';
 
   showToast('✏️ 편집 모드 — 텍스트를 직접 클릭해서 수정하세요');
+
+  // ── freeContent: Enter 시 자동 ☑️ 추가 ──
+  const fc = document.getElementById('freeContent');
+  fc._checkHandler = function(e) {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+
+    // 현재 커서 위치에 ☑️ + 줄바꿈 삽입
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return;
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
+
+    // <br>☑️ 텍스트노드 삽입
+    const br = document.createElement('br');
+    const checkNode = document.createTextNode('☑️ ');
+    const frag = document.createDocumentFragment();
+    frag.appendChild(br);
+    frag.appendChild(checkNode);
+    range.insertNode(frag);
+
+    // 커서를 ☑️ 뒤로 이동
+    const newRange = document.createRange();
+    newRange.setStartAfter(checkNode);
+    newRange.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(newRange);
+  };
+  fc.addEventListener('keydown', fc._checkHandler);
 }
 
 window.exitEdit = function() {
@@ -694,6 +723,13 @@ window.exitEdit = function() {
   document.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable','false'));
   document.querySelectorAll('.edit-del-btn').forEach(el => el.style.display = 'none');
   document.getElementById('proImgBtn').style.display = 'none';
+
+  // freeContent Enter 핸들러 제거
+  const fc2 = document.getElementById('freeContent');
+  if (fc2._checkHandler) {
+    fc2.removeEventListener('keydown', fc2._checkHandler);
+    delete fc2._checkHandler;
+  }
 };
 
 /* ── 툴바 포맷 ── */
