@@ -665,17 +665,20 @@ footer {
 /* ── 패키지 카드 — 가로 스크롤 ── */
 .pkg-wrap {
   overflow-x: auto;
+  overflow-y: visible;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  padding: 4px 16px 16px;
-  display: flex;
-  justify-content: center;
+  /* 섹션 좌우 패딩 상쇄 후 전체 너비 사용 */
+  margin: 0 -16px;
+  padding: 4px 0 16px;
 }
 .pkg-wrap::-webkit-scrollbar { display: none; }
 .pkg-grid {
   display: flex;
   gap: 12px;
   width: max-content;
+  /* 첫 카드 왼쪽 / 마지막 카드 오른쪽 여백 */
+  padding: 4px 16px 0;
 }
 .pkg-item {
   width: 220px;
@@ -723,6 +726,10 @@ footer {
   .pkg-hscroll-wrap { overflow: visible; padding: 4px 0 12px; margin: 0; }
   .pkg-hscroll-inner { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; width: auto; padding: 0; }
   .pkg-card { width: auto; }
+  /* pkg-wrap/pkg-grid 데스크탑 오버라이드 */
+  .pkg-wrap { overflow: visible; margin: 0; padding: 4px 0 16px; }
+  .pkg-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; width: auto; padding: 0; }
+  .pkg-item { width: auto; }
 
   /* 캐디 가로스크롤 → 그리드 */
   .caddy-hscroll-wrap { overflow: visible; padding: 4px 0 12px; margin: 0; }
