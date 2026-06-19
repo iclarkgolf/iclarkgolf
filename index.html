@@ -1099,12 +1099,7 @@ try {
     <a href="blog.html" class="sec-more"><span data-i18n="sec.more">전체보기</span> <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
   </div>
   <div class="hscroll-wrap blog-hscroll-wrap">
-    <div class="hscroll-inner blog-hscroll-inner">
-      <a href="blog-p21.html" class="blog-card"><div class="blog-thumb"><img src="https://iclarkgolf.com/images/blog-p21-hero.jpg" alt="우기 골프" onerror="this.style.opacity=0"></div><div class="blog-body"><div class="blog-tag">클락 여름 골프</div><div class="blog-title">7·8월 클락 우기 골프 — 비가 오는데 왜 최고 시즌인가</div></div></a>
-      <a href="blog-p20.html" class="blog-card"><div class="blog-thumb"><img src="https://iclarkgolf.com/images/blog-p20-hero.jpg" alt="시니어 골프" onerror="this.style.opacity=0"></div><div class="blog-body"><div class="blog-tag">시니어 골퍼</div><div class="blog-title">시니어 골퍼의 천국 — 클락이 50·60대에게 맞는 이유</div></div></a>
-      <a href="blog-p19.html" class="blog-card"><div class="blog-thumb"><img src="https://iclarkgolf.com/images/blog-p19-hero.jpg" alt="여성 골퍼" onerror="this.style.opacity=0"></div><div class="blog-body"><div class="blog-tag">여성 골퍼</div><div class="blog-title">여성 골퍼 나 홀로 전지훈련 — 필리핀 클락이 정답인 이유</div></div></a>
-      <a href="blog-p18.html" class="blog-card"><div class="blog-thumb"><img src="https://iclarkgolf.com/images/blog-p18-hero.jpg" alt="주니어 골프" onerror="this.style.opacity=0"></div><div class="blog-body"><div class="blog-tag">주니어 골프</div><div class="blog-title">주니어 골프 전지훈련, 태국 말고 클락으로</div></div></a>
-    </div>
+    <div class="hscroll-inner blog-hscroll-inner" id="blog-preview-inner"></div>
   </div>
   <a href="blog.html" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;background:var(--white);border:1.5px solid var(--pink-border);border-radius:var(--radius-full);padding:11px 20px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:var(--pink);text-decoration:none;">
     📝 전체 블로그 보기 →
@@ -1751,6 +1746,31 @@ try {
   }
 } catch(e) {
   console.warn('방문자 카운트 실패:', e.message);
+}
+</script>
+
+<script src="posts-data.js"></script>
+<script>
+// 홈 화면 블로그 미리보기 — posts-data.js의 POSTS에서 최신 4개만 자동으로 보여줌
+// 새 글이 posts-data.js 맨 위에 추가되면 여기도 자동으로 갈아끼워짐 (직접 수정할 필요 없음)
+try {
+  const previewWrap = document.getElementById('blog-preview-inner');
+  if (previewWrap && typeof POSTS !== 'undefined') {
+    const latest4 = [...POSTS]
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .slice(0, 4);
+    previewWrap.innerHTML = latest4.map(p => `
+      <a href="blog-${p.id}.html" class="blog-card">
+        <div class="blog-thumb"><img src="${p.thumb}" alt="${p.cat}" onerror="this.style.opacity=0"></div>
+        <div class="blog-body">
+          <div class="blog-tag">${p.cat}</div>
+          <div class="blog-title">${p.title}</div>
+        </div>
+      </a>
+    `).join('');
+  }
+} catch(e) {
+  console.warn('블로그 미리보기 렌더링 실패:', e.message);
 }
 </script>
 </body>

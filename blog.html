@@ -146,35 +146,8 @@ a{text-decoration:none;color:inherit;}
   <a href="/index.html" class="fixed-btn btn-home">🏠 홈으로</a>
 </div>
 
+<script src="posts-data.js"></script>
 <script>
-const POSTS = [
-  {id:"p25",title:"필리핀 골프유학, 클락에서 한 아이를 키운 기록 — 검정고시부터 AUF 졸업까지",cat:"골프유학",date:"2026.06.19",thumb:"https://iclarkgolf.com/images/blog-p25-hero.jpg",excerpt:"2013년 클락으로 건너간 골프 프로가 중학교 1학년 남자아이를 데려와 검정고시와 AUF 졸업까지 함께한 4년의 실화. 골프유학을 고민하는 학부모를 위한 체크리스트와 투어 루틴까지 담았다."},
-  {id:"p24",title:"필리핀 어학연수 어학원 고르는 법 — SSP 확인부터 사기 피해 예방까지",cat:"필리핀 생활",date:"2026.06.18",thumb:"https://iclarkgolf.com/images/blog-p24-hero.jpg",excerpt:"방학마다 늘어나는 어학연수, 진짜 변수는 비자가 아니라 어학원 선택이다. SSP 자격 확인부터 실제 사기 피해 패턴까지 현지 기준으로 정리했다."},
-  {id:"p23",title:"골프 전지훈련, 왜 필리핀 클락인가 — 현지 프로가 말하는 클락 전지훈련의 진실",cat:"전지훈련 가이드",date:"2026.06.18",thumb:"https://iclarkgolf.com/images/blog-p23-hero.jpg",excerpt:"마닐라 3년, 클락 10년 이상. 클락 시내 골프장은 왜 전지훈련에 맞지 않는지, 베버리와 프라데라 중 어디가 적합한지 현지 프로가 솔직하게 분석했다."},
-  {id:"p22",title:"클락 골프 캐디 완전 가이드 — 좋은 캐디 고르는 법과 팁 문화의 진실",cat:"골프 팁",date:"2026.06.15",thumb:"https://iclarkgolf.com/images/blog-p22-hero.jpg",excerpt:"같은 골프장, 같은 그린피인데 라운드 만족도가 극과 극으로 갈리는 이유. 현지 클럽 프로가 수년간 함께 일한 경험으로 솔직하게 말한다."},
-  {id:"p21",title:"7·8월 클락 우기 골프 완전 가이드 — 비가 오는데 왜 최고 시즌인가",cat:"클락 여름 골프",date:"2026.06.02",thumb:"https://iclarkgolf.com/images/blog-p21-hero.jpg",excerpt:"오전엔 맑고 서늘하고, 오후 스콜은 잠간이고, 밤엔 대지를 식히는 비가 내린다. 한국 폭염이 절정일 때 클락은 가장 쾌적한 골프 시즌을 맞는다."},
-  {id:"p20",title:"시니어 골퍼의 천국 — 필리핀 클락이 50·60대에게 맞는 이유",cat:"시니어 골퍼",date:"2026.06.01",thumb:"https://iclarkgolf.com/images/blog-p20-hero.jpg",excerpt:"50·60대 시니어 골퍼가 클락을 반복해서 찾는 이유. 따뜻한 기후, 친절한 하우스메이드, 진행 압박 없는 라운드."},
-  {id:"p19",title:"여성 골퍼 나 홀로 전지훈련 — 필리핀 클락이 정답인 이유",cat:"여성 골퍼",date:"2026.05.31",thumb:"https://iclarkgolf.com/images/blog-p19-hero.jpg",excerpt:"혼자 가도 안전하고, 혼자 가도 즐겁고, 혼자 가도 실력이 는다. 여성 골퍼의 나 홀로 클락 전지훈련 완전 가이드."},
-  {id:"p18",title:"주니어 골프 전지훈련, 태국 말고 클락으로 — 프라데라 베르데 완전 가이드",cat:"주니어 골프",date:"2026.05.30",thumb:"https://iclarkgolf.com/images/blog-p18-hero.jpg",excerpt:"방학마다 태국 치앙마이만 찾는 주니어 골퍼 부모님들. 클락 프라데라 베르데가 왜 더 나은지 비교해봤습니다."},
-  {id:"p17",title:"올 여름 휴가는 클락으로 — 7·8월 비수기 골프 전지훈련 완전 가이드",cat:"전지훈련 가이드",date:"2026.05.29",thumb:"https://iclarkgolf.com/images/blog-p17-hero.jpg",excerpt:"비수기라 그린피 저렴, 사람 없어 여유롭고, 오전엔 맑아 라운드 최적. 7·8월 클락이 오히려 황금 시즌인 이유."},
-  {id:"p16",title:"클락 골프 후 수빅 바다 하루 코스 — 돌고래쇼·잠발레스 호핑투어 완전 가이드",cat:"여행 가이드",date:"2026.05.29",thumb:"https://iclarkgolf.com/images/blog-p16-hero.jpg",excerpt:"클락에서 차로 1시간, 수빅만의 에메랄드 바다. 돌고래 투어, 잠발레스 섬 호핑, 해산물 만찬까지."},
-  {id:"p15",title:"필리핀 골프장 복장·카트·음주·컨슘어블 완전 가이드",cat:"필리핀 생활",date:"2026.05.28",thumb:"https://iclarkgolf.com/images/blog-p15-hero.jpg",excerpt:"청바지 금지, 카라 필수, 카트 필수, 라운드 중 음주 허용, 컨슘어블 제도까지 현장 정보 총정리."},
-  {id:"p14",title:"클락 골프 여행, 이제는 풀빌라다 — 2026 클락 풀빌라 완전 가이드",cat:"클락 여행 트렌드",date:"2026.05.28",thumb:"https://iclarkgolf.com/images/blog-p14-hero.jpg",excerpt:"골프 후 풀빌라에서 바베큐. 2026년 클락 여행 트렌드는 단연 풀빌라. 가격·위치·예약까지 완전 정리."},
-  {id:"p13",title:"필리핀 클락 vs 세부 vs 베트남 다낭 — 한국 골퍼를 위한 3파전 완전 비교 2026",cat:"골프 여행 비교",date:"2026.05.27",thumb:"https://iclarkgolf.com/images/blog-p13-hero.jpg",excerpt:"어디로 갈지 고민되는 한국 골퍼를 위한 비교. 비용, 코스 수준, 한국어 서비스, 관광 인프라까지."},
-  {id:"p12",title:"골프 100타 벽 깨는 법 — 연습장·스크린의 한계와 실전 훈련이 답인 이유",cat:"골프 팁",date:"2026.05.26",thumb:"https://iclarkgolf.com/images/blog-p12-hero.jpg",excerpt:"수년째 100타 벽을 못 깨는 이유는 연습량이 아니라 연습 방식에 있습니다."},
-  {id:"p11",title:"필리핀 비자 완전 가이드 2026 — 관광·학생·취업·사업·은퇴 비자 총정리",cat:"필리핀 생활",date:"2026.05.25",thumb:"https://iclarkgolf.com/images/blog-p11-hero.jpg",excerpt:"관광 비자 30일 무비자부터 은퇴 비자(SRRV)까지. 2026년 최신 비자 종류·비용·주의사항 총정리."},
-  {id:"p10",title:"골프 입문자가 가장 빨리 느는 방법 — 스크린 말고 실전으로",cat:"골프 입문",date:"2026.05.24",thumb:"https://iclarkgolf.com/images/blog-p10-hero.jpg",excerpt:"스크린에서 시작하면 스크린에서 끝납니다. 실전 훈련의 차이, 가장 빠르고 경제적으로 중급까지 가는 방법."},
-  {id:"p9",title:"필리핀 클락 완전 여행 가이드 2026 — 맛집·카지노·피나투보·수빅 총정리",cat:"여행 가이드",date:"2026.05.24",thumb:"https://iclarkgolf.com/images/blog-p9-hero.jpg",excerpt:"골프 말고도 넘치는 클락. 맛집, 카지노, 피나투보 트래킹, 수빅 호핑까지 2026년 최신 정보 완전 총정리."},
-  {id:"p8",title:"필리핀 골프 전지훈련 준비의 5가지 원칙 — 가방 싸기 전에 먼저 읽어야 할 글",cat:"전지훈련 가이드",date:"2026.05.24",thumb:"https://iclarkgolf.com/images/blog-p8-hero.jpg",excerpt:"기후, 경제성, 접근성, 숙소 위치, 연습 시설과 코칭 — 10년 이상 클락에서 전지훈련을 운영해온 티칭 프로가 말하는 5가지 원칙."},
-  {id:"p7",title:"한국 vs 필리핀 클락 골프 비용 완전 비교 — 같은 돈으로 클락에서 며칠을 칠 수 있나?",cat:"비용 분석",date:"2026.05.24",thumb:"https://iclarkgolf.com/images/blog-p7-hero.jpg",excerpt:"한국 주말 라운드 한 번 비용으로 클락에서 3라운드를 칩니다. 그린피·캐디피·카트비·숙박·항공까지 항목별 완전 분석."},
-  {id:"p6",title:"필리핀 클락 골프장 완전 비교 가이드 — 어디서 칠 것인가?",cat:"골프장 가이드",date:"2026.05.24",thumb:"https://iclarkgolf.com/images/blog-p6-hero.jpg",excerpt:"프라데라, 베버리, 미모사, 코리아CC, 썬벨리, 루이시타, 수빅, 뉴아시아까지 클락 인근 8개 골프장 비교."},
-  {id:"p5",title:"골퍼의 한(恨)을 풀어드립니다 — 프라데라에서 7일, 당신의 골프가 달라집니다",cat:"골프 팁",date:"2026.05.22",thumb:"https://iclarkgolf.com/images/pradera-golf-06.jpg",excerpt:"레슨을 받아도 안 잡히는 스윙, 필드만 나가면 무너지는 멘탈. 프라데라 7일로 골퍼의 한을 풀어드립니다."},
-  {id:"p4",title:"나 홀로도 전지훈련은 됩니다 — 먹.자.골, 클락에서 7일이면 충분합니다",cat:"패키지 안내",date:"2026.05.22",thumb:"https://iclarkgolf.com/images/pradera-golf-05.jpg",excerpt:"골프백 하나. 여권 하나. 그리고 7일의 시간. 먹고 자고 골프만 하는 먹.자.골 클락 나 홀로 전지훈련."},
-  {id:"p3",title:"필리핀 골프 캐디 완전 가이드 — 캐디피·한국어 캐디·팁 문화 총정리",cat:"골프 팁",date:"2026.05.21",thumb:"https://iclarkgolf.com/images/pradera-golf-03.jpg",excerpt:"캐디피는 얼마인가요? 영어를 못하면 어떻게 소통하나요? 팁은 꼭 줘야 하나요? 모든 궁금증 해결."},
-  {id:"p2",title:"필리핀 클락 골프 날씨 완전 가이드 — 월별 기후·우기·건기 총정리",cat:"필리핀 생활",date:"2026.05.20",thumb:"https://iclarkgolf.com/images/pradera-golf-02.jpg",excerpt:"우기에도 골프가 가능한가요? 몇 월에 가는 게 제일 좋나요? 이 글 하나로 모든 궁금증을 해결해 드립니다."},
-  {id:"p1",title:"7·8월 여름 휴가, 골프 전지훈련으로 바꿔보세요 — 필리핀 클락 프라데라 완벽 가이드",cat:"패키지 안내",date:"2026.05.20",thumb:"https://iclarkgolf.com/images/pradera-golf-01.jpg",excerpt:"인천에서 비행기로 3시간 50분, 필리핀 클락에서 매일 라운드하고 매일 레슨받는 골프 전지훈련을 경험해보세요."}
-];
-
 const PER_PAGE = 12;
 let filtered = [...POSTS];
 let currentPage = 1;
