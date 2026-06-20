@@ -1892,7 +1892,8 @@ async function fetchLiveRate(btnEl) {
   const buttons = document.querySelectorAll('[onclick^="fetchLiveRate"]');
   const btn = btnEl || (event && event.currentTarget) || buttons[0];
   const originalText = btn ? btn.textContent : '';
-  if (btn) btn.textContent = '로딩...';
+  const box = document.getElementById('exchange-card');
+  if (btn) btn.textContent = '⏳ 불러오는 중...';
   try {
     // 무료 환율 API (CORS 허용)
     const res = await fetch('https://open.er-api.com/v6/latest/USD');
@@ -1902,16 +1903,20 @@ async function fetchLiveRate(btnEl) {
     const krwRate = data.rates.KRW;
     document.getElementById('live-usd-php').textContent = phpRate.toFixed(2);
     document.getElementById('live-usd-krw').textContent = Math.round(krwRate).toLocaleString();
-    document.getElementById('live-updated').textContent = '방금 업데이트';
+    document.getElementById('live-updated').textContent = '✅ 방금 업데이트';
     document.getElementById('manual-usd-php').value = phpRate.toFixed(2);
     document.getElementById('usd-krw').value = Math.round(krwRate);
     updateMarginDisplay();
-    if (btn) btn.textContent = originalText;
+    if (btn) btn.textContent = '✅ 완료!';
+    if (box) { box.style.transition='box-shadow .2s'; box.style.boxShadow='0 0 0 3px #1D9E75'; setTimeout(()=>box.style.boxShadow='',1200); }
+    showToast('📡 실시간 환율 갱신: $1 = ' + phpRate.toFixed(2) + ' PHP', 'success');
+    setTimeout(()=>{ if (btn) btn.textContent = originalText; }, 1800);
   } catch(e) {
-    document.getElementById('live-updated').textContent = '실패 — 수동 입력 사용';
-    if (btn) btn.textContent = originalText;
+    document.getElementById('live-updated').textContent = '❌ 실패 — 수동 입력 사용';
+    if (btn) btn.textContent = '❌ 실패';
     updateMarginDisplay();
-    alert('⚠️ 실시간 환율을 불러오지 못했어요.\n네트워크 상태를 확인하거나, 아래 "수동 입력" 칸에 직접 입력해주세요.\n\n오류: ' + e.message);
+    showToast('⚠️ 실시간 환율 불러오기 실패 — 수동 입력해주세요', 'error');
+    setTimeout(()=>{ if (btn) btn.textContent = originalText; }, 1800);
   }
 }
 
@@ -1948,8 +1953,9 @@ function saveExchange() {
   const marketRate = parseFloat(document.getElementById('manual-usd-php').value) || 0;
   const margin = parseFloat(document.getElementById('margin-slider').value) || 5;
   const usdKrw = parseFloat(document.getElementById('usd-krw').value) || 1380;
+  const saveBtn = (event && event.currentTarget) || document.querySelector('[onclick="saveExchange()"]');
   if (!marketRate) {
-    alert('⚠️ 먼저 실시간 불러오기 또는 수동 입력을 해주세요');
+    showToast('⚠️ 먼저 실시간 불러오기 또는 수동 입력을 해주세요', 'error');
     return;
   }
   const applied = marketRate * (1 - margin / 100);
@@ -1965,6 +1971,12 @@ function saveExchange() {
   localStorage.setItem('iclark_php_usd', (1 / applied).toFixed(6));
   localStorage.setItem('iclark_usd_krw', usdKrw);
 
+  // 저장 즉시 시각적 표식 (Firebase 결과 기다리지 않고 바로 표시)
+  const box = document.getElementById('exchange-card');
+  if (saveBtn) { const orig = saveBtn.textContent; saveBtn.textContent = '✅ 저장됨!'; setTimeout(()=>saveBtn.textContent = orig, 1800); }
+  if (box) { box.style.transition='box-shadow .2s'; box.style.boxShadow='0 0 0 3px #534AB7'; setTimeout(()=>box.style.boxShadow='',1200); }
+  showToast('💾 환율 저장 완료! $1 = ' + applied.toFixed(2) + ' PHP (마진 ' + margin + '%)', 'success');
+
   // Firebase에도 저장 (모든 기기에서 동일 환율 적용)
   (async () => {
     try {
@@ -1974,9 +1986,9 @@ function saveExchange() {
       const app = getApps().find(a=>a.name==='exchange') || initializeApp(cfg,'exchange');
       const db = getFirestore(app);
       await setDoc(doc(db, 'settings', 'exchange'), data);
-      alert('✅ 환율 저장 완료!\n적용 환율: $1 = ' + applied.toFixed(2) + ' PHP (마진 ' + margin + '%)\n\n모든 기기에 동일하게 적용됩니다.');
+      showToast('☁️ 모든 기기에 동기화 완료', 'success');
     } catch(e) {
-      alert('✅ 환율 저장 완료!\n적용 환율: $1 = ' + applied.toFixed(2) + ' PHP (마진 ' + margin + '%)\n(Firebase 저장 실패 — 로컬에만 저장됨)');
+      showToast('⚠️ 로컬엔 저장됐지만 다른 기기 동기화는 실패했어요', 'error');
     }
   })();
 }
