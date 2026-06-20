@@ -121,6 +121,8 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 /* 편집 모드 필드 공통 */
 [contenteditable="true"]{outline:2px dashed #1b4332;outline-offset:3px;border-radius:4px;min-height:1em;cursor:text;}
 [contenteditable="true"]:focus{outline:2px solid #1b4332;background:rgba(27,67,50,0.04);}
+/* 안전장치: 텍스트 칸에 실수로 사진이 붙여넣어져도 거대해지지 않게 */
+[contenteditable] img{max-width:100%;height:auto;display:block;}
 
 /* 편집 모드 이미지 교체 버튼 */
 .img-replace-btn{display:none;position:absolute;top:8px;right:8px;background:#1b4332;color:#fff;border:none;border-radius:7px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;z-index:10;}
@@ -676,6 +678,15 @@ window.checkPw = function() {
     document.getElementById('pwInput').focus();
   }
 };
+
+// ── 안전장치: 모든 텍스트 입력칸(contenteditable)에 사진을 붙여넣어도 텍스트만 들어가게 처리 ──
+document.addEventListener('paste', function(e) {
+  const target = e.target.closest && e.target.closest('[contenteditable="true"]');
+  if (!target) return;
+  e.preventDefault();
+  const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+  document.execCommand('insertText', false, text);
+});
 
 function enterEdit() {
   editMode = true;
