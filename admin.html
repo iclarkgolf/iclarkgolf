@@ -896,10 +896,14 @@ body { background:#f4faf7; padding-bottom:40px; }
             <label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">카피 (설명 문구)</label>
             <textarea id="ce-copy" rows="3" placeholder="예: 로컬 숙소에서&#10;먹고 · 자고 · 골프만&#10;나 홀로 전지훈련을 오픈합니다" style="width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box;resize:none;font-family:inherit;"></textarea>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div style="display:grid;grid-template-columns:1.2fr 0.8fr 1fr;gap:10px;">
             <div>
-              <label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">가격 표시</label>
-              <input id="ce-price" type="text" placeholder="예: $99 / day · 가격 문의" style="width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box;">
+              <label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">가격 (큰 글씨)</label>
+              <input id="ce-price" type="text" placeholder="예: $99 · 가격 문의" style="width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box;">
+            </div>
+            <div>
+              <label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">기준 단위 (작은 글씨)</label>
+              <input id="ce-price-unit" type="text" placeholder="예: / day · / 4박" style="width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box;">
             </div>
             <div>
               <label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">버튼 텍스트</label>
@@ -1380,7 +1384,7 @@ function openCardEditor(cardId) {
 
   if (cardId === 'new') {
     // 빈 폼
-    ['ce-tag','ce-title-en','ce-sub1','ce-sub2','ce-copy','ce-price','ce-btn'].forEach(id => document.getElementById(id).value = '');
+    ['ce-tag','ce-title-en','ce-sub1','ce-sub2','ce-copy','ce-price','ce-price-unit','ce-btn'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('ce-editor').innerHTML = '';
     document.getElementById('ce-color1').value = '#054535';
     document.getElementById('ce-color1-hex').value = '#054535';
@@ -1403,6 +1407,7 @@ function openCardEditor(cardId) {
         document.getElementById('ce-sub2').value = c.sub2 || '';
         document.getElementById('ce-copy').value = c.copy || '';
         document.getElementById('ce-price').value = c.price || '';
+        document.getElementById('ce-price-unit').value = c.priceUnit || '';
         document.getElementById('ce-btn').value = c.btn || '';
         document.getElementById('ce-color1').value = c.color1 || '#054535';
         document.getElementById('ce-color1-hex').value = c.color1 || '#054535';
@@ -1455,6 +1460,7 @@ async function saveCard() {
     sub2: document.getElementById('ce-sub2').value.trim(),
     copy: document.getElementById('ce-copy').value.trim(),
     price: document.getElementById('ce-price').value.trim(),
+    priceUnit: document.getElementById('ce-price-unit').value.trim(),
     btn: document.getElementById('ce-btn').value.trim(),
     color1: document.getElementById('ce-color1').value,
     color2: document.getElementById('ce-color2').value,
