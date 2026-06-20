@@ -220,17 +220,17 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 <div class="stats-bar" id="statsBar" style="display:none;">
   <div class="stat-item">
     <div class="stat-label" data-i18n="stat.price">시작 가격</div>
-    <div class="stat-value" id="statPrice">$99</div>
+    <div class="stat-value" id="statPrice" contenteditable="false">$99</div>
     <div class="stat-unit">/ 1일</div>
   </div>
   <div class="stat-item">
     <div class="stat-label" data-i18n="stat.mindays">최소 기간</div>
-    <div class="stat-value" id="statMinDays">5일</div>
+    <div class="stat-value" id="statMinDays" contenteditable="false">5일</div>
     <div class="stat-unit">이상</div>
   </div>
   <div class="stat-item">
     <div class="stat-label" data-i18n="stat.pax">인원</div>
-    <div class="stat-value" id="statPax">1인</div>
+    <div class="stat-value" id="statPax" contenteditable="false">1인</div>
     <div class="stat-unit">전용</div>
   </div>
 </div>
@@ -469,16 +469,8 @@ function render() {
   document.getElementById('heroCopy').innerHTML    = (D.copy||'').replace(/\n/g,'<br>');
   document.title = `${D.sub1||''} ${D.sub2||''} — iClark Golf`;
 
-  // 스탯 바
-  // 시작 가격 — prices 중 php 있는 최저값으로 자동계산
-  const rate = getRate();
-  const phpPrices = (D.prices||[]).filter(p => p.php);
-  if (phpPrices.length > 0) {
-    const minUsd = Math.ceil(Math.min(...phpPrices.map(p => p.php)) / rate);
-    document.getElementById('statPrice').textContent = '$' + minUsd.toLocaleString();
-  } else {
-    document.getElementById('statPrice').textContent = D.price || '$99';
-  }
+  // 스탯 바 — 모두 직접 입력값 (환율 자동계산 없음, 기획 상품 고정가)
+  document.getElementById('statPrice').textContent  = D.price || '$99';
   document.getElementById('statMinDays').textContent = D.statMinDays || '5일';
   document.getElementById('statPax').textContent     = D.statPax     || '1인';
 
@@ -628,12 +620,11 @@ function getRate() {
 }
 
 function renderPrices() {
-  const rate = getRate();
   const list = document.getElementById('priceList');
   list.innerHTML = '';
   (D.prices||[]).forEach((p,i) => {
-    // PHP 있으면 환율 자동계산, 없으면 amount 그대로
-    const displayAmt = p.php ? '$' + Math.ceil(p.php / rate).toLocaleString() : (p.amount || '문의');
+    // 기획 상품 고정가 — 직접 입력한 금액 그대로 표시 (환율 자동계산 없음)
+    const displayAmt = p.amount || '문의';
     const div = document.createElement('div');
     div.className = 'price-row' + (p.featured ? ' featured' : '');
     div.dataset.idx = i;
@@ -921,7 +912,8 @@ window.saveAll = async function() {
     }
   });
 
-  // 인라인 숫자 바
+  // 인라인 숫자 바 (모두 직접 입력값, 환율 자동계산 없음)
+  D.price       = document.getElementById('statPrice').innerText.trim();
   D.statMinDays = document.getElementById('statMinDays').innerText.trim();
   D.statPax     = document.getElementById('statPax').innerText.trim();
 
