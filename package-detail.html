@@ -541,7 +541,7 @@ function renderSchedule() {
       <div class="day-num">${s.num}</div>
       <div>
         <div class="day-title" contenteditable="false" data-field="schedule.${i}.title">${s.title}</div>
-        <div class="day-desc" contenteditable="false" data-field="schedule.${i}.desc">${s.desc}</div>
+        <div class="day-desc" contenteditable="false" data-field="schedule.${i}.desc">${(s.desc||'').replace(/\n/g,'<br>')}</div>
       </div>
       <button class="edit-del-btn" style="display:none;margin-left:auto;padding:4px 8px;background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;border-radius:6px;font-size:11px;cursor:pointer;" onclick="delScheduleRow(${i})">✕</button>`;
     list.appendChild(div);
@@ -905,12 +905,14 @@ window.saveAll = async function() {
   // 텍스트 필드 수집
   document.querySelectorAll('[data-field]').forEach(el => {
     const path = el.dataset.field.split('.');
+    // day-desc(일정 설명)는 굵게·줄바꿈 서식을 보존해야 해서 innerHTML로 저장
+    const val = el.classList.contains('day-desc') ? el.innerHTML.trim() : el.innerText.trim();
     if (path.length === 1) {
-      D[path[0]] = el.innerText.trim();
+      D[path[0]] = val;
     } else if (path.length === 3) {
       if (!D[path[0]]) D[path[0]] = [];
       if (!D[path[0]][path[1]]) D[path[0]][path[1]] = {};
-      D[path[0]][path[1]][path[2]] = el.innerText.trim();
+      D[path[0]][path[1]][path[2]] = val;
     }
   });
 
