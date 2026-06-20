@@ -538,8 +538,7 @@ function renderSchedule() {
     div.className = 'day-row';
     div.dataset.idx = i;
     div.innerHTML = `
-      <div class="day-num">${s.num}</div>
-      <div>
+      <div style="flex:1;">
         <div class="day-title" contenteditable="false" data-field="schedule.${i}.title">${s.title}</div>
         <div class="day-desc" contenteditable="false" data-field="schedule.${i}.desc">${(s.desc||'').replace(/\n/g,'<br>')}</div>
       </div>
