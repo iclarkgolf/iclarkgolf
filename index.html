@@ -1735,10 +1735,15 @@ try {
 }
 
 // 방문자 카운터 — 기존 Firebase 연결 재사용
+// 수정: ①한국 현지시간(UTC+9) 기준으로 "오늘" 계산 (기존엔 UTC라 한국 오전 9시에 날짜가 바뀌는 오류) ②검색엔진 봇 필터링 추가 ③탭/세션 단위가 아닌 "이 브라우저에서 오늘 1회만" 카운트
 try {
-  const today = new Date().toISOString().slice(0,10);
-  if (!sessionStorage.getItem('visit_counted') && !localStorage.getItem('iclark_admin')) {
-    sessionStorage.setItem('visit_counted', 'yes');
+  const BOT_UA = /bot|spider|crawl|slurp|bingpreview|facebookexternalhit|kakaotalk|yeti|daumoa|naverbot|baiduspider|ahrefsbot|semrushbot|mj12bot|petalbot|headlesschrome|lighthouse|pingdom|uptimerobot/i;
+  const isBot = BOT_UA.test(navigator.userAgent);
+  const krNow = new Date(Date.now() + 9 * 60 * 60 * 1000); // 한국(UTC+9) 현지 시각으로 보정
+  const today = krNow.toISOString().slice(0,10);
+  const lastVisitDate = localStorage.getItem('iclark_last_visit_date');
+  if (!isBot && lastVisitDate !== today && !localStorage.getItem('iclark_admin')) {
+    localStorage.setItem('iclark_last_visit_date', today);
     const { doc, getDoc, setDoc, updateDoc, increment } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     const cfg2 = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
     const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
