@@ -1,13 +1,15 @@
-# robots.txt - iClark Golf Academy
+# robots.txt - iCLARKGOLF
 # https://iclarkgolf.com
 
 # 모든 검색 로봇 허용
 User-agent: *
 Allow: /
 
-# 관리자 페이지는 검색 제외
-Disallow: /admin/
-Disallow: /admin-panel/
+# 관리자·템플릿·구버전 페이지는 검색 제외
+Disallow: /admin.html
+Disallow: /blog-admin.html
+Disallow: /blog-template.html
+Disallow: /index-new.html
 
 # 구글봇
 User-agent: Googlebot
