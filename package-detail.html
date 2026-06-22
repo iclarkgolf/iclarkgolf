@@ -451,6 +451,7 @@ const DEFAULT = {
 };
 
 /* ── 데이터 로드 — localStorage 우선, 없으면 기본값 ── */
+if (params.get('reset') === '1') { localStorage.removeItem('pkg_' + cardId); }
 const savedData = localStorage.getItem('pkg_' + cardId);
 let D = savedData ? { ...(DEFAULT[cardId] || {}), ...JSON.parse(savedData) } : { ...(DEFAULT[cardId] || {}) };
 window.addEventListener('DOMContentLoaded', render);
