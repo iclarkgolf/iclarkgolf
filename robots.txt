@@ -26,6 +26,13 @@ User-agent: Daumoa
 Allow: /
 Crawl-delay: 1
 
+# 페이스북/카카오 크롤러
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Facebot
+Allow: /
+
 # 사이트맵 위치 안내
 Sitemap: https://iclarkgolf.com/sitemap.xml
 
