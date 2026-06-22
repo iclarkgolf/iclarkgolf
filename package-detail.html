@@ -453,7 +453,19 @@ const DEFAULT = {
 /* ── 데이터 로드 — localStorage 우선, 없으면 기본값 ── */
 if (params.get('reset') === '1') { localStorage.removeItem('pkg_' + cardId); }
 const savedData = localStorage.getItem('pkg_' + cardId);
-let D = savedData ? { ...(DEFAULT[cardId] || {}), ...JSON.parse(savedData) } : { ...(DEFAULT[cardId] || {}) };
+const def = DEFAULT[cardId] || {};
+const saved = savedData ? JSON.parse(savedData) : {};
+let D = {
+  ...def,
+  ...saved,
+  tag:     saved.tag     || def.tag     || '',
+  titleEn: saved.titleEn || def.titleEn || '',
+  sub1:    saved.sub1    || def.sub1    || '',
+  sub2:    saved.sub2    || def.sub2    || '',
+  heroImg: saved.heroImg || def.heroImg || '',
+  color1:  saved.color1  || def.color1  || '#054535',
+  color2:  saved.color2  || def.color2  || '#1D9E75',
+};
 window.addEventListener('DOMContentLoaded', render);
 
 /* ── 렌더링 ── */
