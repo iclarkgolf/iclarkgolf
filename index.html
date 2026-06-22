@@ -921,7 +921,7 @@ const db = getFirestore(app);
 const DEFAULT_CARDS = [
   { id:'card1', tag:'먹 · 자 · 골', titleEn:'PRADERA', sub1:'로컬숙소', sub2:'라이프', copy:'로컬 숙소에서\n먹고 · 자고 · 골프만\n나 홀로 전지훈련을 오픈합니다', price:'$99', priceUnit:'/ day', btn:'자세히 보기', color1:'#054535', color2:'#1D9E75', order:1 },
   { id:'card2', tag:'힐링 친목 / 럭셔리 골프', titleEn:'PRADERA', sub1:'풀 빌라', sub2:'라이프', copy:'골프와 힐링을 동시에\n4인 이상 풀빌라 단독 사용', price:'가격 문의', priceUnit:'', btn:'자세히 보기', color1:'#72243E', color2:'#D4537E', order:2 },
-  { id:'card3', tag:'자격증을 위한 / 휴양 휴식을 위한', titleEn:'PRADERA', sub1:'장기 하숙형', sub2:'전지훈련', copy:'프라데라에서 오래 머물수록\n실력도 자격증도 휴식도 완성', price:'가격 문의', priceUnit:'', btn:'자세히 보기', color1:'#2D5A27', color2:'#7DC274', order:3 },
+  { id:'card3', tag:'시간은 짧게 · 훈련은 깊게', titleEn:'PRADERA', sub1:'단기 집중', sub2:'전지훈련', copy:'로컬 숙소에서\n4일 · 90홀 · 최고 효율\n짧게 와서 확실하게 치고 돌아가기', price:'가격 문의', priceUnit:'', btn:'자세히 보기', color1:'#2D5A27', color2:'#7DC274', heroImg:'https://i.ibb.co/MxJ7rgy1/web-13-sq.jpg', order:3 },
   { id:'card4', tag:'내 마음 가는 대로', titleEn:'CLARK GOLF', sub1:'맘대로', sub2:'선택하기', copy:'클락의 골프 모든 것을\n골프장 · 숙소 · 레슨 · 캐디\n직접 골라보세요', price:'내 견적 만들기', priceUnit:'', btn:'선택하러 가기', color1:'#1a1a2e', color2:'#8B5CF6', order:4 },
 ];
 
@@ -933,6 +933,7 @@ function renderCards(cards) {
     <a href="package-detail.html?id=${c.id}" class="pkg-item" style="border-radius:16px;overflow:hidden;text-decoration:none;display:block;box-shadow:0 4px 20px rgba(0,0,0,0.15);">
       <!-- ★ 썸네일: height 완전 고정, 내부 overflow 차단 -->
       <div style="background:linear-gradient(135deg,${c.color1||'#054535'},${c.color2||'#1D9E75'});position:relative;height:200px;overflow:hidden;">
+        ${c.heroImg ? `<div style="position:absolute;inset:0;background-image:url(${c.heroImg});background-size:cover;background-position:center;opacity:0.55;"></div>` : ''}
         <!-- 왼쪽 강조 라인 -->
         <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,rgba(255,255,255,0.5),rgba(255,255,255,0.1));"></div>
         <!-- 배경 원 장식 -->
