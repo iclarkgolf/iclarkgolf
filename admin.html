@@ -927,7 +927,12 @@ body { background:#f4faf7; padding-bottom:40px; }
               </div>
             </div>
           </div>
-          <!-- 미리보기 -->
+          <!-- 썸네일 대표 사진 URL -->
+          <div>
+            <label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">🖼 썸네일 대표 사진 URL</label>
+            <input id="ce-hero-img-input" type="text" placeholder="https://i.ibb.co/... 사진 URL 입력" style="width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box;" oninput="document.getElementById('ce-hero-img').value=this.value; updateCeHeroPreview();">
+            <div id="ce-hero-preview" style="margin-top:8px;width:100%;height:120px;border-radius:8px;background:#f4f4f5;background-size:cover;background-position:center;border:1.5px solid #e5e7eb;display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:12px;">사진 URL 입력 시 미리보기</div>
+          </div>
           <div id="ce-preview" style="border-radius:12px;padding:20px;background:linear-gradient(135deg,#054535,#1D9E75);color:#fff;margin-top:4px;min-height:80px;position:relative;">
             <div id="ce-prev-tag" style="font-size:11px;color:rgba(255,255,255,0.7);margin-bottom:6px;"></div>
             <div id="ce-prev-title" style="font-size:28px;font-weight:800;color:#fff;line-height:1;"></div>
@@ -1417,7 +1422,8 @@ function openCardEditor(cardId) {
         document.getElementById('ce-color2-hex').value = c.color2 || '#1D9E75';
         document.getElementById('ce-editor').innerHTML = c.content || '';
         document.getElementById('ce-hero-img').value = c.heroImg || '';
-        updateCePreview();
+        document.getElementById('ce-hero-img-input').value = c.heroImg || '';
+        updateCeHeroPreview();
       }
     } catch(e) { console.error(e); }
   });
@@ -1426,6 +1432,20 @@ function openCardEditor(cardId) {
 function closeCardEditor() {
   document.getElementById('card-editor-modal').style.display = 'none';
   document.body.style.overflow = '';
+}
+
+function updateCeHeroPreview() {
+  const url = document.getElementById('ce-hero-img-input').value.trim();
+  const prev = document.getElementById('ce-hero-preview');
+  if (url) {
+    prev.style.backgroundImage = `url(${url})`;
+    prev.style.backgroundSize = 'cover';
+    prev.style.backgroundPosition = 'center';
+    prev.textContent = '';
+  } else {
+    prev.style.backgroundImage = '';
+    prev.textContent = '사진 URL 입력 시 미리보기';
+  }
 }
 
 function updateCePreview() {
