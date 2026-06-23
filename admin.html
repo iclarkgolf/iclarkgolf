@@ -1420,7 +1420,7 @@ function openCardEditor(cardId) {
         document.getElementById('ce-color1-hex').value = c.color1 || '#054535';
         document.getElementById('ce-color2').value = c.color2 || '#1D9E75';
         document.getElementById('ce-color2-hex').value = c.color2 || '#1D9E75';
-        document.getElementById('ce-editor').innerHTML = c.content || '';
+        document.getElementById('ce-editor').innerHTML = c.freeContent || c.content || '';
         document.getElementById('ce-hero-img').value = c.heroImg || '';
         document.getElementById('ce-hero-img-input').value = c.heroImg || '';
         updateCeHeroPreview();
@@ -1488,7 +1488,7 @@ async function saveCard() {
     btn: document.getElementById('ce-btn').value.trim(),
     color1: document.getElementById('ce-color1').value,
     color2: document.getElementById('ce-color2').value,
-    content: document.getElementById('ce-editor').innerHTML,
+    freeContent: document.getElementById('ce-editor').innerHTML,
     updatedAt: new Date().toISOString(),
   };
   // heroImg가 있을 때만 포함 (빈값이면 Firebase 기존값 보존)
