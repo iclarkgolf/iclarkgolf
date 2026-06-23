@@ -468,32 +468,64 @@ const DEFAULT = {
   }
 };
 
-/* ── 데이터 로드 — localStorage 우선, 없으면 기본값 ── */
+/* ── 데이터 로드 — Firebase 우선, 없으면 localStorage, 없으면 기본값 ── */
 if (params.get('reset') === '1') { localStorage.removeItem('pkg_' + cardId); }
-const savedData = localStorage.getItem('pkg_' + cardId);
 const def = DEFAULT[cardId] || {};
-const saved = savedData ? JSON.parse(savedData) : {};
-// ── 병합 헬퍼: saved 값이 실제로 존재(null/undefined 아님)할 때만 우선 적용
+
+// ── 병합 헬퍼: 값이 실제로 존재하고 빈 문자열이 아닐 때만 우선 적용
 function pick(savedVal, defVal, fallback) {
-  if (savedVal !== undefined && savedVal !== null) return savedVal;
-  if (defVal   !== undefined && defVal   !== null) return defVal;
+  if (savedVal !== undefined && savedVal !== null && savedVal !== '') return savedVal;
+  if (defVal   !== undefined && defVal   !== null && defVal   !== '') return defVal;
   return fallback !== undefined ? fallback : '';
 }
-let D = {
-  ...def,
-  ...saved,
-  tag:     pick(saved.tag,     def.tag,     ''),
-  titleEn: pick(saved.titleEn, def.titleEn, ''),
-  sub1:    pick(saved.sub1,    def.sub1,    ''),
-  sub2:    pick(saved.sub2,    def.sub2,    ''),
-  copy:    pick(saved.copy,    def.copy,    ''),
-  price:   pick(saved.price,   def.price,   ''),
-  priceUnit: pick(saved.priceUnit, def.priceUnit, ''),
-  heroImg: pick(saved.heroImg, def.heroImg, ''),
-  color1:  pick(saved.color1,  def.color1,  '#054535'),
-  color2:  pick(saved.color2,  def.color2,  '#1D9E75'),
-};
-window.addEventListener('DOMContentLoaded', render);
+
+let D = { ...def };
+
+function mergeData(fireData) {
+  const fd = fireData || {};
+  D = {
+    ...def,
+    ...fd,
+    tag:      pick(fd.tag,      def.tag,      ''),
+    titleEn:  pick(fd.titleEn,  def.titleEn,  ''),
+    sub1:     pick(fd.sub1,     def.sub1,     ''),
+    sub2:     pick(fd.sub2,     def.sub2,     ''),
+    copy:     pick(fd.copy,     def.copy,     ''),
+    price:    pick(fd.price,    def.price,    ''),
+    priceUnit:pick(fd.priceUnit,def.priceUnit,''),
+    heroImg:  pick(fd.heroImg,  def.heroImg,  ''),
+    color1:   pick(fd.color1,   def.color1,   '#054535'),
+    color2:   pick(fd.color2,   def.color2,   '#1D9E75'),
+    content:  fd.content || def.content || '',
+  };
+}
+
+// 즉시 localStorage로 1차 렌더 (빠른 표시)
+const localRaw = localStorage.getItem('pkg_' + cardId);
+const localData = localRaw ? JSON.parse(localRaw) : {};
+mergeData(localData);
+
+window.addEventListener('DOMContentLoaded', async () => {
+  render();
+  // Firebase에서 최신 데이터 가져와 재렌더 (항상 Firebase 우선)
+  try {
+    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+    const app = getApps().length ? getApps()[0] : initializeApp(cfg);
+    const db = getFirestore(app);
+    const snap = await getDoc(doc(db, 'package_cards', cardId));
+    if (snap.exists()) {
+      const fireData = snap.data();
+      mergeData(fireData);
+      // Firebase 데이터로 localStorage 갱신
+      localStorage.setItem('pkg_' + cardId, JSON.stringify(fireData));
+      render(); // Firebase 데이터로 재렌더
+    }
+  } catch(e) {
+    console.warn('Firebase 로드 실패, localStorage 사용:', e);
+  }
+});
 
 /* ── 렌더링 ── */
 function render() {
