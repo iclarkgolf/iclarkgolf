@@ -941,7 +941,7 @@ function renderCards(cards) {
         <div style="position:absolute;right:-14px;top:-14px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,0.07);"></div>
         <div style="position:absolute;right:12px;top:12px;width:55px;height:55px;border-radius:50%;background:rgba(255,255,255,0.1);"></div>
         <!-- 태그 -->
-        <div style="position:absolute;top:14px;left:14px;right:14px;font-size:9px;color:rgba(255,255,255,0.65);letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${c.tag||''}</div>
+        <div style="position:absolute;top:14px;left:14px;right:14px;font-size:11px;color:rgba(255,255,255,0.65);letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${c.tag||''}</div>
         <!-- 타이틀 (Bebas Neue) -->
         <div style="position:absolute;top:30px;left:14px;right:14px;font-family:'Bebas Neue',sans-serif;font-size:34px;color:#fff;line-height:.9;letter-spacing:.02em;text-shadow:0 2px 10px rgba(0,0,0,0.2);overflow:hidden;max-height:38px;">${c.titleEn||''}</div>
         <!-- sub1 · sub2 -->
@@ -951,15 +951,15 @@ function renderCards(cards) {
           <span style="font-size:13px;font-weight:300;color:rgba(255,255,255,0.85);white-space:nowrap;">${c.sub2||''}</span>
         </div>
         <!-- copy 텍스트 -->
-        <div style="position:absolute;top:104px;left:14px;right:14px;bottom:10px;font-size:10px;color:rgba(255,255,255,0.7);line-height:1.7;border-left:2px solid rgba(255,255,255,0.3);padding-left:9px;overflow:hidden;">${(c.copy||'').replace(/\n/g,'<br>')}</div>
+        <div style="position:absolute;top:104px;left:14px;right:14px;bottom:10px;font-size:12px;color:rgba(255,255,255,0.7);line-height:1.7;border-left:2px solid rgba(255,255,255,0.3);padding-left:9px;overflow:hidden;">${(c.copy||'').replace(/\n/g,'<br>')}</div>
       </div>
       <!-- 하단 가격 -->
       <div style="background:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
         <div>
-          <div style="font-size:9px;color:#9ca3af;margin-bottom:1px;">1인 기준</div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#18181b;line-height:1;">${c.price||'—'}<span style="font-size:10px;font-weight:400;color:#9ca3af;"> ${c.priceUnit||''}</span></div>
+          <div style="font-size:11px;color:#9ca3af;margin-bottom:1px;">1인 기준</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#18181b;line-height:1;">${c.price||'—'}<span style="font-size:12px;font-weight:400;color:#9ca3af;"> ${c.priceUnit||''}</span></div>
         </div>
-        <div style="background:#1b4332;color:#fff;padding:8px 14px;border-radius:8px;font-size:10px;font-weight:700;white-space:nowrap;">${c.btn||'보기'} →</div>
+        <div style="background:#1b4332;color:#fff;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;white-space:nowrap;">${c.btn||'보기'} →</div>
       </div>
     </a>
   `).join('');
