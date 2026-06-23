@@ -361,7 +361,13 @@ const cardId   = params.get('id') || 'card1';
 /* ── 카드 데이터 (Firebase 없음 — 직접 수정) ── */
 const DEFAULT = {
   card1: {
-    heroImg: 'https://i.ibb.co/XxwyYydt/hero-bg.jpg',
+    tag:'먹 · 자 · 골',
+    titleEn:'PRADERA',
+    sub1:'로컬숙소', sub2:'라이프',
+    copy:'로컬 숙소에서\n먹고 · 자고 · 골프만\n나 홀로 전지훈련을 오픈합니다',
+    price:'$99', priceUnit:'/ day',
+    color1:'#054535', color2:'#1D9E75',
+    heroImg: 'https://i.ibb.co/wvSw8Dw/slide-01.jpg',
     accomImgs: ['https://i.ibb.co/TBMBn84y/slide-01.jpg','https://i.ibb.co/C59vCmfN/slide-02.jpg','https://i.ibb.co/YBQkhZNh/slide-06.jpg'],
     statMinDays:'5일', statPax:'1인',
     schedule:[
@@ -383,7 +389,13 @@ const DEFAULT = {
     freeContent:'<h2>나 홀로 전지훈련이란?</h2><p>혼자서 필리핀 클락으로 떠나는 골프 집중 훈련 프로그램입니다. 현지 티칭 프로가 1:1로 함께하며, 아침에는 레슨, 오후에는 라운드로 하루를 꽉 채웁니다.</p><hr><h3>🌟 이런 분께 추천해요</h3><p>✅ 골프을 배울 분<br>✅ 단기간 원하는 목표를 달성 할 분<br>✅ 본인만의 루틴과 스윙을 안착시킬 분<br>✅ 구력도 많고 의심도 많고 인정하고 싶지 않은 부분도 많은 분<br>✅ 프로 테스트, 생활스포츠 자격증을 목적으로 훈련 할 분<br>✅ 삶에 지쳐 골프하며 로컬 체험하며 힐링과 휴식을 할 분<br>✅ 엄마와 아이. 엄마와 아이 골프 하며 영어 배우기 할 분</p><hr><p style="text-align:center;margin-top:16px;"><a href="https://cafe.naver.com/polojang/8188" target="_blank" style="color:#1D9E75;font-weight:700;text-decoration:underline;">📷 실제 후기·사진 더 보기 (네이버 카페)</a></p>'
   },
   card2: {
-    heroImg: '',
+    tag:'힐링 친목 / 럭셔리 골프',
+    titleEn:'PRADERA',
+    sub1:'풀 빌라', sub2:'라이프',
+    copy:'골프와 힐링을 동시에\n4인 이상 풀빌라 단독 사용',
+    price:'가격 문의', priceUnit:'',
+    color1:'#72243E', color2:'#D4537E',
+    heroImg: 'https://i.ibb.co/RpFJNbk8/slide-f07.jpg',
     accomImgs: [],
     statMinDays:'5일', statPax:'1인',
     schedule:[
@@ -430,7 +442,13 @@ const DEFAULT = {
     freeContent:'<h2>단기 집중 전지훈련이란?</h2><p>4박 5일 · 총 90홀 · 프라데라 베르데에서 진행되는 <strong>최저 시간 최고 효율</strong> 골프 전지훈련입니다.<br>새벽에 도착해서 당일 바로 훈련을 시작하고, 매일 27홀 + 연습장 레슨으로 하루를 꽉 채웁니다.</p><hr><h3>🌟 이런 분께 추천해요</h3><p>✅ 시간이 없어서 짧게 와서 확실하게 치고 싶은 분<br>✅ 스윙 교정을 단기간에 끝내고 싶은 분<br>✅ 필드 감각을 빠르게 되살리고 싶은 분<br>✅ 라운드 수를 최대한 많이 치고 싶은 분<br>✅ 혼자 집중 훈련하고 싶은 분</p><hr><p style="text-align:center;margin-top:16px;"><a href="https://cafe.naver.com/polojang" target="_blank" style="color:#1D9E75;font-weight:700;text-decoration:underline;">📷 실제 후기·사진 더 보기 (네이버 카페)</a></p>'
   },
   card4: {
-    heroImg: '',
+    tag:'내 마음 가는 대로',
+    titleEn:'CLARK GOLF',
+    sub1:'맘대로', sub2:'선택하기',
+    copy:'클락의 골프 모든 것을\n골프장 · 숙소 · 레슨 · 캐디\n직접 골라보세요',
+    price:'내 견적 만들기', priceUnit:'',
+    color1:'#1a1a2e', color2:'#8B5CF6',
+    heroImg: 'https://i.ibb.co/hJnKBv71/slide-p05.jpg',
     accomImgs: [],
     statMinDays:'1일', statPax:'1인~',
     schedule:[
@@ -455,16 +473,25 @@ if (params.get('reset') === '1') { localStorage.removeItem('pkg_' + cardId); }
 const savedData = localStorage.getItem('pkg_' + cardId);
 const def = DEFAULT[cardId] || {};
 const saved = savedData ? JSON.parse(savedData) : {};
+// ── 병합 헬퍼: saved 값이 실제로 존재(null/undefined 아님)할 때만 우선 적용
+function pick(savedVal, defVal, fallback) {
+  if (savedVal !== undefined && savedVal !== null) return savedVal;
+  if (defVal   !== undefined && defVal   !== null) return defVal;
+  return fallback !== undefined ? fallback : '';
+}
 let D = {
   ...def,
   ...saved,
-  tag:     saved.tag     || def.tag     || '',
-  titleEn: saved.titleEn || def.titleEn || '',
-  sub1:    saved.sub1    || def.sub1    || '',
-  sub2:    saved.sub2    || def.sub2    || '',
-  heroImg: saved.heroImg || def.heroImg || '',
-  color1:  saved.color1  || def.color1  || '#054535',
-  color2:  saved.color2  || def.color2  || '#1D9E75',
+  tag:     pick(saved.tag,     def.tag,     ''),
+  titleEn: pick(saved.titleEn, def.titleEn, ''),
+  sub1:    pick(saved.sub1,    def.sub1,    ''),
+  sub2:    pick(saved.sub2,    def.sub2,    ''),
+  copy:    pick(saved.copy,    def.copy,    ''),
+  price:   pick(saved.price,   def.price,   ''),
+  priceUnit: pick(saved.priceUnit, def.priceUnit, ''),
+  heroImg: pick(saved.heroImg, def.heroImg, ''),
+  color1:  pick(saved.color1,  def.color1,  '#054535'),
+  color2:  pick(saved.color2,  def.color2,  '#1D9E75'),
 };
 window.addEventListener('DOMContentLoaded', render);
 
@@ -950,6 +977,10 @@ window.saveAll = async function() {
   // 히어로 위치/밝기
   D.heroPos     = document.getElementById('heroPos').value;
   D.heroOpacity = document.getElementById('heroOpacity').value / 100;
+
+  // 히어로 텍스트 & 색상 — D에서 그대로 보존 (편집 중 바뀐 값 유지)
+  // tag, titleEn, sub1, sub2, copy, color1, color2, heroImg, price, priceUnit 은
+  // D 객체에 이미 최신값이 들어있으므로 별도 수집 불필요 (replaceHeroImg 등이 D에 직접 씀)
 
   try {
     localStorage.setItem('pkg_' + cardId, JSON.stringify(D));
