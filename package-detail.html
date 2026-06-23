@@ -497,6 +497,8 @@ window.addEventListener('DOMContentLoaded', render);
 
 /* ── 렌더링 ── */
 function render() {
+  // 히어로 섹션 즉시 표시
+  document.getElementById('heroSection').style.display = 'flex';
   // 히어로
   const bg = document.getElementById('heroBg');
   bg.style.background = `linear-gradient(135deg,${D.color1||'#054535'},${D.color2||'#1D9E75'})`;
