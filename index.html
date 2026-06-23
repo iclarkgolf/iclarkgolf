@@ -970,7 +970,7 @@ try {
   let cards = snap.docs.map(d => {
     const fireData = { id: d.id, ...d.data() };
     const def = DEFAULT_CARDS.find(c => c.id === d.id) || {};
-    return { ...def, ...fireData, heroImg: def.heroImg || fireData.heroImg || '' };
+    return { ...def, ...fireData, heroImg: fireData.heroImg || def.heroImg || '' };
   });
   if (cards.length === 0) cards = DEFAULT_CARDS;
   cards.sort((a,b) => (a.order||0) - (b.order||0));
