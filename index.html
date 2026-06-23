@@ -965,12 +965,30 @@ function renderCards(cards) {
   `).join('');
 }
 
+function safeVal(fireVal, defVal) {
+  // Firebase 값이 존재하고 빈 문자열이 아닐 때만 사용, 아니면 DEFAULT 사용
+  return (fireVal !== undefined && fireVal !== null && fireVal !== '') ? fireVal : (defVal || '');
+}
 try {
   const snap = await getDocs(collection(db, 'package_cards'));
   let cards = snap.docs.map(d => {
     const fireData = { id: d.id, ...d.data() };
     const def = DEFAULT_CARDS.find(c => c.id === d.id) || {};
-    return { ...def, ...fireData, heroImg: (fireData.heroImg && fireData.heroImg.trim()) ? fireData.heroImg : (def.heroImg || '') };
+    return {
+      ...def,
+      ...fireData,
+      // 핵심 필드는 빈값이면 반드시 DEFAULT로 fallback
+      heroImg: safeVal(fireData.heroImg, def.heroImg),
+      color1:  safeVal(fireData.color1,  def.color1),
+      color2:  safeVal(fireData.color2,  def.color2),
+      tag:     safeVal(fireData.tag,     def.tag),
+      titleEn: safeVal(fireData.titleEn, def.titleEn),
+      sub1:    safeVal(fireData.sub1,    def.sub1),
+      sub2:    safeVal(fireData.sub2,    def.sub2),
+      copy:    safeVal(fireData.copy,    def.copy),
+      price:   safeVal(fireData.price,   def.price),
+      btn:     safeVal(fireData.btn,     def.btn),
+    };
   });
   if (cards.length === 0) cards = DEFAULT_CARDS;
   cards.sort((a,b) => (a.order||0) - (b.order||0));

@@ -1456,6 +1456,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function saveCard() {
   const cardId = document.getElementById('ce-card-id').value;
   const msg = document.getElementById('ce-msg');
+  const heroImgVal = document.getElementById('ce-hero-img').value.trim();
   const data = {
     tag: document.getElementById('ce-tag').value.trim(),
     titleEn: document.getElementById('ce-title-en').value.trim(),
@@ -1467,18 +1468,21 @@ async function saveCard() {
     btn: document.getElementById('ce-btn').value.trim(),
     color1: document.getElementById('ce-color1').value,
     color2: document.getElementById('ce-color2').value,
-    heroImg: document.getElementById('ce-hero-img').value || '',
     content: document.getElementById('ce-editor').innerHTML,
     updatedAt: new Date().toISOString(),
   };
+  // heroImg가 있을 때만 포함 (빈값이면 Firebase 기존값 보존)
+  if (heroImgVal) data.heroImg = heroImgVal;
+
   try {
     const db = await initCardDB();
-    const { doc, setDoc, addDoc, collection } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const { doc, setDoc, updateDoc, addDoc, collection } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     if (cardId === 'new') {
       const ref = await addDoc(collection(db, 'package_cards'), { ...data, order: Date.now() });
       document.getElementById('ce-card-id').value = ref.id;
     } else {
-      await setDoc(doc(db, 'package_cards', cardId), data, { merge: true });
+      // setDoc 대신 updateDoc 사용 → 없는 필드는 건드리지 않음
+      await updateDoc(doc(db, 'package_cards', cardId), data);
     }
     msg.style.display = 'block';
     msg.style.background = '#f0fdf4';
