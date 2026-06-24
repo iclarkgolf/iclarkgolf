@@ -1,15 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-8S6Z4PD9VZ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-8S6Z4PD9VZ');
-</script>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>필리핀 골프유학, 클락에서 한 아이를 키운 기록 — 검정고시부터 AUF 졸업까지</title>
@@ -94,6 +85,28 @@ article p{font-size:15px;line-height:1.95;color:#2c2c2c;margin-bottom:18px;}
 
 footer{background:var(--dark);color:rgba(255,255,255,0.5);text-align:center;padding:30px;font-size:13px;}
 @media(max-width:600px){.post-hero{padding:70px 20px 40px;}article{padding:40px 16px 60px;}.route-flow{font-size:13px;}}
+
+/* 관련 글 추천 */
+.related-posts-wrap{max-width:900px;margin:0 auto 40px;padding:0 40px;}
+.related-posts-wrap h3{font-size:18px;font-weight:800;color:var(--green);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--gold);}
+.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.rel-card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,0.07);text-decoration:none;transition:transform .2s,box-shadow .2s;display:block;}
+.rel-card:hover{transform:translateY(-4px);box-shadow:0 6px 20px rgba(0,0,0,0.13);}
+.rel-card .rc-tag{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1px;font-family:'Barlow Condensed',sans-serif;margin-bottom:6px;}
+.rel-card .rc-title{font-size:14px;font-weight:700;color:var(--dark);line-height:1.5;}
+.cta-section{max-width:900px;margin:0 auto 40px;padding:0 40px;}
+.cta-box{background:linear-gradient(135deg,var(--green),var(--green-mid));border-radius:16px;padding:32px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.15);}
+.cta-box p{color:rgba(255,255,255,0.85);font-size:15px;margin-bottom:20px;}
+.cta-box a{display:inline-block;background:var(--gold);color:var(--dark);font-weight:800;font-size:15px;padding:14px 32px;border-radius:50px;text-decoration:none;letter-spacing:1px;transition:opacity .2s;}
+.cta-box a:hover{opacity:0.85;}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
+.hamburger span{display:block;width:22px;height:2px;background:#fff;border-radius:2px;}
+.mobile-menu{display:none;position:fixed;top:56px;left:0;right:0;background:rgba(13,31,23,0.97);padding:16px 24px;z-index:99;flex-direction:column;gap:16px;}
+.mobile-menu a{color:rgba(255,255,255,0.85);text-decoration:none;font-size:15px;font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);}
+.mobile-menu.open{display:flex;}
+@media(max-width:768px){.related-posts-wrap,.cta-section{padding:0 16px;}.related-grid{grid-template-columns:1fr;}}
+@media(max-width:480px){.hamburger{display:flex;}.nav-links{display:none !important;}}
+
 </style>
 </head>
 <body>
@@ -226,6 +239,34 @@ footer{background:var(--dark);color:rgba(255,255,255,0.5);text-align:center;padd
   <a href="/blog.html" class="back-btn">← 블로그 목록으로</a>
 
 </article>
+
+
+<!-- 관련 글 추천 -->
+<div class="related-posts-wrap">
+  <h3>📖 함께 읽으면 좋은 글</h3>
+  <div class="related-grid">
+    <a href="/blog-p18.html" class="rel-card">
+      <div class="rc-tag">JUNIOR</div>
+      <div class="rc-title">주니어 골프 전지훈련, 태국 말고 클락으로 — 프라데라 베르데 가이드</div>
+    </a>
+    <a href="/blog-p11.html" class="rel-card">
+      <div class="rc-tag">VISA</div>
+      <div class="rc-title">필리핀 비자 완전 가이드 2026 — 관광·학생·취업·은퇴 비자 총정리</div>
+    </a>
+    <a href="/blog-p24.html" class="rel-card">
+      <div class="rc-tag">STUDY</div>
+      <div class="rc-title">필리핀 어학연수 어학원 고르는 법 — SSP 확인부터 사기 피해 예방까지</div>
+    </a>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-box">
+    <p>클락 골프 여행, 직접 현지에서 운영하는 전문가와 함께하세요.<br>숙소·그린피·캐디 원스톱 패키지를 확인해보세요.</p>
+    <a href="/package-detail.html">⛳ 클락 골프 패키지 보러가기</a>
+  </div>
+</div>
 
 <footer>
   <p>© 2026 iClark Golf — Clark, Pampanga, Philippines</p>
