@@ -297,14 +297,20 @@ window.render = function render(D) {
 
   // 일정
   const sList = document.getElementById('scheduleList');
-  sList.innerHTML = (D.schedule||[]).map(s => `
-    <div class="day-row">
-      <div class="day-num">${s.num||''}</div>
-      <div style="flex:1;">
-        <div class="day-title">${s.title||''}</div>
-        <div class="day-desc">${(s.desc||'').replace(/\n/g,'<br>')}</div>
-      </div>
-    </div>`).join('');
+  if (D.trainingSchedule && D.trainingSchedule.trim()) {
+    sList.innerHTML = D.trainingSchedule;
+  } else if (D.schedule && D.schedule.length > 0) {
+    sList.innerHTML = (D.schedule||[]).map(s => `
+      <div class="day-row">
+        <div class="day-num">${s.num||''}</div>
+        <div style="flex:1;">
+          <div class="day-title">${s.title||''}</div>
+          <div class="day-desc">${(s.desc||'').replace(/\n/g,'<br>')}</div>
+        </div>
+      </div>`).join('');
+  } else {
+    document.getElementById('scheduleSection').style.display = 'none';
+  }
 
   // 포함/불포함
   document.getElementById('inclYes').innerHTML = (D.inclYes||[]).map(t=>`<span>✅ ${t}</span>`).join('');

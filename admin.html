@@ -977,14 +977,48 @@ body { background:#f4faf7; padding-bottom:40px; }
       <!-- 전지훈련 하루 일정표 -->
       <div style="background:#f0f7f4;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #c8edd9;">
         <div style="font-size:13px;font-weight:800;color:#085041;margin-bottom:4px;">📅 전지훈련 하루 일정표</div>
-        <div style="font-size:11px;color:#6b7280;margin-bottom:12px;">일차별 일정을 추가하세요. 예) 1일차 · 오전 레슨 · 09:00 레슨 / 13:00 라운드</div>
-        <div id="ce-schedule-list" style="margin-bottom:10px;"></div>
-        <div style="display:grid;grid-template-columns:60px 1fr 1fr;gap:6px;margin-bottom:6px;">
-          <input id="ce-sch-num" type="text" placeholder="1일차" style="padding:9px 10px;border:1.5px solid #c8edd9;border-radius:8px;font-size:12px;outline:none;font-family:'Nunito',sans-serif;">
-          <input id="ce-sch-title" type="text" placeholder="제목 (예: 오전 레슨)" style="padding:9px 10px;border:1.5px solid #c8edd9;border-radius:8px;font-size:12px;outline:none;font-family:'Nunito',sans-serif;">
-          <input id="ce-sch-desc" type="text" placeholder="내용 (예: 09:00 레슨 / 13:00 라운드)" style="padding:9px 10px;border:1.5px solid #c8edd9;border-radius:8px;font-size:12px;outline:none;font-family:'Nunito',sans-serif;" onkeydown="if(event.key==='Enter'){event.preventDefault();ceAddSchedule();}">
+        <div style="font-size:11px;color:#6b7280;margin-bottom:10px;">블로그처럼 자유롭게 작성하세요 — 글, 강조, 목록, 구분선 모두 가능</div>
+
+        <!-- 툴바 -->
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;padding:10px;background:#fff;border:1px solid #c8edd9;border-radius:8px;">
+          <button onclick="ceFormatSch('h2')" title="큰 제목" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">H2</button>
+          <button onclick="ceFormatSch('h3')" title="중간 제목" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">H3</button>
+          <div style="width:1px;background:#e5e7eb;margin:0 2px;"></div>
+          <button onclick="ceFormatSch('bold')" title="굵게" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:13px;font-weight:900;cursor:pointer;">B</button>
+          <button onclick="ceFormatSch('italic')" title="기울임" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:13px;font-style:italic;cursor:pointer;">I</button>
+          <button onclick="ceFormatSch('underline')" title="밑줄" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:13px;text-decoration:underline;cursor:pointer;">U</button>
+          <button onclick="ceFormatSch('strikeThrough')" title="취소선" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:13px;text-decoration:line-through;cursor:pointer;">S</button>
+          <div style="width:1px;background:#e5e7eb;margin:0 2px;"></div>
+          <button onclick="ceFormatSch('justifyLeft')" title="왼쪽 정렬" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:13px;cursor:pointer;">≡</button>
+          <button onclick="ceFormatSch('justifyCenter')" title="가운데 정렬" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:13px;cursor:pointer;">☰</button>
+          <div style="width:1px;background:#e5e7eb;margin:0 2px;"></div>
+          <button onclick="ceFormatSch('insertUnorderedList')" title="불릿 목록" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;">• 목록</button>
+          <button onclick="ceFormatSch('insertOrderedList')" title="번호 목록" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;">1. 목록</button>
+          <div style="width:1px;background:#e5e7eb;margin:0 2px;"></div>
+          <button onclick="ceFormatSch('hr')" title="구분선" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;">— 구분선</button>
+          <select onchange="ceSchFontSize(this.value);this.value=''" style="padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;background:#f4f4f5;">
+            <option value="">글자 크기</option>
+            <option value="1">아주 작게</option>
+            <option value="2">작게</option>
+            <option value="3">보통</option>
+            <option value="4">크게</option>
+            <option value="5">아주 크게</option>
+          </select>
+          <select onchange="ceSchColor(this.value);this.value=''" style="padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;background:#f4f4f5;">
+            <option value="">글자 색상</option>
+            <option value="#18181b">⬛ 검정</option>
+            <option value="#1D9E75">🟢 초록</option>
+            <option value="#1b4332">🟢 진초록</option>
+            <option value="#2563EB">🔵 파랑</option>
+            <option value="#EF4444">🔴 빨강</option>
+            <option value="#F59E0B">🟡 골드</option>
+          </select>
         </div>
-        <button onclick="ceAddSchedule()" style="padding:9px 16px;background:#1D9E75;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;">+ 일정 추가</button>
+
+        <!-- 에디터 영역 -->
+        <div id="ce-schedule-editor" contenteditable="true"
+          style="min-height:200px;border:1.5px solid #c8edd9;border-radius:8px;padding:16px;font-size:14px;line-height:1.9;font-family:'Noto Sans KR',sans-serif;outline:none;background:#fff;"
+          placeholder="예) 1일차 오전: 08:00 연습장 레슨 / 10:00 티오프"></div>
       </div>
 
       <!-- 포함 / 불포함 -->
@@ -1518,7 +1552,7 @@ function openCardEditor(cardId) {
     document.getElementById('ce-color2-hex').value = '#1D9E75';
     ceRenderImgs('ce-accom-imgs', []);
     ceRenderImgs('ce-training-imgs', []);
-    ceRenderSchedule([]);
+    document.getElementById('ce-schedule-editor').innerHTML = '';
     ceRenderIncl('yes', []);
     ceRenderIncl('no',  []);
     ceRenderPrices([]);
@@ -1554,7 +1588,7 @@ function openCardEditor(cardId) {
         ceRenderImgs('ce-accom-imgs', c.accomImgs || []);
         ceRenderImgs('ce-training-imgs', c.trainingImgs || []);
         // 일정·포함·불포함·가격 렌더링
-        ceRenderSchedule(c.schedule || []);
+        document.getElementById('ce-schedule-editor').innerHTML = c.trainingSchedule || '';
         ceRenderIncl('yes', c.inclYes || []);
         ceRenderIncl('no',  c.inclNo  || []);
         ceRenderPrices(c.prices || []);
@@ -1630,7 +1664,7 @@ async function saveCard() {
     freeContent: document.getElementById('ce-editor').innerHTML,
     accomImgs:    ceGetImgs('ce-accom-imgs'),
     trainingImgs: ceGetImgs('ce-training-imgs'),
-    schedule:     ceGetSchedule(),
+    trainingSchedule: document.getElementById('ce-schedule-editor').innerHTML,
     inclYes:      ceGetIncl('yes'),
     inclNo:       ceGetIncl('no'),
     prices:       ceGetPrices(),
@@ -1681,6 +1715,33 @@ function ceFormat(type) {
   else if (type === 'insertUnorderedList') document.execCommand('insertUnorderedList');
   else if (type === 'insertOrderedList') document.execCommand('insertOrderedList');
   else if (type === 'hr') document.execCommand('insertHTML', false, '<hr style="border:none;border-top:1.5px solid #e5e7eb;margin:16px 0;">');
+}
+
+// 일정표 에디터 툴바 함수
+function ceFormatSch(type) {
+  const editor = document.getElementById('ce-schedule-editor');
+  editor.focus();
+  if (type === 'h2') document.execCommand('formatBlock', false, 'h2');
+  else if (type === 'h3') document.execCommand('formatBlock', false, 'h3');
+  else if (type === 'bold') document.execCommand('bold');
+  else if (type === 'italic') document.execCommand('italic');
+  else if (type === 'underline') document.execCommand('underline');
+  else if (type === 'strikeThrough') document.execCommand('strikeThrough');
+  else if (type === 'justifyLeft') document.execCommand('justifyLeft');
+  else if (type === 'justifyCenter') document.execCommand('justifyCenter');
+  else if (type === 'insertUnorderedList') document.execCommand('insertUnorderedList');
+  else if (type === 'insertOrderedList') document.execCommand('insertOrderedList');
+  else if (type === 'hr') document.execCommand('insertHTML', false, '<hr style="border:none;border-top:1.5px solid #e5e7eb;margin:16px 0;">');
+}
+function ceSchFontSize(size) {
+  if (!size) return;
+  document.getElementById('ce-schedule-editor').focus();
+  document.execCommand('fontSize', false, size);
+}
+function ceSchColor(color) {
+  if (!color) return;
+  document.getElementById('ce-schedule-editor').focus();
+  document.execCommand('foreColor', false, color);
 }
 
 function ceFontSize(size) {
@@ -2330,34 +2391,6 @@ function ceGetImgs(containerId) {
   if (!box || !box.dataset.urls) return [];
   try { return JSON.parse(box.dataset.urls); } catch { return []; }
 }
-
-/* ── 일정표 관리 ── */
-function ceRenderSchedule(list) {
-  const box = document.getElementById('ce-schedule-list');
-  if (!list || list.length === 0) { box.innerHTML = '<div style="font-size:12px;color:#9ca3af;padding:4px 0;">아직 일정이 없습니다</div>'; box.dataset.list = '[]'; return; }
-  box.innerHTML = list.map((s,i) => `
-    <div style="display:flex;align-items:center;gap:8px;background:#fff;border-radius:8px;padding:8px 10px;margin-bottom:6px;border:1px solid #e5e7eb;">
-      <span style="font-size:11px;font-weight:700;color:#1b4332;white-space:nowrap;">${s.num||''}</span>
-      <span style="font-size:12px;font-weight:700;color:#18181b;white-space:nowrap;">${s.title||''}</span>
-      <span style="font-size:12px;color:#6b7280;flex:1;">${s.desc||''}</span>
-      <button onclick="ceDelSchedule(${i})" style="background:none;border:none;color:#dc2626;font-size:16px;cursor:pointer;padding:0 4px;flex-shrink:0;">✕</button>
-    </div>`).join('');
-  box.dataset.list = JSON.stringify(list);
-}
-function ceGetSchedule() { try { return JSON.parse(document.getElementById('ce-schedule-list').dataset.list||'[]'); } catch { return []; } }
-function ceAddSchedule() {
-  const num = document.getElementById('ce-sch-num').value.trim();
-  const title = document.getElementById('ce-sch-title').value.trim();
-  const desc = document.getElementById('ce-sch-desc').value.trim();
-  if (!title) { showToast('제목을 입력해주세요','error'); return; }
-  const list = ceGetSchedule(); list.push({num,title,desc});
-  ceRenderSchedule(list);
-  document.getElementById('ce-sch-num').value = '';
-  document.getElementById('ce-sch-title').value = '';
-  document.getElementById('ce-sch-desc').value = '';
-  document.getElementById('ce-sch-num').focus();
-}
-function ceDelSchedule(i) { const l = ceGetSchedule(); l.splice(i,1); ceRenderSchedule(l); }
 
 /* ── 포함/불포함 관리 ── */
 function ceRenderIncl(type, list) {
