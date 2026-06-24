@@ -231,7 +231,10 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
   <a href="quote.html" class="btn-quote" data-i18n="btn.quote">📋 맞춤 견적</a>
 </div>
 
-<script>
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
 const params = new URLSearchParams(location.search);
 const cardId = params.get('id') || 'card1';
 
@@ -361,13 +364,7 @@ function renderPhotoGrid(containerId, urls) {
   ).join('');
 }
 
-/* ── Firebase는 아래 module 스크립트에서 처리 ── */
-</script>
-
-<script type="module">
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
+/* ── Firebase 로드 및 데이터 패치 ── */
 const cfg = {
   apiKey: "AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU",
   authDomain: "iclarkgolf.firebaseapp.com",
@@ -376,13 +373,10 @@ const cfg = {
 const app = getApps().length ? getApps()[0] : initializeApp(cfg);
 const db  = getFirestore(app);
 
-const params = new URLSearchParams(location.search);
-const cardId = params.get('id') || 'card1';
-
 try {
   const snap = await getDoc(doc(db, 'package_cards', cardId));
   if (snap.exists()) {
-    window.render(snap.data());
+    render(snap.data());
   } else {
     document.getElementById('loading').textContent = '⚠️ 패키지 정보를 찾을 수 없습니다.';
   }
