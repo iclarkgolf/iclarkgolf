@@ -109,6 +109,39 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content
 
 .ad-bottom{max-width:760px;margin:0 auto 40px;padding:0 24px;}
 
+/* 관련 글 추천 */
+.related-posts{max-width:900px;margin:0 auto 40px;padding:0 40px;}
+.related-posts h3{font-size:18px;font-weight:800;color:var(--green);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--gold);}
+.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.related-card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,0.07);text-decoration:none;transition:transform .2s,box-shadow .2s;}
+.related-card:hover{transform:translateY(-4px);box-shadow:0 6px 20px rgba(0,0,0,0.13);}
+.related-card .rc-tag{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1px;font-family:'Barlow Condensed',sans-serif;margin-bottom:6px;}
+.related-card .rc-title{font-size:14px;font-weight:700;color:var(--dark);line-height:1.5;}
+
+/* CTA 버튼 */
+.cta-section{max-width:900px;margin:0 auto 40px;padding:0 40px;}
+.cta-box{background:linear-gradient(135deg,var(--green),var(--green-mid));border-radius:16px;padding:32px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.15);}
+.cta-box p{color:rgba(255,255,255,0.85);font-size:15px;margin-bottom:20px;}
+.cta-box a{display:inline-block;background:var(--gold);color:var(--dark);font-weight:800;font-size:15px;padding:14px 32px;border-radius:50px;text-decoration:none;letter-spacing:1px;transition:opacity .2s;}
+.cta-box a:hover{opacity:0.85;}
+
+/* 햄버거 메뉴 */
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
+.hamburger span{display:block;width:22px;height:2px;background:#fff;border-radius:2px;transition:.3s;}
+.mobile-menu{display:none;position:fixed;top:56px;left:0;right:0;background:rgba(13,31,23,0.97);padding:16px 24px;z-index:99;flex-direction:column;gap:16px;}
+.mobile-menu a{color:rgba(255,255,255,0.85);text-decoration:none;font-size:15px;font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);}
+.mobile-menu.open{display:flex;}
+
+@media(max-width:768px){
+  .related-posts{padding:0 16px;}
+  .related-grid{grid-template-columns:1fr;}
+  .cta-section{padding:0 16px;}
+}
+@media(max-width:480px){
+  .hamburger{display:flex;}
+  .nav-links{display:none !important;}
+}
+
 footer{background:var(--dark);color:rgba(255,255,255,0.5);text-align:center;padding:24px;font-size:13px;}
 footer a{color:var(--gold);text-decoration:none;}
 
@@ -149,7 +182,17 @@ footer a{color:var(--gold);text-decoration:none;}
     <a href="/about.html">소개</a>
     <a href="/blog.html" class="active">블로그</a>
   </div>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
 </nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="/index.html">홈</a>
+  <a href="/about.html">소개</a>
+  <a href="/blog.html">블로그</a>
+  <a href="/package-detail.html">골프 패키지</a>
+</div>
+<script>function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}</script>
 
 <div class="post-hero">
   <div class="post-category">필리핀 생활</div>
@@ -388,8 +431,6 @@ footer a{color:var(--gold);text-decoration:none;}
 
   <p>클락의 날씨는 한국 골퍼들에게 생각보다 훨씬 우호적입니다. 어느 달을 선택하든, 제대로 준비하고 오신다면 충분히 즐거운 골프 여행이 됩니다. 날씨 때문에 망설이고 계셨다면, 이제 결정하셔도 됩니다.</p>
 
-  <p>클락의 날씨는 한국 골퍼들에게 생각보다 훨씬 우호적입니다. 어느 달을 선택하든, 제대로 준비하고 오신다면 충분히 즐거운 골프 여행이 됩니다. 날씨 때문에 망설이고 계셨다면, 이제 결정하셔도 됩니다.</p>
-
   <div class="post-tags">
     <span>필리핀클락날씨</span><span>클락골프날씨</span><span>필리핀우기골프</span>
     <span>클락건기</span><span>팜팡가날씨</span><span>프라데라날씨</span>
@@ -401,6 +442,33 @@ footer a{color:var(--gold);text-decoration:none;}
   <a href="/blog.html" class="back-btn">← 블로그 목록으로</a>
 
 </article>
+
+<!-- 관련 글 추천 -->
+<div class="related-posts">
+  <h3>📖 함께 읽으면 좋은 글</h3>
+  <div class="related-grid">
+    <a href="/blog-p11.html" class="related-card">
+      <div class="rc-tag">TRAVEL TIP</div>
+      <div class="rc-title">클락 골프장 그린피 완전 비교 — 프라데라 vs 미모사 vs 클락선샤인</div>
+    </a>
+    <a href="/blog-p10.html" class="related-card">
+      <div class="rc-tag">GUIDE</div>
+      <div class="rc-title">클락 골프 전지훈련 준비물 체크리스트 — 빠뜨리면 후회하는 것들</div>
+    </a>
+    <a href="/blog-p7.html" class="related-card">
+      <div class="rc-tag">COURSE</div>
+      <div class="rc-title">프라데라 베르데 골프장 완전 정복 — 코스 공략법과 현지 꿀팁</div>
+    </a>
+  </div>
+</div>
+
+<!-- CTA 버튼 -->
+<div class="cta-section">
+  <div class="cta-box">
+    <p>클락 골프 여행, 직접 현지에서 운영하는 전문가와 함께하세요.<br>숙소·그린피·캐디 원스톱 패키지를 확인해보세요.</p>
+    <a href="/package-detail.html">⛳ 클락 골프 패키지 보러가기</a>
+  </div>
+</div>
 
 <div class="ad-bottom">
   <div class="ad-box" style="background:#fff;border:1px dashed #ddd;border-radius:8px;padding:20px;color:#aaa;font-size:13px;text-align:center;">하단 광고 영역 — 애드센스 승인 후 자동 표시</div>
