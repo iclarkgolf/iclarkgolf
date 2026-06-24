@@ -483,20 +483,30 @@ let D = { ...def };
 
 function mergeData(fireData) {
   const fd = fireData || {};
+  // 이미지 배열: fd에 배열이 있으면 fd 우선, 없으면 def 사용 (빈 배열 []은 "있음"으로 처리)
+  const resolveImgs = (fdArr, defArr) => Array.isArray(fdArr) ? fdArr : (defArr || []);
   D = {
     ...def,
     ...fd,
-    tag:      pick(fd.tag,      def.tag,      ''),
-    titleEn:  pick(fd.titleEn,  def.titleEn,  ''),
-    sub1:     pick(fd.sub1,     def.sub1,     ''),
-    sub2:     pick(fd.sub2,     def.sub2,     ''),
-    copy:     pick(fd.copy,     def.copy,     ''),
-    price:    pick(fd.price,    def.price,    ''),
-    priceUnit:pick(fd.priceUnit,def.priceUnit,''),
-    heroImg:  pick(fd.heroImg,  def.heroImg,  ''),
-    color1:   pick(fd.color1,   def.color1,   '#054535'),
-    color2:   pick(fd.color2,   def.color2,   '#1D9E75'),
-    content:  fd.content || def.content || '',
+    tag:         pick(fd.tag,         def.tag,         ''),
+    titleEn:     pick(fd.titleEn,     def.titleEn,     ''),
+    sub1:        pick(fd.sub1,        def.sub1,        ''),
+    sub2:        pick(fd.sub2,        def.sub2,        ''),
+    copy:        pick(fd.copy,        def.copy,        ''),
+    price:       pick(fd.price,       def.price,       ''),
+    priceUnit:   pick(fd.priceUnit,   def.priceUnit,   ''),
+    heroImg:     pick(fd.heroImg,     def.heroImg,     ''),
+    color1:      pick(fd.color1,      def.color1,      '#054535'),
+    color2:      pick(fd.color2,      def.color2,      '#1D9E75'),
+    content:     fd.content     || def.content     || '',
+    // 사진 배열 — fd에 저장된 값 우선, 없으면 def 기본값
+    accomImgs:    resolveImgs(fd.accomImgs,    def.accomImgs),
+    trainingImgs: resolveImgs(fd.trainingImgs, def.trainingImgs),
+    // 그 외 배열 데이터도 보존
+    schedule:    Array.isArray(fd.schedule)  ? fd.schedule  : (def.schedule  || []),
+    inclYes:     Array.isArray(fd.inclYes)   ? fd.inclYes   : (def.inclYes   || []),
+    inclNo:      Array.isArray(fd.inclNo)    ? fd.inclNo    : (def.inclNo    || []),
+    prices:      Array.isArray(fd.prices)    ? fd.prices    : (def.prices    || []),
   };
 }
 
@@ -517,9 +527,19 @@ window.addEventListener('DOMContentLoaded', async () => {
     const snap = await getDoc(doc(db, 'package_cards', cardId));
     if (snap.exists()) {
       const fireData = snap.data();
-      mergeData(fireData);
-      // Firebase 데이터로 localStorage 갱신
-      localStorage.setItem('pkg_' + cardId, JSON.stringify(fireData));
+      // localStorage의 사진 배열을 Firebase 데이터와 병합 (Firebase 우선, 없으면 localStorage 보존)
+      const localRawNow = localStorage.getItem('pkg_' + cardId);
+      const localNow = localRawNow ? JSON.parse(localRawNow) : {};
+      const merged = { ...localNow, ...fireData };
+      // accomImgs/trainingImgs: Firebase에 있으면 Firebase, 없으면 localStorage 보존
+      if (!Array.isArray(fireData.accomImgs) && Array.isArray(localNow.accomImgs)) {
+        merged.accomImgs = localNow.accomImgs;
+      }
+      if (!Array.isArray(fireData.trainingImgs) && Array.isArray(localNow.trainingImgs)) {
+        merged.trainingImgs = localNow.trainingImgs;
+      }
+      mergeData(merged);
+      localStorage.setItem('pkg_' + cardId, JSON.stringify(merged));
       render(); // Firebase 데이터로 재렌더
     }
   } catch(e) {
@@ -1027,17 +1047,35 @@ window.saveAll = async function() {
       const app = getApps().find(a=>a.name==='pkg-save') || initializeApp(cfg,'pkg-save');
       const db = getFirestore(app);
       await setDoc(doc(db, 'package_cards', cardId), {
-        heroImg: D.heroImg || '',
-        tag: D.tag || '',
-        titleEn: D.titleEn || '',
-        sub1: D.sub1 || '',
-        sub2: D.sub2 || '',
-        copy: D.copy || '',
-        price: D.price || '',
-        priceUnit: D.priceUnit || '',
-        color1: D.color1 || '',
-        color2: D.color2 || '',
-        updatedAt: new Date().toISOString()
+        heroImg:      D.heroImg      || '',
+        tag:          D.tag          || '',
+        titleEn:      D.titleEn      || '',
+        sub1:         D.sub1         || '',
+        sub2:         D.sub2         || '',
+        copy:         D.copy         || '',
+        price:        D.price        || '',
+        priceUnit:    D.priceUnit    || '',
+        color1:       D.color1       || '',
+        color2:       D.color2       || '',
+        statMinDays:  D.statMinDays  || '',
+        statPax:      D.statPax      || '',
+        accomName:    D.accomName    || '',
+        accomDesc:    D.accomDesc    || '',
+        trainingName: D.trainingName || '',
+        trainingDesc: D.trainingDesc || '',
+        proName:      D.proName      || '',
+        proCerts:     D.proCerts     || '',
+        proImg:       D.proImg       || '',
+        freeContent:  D.freeContent  || '',
+        accomImgs:    D.accomImgs    || [],
+        trainingImgs: D.trainingImgs || [],
+        schedule:     D.schedule     || [],
+        inclYes:      D.inclYes      || [],
+        inclNo:       D.inclNo       || [],
+        prices:       D.prices       || [],
+        heroPos:      D.heroPos      || 45,
+        heroOpacity:  D.heroOpacity  || 0.9,
+        updatedAt:    new Date().toISOString()
       }, { merge: true });
     } catch(fe) {
       console.warn('Firebase 저장 실패(localStorage는 성공):', fe);
