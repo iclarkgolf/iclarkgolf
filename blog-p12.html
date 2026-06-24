@@ -1,15 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-8S6Z4PD9VZ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-8S6Z4PD9VZ');
-</script>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>골프 100타 벽 깨는 법 — 연습장·스크린의 한계와 실전 훈련이 답인 이유</title>
@@ -123,6 +114,30 @@ footer{background:var(--dark);color:rgba(255,255,255,0.5);text-align:center;padd
   .number-cards{grid-template-columns:1fr 1fr;}
   .stage-box{flex-direction:column;gap:12px;}
 }
+
+/* 관련 글 추천 */
+.related-posts-wrap{max-width:900px;margin:0 auto 40px;padding:0 40px;}
+.related-posts-wrap h3{font-size:18px;font-weight:800;color:var(--green);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--gold);}
+.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.rel-card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,0.07);text-decoration:none;transition:transform .2s,box-shadow .2s;display:block;}
+.rel-card:hover{transform:translateY(-4px);box-shadow:0 6px 20px rgba(0,0,0,0.13);}
+.rel-card .rc-tag{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1px;font-family:'Barlow Condensed',sans-serif;margin-bottom:6px;}
+.rel-card .rc-title{font-size:14px;font-weight:700;color:var(--dark);line-height:1.5;}
+/* CTA 버튼 */
+.cta-section{max-width:900px;margin:0 auto 40px;padding:0 40px;}
+.cta-box{background:linear-gradient(135deg,var(--green),var(--green-mid));border-radius:16px;padding:32px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.15);}
+.cta-box p{color:rgba(255,255,255,0.85);font-size:15px;margin-bottom:20px;}
+.cta-box a{display:inline-block;background:var(--gold);color:var(--dark);font-weight:800;font-size:15px;padding:14px 32px;border-radius:50px;text-decoration:none;letter-spacing:1px;transition:opacity .2s;}
+.cta-box a:hover{opacity:0.85;}
+/* 햄버거 메뉴 */
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;}
+.hamburger span{display:block;width:22px;height:2px;background:#fff;border-radius:2px;}
+.mobile-menu{display:none;position:fixed;top:56px;left:0;right:0;background:rgba(13,31,23,0.97);padding:16px 24px;z-index:99;flex-direction:column;gap:16px;}
+.mobile-menu a{color:rgba(255,255,255,0.85);text-decoration:none;font-size:15px;font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);}
+.mobile-menu.open{display:flex;}
+@media(max-width:768px){.related-posts-wrap,.cta-section{padding:0 16px;}.related-grid{grid-template-columns:1fr;}}
+@media(max-width:480px){.hamburger{display:flex;}.nav-links{display:none !important;}}
+
 </style>
 </head>
 <body>
@@ -343,6 +358,34 @@ footer{background:var(--dark);color:rgba(255,255,255,0.5);text-align:center;padd
   <a href="/blog.html" class="back-btn">← 블로그 목록으로</a>
 
 </article>
+
+
+<!-- 관련 글 추천 -->
+<div class="related-posts-wrap">
+  <h3>📖 함께 읽으면 좋은 글</h3>
+  <div class="related-grid">
+    <a href="/blog-p10.html" class="rel-card">
+      <div class="rc-tag">BEGINNER</div>
+      <div class="rc-title">골프 입문자가 가장 빨리 느는 방법 — 스크린 말고 실전으로</div>
+    </a>
+    <a href="/blog-p5.html" class="rel-card">
+      <div class="rc-tag">COURSE</div>
+      <div class="rc-title">골퍼의 한(恨)을 풀어드립니다 — 프라데라 7일, 당신의 골프가 달라집니다</div>
+    </a>
+    <a href="/blog-p23.html" class="rel-card">
+      <div class="rc-tag">WHY</div>
+      <div class="rc-title">골프 전지훈련, 왜 필리핀 클락인가 — 현지 프로가 말하는 진실</div>
+    </a>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-box">
+    <p>클락 골프 여행, 직접 현지에서 운영하는 전문가와 함께하세요.<br>숙소·그린피·캐디 원스톱 패키지를 확인해보세요.</p>
+    <a href="/package-detail.html">⛳ 클락 골프 패키지 보러가기</a>
+  </div>
+</div>
 
 <footer>
   <p>© 2026 iClark Golf — Clark, Pampanga, Philippines</p>
