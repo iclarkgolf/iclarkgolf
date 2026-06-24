@@ -1542,6 +1542,14 @@ function openCardEditor(cardId) {
   document.getElementById('ce-card-id').value = cardId;
   document.getElementById('ce-msg').style.display = 'none';
 
+  // contenteditable 에디터 렌더링 보장
+  setTimeout(() => {
+    const ed1 = document.getElementById('ce-editor');
+    const ed2 = document.getElementById('ce-schedule-editor');
+    if (ed1) { ed1.style.display = 'none'; ed1.offsetHeight; ed1.style.display = ''; }
+    if (ed2) { ed2.style.display = 'none'; ed2.offsetHeight; ed2.style.display = ''; }
+  }, 50);
+
   if (cardId === 'new') {
     // 빈 폼
     ['ce-tag','ce-title-en','ce-sub1','ce-sub2','ce-copy','ce-price','ce-price-unit','ce-btn'].forEach(id => document.getElementById(id).value = '');
