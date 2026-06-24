@@ -77,11 +77,7 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 @media(max-width:380px){.photo-grid{grid-template-columns:1fr;}}
 
 /* 프로 */
-.pro-row{display:flex;gap:14px;align-items:center;}
-.pro-avatar{width:60px;height:60px;border-radius:50%;background:#1b4332;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;overflow:hidden;}
-.pro-avatar img{width:100%;height:100%;object-fit:cover;}
-.pro-name{font-size:15px;font-weight:700;color:#18181b;margin-bottom:3px;}
-.pro-certs{font-size:12px;color:#6b7280;line-height:1.7;}
+
 
 /* 가격표 */
 .price-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:9px;margin-bottom:7px;background:#f9f9f6;}
@@ -244,13 +240,13 @@ const TRANS = {
   kr: {
     'nav.back':'← 홈으로','stat.price':'시작 가격','stat.mindays':'최소 기간','stat.pax':'인원',
     'sec.schedule':'📅 샘플 일정','sec.incl':'✅ 포함 · 불포함','incl.yes':'✅ 포함','incl.no':'❌ 불포함',
-    'sec.accom':'🏠 숙소 안내','sec.training':'⛳ 전지훈련','sec.pro':'🏌️ 담당 프로 소개',
+    'sec.accom':'🏠 숙소 안내','sec.training':'⛳ 전지훈련',
     'sec.price':'💰 기간별 가격','sec.detail':'📝 상세 안내','btn.kakao':'💬 카카오 문의','btn.quote':'📋 맞춤 견적',
   },
   en: {
     'nav.back':'← Home','stat.price':'Starting Price','stat.mindays':'Min. Stay','stat.pax':'Guests',
     'sec.schedule':'📅 Sample Schedule','sec.incl':'✅ Included · Excluded','incl.yes':'✅ Included','incl.no':'❌ Not Included',
-    'sec.accom':'🏠 Accommodation','sec.training':'⛳ Training Photos','sec.pro':'🏌️ Your Golf Pro',
+    'sec.accom':'🏠 Accommodation','sec.training':'⛳ Training Photos',
     'sec.price':'💰 Pricing','sec.detail':'📝 Details','btn.kakao':'💬 KakaoTalk','btn.quote':'📋 Get a Quote',
   }
 };
@@ -322,15 +318,6 @@ window.render = function render(D) {
   document.getElementById('trainingName').textContent = D.trainingName || '';
   document.getElementById('trainingDesc').innerHTML   = (D.trainingDesc||'').replace(/\n/g,'<br>');
 
-  // 프로
-  if (D.proImg) {
-    document.getElementById('proImg').src = D.proImg;
-    document.getElementById('proImg').style.display = 'block';
-    document.getElementById('proInitials').style.display = 'none';
-  }
-  document.getElementById('proName').textContent = D.proName  || '장수남 프로 (Paulo Jang)';
-  document.getElementById('proCerts').innerHTML  = D.proCerts || 'PGAP Member #0507 · GAB Senior Touring Pro<br>Beverly C.C (2017–2023) · Pradera Verde (2023–2025)';
-
   // 가격표
   const pList = document.getElementById('priceList');
   pList.innerHTML = (D.prices||[]).map(p => `
@@ -356,7 +343,7 @@ window.render = function render(D) {
   document.getElementById('heroSection').style.display = 'flex';
   document.getElementById('statsBar').style.display = 'grid';
   document.getElementById('bottomCta').style.display = 'flex';
-  ['scheduleSection','inclSection','accomSection','trainingSection','proSection','priceSection'].forEach(id => {
+  ['scheduleSection','inclSection','accomSection','trainingSection','priceSection'].forEach(id => {
     document.getElementById(id).style.display = 'block';
   });
   // 사진 없는 섹션은 숨기기
