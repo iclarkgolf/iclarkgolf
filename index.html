@@ -931,9 +931,9 @@ function renderCards(cards) {
      내부 레이아웃은 position:absolute 로 배치 → 텍스트 길이와 무관하게 항상 동일 높이 */
   box.innerHTML = cards.map(c => `
     <a href="package-detail.html?id=${c.id}" class="pkg-item" style="border-radius:16px;overflow:hidden;text-decoration:none;display:block;box-shadow:0 4px 20px rgba(0,0,0,0.15);">
-      <!-- 썸네일: 사진만 깔끔하게 -->
-      <div style="background:#222;position:relative;height:200px;overflow:hidden;">
-        ${c.heroImg ? `<div style="position:absolute;inset:0;background-image:url(${c.heroImg});background-size:cover;background-position:center;"></div>` : ''}
+      <!-- 썸네일: 사진만 -->
+      <div style="background:#e5e7eb;position:relative;height:200px;overflow:hidden;">
+        ${c.heroImg ? `<div style="position:absolute;inset:0;background-image:url(${c.heroImg});background-size:cover;background-position:center;"></div>` : '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40px;">⛳</div>'}
         <!-- 태그 -->
         <div style="position:absolute;top:14px;left:14px;right:14px;font-size:11px;color:#fff;letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 4px rgba(0,0,0,0.6);">${c.tag||''}</div>
         <!-- 타이틀 -->
