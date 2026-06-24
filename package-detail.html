@@ -9,7 +9,6 @@
   gtag('js', new Date());
   gtag('config', 'G-8S6Z4PD9VZ');
 </script>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>iClark Golf — 패키지 상세</title>
@@ -61,8 +60,6 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 .day-num{width:34px;height:34px;border-radius:50%;background:#1b4332;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px;}
 .day-title{font-size:14px;font-weight:700;color:#18181b;margin-bottom:3px;}
 .day-desc{font-size:14px;color:#374151;line-height:1.9;}
-.day-desc div,.day-desc p{margin-top:10px;}
-.day-desc div:first-child,.day-desc p:first-child{margin-top:0;}
 
 /* 포함/불포함 */
 .inc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
@@ -72,21 +69,12 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 .inc-list{font-size:12px;color:#374151;line-height:2.1;}
 .inc-list span{display:flex;align-items:center;gap:5px;}
 
-/* 숙소 사진 카드 그리드 */
-.accom-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
-.accom-card{position:relative;border-radius:10px;overflow:hidden;background:#e5e7eb;}
-.accom-card img{width:100%;height:100%;object-fit:contain;background:#f4f4f0;display:block;max-height:280px;}
-.slide-del-btn{position:absolute;top:6px;right:6px;background:rgba(220,38,38,.85);color:#fff;border:none;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;display:none;}
-.edit-mode .slide-del-btn{display:block;}
-.slider-add-btn{display:none;width:100%;padding:9px;background:#f0f7f4;border:1.5px dashed #1b4332;border-radius:9px;color:#1b4332;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:10px;}
-.edit-mode .slider-add-btn{display:block;}
-.slider-wrap,.slider-track,.slider-dots{display:none;}
-@media(max-width:600px){.accom-grid{grid-template-columns:repeat(2,1fr);}.accom-card img{max-height:180px;}}
-@media(max-width:380px){.accom-grid{grid-template-columns:1fr;}.accom-card img{max-height:240px;}}
-.slide-del-btn{display:none;position:absolute;top:8px;right:8px;background:rgba(220,38,38,0.85);color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;z-index:5;}
-.edit-mode .slide-del-btn{display:block;}
-.accom-name{font-size:15px;font-weight:700;color:#18181b;margin-bottom:4px;}
-.accom-sub{font-size:12px;color:#6b7280;line-height:1.7;}
+/* 사진 그리드 */
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.photo-card{border-radius:10px;overflow:hidden;background:#e5e7eb;aspect-ratio:4/3;}
+.photo-card img{width:100%;height:100%;object-fit:cover;display:block;}
+@media(max-width:600px){.photo-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:380px){.photo-grid{grid-template-columns:1fr;}}
 
 /* 프로 */
 .pro-row{display:flex;gap:14px;align-items:center;}
@@ -103,7 +91,7 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 .price-badge{font-size:10px;font-weight:700;background:#1b4332;color:#fff;padding:2px 8px;border-radius:10px;}
 .price-amount{font-size:14px;font-weight:700;color:#1b4332;}
 
-/* 자유 글 영역 */
+/* 자유 글 */
 .free-content{font-size:14px;line-height:1.9;color:#374151;}
 .free-content h2{font-size:20px;font-weight:700;color:#18181b;margin:20px 0 10px;}
 .free-content h3{font-size:16px;font-weight:700;color:#18181b;margin:16px 0 8px;}
@@ -116,51 +104,12 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 .btn-kakao{flex:1;padding:13px;background:#FEE500;color:#1b1b1b;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;}
 .btn-quote{flex:1;padding:13px;background:linear-gradient(135deg,#1b4332,#534AB7);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;}
 
-/* ── 편집 모드 ── */
-.edit-fab{position:fixed;bottom:90px;right:16px;width:50px;height:50px;border-radius:50%;background:#1b4332;color:#fff;border:none;font-size:20px;cursor:pointer;z-index:300;box-shadow:0 4px 16px rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;}
-.edit-fab.active{background:#dc2626;}
-
-/* 편집 모드 필드 공통 */
-[contenteditable="true"]{outline:2px dashed #1b4332;outline-offset:3px;border-radius:4px;min-height:1em;cursor:text;}
-[contenteditable="true"]:focus{outline:2px solid #1b4332;background:rgba(27,67,50,0.04);}
-/* 안전장치: 텍스트 칸에 실수로 사진이 붙여넣어져도 거대해지지 않게 */
-[contenteditable] img{max-width:100%;height:auto;display:block;}
-
-/* 편집 모드 이미지 교체 버튼 */
-.img-replace-btn{display:none;position:absolute;top:8px;right:8px;background:#1b4332;color:#fff;border:none;border-radius:7px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;z-index:10;}
-.edit-mode .img-replace-btn{display:block;}
-.img-wrap{position:relative;}
-
-/* 편집 툴바 */
-.edit-toolbar{display:none;position:fixed;top:56px;left:0;right:0;z-index:250;background:#1b4332;padding:8px 12px;gap:6px;flex-wrap:wrap;}
-.edit-toolbar.show{display:flex;}
-.tb-btn{padding:5px 10px;background:rgba(255,255,255,0.15);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
-.tb-btn:hover{background:rgba(255,255,255,0.3);}
-.tb-btn.save{background:#f4a261;color:#1b4332;}
-.tb-sep{width:1px;background:rgba(255,255,255,0.2);margin:0 4px;}
-
-/* 편집모드 섹션 추가버튼 */
-.add-row-btn{display:none;width:100%;margin-top:10px;padding:9px;background:#f0f7f4;border:1.5px dashed #1b4332;border-radius:9px;color:#1b4332;font-size:12px;font-weight:700;cursor:pointer;}
-.edit-mode .add-row-btn{display:block;}
-
 /* 로딩 */
 #loading{text-align:center;padding:80px 20px;color:#9ca3af;font-size:14px;}
 
-/* 비밀번호 모달 */
-.pw-modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;}
-.pw-modal.show{display:flex;}
-.pw-box{background:#fff;border-radius:16px;padding:28px 24px;width:88%;max-width:340px;}
-.pw-title{font-size:16px;font-weight:700;margin-bottom:16px;color:#18181b;}
-.pw-input{width:100%;padding:12px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:15px;margin-bottom:12px;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;}
-.pw-input:focus{outline:none;border-color:#1b4332;}
-.pw-btns{display:flex;gap:10px;}
-.pw-cancel{flex:1;padding:12px;background:#f4f4f5;color:#6b7280;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
-.pw-ok{flex:2;padding:12px;background:#1b4332;color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
-.pw-err{font-size:12px;color:#dc2626;margin-bottom:8px;display:none;}
-
-/* 저장 토스트 */
-.toast{position:fixed;bottom:110px;left:50%;transform:translateX(-50%);background:rgba(27,67,50,0.92);color:#fff;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:700;display:none;z-index:400;white-space:nowrap;}
-.toast.show{display:block;}
+/* 한/영 버튼 */
+.lang-btn{font-size:11px;padding:3px 8px;border:1px solid #d1d5db;border-radius:6px;background:#fff;cursor:pointer;font-weight:700;font-family:'Noto Sans KR',sans-serif;}
+.lang-btn.on{background:#1b4332;color:#fff;border-color:#1b4332;}
 </style>
 </head>
 <body>
@@ -170,38 +119,21 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
   <a href="index.html" class="nav-logo"><span class="i">i</span><span class="clark">CLARK</span>GOLF</a>
   <div style="display:flex;align-items:center;gap:10px;">
     <div style="display:flex;gap:4px;">
-      <button class="lang-btn on" onclick="setLang('kr')" style="font-size:11px;padding:3px 8px;border:1px solid #d1d5db;border-radius:6px;background:#fff;cursor:pointer;font-weight:700;">KOR</button>
-      <button class="lang-btn" onclick="setLang('en')" style="font-size:11px;padding:3px 8px;border:1px solid #d1d5db;border-radius:6px;background:#fff;cursor:pointer;font-weight:700;">ENG</button>
+      <button class="lang-btn on" onclick="setLang('kr')">KOR</button>
+      <button class="lang-btn" onclick="setLang('en')">ENG</button>
     </div>
     <a href="index.html" class="nav-back" data-i18n="nav.back">← 홈으로</a>
   </div>
 </nav>
 
-<!-- 편집 툴바 (편집모드 시 노출) -->
-<div class="edit-toolbar" id="editToolbar">
-  <button class="tb-btn" onclick="tbFormat('bold')"><b>B</b></button>
-  <button class="tb-btn" onclick="tbFormat('italic')"><i>I</i></button>
-  <div class="tb-sep"></div>
-  <button class="tb-btn" onclick="tbInsertImg()">🖼 사진 URL</button>
-  <button class="tb-btn" onclick="replaceHeroImg()" style="background:#2d6a4f;">🏔 Hero 사진</button>
-  <div class="tb-sep"></div>
-  <span style="color:#fff;font-size:11px;white-space:nowrap;">📍 위치</span>
-  <input type="range" id="heroPos" min="0" max="100" value="45" style="width:80px;cursor:pointer;" oninput="adjustHero()">
-  <span style="color:#fff;font-size:11px;white-space:nowrap;">☀️ 밝기</span>
-  <input type="range" id="heroOpacity" min="10" max="100" value="90" style="width:80px;cursor:pointer;" oninput="adjustHero()">
-  <div class="tb-sep"></div>
-  <button class="tb-btn save" onclick="saveAll()">💾 저장</button>
-  <button class="tb-btn" onclick="exitEdit()" style="background:rgba(255,255,255,0.1);">✕ 취소</button>
-</div>
-
-<div id="loading" style="display:none">⏳ 불러오는 중...</div>
+<!-- 로딩 -->
+<div id="loading">⏳ 불러오는 중...</div>
 
 <!-- ① 히어로 -->
 <div class="hero" id="heroSection" style="display:none;">
   <div class="hero-bg" id="heroBg"></div>
-  <div class="img-wrap" style="position:absolute;inset:0;">
+  <div style="position:absolute;inset:0;">
     <div class="hero-img" id="heroImg"></div>
-    <button class="img-replace-btn" onclick="replaceHeroImg()">🖼 사진 교체</button>
   </div>
   <div class="hero-overlay"></div>
   <div class="hero-glow"></div>
@@ -211,7 +143,7 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
     <div class="hero-title" id="heroTitle"></div>
     <div class="hero-subs">
       <span class="hero-sub1" id="heroSub1"></span>
-      <span class="hero-dot" id="heroDot"></span>
+      <span class="hero-dot" id="heroDot" style="display:none;"></span>
       <span class="hero-sub2" id="heroSub2"></span>
     </div>
     <div class="hero-copy" id="heroCopy"></div>
@@ -222,17 +154,17 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 <div class="stats-bar" id="statsBar" style="display:none;">
   <div class="stat-item">
     <div class="stat-label" data-i18n="stat.price">시작 가격</div>
-    <div class="stat-value" id="statPrice" contenteditable="false">$99</div>
+    <div class="stat-value" id="statPrice"></div>
     <div class="stat-unit">/ 1일</div>
   </div>
   <div class="stat-item">
     <div class="stat-label" data-i18n="stat.mindays">최소 기간</div>
-    <div class="stat-value" id="statMinDays" contenteditable="false">5일</div>
+    <div class="stat-value" id="statMinDays"></div>
     <div class="stat-unit">이상</div>
   </div>
   <div class="stat-item">
     <div class="stat-label" data-i18n="stat.pax">인원</div>
-    <div class="stat-value" id="statPax" contenteditable="false">1인</div>
+    <div class="stat-value" id="statPax"></div>
     <div class="stat-unit">전용</div>
   </div>
 </div>
@@ -242,7 +174,6 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
   <div class="section-header" data-i18n="sec.schedule">📅 샘플 일정</div>
   <div class="section-body">
     <div id="scheduleList"></div>
-    <button class="add-row-btn" onclick="addScheduleRow()">+ 일정 추가</button>
   </div>
 </div>
 
@@ -260,7 +191,6 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
         <div class="inc-list" id="inclNo"></div>
       </div>
     </div>
-    <button class="add-row-btn" onclick="addIncRow()">+ 항목 추가</button>
   </div>
 </div>
 
@@ -268,26 +198,23 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 <div class="section" id="accomSection" style="display:none;">
   <div class="section-header" data-i18n="sec.accom">🏠 숙소 안내</div>
   <div class="section-body">
-    <!-- 사진 카드 그리드 -->
-    <div class="accom-grid" id="accomGrid"></div>
-    <button class="slider-add-btn" onclick="addSlide()">+ 사진 추가 (ImgBB URL)</button>
-    <div class="accom-name" id="accomName" contenteditable="false">로컬 전용 숙소</div>
-    <div class="accom-sub" id="accomDesc" contenteditable="false">전용숙소는 로컬 마을에 있습니다. 프라데라 클럽하우스에서 5분 거리, 로컬의 참맛과 생생한 체험을 겸할 수 있습니다.</div>
+    <div class="photo-grid" id="accomGrid"></div>
+    <div style="font-size:15px;font-weight:700;color:#18181b;margin-bottom:4px;" id="accomName"></div>
+    <div style="font-size:12px;color:#6b7280;line-height:1.7;" id="accomDesc"></div>
   </div>
 </div>
 
-<!-- ⑤-② 전지훈련 사진 -->
+<!-- ⑥ 전지훈련 -->
 <div class="section" id="trainingSection" style="display:none;">
   <div class="section-header" data-i18n="sec.training">⛳ 전지훈련</div>
   <div class="section-body">
-    <div class="accom-grid" id="trainingGrid"></div>
-    <button class="slider-add-btn" onclick="addTrainingSlide()">+ 사진 추가 (ImgBB URL)</button>
-    <div class="accom-name" id="trainingName" contenteditable="false">전지훈련 현장</div>
-    <div class="accom-sub" id="trainingDesc" contenteditable="false">실제 레슨과 라운드 현장 사진입니다.</div>
+    <div class="photo-grid" id="trainingGrid"></div>
+    <div style="font-size:15px;font-weight:700;color:#18181b;margin-bottom:4px;" id="trainingName"></div>
+    <div style="font-size:12px;color:#6b7280;line-height:1.7;" id="trainingDesc"></div>
   </div>
 </div>
 
-<!-- ⑥ 담당 프로 -->
+<!-- ⑦ 담당 프로 -->
 <div class="section" id="proSection" style="display:none;">
   <div class="section-header" data-i18n="sec.pro">🏌️ 담당 프로 소개</div>
   <div class="section-body">
@@ -297,34 +224,29 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
         <span id="proInitials">PJ</span>
       </div>
       <div>
-        <div class="pro-name" id="proName" contenteditable="false">장수남 프로 (Paulo Jang)</div>
-        <div class="pro-certs" id="proCerts" contenteditable="false">
+        <div class="pro-name" id="proName">장수남 프로 (Paulo Jang)</div>
+        <div class="pro-certs" id="proCerts">
           PGAP Member #0507 · GAB Senior Touring Pro<br>
           Beverly C.C (2017–2023) · Pradera Verde (2023–2025)
         </div>
       </div>
     </div>
-    <div class="img-wrap" style="margin-top:10px;">
-      <button class="img-replace-btn" style="position:relative;display:none;" id="proImgBtn" onclick="replaceProImg()">🖼 프로 사진 교체</button>
-    </div>
   </div>
 </div>
 
-<!-- ⑦ 기간별 가격표 -->
+<!-- ⑧ 기간별 가격 -->
 <div class="section" id="priceSection" style="display:none;">
   <div class="section-header" data-i18n="sec.price">💰 기간별 가격</div>
   <div class="section-body">
     <div id="priceList"></div>
-    <button class="add-row-btn" onclick="addPriceRow()">+ 기간 추가</button>
   </div>
 </div>
 
-<!-- ⑧ 자유 글/사진 영역 -->
+<!-- ⑨ 상세 안내 -->
 <div class="section" id="freeSection" style="display:none;">
   <div class="section-header" data-i18n="sec.detail">📝 상세 안내</div>
   <div class="section-body">
-    <div class="free-content" id="freeContent" contenteditable="false"></div>
-    <div id="freeEmpty" style="text-align:center;padding:24px;color:#9ca3af;font-size:13px;">편집 버튼을 눌러 자유롭게 글과 사진을 추가하세요</div>
+    <div class="free-content" id="freeContent"></div>
   </div>
 </div>
 
@@ -334,260 +256,92 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
   <a href="quote.html" class="btn-quote" data-i18n="btn.quote">📋 맞춤 견적</a>
 </div>
 
-<!-- ✏️ 편집 FAB -->
-<button class="edit-fab" id="editFab" onclick="onEditFab()" style="display:none;" title="편집">✏️</button>
-
-<!-- 비밀번호 모달 -->
-<div class="pw-modal" id="pwModal">
-  <div class="pw-box">
-    <div class="pw-title">🔒 편집 비밀번호</div>
-    <div class="pw-err" id="pwErr">비밀번호가 틀렸습니다.</div>
-    <input class="pw-input" id="pwInput" type="password" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')checkPw()">
-    <div class="pw-btns">
-      <button class="pw-cancel" onclick="closePwModal()">취소</button>
-      <button class="pw-ok" onclick="checkPw()">확인</button>
-    </div>
-  </div>
-</div>
-
-<!-- 저장 토스트 -->
-<div class="toast" id="toast"></div>
-
 <script>
-const ADMIN_PW = 'admin0115';
-const params   = new URLSearchParams(location.search);
-const cardId   = params.get('id') || 'card1';
+const params = new URLSearchParams(location.search);
+const cardId = params.get('id') || 'card1';
 
-/* ── 카드 데이터 (Firebase 없음 — 직접 수정) ── */
-const DEFAULT = {
-  card1: {
-    tag:'먹 · 자 · 골',
-    titleEn:'PRADERA',
-    sub1:'로컬숙소', sub2:'라이프',
-    copy:'로컬 숙소에서\n먹고 · 자고 · 골프만\n나 홀로 전지훈련을 오픈합니다',
-    price:'$99', priceUnit:'/ day',
-    color1:'#054535', color2:'#1D9E75',
-    heroImg: 'https://i.ibb.co/XxwyYydt/hero-bg.jpg',
-    accomImgs: ['https://i.ibb.co/TBMBn84y/slide-01.jpg','https://i.ibb.co/C59vCmfN/slide-02.jpg','https://i.ibb.co/YBQkhZNh/slide-06.jpg'],
-    statMinDays:'5일', statPax:'1인',
-    schedule:[
-      {num:'1', title:'도착 · 체크인 · 오리엔테이션', desc:'숙소 안내, 골프장 사전 투어, 일정 협의'},
-      {num:'2~N', title:'오전 레슨 + 오후 라운드', desc:'티칭 프로 1:1 레슨 · Pradera Verde 18홀'},
-      {num:'N', title:'귀국 또는 연장', desc:'1주 체험 후 원하면 연장 가능'}
-    ],
-    inclYes:['공항 픽업 및 드롭','1인 1실','조식 · 석식','인터넷 및 심카드 (장기체류)','청소 · 세탁','매일 18홀 그린피','매일 프로 1:1 필드 레슨','매일 연습장 레슨'],
-    inclNo:['카트피 (본인)','캐디피 (본인)','보험료 (본인)','프로 동반 카트피·캐디피·보험료 (n/1 분담)','항공권','기타 개별 용도'],
-    accomName:'로컬 전용 숙소',
-    accomDesc:'전용숙소는 로컬 마을에 있습니다. 프라데라 클럽하우스에서 5분 거리, 로컬의 참맛과 생생한 체험을 겸할 수 있습니다.',
-    trainingImgs:[],
-    prices:[
-      {period:'5일',  php:28350, featured:false},
-      {period:'7일',  php:39690, featured:false},
-      {period:'14일', php:79380, featured:true, badge:'인기'},
-      {period:'기간 협의', amount:'문의', featured:false}
-    ],
-    freeContent:'<h2>나 홀로 전지훈련이란?</h2><p>혼자서 필리핀 클락으로 떠나는 골프 집중 훈련 프로그램입니다. 현지 티칭 프로가 1:1로 함께하며, 아침에는 레슨, 오후에는 라운드로 하루를 꽉 채웁니다.</p><hr><h3>🌟 이런 분께 추천해요</h3><p>✅ 골프을 배울 분<br>✅ 단기간 원하는 목표를 달성 할 분<br>✅ 본인만의 루틴과 스윙을 안착시킬 분<br>✅ 구력도 많고 의심도 많고 인정하고 싶지 않은 부분도 많은 분<br>✅ 프로 테스트, 생활스포츠 자격증을 목적으로 훈련 할 분<br>✅ 삶에 지쳐 골프하며 로컬 체험하며 힐링과 휴식을 할 분<br>✅ 엄마와 아이. 엄마와 아이 골프 하며 영어 배우기 할 분</p><hr><p style="text-align:center;margin-top:16px;"><a href="https://cafe.naver.com/polojang/8188" target="_blank" style="color:#1D9E75;font-weight:700;text-decoration:underline;">📷 실제 후기·사진 더 보기 (네이버 카페)</a></p>'
+/* ── 한/영 번역 ── */
+const TRANS = {
+  kr: {
+    'nav.back':'← 홈으로','stat.price':'시작 가격','stat.mindays':'최소 기간','stat.pax':'인원',
+    'sec.schedule':'📅 샘플 일정','sec.incl':'✅ 포함 · 불포함','incl.yes':'✅ 포함','incl.no':'❌ 불포함',
+    'sec.accom':'🏠 숙소 안내','sec.training':'⛳ 전지훈련','sec.pro':'🏌️ 담당 프로 소개',
+    'sec.price':'💰 기간별 가격','sec.detail':'📝 상세 안내','btn.kakao':'💬 카카오 문의','btn.quote':'📋 맞춤 견적',
   },
-  card2: {
-    tag:'힐링 친목 / 럭셔리 골프',
-    titleEn:'PRADERA',
-    sub1:'풀 빌라', sub2:'라이프',
-    copy:'골프와 힐링을 동시에\n4인 이상 풀빌라 단독 사용',
-    price:'가격 문의', priceUnit:'',
-    color1:'#72243E', color2:'#D4537E',
-    heroImg: 'https://i.ibb.co/RpFJNbk8/slide-f07.jpg',
-    accomImgs: [],
-    statMinDays:'5일', statPax:'1인',
-    schedule:[
-      {num:'1', title:'도착 · 체크인 · 오리엔테이션', desc:'숙소 안내, 골프장 사전 투어, 일정 협의'},
-      {num:'2~N', title:'오전 레슨 + 오후 라운드', desc:'티칭 프로 1:1 레슨 · Pradera Verde 18홀'},
-      {num:'N', title:'귀국 또는 연장', desc:'1주 체험 후 원하면 연장 가능'}
-    ],
-    inclYes:['공항 픽업 및 드롭','1인 1실','조식 · 석식','인터넷 및 심카드 (장기체류)','청소 · 세탁','매일 18홀 그린피','매일 프로 1:1 필드 레슨','매일 연습장 레슨'],
-    inclNo:['카트피 (본인)','캐디피 (본인)','보험료 (본인)','프로 동반 카트피·캐디피·보험료 (n/1 분담)','항공권','기타 개별 용도'],
-    accomName:'풀 빌라 전용 숙소',
-    accomDesc:'4인 이상 단독 사용 풀 빌라입니다. 프라데라 클럽하우스 인근, 럭셔리한 환경에서 골프와 힐링을 동시에.',
-    trainingImgs:[],
-    prices:[
-      {period:'5일',  php:28350, featured:false},
-      {period:'7일',  php:39690, featured:false},
-      {period:'14일', php:79380, featured:true, badge:'인기'},
-      {period:'기간 협의', amount:'문의', featured:false}
-    ],
-    freeContent:'<h2>힐링 친목 / 럭셔리 골프란?</h2><p>4인 이상 단독 풀 빌라에서 즐기는 프리미엄 골프 여행입니다. 골프와 힐링을 동시에 즐기실 수 있습니다.</p><hr><h3>🌟 이런 분께 추천해요</h3><p>✔ 가족 또는 친목 모임으로 오시는 분<br>✔ 럭셔리한 환경에서 골프를 즐기고 싶은 분<br>✔ 프라이빗한 공간을 원하시는 분</p>'
-  },
-  card3: {
-    heroImg: 'https://i.ibb.co/MxJ7rgy1/web-13-sq.jpg',
-    accomImgs: [],
-    tag:'시간은 짧게 · 훈련은 깊게',
-    titleEn:'PRADERA',
-    sub1:'단기 집중', sub2:'전지훈련',
-    statMinDays:'4박5일', statPax:'1인',
-    price:'가격 문의',
-    schedule:[
-      {num:'1일', title:'새벽 도착 · 방 배정 · 첫 라운드', desc:'01:30 클락 공항 BAY5 피켓 확인 후 픽업\n이동 중 마트 들러 소주·맥주·음료·라면 등 쇼핑\n03:00 숙소 도착 — 방 배정 & 오리엔테이션 후 취침\n07:00 기상 및 조식 → 골프장 이동\n(당일 날씨에 따라 오전·오후 티오프가 결정됩니다)\n08:00 연습장 개별 연습 & 레슨 — 스윙 점검 · 문제점 분석\n12:00 중식 — 숙소 또는 클럽하우스\n13:00 오후 티오프 18홀\n(필드 레슨인 경우 종합적으로 터치를 합니다)\n18:00 숙소 귀환 · 19:00 석식 및 휴식'},
-      {num:'2일', title:'집중 훈련일 — 27홀', desc:'06:00 기상 및 조식 → 연습장 이동\n08:00 티오프 18홀\n12:00 중식 — 클럽하우스\n13:00 오후 티오프 9홀 추가\n15:30 연습장 훈련 & 레슨\n18:30 숙소 귀환 — 석식 및 휴식\n※ 2일차부터 27홀 권장 — 페어웨이 훈련량 최대화'},
-      {num:'3일', title:'어프로치 & 코스 공략일', desc:'06:00 기상 및 조식 → 골프장 이동\n07:30 천연잔디 그린 주변 어프로치 훈련 & 레슨\n10:00 티오프 18홀\n(뒷팀 없을 때 반복 티샷 — 볼 방향성 교정 & 그린 공략)\n12:00 티하우스 간식 — 컵라면·계란 등\n15:00 연습장 이동 — 필드 문제점 집중 교정\n18:30 숙소 귀환 — 석식 및 휴식'},
-      {num:'4일', title:'마무리 라운드 & 귀국', desc:'06:00 티오프 18홀 (얼리 버드 스타트)\n08:00 추가 9홀 — 총 27홀\n12:00 중식 — 클럽하우스\n14:00 연습장 — 임팩트 & 어프로치 마무리 훈련\n18:00 숙소 귀환 — 체크아웃 준비\n(선택: 코리아타운 or 로컬 유명 레스토랑 저녁)\n22:00 숙소 체크아웃 → 클락 공항 이동\n23:00 클락 공항 — 안녕히 가세요!'}
-    ],
-    inclYes:['공항 픽업 및 드롭','1인 1실 로컬 전용 숙소','조식 · 석식 전 일정','4일간 그린피 (총 약 90홀)','프로 1:1 필드 레슨 전 일정','매일 연습장 레슨','심카드'],
-    inclNo:['카트피 (본인)','캐디피 (본인)','보험료 (본인)','항공권','기타 개별 용도'],
-    accomName:'로컬 전용 숙소',
-    accomDesc:'프라데라 클럽하우스에서 5분 거리 로컬 마을 전용 숙소입니다. 깨끗하고 조용한 환경에서 훈련에만 집중할 수 있습니다.',
-    trainingImgs:[],
-    prices:[
-      {period:'4박5일', amount:'가격 문의', featured:true, badge:'최저 일정'},
-      {period:'기간 협의', amount:'문의', featured:false}
-    ],
-    freeContent:'<h2>단기 집중 전지훈련이란?</h2><p>4박 5일 · 총 90홀 · 프라데라 베르데에서 진행되는 <strong>최저 시간 최고 효율</strong> 골프 전지훈련입니다.<br>새벽에 도착해서 당일 바로 훈련을 시작하고, 매일 27홀 + 연습장 레슨으로 하루를 꽉 채웁니다.</p><hr><h3>🌟 이런 분께 추천해요</h3><p>✅ 시간이 없어서 짧게 와서 확실하게 치고 싶은 분<br>✅ 스윙 교정을 단기간에 끝내고 싶은 분<br>✅ 필드 감각을 빠르게 되살리고 싶은 분<br>✅ 라운드 수를 최대한 많이 치고 싶은 분<br>✅ 혼자 집중 훈련하고 싶은 분</p><hr><p style="text-align:center;margin-top:16px;"><a href="https://cafe.naver.com/polojang" target="_blank" style="color:#1D9E75;font-weight:700;text-decoration:underline;">📷 실제 후기·사진 더 보기 (네이버 카페)</a></p>'
-  },
-  card4: {
-    tag:'내 마음 가는 대로',
-    titleEn:'CLARK GOLF',
-    sub1:'맘대로', sub2:'선택하기',
-    copy:'클락의 골프 모든 것을\n골프장 · 숙소 · 레슨 · 캐디\n직접 골라보세요',
-    price:'내 견적 만들기', priceUnit:'',
-    color1:'#1a1a2e', color2:'#8B5CF6',
-    heroImg: 'https://i.ibb.co/hJnKBv71/slide-p05.jpg',
-    accomImgs: [],
-    statMinDays:'1일', statPax:'1인~',
-    schedule:[
-      {num:'1', title:'원하는 일정 선택', desc:'골프장 · 숙소 · 레슨 · 캐디 직접 선택'},
-      {num:'2~N', title:'맞춤 골프 일정 진행', desc:'클락의 모든 골프 자원을 자유롭게 활용'},
-      {num:'N', title:'귀국 또는 연장', desc:'원하는 만큼 자유롭게'}
-    ],
-    inclYes:['공항 픽업 및 드롭','선택한 숙소','선택한 골프장','선택한 레슨','선택한 캐디'],
-    inclNo:['패키지 외 추가 비용 (본인)','항공권','보험료 (본인)'],
-    accomName:'맞춤 선택 숙소',
-    accomDesc:'클락의 모든 숙소 중 원하시는 곳을 직접 선택하실 수 있습니다.',
-    trainingImgs:[],
-    prices:[
-      {period:'기간 협의', amount:'문의', featured:true, badge:'맞춤'},
-    ],
-    freeContent:'<h2>내 마음 가는 대로 클락 골프</h2><p>골프장, 숙소, 레슨, 캐디를 직접 골라서 나만의 일정을 만드세요. 클락의 골프 모든 것을 자유롭게 즐기실 수 있습니다.</p><hr><h3>🌟 이런 분께 추천해요</h3><p>✔ 패키지보다 자유로운 여행을 원하시는 분<br>✔ 골프장, 숙소를 직접 고르고 싶은 분<br>✔ 단기 또는 장기 모두 가능한 분</p>'
+  en: {
+    'nav.back':'← Home','stat.price':'Starting Price','stat.mindays':'Min. Stay','stat.pax':'Guests',
+    'sec.schedule':'📅 Sample Schedule','sec.incl':'✅ Included · Excluded','incl.yes':'✅ Included','incl.no':'❌ Not Included',
+    'sec.accom':'🏠 Accommodation','sec.training':'⛳ Training Photos','sec.pro':'🏌️ Your Golf Pro',
+    'sec.price':'💰 Pricing','sec.detail':'📝 Details','btn.kakao':'💬 KakaoTalk','btn.quote':'📋 Get a Quote',
   }
 };
+let currentLang = localStorage.getItem('clarkgo_lang') || 'kr';
 
-/* ── 데이터 로드 — Firebase 우선, 없으면 localStorage, 없으면 기본값 ── */
-if (params.get('reset') === '1') { localStorage.removeItem('pkg_' + cardId); }
-const def = DEFAULT[cardId] || {};
-
-// ── 병합 헬퍼: 값이 실제로 존재하고 빈 문자열이 아닐 때만 우선 적용
-function pick(savedVal, defVal, fallback) {
-  if (savedVal !== undefined && savedVal !== null && savedVal !== '') return savedVal;
-  if (defVal   !== undefined && defVal   !== null && defVal   !== '') return defVal;
-  return fallback !== undefined ? fallback : '';
+function applyTranslations() {
+  const t = TRANS[currentLang] || TRANS.kr;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.getAttribute('data-i18n');
+    if (t[k]) el.textContent = t[k];
+  });
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    const isOn = btn.textContent.trim().toLowerCase().startsWith(currentLang);
+    btn.classList.toggle('on', isOn);
+  });
 }
-
-let D = { ...def };
-
-function mergeData(fireData) {
-  const fd = fireData || {};
-  // 이미지 배열: fd에 배열이 있으면 fd 우선, 없으면 def 사용 (빈 배열 []은 "있음"으로 처리)
-  const resolveImgs = (fdArr, defArr) => Array.isArray(fdArr) ? fdArr : (defArr || []);
-  D = {
-    ...def,
-    ...fd,
-    tag:         pick(fd.tag,         def.tag,         ''),
-    titleEn:     pick(fd.titleEn,     def.titleEn,     ''),
-    sub1:        pick(fd.sub1,        def.sub1,        ''),
-    sub2:        pick(fd.sub2,        def.sub2,        ''),
-    copy:        pick(fd.copy,        def.copy,        ''),
-    price:       pick(fd.price,       def.price,       ''),
-    priceUnit:   pick(fd.priceUnit,   def.priceUnit,   ''),
-    heroImg:     pick(fd.heroImg,     def.heroImg,     ''),
-    color1:      pick(fd.color1,      def.color1,      '#054535'),
-    color2:      pick(fd.color2,      def.color2,      '#1D9E75'),
-    content:     fd.content     || def.content     || '',
-    // 사진 배열 — fd에 저장된 값 우선, 없으면 def 기본값
-    accomImgs:    resolveImgs(fd.accomImgs,    def.accomImgs),
-    trainingImgs: resolveImgs(fd.trainingImgs, def.trainingImgs),
-    // 그 외 배열 데이터도 보존
-    schedule:    Array.isArray(fd.schedule)  ? fd.schedule  : (def.schedule  || []),
-    inclYes:     Array.isArray(fd.inclYes)   ? fd.inclYes   : (def.inclYes   || []),
-    inclNo:      Array.isArray(fd.inclNo)    ? fd.inclNo    : (def.inclNo    || []),
-    prices:      Array.isArray(fd.prices)    ? fd.prices    : (def.prices    || []),
-  };
-}
-
-// 즉시 localStorage로 1차 렌더 (빠른 표시)
-const localRaw = localStorage.getItem('pkg_' + cardId);
-const localData = localRaw ? JSON.parse(localRaw) : {};
-mergeData(localData);
-
-window.addEventListener('DOMContentLoaded', async () => {
-  render();
-  // Firebase에서 최신 데이터 가져와 재렌더 (항상 Firebase 우선)
-  try {
-    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
-    const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
-    const app = getApps().length ? getApps()[0] : initializeApp(cfg);
-    const db = getFirestore(app);
-    const snap = await getDoc(doc(db, 'package_cards', cardId));
-    if (snap.exists()) {
-      const fireData = snap.data();
-      // localStorage의 사진 배열을 Firebase 데이터와 병합 (Firebase 우선, 없으면 localStorage 보존)
-      const localRawNow = localStorage.getItem('pkg_' + cardId);
-      const localNow = localRawNow ? JSON.parse(localRawNow) : {};
-      const merged = { ...localNow, ...fireData };
-      // accomImgs/trainingImgs: Firebase에 있으면 Firebase, 없으면 localStorage 보존
-      if (!Array.isArray(fireData.accomImgs) && Array.isArray(localNow.accomImgs)) {
-        merged.accomImgs = localNow.accomImgs;
-      }
-      if (!Array.isArray(fireData.trainingImgs) && Array.isArray(localNow.trainingImgs)) {
-        merged.trainingImgs = localNow.trainingImgs;
-      }
-      mergeData(merged);
-      localStorage.setItem('pkg_' + cardId, JSON.stringify(merged));
-      render(); // Firebase 데이터로 재렌더
-    }
-  } catch(e) {
-    console.warn('Firebase 로드 실패, localStorage 사용:', e);
-  }
-});
+window.setLang = function(lang) {
+  currentLang = lang;
+  localStorage.setItem('clarkgo_lang', lang);
+  applyTranslations();
+};
 
 /* ── 렌더링 ── */
-function render() {
-  // 히어로 섹션 즉시 표시
-  document.getElementById('heroSection').style.display = 'flex';
+function render(D) {
   // 히어로
-  const bg = document.getElementById('heroBg');
-  bg.style.background = `linear-gradient(135deg,${D.color1||'#054535'},${D.color2||'#1D9E75'})`;
+  document.getElementById('heroBg').style.background = `linear-gradient(135deg,${D.color1||'#054535'},${D.color2||'#1D9E75'})`;
   if (D.heroImg) {
     const hi = document.getElementById('heroImg');
-    hi.style.backgroundImage    = `url(${D.heroImg})`;
+    hi.style.backgroundImage = `url(${D.heroImg})`;
     hi.style.backgroundPosition = `center ${D.heroPos || 45}%`;
-    hi.style.opacity            = D.heroOpacity || 0.9;
+    hi.style.opacity = D.heroOpacity || 0.9;
   }
-  document.getElementById('heroTag').textContent   = D.tag   || '';
-  document.getElementById('heroTitle').textContent = D.titleEn || '';
-  document.getElementById('heroSub1').textContent  = D.sub1  || '';
-  document.getElementById('heroSub2').textContent  = D.sub2  || '';
+  document.getElementById('heroTag').textContent   = D.tag    || '';
+  document.getElementById('heroTitle').textContent = D.titleEn|| '';
+  document.getElementById('heroSub1').textContent  = D.sub1   || '';
+  document.getElementById('heroSub2').textContent  = D.sub2   || '';
   document.getElementById('heroDot').style.display = (D.sub1 && D.sub2) ? 'block' : 'none';
   document.getElementById('heroCopy').innerHTML    = (D.copy||'').replace(/\n/g,'<br>');
   document.title = `${D.sub1||''} ${D.sub2||''} — iClark Golf`;
 
-  // 스탯 바 — 모두 직접 입력값 (환율 자동계산 없음, 기획 상품 고정가)
-  document.getElementById('statPrice').textContent  = D.price || '$99';
-  document.getElementById('statMinDays').textContent = D.statMinDays || '5일';
-  document.getElementById('statPax').textContent     = D.statPax     || '1인';
+  // 스탯
+  document.getElementById('statPrice').textContent   = D.price      || '';
+  document.getElementById('statMinDays').textContent = D.statMinDays|| '';
+  document.getElementById('statPax').textContent     = D.statPax    || '';
 
   // 일정
-  renderSchedule();
+  const sList = document.getElementById('scheduleList');
+  sList.innerHTML = (D.schedule||[]).map(s => `
+    <div class="day-row">
+      <div class="day-num">${s.num||''}</div>
+      <div style="flex:1;">
+        <div class="day-title">${s.title||''}</div>
+        <div class="day-desc">${(s.desc||'').replace(/\n/g,'<br>')}</div>
+      </div>
+    </div>`).join('');
 
-  // 포함
-  renderIncl();
+  // 포함/불포함
+  document.getElementById('inclYes').innerHTML = (D.inclYes||[]).map(t=>`<span>✅ ${t}</span>`).join('');
+  document.getElementById('inclNo').innerHTML  = (D.inclNo||[]).map(t=>`<span>❌ ${t}</span>`).join('')
+    + `<div style="margin-top:10px;padding:10px 12px;background:#fff8e8;border-left:3px solid #f4a261;border-radius:0 8px 8px 0;font-size:12px;color:#92400e;line-height:1.7;">📋 골프장에서 본인 부담 비용은 <strong>견적서에 첨부</strong>해 드립니다.</div>`;
 
-  // 숙소
-  document.getElementById('accomName').textContent = D.accomName || '로컬 전용 숙소';
+  // 숙소 사진
+  renderPhotoGrid('accomGrid', D.accomImgs || []);
+  document.getElementById('accomName').textContent = D.accomName || '';
   document.getElementById('accomDesc').innerHTML   = (D.accomDesc||'').replace(/\n/g,'<br>');
-  renderSlider();
-  renderTraining();
 
-  // 전지훈련 텍스트
-  document.getElementById('trainingName').textContent = D.trainingName || '전지훈련 현장';
-  document.getElementById('trainingDesc').innerHTML   = (D.trainingDesc||'실제 레슨과 라운드 현장 사진입니다.').replace(/\n/g,'<br>');
+  // 전지훈련 사진
+  renderPhotoGrid('trainingGrid', D.trainingImgs || []);
+  document.getElementById('trainingName').textContent = D.trainingName || '';
+  document.getElementById('trainingDesc').innerHTML   = (D.trainingDesc||'').replace(/\n/g,'<br>');
 
   // 프로
   if (D.proImg) {
@@ -595,508 +349,71 @@ function render() {
     document.getElementById('proImg').style.display = 'block';
     document.getElementById('proInitials').style.display = 'none';
   }
-  document.getElementById('proName').textContent  = D.proName  || '장수남 프로 (Paulo Jang)';
-  document.getElementById('proCerts').innerHTML   = D.proCerts || 'PGAP Member #0507 · GAB Senior Touring Pro<br>Beverly C.C (2017–2023) · Pradera Verde (2023–2025)';
+  document.getElementById('proName').textContent = D.proName  || '장수남 프로 (Paulo Jang)';
+  document.getElementById('proCerts').innerHTML  = D.proCerts || 'PGAP Member #0507 · GAB Senior Touring Pro<br>Beverly C.C (2017–2023) · Pradera Verde (2023–2025)';
 
   // 가격표
-  renderPrices();
-
-  // 자유 글
-  const fc = document.getElementById('freeContent');
-  const fe = document.getElementById('freeEmpty');
-  if (D.freeContent && D.freeContent.trim()) {
-    fc.innerHTML = D.freeContent;
-    fc.style.display = 'block';
-    fe.style.display = 'none';
-  } else {
-    fc.style.display = 'none';
-    fe.style.display = 'block';
-  }
-
-  // 전체 보이기
-  document.getElementById('loading').style.display = 'none';
-  ['heroSection','statsBar','scheduleSection','inclSection','accomSection','proSection','priceSection','freeSection','bottomCta','editFab']
-    .forEach(id => document.getElementById(id).style.display = id === 'statsBar' ? 'grid' : 'flex' === getComputedStyle(document.getElementById(id)).display ? 'flex' : 'block');
-  document.getElementById('bottomCta').style.display = 'flex';
-  document.getElementById('editFab').style.display = 'flex';
-  document.getElementById('heroSection').style.display = 'flex';
-  document.getElementById('statsBar').style.display = 'grid';
-  ['scheduleSection','inclSection','accomSection','trainingSection','proSection','priceSection','freeSection'].forEach(id=>document.getElementById(id).style.display='block');
-
-  // 번역 적용
-  applyTranslations();
-}
-
-function renderSchedule() {
-  const list = document.getElementById('scheduleList');
-  list.innerHTML = '';
-  (D.schedule||[]).forEach((s,i) => {
-    const div = document.createElement('div');
-    div.className = 'day-row';
-    div.dataset.idx = i;
-    div.innerHTML = `
-      <div style="flex:1;">
-        <div class="day-title" contenteditable="false" data-field="schedule.${i}.title">${s.title}</div>
-        <div class="day-desc" contenteditable="false" data-field="schedule.${i}.desc">${(s.desc||'').replace(/\n/g,'<br>')}</div>
-      </div>
-      <button class="edit-del-btn" style="display:none;margin-left:auto;padding:4px 8px;background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;border-radius:6px;font-size:11px;cursor:pointer;" onclick="delScheduleRow(${i})">✕</button>`;
-    list.appendChild(div);
-  });
-}
-
-function renderIncl() {
-  const yEl = document.getElementById('inclYes');
-  const nEl = document.getElementById('inclNo');
-  yEl.innerHTML = (D.inclYes||[]).map((t,i)=>`<span contenteditable="false" data-field="inclYes.${i}" style="display:flex;align-items:center;gap:5px;padding:2px 0;">✅ ${t}</span>`).join('');
-  nEl.innerHTML = (D.inclNo||[]).map((t,i) =>`<span contenteditable="false" data-field="inclNo.${i}"  style="display:flex;align-items:center;gap:5px;padding:2px 0;">❌ ${t}</span>`).join("") + `<div style="margin-top:10px;padding:10px 12px;background:#fff8e8;border-left:3px solid #f4a261;border-radius:0 8px 8px 0;font-size:12px;color:#92400e;line-height:1.7;">📋 골프장에서 본인 부담 비용은 <strong>견적서에 첨부</strong>해 드립니다.</div>`;
-}
-
-/* ── 한/영 번역 ── */
-const TRANS = {
-  kr: {
-    'nav.back':      '← 홈으로',
-    'stat.price':    '시작 가격',
-    'stat.mindays':  '최소 기간',
-    'stat.pax':      '인원',
-    'sec.schedule':  '📅 샘플 일정',
-    'sec.incl':      '✅ 포함 · 불포함',
-    'incl.yes':      '✅ 포함',
-    'incl.no':       '❌ 불포함',
-    'sec.training':  '⛳ 전지훈련',
-    'sec.pro':       '🏌️ 담당 프로 소개',
-    'sec.price':     '💰 기간별 가격',
-    'sec.detail':    '📝 상세 안내',
-    'btn.kakao':     '💬 카카오 문의',
-    'btn.quote':     '📋 맞춤 견적',
-  },
-  en: {
-    'nav.back':      '← Home',
-    'stat.price':    'Starting Price',
-    'stat.mindays':  'Min. Stay',
-    'stat.pax':      'Guests',
-    'sec.schedule':  '📅 Sample Schedule',
-    'sec.incl':      '✅ Included · Excluded',
-    'incl.yes':      '✅ Included',
-    'incl.no':       '❌ Not Included',
-    'sec.training':  '⛳ Training Photos',
-    'sec.pro':       '🏌️ Your Golf Pro',
-    'sec.price':     '💰 Pricing',
-    'sec.detail':    '📝 Details',
-    'btn.kakao':     '💬 KakaoTalk',
-    'btn.quote':     '📋 Get a Quote',
-  }
-};
-
-let currentLang = localStorage.getItem('clarkgo_lang') || 'kr';
-
-function applyTranslations() {
-  const t = TRANS[currentLang] || TRANS['kr'];
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    if (t[key]) el.textContent = t[key];
-  });
-  // 언어 버튼 활성화
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.style.background = btn.textContent.trim().toLowerCase().startsWith(currentLang) ? '#1b4332' : '#fff';
-    btn.style.color      = btn.textContent.trim().toLowerCase().startsWith(currentLang) ? '#fff' : '#374151';
-  });
-}
-
-window.setLang = function(lang) {
-  currentLang = lang;
-  localStorage.setItem('clarkgo_lang', lang);
-  applyTranslations();
-};
-
-/* ── 환율 읽기 (admin에서 저장한 값) ── */
-function getRate() {
-  try {
-    const saved = localStorage.getItem('iclark_exchange');
-    if (saved) return JSON.parse(saved).appliedUsdPhp || 53.2;
-  } catch(e) {}
-  return 53.2; // 기본값
-}
-
-function renderPrices() {
-  const list = document.getElementById('priceList');
-  list.innerHTML = '';
-  (D.prices||[]).forEach((p,i) => {
-    // 기획 상품 고정가 — 직접 입력한 금액 그대로 표시 (환율 자동계산 없음)
-    const displayAmt = p.amount || '문의';
-    const div = document.createElement('div');
-    div.className = 'price-row' + (p.featured ? ' featured' : '');
-    div.dataset.idx = i;
-    div.innerHTML = `
+  const pList = document.getElementById('priceList');
+  pList.innerHTML = (D.prices||[]).map(p => `
+    <div class="price-row${p.featured?' featured':''}">
       <div class="price-period">
-        <span contenteditable="false" data-field="prices.${i}.period">${p.period}</span>
+        <span>${p.period||''}</span>
         ${p.badge ? `<span class="price-badge">${p.badge}</span>` : ''}
       </div>
-      <span class="price-amount" contenteditable="false" data-field="prices.${i}.amount">${displayAmt}</span>
-      <button class="edit-del-btn" style="display:none;margin-left:8px;padding:3px 7px;background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;border-radius:5px;font-size:11px;cursor:pointer;" onclick="delPriceRow(${i})">✕</button>`;
-    list.appendChild(div);
-  });
-}
-
-/* ── 편집 모드 ── */
-let editMode = false;
-let savedAuth = sessionStorage.getItem('pk_edit_auth') === 'yes';
-
-window.onEditFab = function() {
-  if (editMode) { exitEdit(); return; }
-  if (savedAuth) { enterEdit(); return; }
-  document.getElementById('pwModal').classList.add('show');
-  setTimeout(()=>document.getElementById('pwInput').focus(), 100);
-};
-
-window.closePwModal = function() {
-  document.getElementById('pwModal').classList.remove('show');
-  document.getElementById('pwInput').value = '';
-  document.getElementById('pwErr').style.display = 'none';
-};
-
-window.checkPw = function() {
-  const val = document.getElementById('pwInput').value;
-  if (val === ADMIN_PW) {
-    savedAuth = true;
-    sessionStorage.setItem('pk_edit_auth','yes');
-    closePwModal();
-    enterEdit();
-  } else {
-    document.getElementById('pwErr').style.display = 'block';
-    document.getElementById('pwInput').value = '';
-    document.getElementById('pwInput').focus();
-  }
-};
-
-// ── 안전장치: 모든 텍스트 입력칸(contenteditable)에 사진을 붙여넣어도 텍스트만 들어가게 처리 ──
-document.addEventListener('paste', function(e) {
-  const target = e.target.closest && e.target.closest('[contenteditable="true"]');
-  if (!target) return;
-  e.preventDefault();
-  const text = (e.clipboardData || window.clipboardData).getData('text/plain');
-  document.execCommand('insertText', false, text);
-});
-
-function enterEdit() {
-  editMode = true;
-  document.body.classList.add('edit-mode');
-  document.getElementById('editFab').textContent = '✕';
-  document.getElementById('editFab').classList.add('active');
-  document.getElementById('editToolbar').classList.add('show');
-
-  // contenteditable 켜기
-  document.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable','true'));
-  // 삭제 버튼 보이기
-  document.querySelectorAll('.edit-del-btn').forEach(el => el.style.display = 'inline-block');
-  // 프로 사진 버튼
-  document.getElementById('proImgBtn').style.display = 'block';
-
-  showToast('✏️ 편집 모드 — 텍스트를 직접 클릭해서 수정하세요');
-
-  // ── freeContent: Enter 시 자동 ☑️ 추가 ──
-  const fc = document.getElementById('freeContent');
-  fc._checkHandler = function(e) {
-    if (e.key !== 'Enter') return;
-    e.preventDefault();
-
-    // 현재 커서 위치에 ☑️ + 줄바꿈 삽입
-    const sel = window.getSelection();
-    if (!sel.rangeCount) return;
-    const range = sel.getRangeAt(0);
-    range.deleteContents();
-
-    // <br>☑️ 텍스트노드 삽입
-    const br = document.createElement('br');
-    const checkNode = document.createTextNode('☑️ ');
-    const frag = document.createDocumentFragment();
-    frag.appendChild(br);
-    frag.appendChild(checkNode);
-    range.insertNode(frag);
-
-    // 커서를 ☑️ 뒤로 이동
-    const newRange = document.createRange();
-    newRange.setStartAfter(checkNode);
-    newRange.collapse(true);
-    sel.removeAllRanges();
-    sel.addRange(newRange);
-  };
-  fc.addEventListener('keydown', fc._checkHandler);
-}
-
-window.exitEdit = function() {
-  editMode = false;
-  document.body.classList.remove('edit-mode');
-  document.getElementById('editFab').textContent = '✏️';
-  document.getElementById('editFab').classList.remove('active');
-  document.getElementById('editToolbar').classList.remove('show');
-  document.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable','false'));
-  document.querySelectorAll('.edit-del-btn').forEach(el => el.style.display = 'none');
-  document.getElementById('proImgBtn').style.display = 'none';
-
-  // freeContent Enter 핸들러 제거
-  const fc2 = document.getElementById('freeContent');
-  if (fc2._checkHandler) {
-    fc2.removeEventListener('keydown', fc2._checkHandler);
-    delete fc2._checkHandler;
-  }
-};
-
-/* ── 툴바 포맷 ── */
-window.tbFormat = function(cmd) {
-  document.execCommand(cmd === 'bold' ? 'bold' : 'italic');
-};
-
-window.tbInsertImg = function() {
-  const url = prompt('📷 ImgBB 이미지 URL을 붙여넣으세요:');
-  if (!url) return;
-  const fc = document.getElementById('freeContent');
-  fc.focus();
-  document.execCommand('insertHTML', false, `<img src="${url}" style="max-width:100%;border-radius:10px;margin:10px 0;" alt="사진">`);
-};
-
-/* ── 히어로 사진 위치/밝기 조절 ── */
-window.adjustHero = function() {
-  const pos     = document.getElementById('heroPos').value;
-  const opacity = document.getElementById('heroOpacity').value / 100;
-  const hi = document.getElementById('heroImg');
-  hi.style.backgroundPosition = `center ${pos}%`;
-  hi.style.opacity = opacity;
-  D.heroPos     = pos;
-  D.heroOpacity = opacity;
-};
-
-/* ── 히어로 사진 교체 ── */
-window.replaceHeroImg = function() {
-  const url = prompt('📷 히어로 배경 사진 URL (ImgBB):');
-  if (!url) return;
-  D.heroImg = url;
-  document.getElementById('heroImg').style.backgroundImage = `url(${url})`;
-};
-
-/* ── 전지훈련 사진 그리드 ── */
-function renderTraining() {
-  D.trainingImgs = D.trainingImgs || [];
-  const grid = document.getElementById('trainingGrid');
-  grid.innerHTML = '';
-  if (D.trainingImgs.length === 0) return;
-  D.trainingImgs.forEach((url, i) => {
-    const card = document.createElement('div');
-    card.className = 'accom-card';
-    card.innerHTML = `
-      <img src="${url}" alt="전지훈련 사진 ${i+1}">
-      <button class="slide-del-btn" onclick="delTrainingSlide(${i})">✕ 삭제</button>`;
-    grid.appendChild(card);
-  });
-}
-
-window.addTrainingSlide = function() {
-  const url = prompt('📷 전지훈련 사진 URL (ImgBB):\n\nimgbb.com에 업로드 후 Direct link URL을 복붙하세요:');
-  if (!url || !url.startsWith('http')) return;
-  D.trainingImgs = D.trainingImgs || [];
-  D.trainingImgs.push(url);
-  renderTraining();
-};
-
-window.delTrainingSlide = function(i) {
-  if (!confirm('이 사진을 삭제할까요?')) return;
-  D.trainingImgs.splice(i, 1);
-  renderTraining();
-};
-
-/* ── 숙소 슬라이더 ── */
-let sliderIdx = 0;
-let touchStartX = 0;
-
-function renderSlider() {
-  D.accomImgs = D.accomImgs || [];
-  const grid = document.getElementById('accomGrid');
-  grid.innerHTML = '';
-
-  if (D.accomImgs.length === 0) {
-    grid.innerHTML = `<div class="accom-card" style="display:flex;align-items:center;justify-content:center;font-size:40px;">🏠</div>`;
-    return;
-  }
-
-  D.accomImgs.forEach((url, i) => {
-    const card = document.createElement('div');
-    card.className = 'accom-card';
-    card.innerHTML = `
-      <img src="${url}" alt="숙소 사진 ${i+1}">
-      <button class="slide-del-btn" onclick="delSlide(${i})">✕ 삭제</button>`;
-    grid.appendChild(card);
-  });
-}
-
-function goSlide(i) {} // 하위호환용 빈 함수
-
-window.addSlide = function() {
-  const url = prompt('📷 숙소 사진 URL (ImgBB):\n\nimgbb.com에 업로드 후 Direct link URL을 복붙하세요:');
-  if (!url || !url.startsWith('http')) return;
-  D.accomImgs = D.accomImgs || [];
-  D.accomImgs.push(url);
-  renderSlider();
-};
-
-window.delSlide = function(i) {
-  if (!confirm('이 사진을 삭제할까요?')) return;
-  D.accomImgs.splice(i, 1);
-  renderSlider();
-};
-
-/* ── 프로 사진 교체 ── */
-window.replaceProImg = function() {
-  const url = prompt('📷 프로 사진 URL (ImgBB):');
-  if (!url) return;
-  D.proImg = url;
-  document.getElementById('proImg').src = url;
-  document.getElementById('proImg').style.display = 'block';
-  document.getElementById('proInitials').style.display = 'none';
-};
-
-/* ── 일정 추가/삭제 ── */
-window.addScheduleRow = function() {
-  D.schedule = D.schedule || [];
-  D.schedule.push({num: String(D.schedule.length+1), title:'새 일정 제목', desc:'설명을 입력하세요'});
-  renderSchedule();
-  if (editMode) document.querySelectorAll('#scheduleList [contenteditable]').forEach(el=>el.setAttribute('contenteditable','true'));
-  if (editMode) document.querySelectorAll('#scheduleList .edit-del-btn').forEach(el=>el.style.display='inline-block');
-};
-window.delScheduleRow = function(i) {
-  D.schedule.splice(i,1);
-  renderSchedule();
-  if (editMode) document.querySelectorAll('#scheduleList [contenteditable]').forEach(el=>el.setAttribute('contenteditable','true'));
-  if (editMode) document.querySelectorAll('#scheduleList .edit-del-btn').forEach(el=>el.style.display='inline-block');
-};
-
-/* ── 포함 추가 ── */
-window.addIncRow = function() {
-  const type = confirm('포함 항목을 추가하려면 확인, 불포함 항목은 취소') ? 'inclYes' : 'inclNo';
-  const txt = prompt('항목 이름:');
-  if (!txt) return;
-  D[type] = D[type] || [];
-  D[type].push(txt);
-  renderIncl();
-  if (editMode) document.querySelectorAll('#inclYes [contenteditable], #inclNo [contenteditable]').forEach(el=>el.setAttribute('contenteditable','true'));
-};
-
-/* ── 가격 추가/삭제 ── */
-window.addPriceRow = function() {
-  D.prices = D.prices || [];
-  D.prices.push({period:'기간 입력', amount:'$000', featured:false});
-  renderPrices();
-  if (editMode) document.querySelectorAll('#priceList [contenteditable]').forEach(el=>el.setAttribute('contenteditable','true'));
-  if (editMode) document.querySelectorAll('#priceList .edit-del-btn').forEach(el=>el.style.display='inline-block');
-};
-window.delPriceRow = function(i) {
-  D.prices.splice(i,1);
-  renderPrices();
-  if (editMode) document.querySelectorAll('#priceList [contenteditable]').forEach(el=>el.setAttribute('contenteditable','true'));
-  if (editMode) document.querySelectorAll('#priceList .edit-del-btn').forEach(el=>el.style.display='inline-block');
-};
-
-/* ── 저장 ── */
-window.saveAll = async function() {
-  showToast('💾 저장 중...');
-
-  // 텍스트 필드 수집
-  document.querySelectorAll('[data-field]').forEach(el => {
-    const path = el.dataset.field.split('.');
-    // day-desc(일정 설명)는 굵게·줄바꿈 서식을 보존해야 해서 innerHTML로 저장
-    const val = el.classList.contains('day-desc') ? el.innerHTML.trim() : el.innerText.trim();
-    if (path.length === 1) {
-      D[path[0]] = val;
-    } else if (path.length === 3) {
-      if (!D[path[0]]) D[path[0]] = [];
-      if (!D[path[0]][path[1]]) D[path[0]][path[1]] = {};
-      D[path[0]][path[1]][path[2]] = val;
-    }
-  });
-
-  // 인라인 숫자 바 (모두 직접 입력값, 환율 자동계산 없음)
-  D.price       = document.getElementById('statPrice').innerText.trim();
-  D.statMinDays = document.getElementById('statMinDays').innerText.trim();
-  D.statPax     = document.getElementById('statPax').innerText.trim();
-
-  // 숙소·프로 텍스트
-  D.accomName = document.getElementById('accomName').innerText.trim();
-  D.accomDesc = document.getElementById('accomDesc').innerText.trim();
-  D.trainingName = document.getElementById('trainingName').innerText.trim();
-  D.trainingDesc = document.getElementById('trainingDesc').innerText.trim();
-  D.proName   = document.getElementById('proName').innerText.trim();
-  D.proCerts  = document.getElementById('proCerts').innerHTML;
+      <span class="price-amount">${p.amount||'문의'}</span>
+    </div>`).join('');
 
   // 자유 글
-  D.freeContent = document.getElementById('freeContent').innerHTML;
-
-  // 히어로 위치/밝기
-  D.heroPos     = document.getElementById('heroPos').value;
-  D.heroOpacity = document.getElementById('heroOpacity').value / 100;
-
-  // 히어로 텍스트 & 색상 — D에서 그대로 보존 (편집 중 바뀐 값 유지)
-  // tag, titleEn, sub1, sub2, copy, color1, color2, heroImg, price, priceUnit 은
-  // D 객체에 이미 최신값이 들어있으므로 별도 수집 불필요 (replaceHeroImg 등이 D에 직접 씀)
-
-  try {
-    localStorage.setItem('pkg_' + cardId, JSON.stringify(D));
-
-    // Firebase에도 저장
-    try {
-      const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
-      const { getFirestore, doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-      const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
-      const app = getApps().find(a=>a.name==='pkg-save') || initializeApp(cfg,'pkg-save');
-      const db = getFirestore(app);
-      await setDoc(doc(db, 'package_cards', cardId), {
-        heroImg:      D.heroImg      || '',
-        tag:          D.tag          || '',
-        titleEn:      D.titleEn      || '',
-        sub1:         D.sub1         || '',
-        sub2:         D.sub2         || '',
-        copy:         D.copy         || '',
-        price:        D.price        || '',
-        priceUnit:    D.priceUnit    || '',
-        color1:       D.color1       || '',
-        color2:       D.color2       || '',
-        statMinDays:  D.statMinDays  || '',
-        statPax:      D.statPax      || '',
-        accomName:    D.accomName    || '',
-        accomDesc:    D.accomDesc    || '',
-        trainingName: D.trainingName || '',
-        trainingDesc: D.trainingDesc || '',
-        proName:      D.proName      || '',
-        proCerts:     D.proCerts     || '',
-        proImg:       D.proImg       || '',
-        freeContent:  D.freeContent  || '',
-        accomImgs:    D.accomImgs    || [],
-        trainingImgs: D.trainingImgs || [],
-        schedule:     D.schedule     || [],
-        inclYes:      D.inclYes      || [],
-        inclNo:       D.inclNo       || [],
-        prices:       D.prices       || [],
-        heroPos:      D.heroPos      || 45,
-        heroOpacity:  D.heroOpacity  || 0.9,
-        updatedAt:    new Date().toISOString()
-      }, { merge: true });
-    } catch(fe) {
-      console.warn('Firebase 저장 실패(localStorage는 성공):', fe);
-    }
-
-    showToast('✅ 저장 완료!');
-    exitEdit();
-  } catch(e) {
-    showToast('⚠️ 저장 실패');
-    console.error(e);
+  const fc = document.getElementById('freeContent');
+  if (D.freeContent && D.freeContent.trim()) {
+    fc.innerHTML = D.freeContent;
+    document.getElementById('freeSection').style.display = 'block';
+  } else {
+    document.getElementById('freeSection').style.display = 'none';
   }
-};
 
-/* ── 토스트 ── */
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+  // 전체 섹션 표시
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('heroSection').style.display = 'flex';
+  document.getElementById('statsBar').style.display = 'grid';
+  document.getElementById('bottomCta').style.display = 'flex';
+  ['scheduleSection','inclSection','accomSection','trainingSection','proSection','priceSection'].forEach(id => {
+    document.getElementById(id).style.display = 'block';
+  });
+  // 사진 없는 섹션은 숨기기
+  if (!D.accomImgs || D.accomImgs.length === 0) document.getElementById('accomSection').style.display = D.accomName ? 'block' : 'none';
+  if (!D.trainingImgs || D.trainingImgs.length === 0) document.getElementById('trainingSection').style.display = 'none';
+
+  applyTranslations();
 }
-window.showToast = showToast;
+
+function renderPhotoGrid(containerId, urls) {
+  const grid = document.getElementById(containerId);
+  if (!urls || urls.length === 0) { grid.innerHTML = ''; return; }
+  grid.innerHTML = urls.map((url, i) =>
+    `<div class="photo-card"><img src="${url}" alt="사진 ${i+1}" loading="lazy" onerror="this.parentElement.style.display='none'"></div>`
+  ).join('');
+}
+
+/* ── Firebase 에서 데이터 로드 ── */
+window.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+    const app = getApps().length ? getApps()[0] : initializeApp(cfg);
+    const db  = getFirestore(app);
+    const snap = await getDoc(doc(db, 'package_cards', cardId));
+    if (snap.exists()) {
+      render(snap.data());
+    } else {
+      document.getElementById('loading').textContent = '⚠️ 패키지 정보를 찾을 수 없습니다.';
+    }
+  } catch(e) {
+    console.error('데이터 로드 실패:', e);
+    document.getElementById('loading').textContent = '⚠️ 불러오기 실패 — 잠시 후 다시 시도해주세요.';
+  }
+});
 </script>
 </body>
 </html>

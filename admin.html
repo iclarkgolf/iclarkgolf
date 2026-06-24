@@ -946,6 +946,34 @@ body { background:#f4faf7; padding-bottom:40px; }
         </div>
       </div>
 
+      <!-- 숙소 사진 관리 -->
+      <div style="background:#f0f7f4;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #c8edd9;">
+        <div style="font-size:13px;font-weight:800;color:#085041;margin-bottom:4px;">🏠 숙소 사진 관리</div>
+        <div style="font-size:11px;color:#6b7280;margin-bottom:12px;">ImgBB에 올린 사진의 Direct link URL을 입력하세요. 여러 장 추가 가능합니다.</div>
+        <div id="ce-accom-imgs" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;"></div>
+        <div style="display:flex;gap:8px;">
+          <input id="ce-accom-url" type="text" placeholder="https://i.ibb.co/... URL 붙여넣기"
+            style="flex:1;padding:10px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;outline:none;font-family:'Nunito',sans-serif;"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();ceAddAccomImg();}">
+          <button onclick="ceAddAccomImg()"
+            style="padding:10px 16px;background:#1D9E75;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;font-family:'Nunito',sans-serif;">+ 추가</button>
+        </div>
+      </div>
+
+      <!-- 전지훈련 사진 관리 -->
+      <div style="background:#f0f7f4;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #c8edd9;">
+        <div style="font-size:13px;font-weight:800;color:#085041;margin-bottom:4px;">⛳ 전지훈련 사진 관리</div>
+        <div style="font-size:11px;color:#6b7280;margin-bottom:12px;">레슨·라운드 현장 사진을 추가하세요.</div>
+        <div id="ce-training-imgs" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;"></div>
+        <div style="display:flex;gap:8px;">
+          <input id="ce-training-url" type="text" placeholder="https://i.ibb.co/... URL 붙여넣기"
+            style="flex:1;padding:10px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;outline:none;font-family:'Nunito',sans-serif;"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();ceAddTrainingImg();}">
+          <button onclick="ceAddTrainingImg()"
+            style="padding:10px 16px;background:#1D9E75;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;font-family:'Nunito',sans-serif;">+ 추가</button>
+        </div>
+      </div>
+
       <!-- 상세 페이지 글쓰기 -->
       <div style="background:#f8f9fa;border-radius:12px;padding:16px;margin-bottom:16px;">
         <div style="font-size:13px;font-weight:800;color:#374151;margin-bottom:4px;">📝 상세 페이지 내용</div>
@@ -1397,6 +1425,8 @@ function openCardEditor(cardId) {
     document.getElementById('ce-color1-hex').value = '#054535';
     document.getElementById('ce-color2').value = '#1D9E75';
     document.getElementById('ce-color2-hex').value = '#1D9E75';
+    ceRenderImgs('ce-accom-imgs', []);
+    ceRenderImgs('ce-training-imgs', []);
     updateCePreview();
     return;
   }
@@ -1424,6 +1454,9 @@ function openCardEditor(cardId) {
         document.getElementById('ce-hero-img').value = c.heroImg || '';
         document.getElementById('ce-hero-img-input').value = c.heroImg || '';
         updateCeHeroPreview();
+        // 사진 배열 렌더링
+        ceRenderImgs('ce-accom-imgs', c.accomImgs || []);
+        ceRenderImgs('ce-training-imgs', c.trainingImgs || []);
       }
     } catch(e) { console.error(e); }
   });
@@ -1489,6 +1522,8 @@ async function saveCard() {
     color1: document.getElementById('ce-color1').value,
     color2: document.getElementById('ce-color2').value,
     freeContent: document.getElementById('ce-editor').innerHTML,
+    accomImgs: ceGetImgs('ce-accom-imgs'),
+    trainingImgs: ceGetImgs('ce-training-imgs'),
     updatedAt: new Date().toISOString(),
   };
   // heroImg가 있을 때만 포함 (빈값이면 Firebase 기존값 보존)
@@ -2106,7 +2141,68 @@ function loadCaddyData() {
     });
 }
 
-/* ── Firebase 문의 내역 ── */
+/* ── 카드 에디터 사진 배열 관리 ── */
+
+// 사진 목록 렌더링 (썸네일 + 삭제 버튼)
+function ceRenderImgs(containerId, urls) {
+  const box = document.getElementById(containerId);
+  if (!box) return;
+  if (!urls || urls.length === 0) {
+    box.innerHTML = '<div style="font-size:12px;color:#9ca3af;padding:8px 0;">아직 사진이 없습니다</div>';
+    return;
+  }
+  box.innerHTML = urls.map((url, i) => `
+    <div style="position:relative;display:inline-block;">
+      <img src="${url}" alt="사진 ${i+1}"
+        style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1.5px solid #c8edd9;display:block;"
+        onerror="this.style.border='2px solid #fca5a5';this.title='이미지 로드 실패';">
+      <button onclick="ceDelImg('${containerId}',${i})"
+        style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;background:#dc2626;color:#fff;border:none;border-radius:50%;font-size:11px;font-weight:800;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>
+  `).join('');
+  // dataset에 url 배열 보관
+  box.dataset.urls = JSON.stringify(urls);
+}
+
+// 사진 추가
+function ceAddAccomImg() {
+  const input = document.getElementById('ce-accom-url');
+  const url = input.value.trim();
+  if (!url || !url.startsWith('http')) { showToast('올바른 URL을 입력해주세요 (http로 시작)', 'error'); return; }
+  const box = document.getElementById('ce-accom-imgs');
+  const urls = ceGetImgs('ce-accom-imgs');
+  urls.push(url);
+  ceRenderImgs('ce-accom-imgs', urls);
+  input.value = '';
+  input.focus();
+}
+
+function ceAddTrainingImg() {
+  const input = document.getElementById('ce-training-url');
+  const url = input.value.trim();
+  if (!url || !url.startsWith('http')) { showToast('올바른 URL을 입력해주세요 (http로 시작)', 'error'); return; }
+  const urls = ceGetImgs('ce-training-imgs');
+  urls.push(url);
+  ceRenderImgs('ce-training-imgs', urls);
+  input.value = '';
+  input.focus();
+}
+
+// 사진 삭제
+function ceDelImg(containerId, idx) {
+  const urls = ceGetImgs(containerId);
+  urls.splice(idx, 1);
+  ceRenderImgs(containerId, urls);
+}
+
+// 현재 사진 배열 가져오기
+function ceGetImgs(containerId) {
+  const box = document.getElementById(containerId);
+  if (!box || !box.dataset.urls) return [];
+  try { return JSON.parse(box.dataset.urls); } catch { return []; }
+}
+
+/* ── 갤러리 관리 로드 ── */
 let _inquiryDB = null;
 let _inquiryUnsubscribe = null;
 
