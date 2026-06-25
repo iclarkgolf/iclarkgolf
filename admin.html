@@ -1056,13 +1056,6 @@ body { background:#f4faf7; padding-bottom:40px; }
         </div>
       </div>
 
-      <!-- 숙소 이름·설명 -->
-      <div style="background:#f0f7f4;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #c8edd9;">
-        <div style="font-size:13px;font-weight:800;color:#085041;margin-bottom:10px;">🏠 숙소 이름 · 설명</div>
-        <input id="ce-accom-name" type="text" placeholder="숙소 이름 (예: 로컬 전용 숙소)" style="width:100%;padding:9px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;outline:none;font-family:'Nunito',sans-serif;box-sizing:border-box;margin-bottom:8px;">
-        <textarea id="ce-accom-desc" rows="2" placeholder="숙소 설명 (예: 프라데라 클럽하우스에서 5분 거리…)" style="width:100%;padding:9px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;outline:none;font-family:'Nunito',sans-serif;box-sizing:border-box;resize:vertical;"></textarea>
-      </div>
-
       <!-- 로컬 전용 숙소 이름·설명 -->
       <div style="background:#f0f7f4;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #c8edd9;">
         <div style="font-size:13px;font-weight:800;color:#085041;margin-bottom:10px;">🏡 로컬 전용 숙소 이름 · 설명</div>
@@ -1581,7 +1574,7 @@ function openCardEditor(cardId) {
     ceRenderIncl('yes', []);
     ceRenderIncl('no',  []);
     ceRenderPrices([]);
-    ['ce-accom-name','ce-accom-desc','ce-local-name','ce-local-desc','ce-training-name','ce-training-desc'].forEach(id => document.getElementById(id).value = '');
+    ['ce-local-name','ce-local-desc','ce-training-name','ce-training-desc'].forEach(id => document.getElementById(id).value = '');
     updateCePreview();
     return;
   }
@@ -1620,8 +1613,6 @@ function openCardEditor(cardId) {
         ceRenderIncl('no',  c.inclNo  || []);
         ceRenderPrices(c.prices || []);
         // 숙소·훈련 이름/설명
-        document.getElementById('ce-accom-name').value    = c.accomName    || '';
-        document.getElementById('ce-accom-desc').value    = c.accomDesc    || '';
         document.getElementById('ce-local-name').value    = c.localName    || '';
         document.getElementById('ce-local-desc').value    = c.localDesc    || '';
         document.getElementById('ce-training-name').value = c.trainingName || '';
@@ -1678,8 +1669,10 @@ document.addEventListener('DOMContentLoaded', () => {
 async function saveCard() {
   const cardId = document.getElementById('ce-card-id').value;
   const msg = document.getElementById('ce-msg');
-  const heroImgVal = document.getElementById('ce-hero-img').value.trim();
-  const data = {
+  const heroImgVal = document.getElementById('ce-hero-img-input').value.trim()
+                  || document.getElementById('ce-hero-img').value.trim();
+
+  const formData = {
     tag: document.getElementById('ce-tag').value.trim(),
     titleEn: document.getElementById('ce-title-en').value.trim(),
     sub1: document.getElementById('ce-sub1').value.trim(),
@@ -1699,26 +1692,26 @@ async function saveCard() {
     inclYes:      ceGetIncl('yes'),
     inclNo:       ceGetIncl('no'),
     prices:       ceGetPrices(),
-    accomName:    document.getElementById('ce-accom-name').value.trim(),
-    accomDesc:    document.getElementById('ce-accom-desc').value.trim(),
     localName:    document.getElementById('ce-local-name').value.trim(),
     localDesc:    document.getElementById('ce-local-desc').value.trim(),
     trainingName: document.getElementById('ce-training-name').value.trim(),
     trainingDesc: document.getElementById('ce-training-desc').value.trim(),
     updatedAt: new Date().toISOString(),
   };
-  // heroImg가 있을 때만 포함 (빈값이면 Firebase 기존값 보존)
-  if (heroImgVal) data.heroImg = heroImgVal;
+  if (heroImgVal) formData.heroImg = heroImgVal;
 
   try {
     const db = await initCardDB();
-    const { doc, setDoc, updateDoc, addDoc, collection } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const { doc, getDoc, setDoc, updateDoc, addDoc, collection } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     if (cardId === 'new') {
-      const ref = await addDoc(collection(db, 'package_cards'), { ...data, order: Date.now() });
+      const ref = await addDoc(collection(db, 'package_cards'), { ...formData, order: Date.now() });
       document.getElementById('ce-card-id').value = ref.id;
     } else {
-      // setDoc 대신 updateDoc 사용 → 없는 필드는 건드리지 않음
-      await updateDoc(doc(db, 'package_cards', cardId), data);
+      // 기존 데이터 먼저 읽고 병합 → 폼에 없는 필드 절대 날아가지 않음
+      const snap = await getDoc(doc(db, 'package_cards', cardId));
+      const existing = snap.exists() ? snap.data() : {};
+      const merged = { ...existing, ...formData };
+      await setDoc(doc(db, 'package_cards', cardId), merged);
     }
     msg.style.display = 'block';
     msg.style.background = '#f0fdf4';
