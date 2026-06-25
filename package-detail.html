@@ -299,6 +299,14 @@ window.render = function render(D) {
   document.getElementById('heroDot').style.display = (D.sub1 && D.sub2) ? 'block' : 'none';
   document.getElementById('heroCopy').innerHTML    = (D.copy||'').replace(/\n/g,'<br>');
   document.title = `${D.sub1||''} ${D.sub2||''} — iClark Golf`;
+  // 동적 description 추가
+  let metaDesc = document.querySelector('meta[name="description"]');
+  if (!metaDesc) {
+    metaDesc = document.createElement('meta');
+    metaDesc.name = 'description';
+    document.head.appendChild(metaDesc);
+  }
+  metaDesc.content = `${D.sub1||''} ${D.sub2||''} — 필리핀 클락 골프 ${D.copy||'패키지'}. ${D.price||''}${D.priceUnit||''} 부터 시작. iCLARKGOLF에서 예약하세요.`;
 
   // 스탯
   document.getElementById('statPrice').textContent   = D.price      || '';
