@@ -1478,10 +1478,10 @@ function loadProfile() {
 /* ===== 카드 관리 시스템 ===== */
 let _cardDB = null;
 const DEFAULT_CARDS = [
-  { id:'card1', tag:'먹 · 자 · 골', titleEn:'PRADERA', sub1:'로컬숙소', sub2:'라이프', copy:'로컬 숙소에서\n먹고 · 자고 · 골프만\n나 홀로 전지훈련을 오픈합니다', price:'$99 / day', btn:'자세히 보기', color1:'#054535', color2:'#1D9E75', content:'', order:1 },
-  { id:'card2', tag:'힐링 친목 / 럭셔리 골프', titleEn:'PRADERA', sub1:'풀 빌라', sub2:'라이프', copy:'골프와 힐링을 동시에\n4인 이상 풀빌라 단독 사용', price:'가격 문의', btn:'자세히 보기', color1:'#72243E', color2:'#D4537E', content:'', order:2 },
-  { id:'card3', tag:'자격증을 위한 / 휴양 휴식을 위한', titleEn:'PRADERA', sub1:'장기 하숙형', sub2:'전지훈련', copy:'프라데라에서 오래 머물수록\n실력도 자격증도 휴식도 완성', price:'가격 문의', btn:'자세히 보기', color1:'#2D5A27', color2:'#7DC274', content:'', order:3 },
-  { id:'card4', tag:'내 마음 가는 대로', titleEn:'CLARK GOLF', sub1:'맘대로', sub2:'선택하기', copy:'클락의 골프 모든 것을\n골프장 · 숙소 · 레슨 · 캐디\n직접 골라보세요', price:'내 견적 만들기', btn:'선택하러 가기', color1:'#1a1a2e', color2:'#8B5CF6', content:'', order:4 },
+  { id:'card1', tag:'먹 · 자 · 골', titleEn:'PRADERA', sub1:'로컬숙소', sub2:'라이프', copy:'로컬 숙소에서\n먹고 · 자고 · 골프만\n나 홀로 전지훈련을 오픈합니다', price:'$99 / day', btn:'자세히 보기', color1:'0', color2:'0', content:'', order:1 },
+  { id:'card2', tag:'힐링 친목 / 럭셔리 골프', titleEn:'PRADERA', sub1:'풀 빌라', sub2:'라이프', copy:'골프와 힐링을 동시에\n4인 이상 풀빌라 단독 사용', price:'가격 문의', btn:'자세히 보기', color1:'0', color2:'0', content:'', order:2 },
+  { id:'card3', tag:'자격증을 위한 / 휴양 휴식을 위한', titleEn:'PRADERA', sub1:'장기 하숙형', sub2:'전지훈련', copy:'프라데라에서 오래 머물수록\n실력도 자격증도 휴식도 완성', price:'가격 문의', btn:'자세히 보기', color1:'0', color2:'0', content:'', order:3 },
+  { id:'card4', tag:'내 마음 가는 대로', titleEn:'CLARK GOLF', sub1:'맘대로', sub2:'선택하기', copy:'클락의 골프 모든 것을\n골프장 · 숙소 · 레슨 · 캐디\n직접 골라보세요', price:'내 견적 만들기', btn:'선택하러 가기', color1:'0', color2:'0', content:'', order:4 },
 ];
 
 async function initCardDB() {
@@ -1667,8 +1667,8 @@ async function saveCard() {
     price: document.getElementById('ce-price').value.trim(),
     priceUnit: document.getElementById('ce-price-unit').value.trim(),
     btn: document.getElementById('ce-btn').value.trim(),
-    color1: document.getElementById('ce-color1').value,
-    color2: document.getElementById('ce-color2').value,
+    color1: '0',
+    color2: '0',
     freeContent: document.getElementById('ce-editor').innerHTML,
     accomImgs:    ceGetImgs('ce-accom-imgs'),
     trainingImgs: ceGetImgs('ce-training-imgs'),
@@ -2589,7 +2589,26 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // 방문자 카운터 로드
   loadVisitorStats();
+
+  // Firebase 카드 4장 color1/color2 강제 0으로 초기화
+  resetAllCardColors();
 });
+
+async function resetAllCardColors() {
+  try {
+    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    const { getFirestore, collection, getDocs, updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+    const app = getApps().find(a=>a.name==='reset-colors') || initializeApp(cfg,'reset-colors');
+    const db = getFirestore(app);
+    const snap = await getDocs(collection(db, 'package_cards'));
+    const updates = snap.docs.map(d => updateDoc(doc(db, 'package_cards', d.id), { color1:'0', color2:'0' }));
+    await Promise.all(updates);
+    console.log('✅ 카드 색상 초기화 완료');
+  } catch(e) {
+    console.warn('카드 색상 초기화 실패:', e.message);
+  }
+}
 
 async function loadVisitorStats() {
   try {
