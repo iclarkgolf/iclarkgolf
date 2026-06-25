@@ -1672,6 +1672,12 @@ async function saveCard() {
   const heroImgVal = document.getElementById('ce-hero-img-input').value.trim()
                   || document.getElementById('ce-hero-img').value.trim();
 
+  const localNameVal = document.getElementById('ce-local-name').value.trim();
+  const localDescVal = document.getElementById('ce-local-desc').value.trim();
+  const trainingNameVal = document.getElementById('ce-training-name').value.trim();
+  const trainingDescVal = document.getElementById('ce-training-desc').value.trim();
+  console.log('저장 직전 값 확인:', { localNameVal, localDescVal, trainingNameVal, trainingDescVal });
+
   const formData = {
     tag: document.getElementById('ce-tag').value.trim(),
     titleEn: document.getElementById('ce-title-en').value.trim(),
@@ -1692,10 +1698,10 @@ async function saveCard() {
     inclYes:      ceGetIncl('yes'),
     inclNo:       ceGetIncl('no'),
     prices:       ceGetPrices(),
-    localName:    document.getElementById('ce-local-name').value.trim(),
-    localDesc:    document.getElementById('ce-local-desc').value.trim(),
-    trainingName: document.getElementById('ce-training-name').value.trim(),
-    trainingDesc: document.getElementById('ce-training-desc').value.trim(),
+    localName:    localNameVal,
+    localDesc:    localDescVal,
+    trainingName: trainingNameVal,
+    trainingDesc: trainingDescVal,
     updatedAt: new Date().toISOString(),
   };
   if (heroImgVal) formData.heroImg = heroImgVal;
