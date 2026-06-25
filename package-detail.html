@@ -373,7 +373,7 @@ window.render = function render(D) {
   // 사진 없는 섹션은 숨기기
   if (!D.accomImgs || D.accomImgs.length === 0) document.getElementById('accomSection').style.display = D.accomName ? 'block' : 'none';
   if (!D.localImgs || D.localImgs.length === 0) document.getElementById('localSection').style.display = D.localName ? 'block' : 'none';
-  if (!D.trainingImgs || D.trainingImgs.length === 0) document.getElementById('trainingSection').style.display = 'none';
+  if (!D.trainingImgs || D.trainingImgs.length === 0) document.getElementById('trainingSection').style.display = (D.trainingName || D.trainingDesc || D.trainingSchedule) ? 'block' : 'none';
 
   applyTranslations();
 }
