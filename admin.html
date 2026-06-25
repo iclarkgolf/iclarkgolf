@@ -1605,18 +1605,19 @@ function openCardEditor(cardId) {
         document.getElementById('ce-hero-img-input').value = c.heroImg || '';
         updateCeHeroPreview();
         // 사진 배열 렌더링
-        ceRenderImgs('ce-accom-imgs', c.accomImgs || []);
-        ceRenderImgs('ce-training-imgs', c.trainingImgs || []);
+        try { ceRenderImgs('ce-accom-imgs', c.accomImgs || []); } catch(e) { console.warn('accomImgs 렌더 오류', e); }
+        try { ceRenderImgs('ce-training-imgs', c.trainingImgs || []); } catch(e) { console.warn('trainingImgs 렌더 오류', e); }
         // 일정·포함·불포함·가격 렌더링
-        document.getElementById('ce-schedule-editor').innerHTML = c.trainingSchedule || '';
-        ceRenderIncl('yes', c.inclYes || []);
-        ceRenderIncl('no',  c.inclNo  || []);
-        ceRenderPrices(c.prices || []);
-        // 숙소·훈련 이름/설명
+        try { document.getElementById('ce-schedule-editor').innerHTML = c.trainingSchedule || ''; } catch(e) {}
+        try { ceRenderIncl('yes', c.inclYes || []); } catch(e) { console.warn('inclYes 오류', e); }
+        try { ceRenderIncl('no',  c.inclNo  || []); } catch(e) { console.warn('inclNo 오류', e); }
+        try { ceRenderPrices(c.prices || []); } catch(e) { console.warn('prices 오류', e); }
+        // 숙소·훈련 이름/설명 — 에러와 무관하게 항상 실행
         document.getElementById('ce-local-name').value    = c.localName    || '';
         document.getElementById('ce-local-desc').value    = c.localDesc    || '';
         document.getElementById('ce-training-name').value = c.trainingName || '';
         document.getElementById('ce-training-desc').value = c.trainingDesc || '';
+        console.log('로드 완료:', { localName: c.localName, trainingName: c.trainingName });
       }
     } catch(e) { console.error(e); }
   });
@@ -2449,6 +2450,7 @@ function ceDelIncl(type,i) { const l = ceGetIncl(type); l.splice(i,1); ceRenderI
 /* ── 가격표 관리 ── */
 function ceRenderPrices(list) {
   const box = document.getElementById('ce-prices-list');
+  if (!box) return;
   if (!list || list.length === 0) { box.innerHTML = '<div style="font-size:12px;color:#9ca3af;padding:4px 0;">아직 가격이 없습니다</div>'; box.dataset.list = '[]'; return; }
   box.innerHTML = list.map((p,i) => `
     <div style="display:flex;align-items:center;gap:8px;background:#fff;border-radius:8px;padding:8px 10px;margin-bottom:6px;border:1px solid #e5e7eb;">
