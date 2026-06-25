@@ -8,8 +8,11 @@ Allow: /
 # 관리자·템플릿·구버전 페이지는 검색 제외
 Disallow: /admin.html
 Disallow: /blog-admin.html
+Disallow: /blog-admin
 Disallow: /blog-template.html
 Disallow: /index-new.html
+Disallow: /payment
+Disallow: /payment.html
 
 # 구글봇
 User-agent: Googlebot
