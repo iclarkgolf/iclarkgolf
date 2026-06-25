@@ -1063,6 +1063,13 @@ body { background:#f4faf7; padding-bottom:40px; }
         <textarea id="ce-accom-desc" rows="2" placeholder="숙소 설명 (예: 프라데라 클럽하우스에서 5분 거리…)" style="width:100%;padding:9px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;outline:none;font-family:'Nunito',sans-serif;box-sizing:border-box;resize:vertical;"></textarea>
       </div>
 
+      <!-- 로컬 전용 숙소 이름·설명 -->
+      <div style="background:#f0f7f4;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #c8edd9;">
+        <div style="font-size:13px;font-weight:800;color:#085041;margin-bottom:10px;">🏡 로컬 전용 숙소 이름 · 설명</div>
+        <input id="ce-local-name" type="text" placeholder="숙소 이름 (예: 로컬 마을 전용 숙소)" style="width:100%;padding:9px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;outline:none;font-family:'Nunito',sans-serif;box-sizing:border-box;margin-bottom:8px;">
+        <textarea id="ce-local-desc" rows="2" placeholder="숙소 설명 (예: 1인1실 / 조식,중식,석식 / 세탁 / 인터넷 와이파이 / 로컬 체험)" style="width:100%;padding:9px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;outline:none;font-family:'Nunito',sans-serif;box-sizing:border-box;resize:vertical;"></textarea>
+      </div>
+
       <!-- 전지훈련 이름·설명 -->
       <div style="background:#f0f7f4;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #c8edd9;">
         <div style="font-size:13px;font-weight:800;color:#085041;margin-bottom:10px;">⛳ 전지훈련 이름 · 설명</div>
@@ -1574,7 +1581,7 @@ function openCardEditor(cardId) {
     ceRenderIncl('yes', []);
     ceRenderIncl('no',  []);
     ceRenderPrices([]);
-    ['ce-accom-name','ce-accom-desc','ce-training-name','ce-training-desc'].forEach(id => document.getElementById(id).value = '');
+    ['ce-accom-name','ce-accom-desc','ce-local-name','ce-local-desc','ce-training-name','ce-training-desc'].forEach(id => document.getElementById(id).value = '');
     updateCePreview();
     return;
   }
@@ -1615,6 +1622,8 @@ function openCardEditor(cardId) {
         // 숙소·훈련 이름/설명
         document.getElementById('ce-accom-name').value    = c.accomName    || '';
         document.getElementById('ce-accom-desc').value    = c.accomDesc    || '';
+        document.getElementById('ce-local-name').value    = c.localName    || '';
+        document.getElementById('ce-local-desc').value    = c.localDesc    || '';
         document.getElementById('ce-training-name').value = c.trainingName || '';
         document.getElementById('ce-training-desc').value = c.trainingDesc || '';
       }
@@ -1692,6 +1701,8 @@ async function saveCard() {
     prices:       ceGetPrices(),
     accomName:    document.getElementById('ce-accom-name').value.trim(),
     accomDesc:    document.getElementById('ce-accom-desc').value.trim(),
+    localName:    document.getElementById('ce-local-name').value.trim(),
+    localDesc:    document.getElementById('ce-local-desc').value.trim(),
     trainingName: document.getElementById('ce-training-name').value.trim(),
     trainingDesc: document.getElementById('ce-training-desc').value.trim(),
     updatedAt: new Date().toISOString(),
