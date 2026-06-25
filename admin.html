@@ -911,6 +911,16 @@ body { background:#f4faf7; padding-bottom:40px; }
               <input id="ce-btn" type="text" placeholder="예: 자세히 보기 · 선택하러 가기" style="width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box;">
             </div>
           </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+            <div>
+              <label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">최소 기간 (예: 1박 · 3박)</label>
+              <input id="ce-min-days" type="text" placeholder="예: 1박 · 3박 이상" style="width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box;">
+            </div>
+            <div>
+              <label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">인원 (예: 1인 · 4인)</label>
+              <input id="ce-pax" type="text" placeholder="예: 1인 · 4인 이상" style="width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box;">
+            </div>
+          </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
             <div>
               <label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">배경 색상 (시작)</label>
@@ -1552,7 +1562,7 @@ function openCardEditor(cardId) {
 
   if (cardId === 'new') {
     // 빈 폼
-    ['ce-tag','ce-title-en','ce-sub1','ce-sub2','ce-copy','ce-price','ce-price-unit','ce-btn'].forEach(id => document.getElementById(id).value = '');
+    ['ce-tag','ce-title-en','ce-sub1','ce-sub2','ce-copy','ce-price','ce-price-unit','ce-btn','ce-min-days','ce-pax'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('ce-editor').innerHTML = '';
     document.getElementById('ce-color1').value = '#054535';
     document.getElementById('ce-color1-hex').value = '#054535';
@@ -1584,6 +1594,8 @@ function openCardEditor(cardId) {
         document.getElementById('ce-price').value = c.price || '';
         document.getElementById('ce-price-unit').value = c.priceUnit || '';
         document.getElementById('ce-btn').value = c.btn || '';
+        document.getElementById('ce-min-days').value = c.statMinDays || '';
+        document.getElementById('ce-pax').value = c.statPax || '';
         document.getElementById('ce-color1').value = c.color1 || '#054535';
         document.getElementById('ce-color1-hex').value = c.color1 || '#054535';
         document.getElementById('ce-color2').value = c.color2 || '#1D9E75';
@@ -1667,6 +1679,8 @@ async function saveCard() {
     price: document.getElementById('ce-price').value.trim(),
     priceUnit: document.getElementById('ce-price-unit').value.trim(),
     btn: document.getElementById('ce-btn').value.trim(),
+    statMinDays: document.getElementById('ce-min-days').value.trim(),
+    statPax: document.getElementById('ce-pax').value.trim(),
     color1: '0',
     color2: '0',
     freeContent: document.getElementById('ce-editor').innerHTML,
