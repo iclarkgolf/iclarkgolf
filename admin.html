@@ -2337,6 +2337,7 @@ function loadCaddyData() {
       });
       document.getElementById('caddy-pending-count').textContent = pending.length + '명';
       document.getElementById('caddy-approved-count').textContent = approved.length + '명';
+      document.getElementById('stat-caddy').textContent = approved.length;
       document.getElementById('caddy-pending-body').innerHTML = pending.length ?
         pending.map(c => `<tr>
           <td style="font-weight:700;">${c.name}</td>
@@ -2599,6 +2600,7 @@ async function changeInquiryStatus(docId, newStatus) {
 /* ── 초기화 ── */
 window.addEventListener('DOMContentLoaded', () => {
   loadInquiries();
+  loadCaddyData();
   document.getElementById('stat-accom').textContent = getAccoms().length;
   // 환율 초기화
   const saved = getAppliedRate();
