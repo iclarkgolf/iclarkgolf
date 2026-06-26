@@ -2575,7 +2575,7 @@ async function loadInquiries(filter = 'all') {
 
       // 신규 문의 카운트
       const statEl = document.getElementById('stat-inquiry');
-      if (statEl) statEl.textContent = docs.filter(d=>d.status==='pending').length;
+      if (statEl) statEl.textContent = docs.length;
     });
 
   } catch(e) {
