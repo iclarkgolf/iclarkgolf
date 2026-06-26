@@ -612,10 +612,15 @@ body { background:#f4faf7; padding-bottom:40px; }
 .badge-pending { background:#fef3c7; color:#92400e; font-size:11px; padding:2px 8px; border-radius:100px; font-weight:700; }
 
 /* 통계 카드 */
-.stat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:20px; }
+.stat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:12px; margin-bottom:20px; }
 .stat-card { background:#fff; border-radius:14px; border:1.5px solid #c8edd9; padding:16px; text-align:center; }
 .stat-num { font-size:28px; font-weight:800; color:#534AB7; }
 .stat-label { font-size:12px; color:#6b7280; margin-top:4px; }
+@media (max-width:480px) {
+  .stat-grid { grid-template-columns:repeat(2,1fr); gap:8px; }
+  .stat-num { font-size:22px; }
+  .stat-card { padding:12px 8px; }
+}
 
 /* 사진 업로드 */
 .photo-upload { border:2px dashed #9FE1CB; border-radius:12px; padding:20px; text-align:center; cursor:pointer; background:#f4faf7; }
