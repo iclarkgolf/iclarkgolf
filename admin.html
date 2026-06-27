@@ -2702,6 +2702,7 @@ async function loadVisitorStats() {
         <input type="text" id="qfLinkUrl" readonly style="flex:1;min-width:180px;border:1.5px solid #c8e6c9;border-radius:8px;padding:9px 12px;font-size:13px;background:#fff;">
         <button onclick="qfCopy()" style="padding:9px 14px;background:#1b4332;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">📋 복사</button>
         <button onclick="qfKakao()" style="padding:9px 14px;background:#FEE500;color:#000;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">💬 카톡</button>
+        <button onclick="qfPreview()" style="padding:9px 14px;background:#534AB7;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">👁 미리보기</button>
       </div>
     </div>
   </div>
@@ -2789,8 +2790,15 @@ function qfSave(){
     var link='https://iclarkgolf.com/my-quote.html?id='+data.quoteNo.replace(/[^a-zA-Z0-9-]/g,'_');
     document.getElementById('qfLinkUrl').value=link;
     document.getElementById('qfLinkBox').style.display='block';
-    if(typeof showToast==='function')showToast('✅ 저장 완료! 링크를 고객에게 전송하세요.','success');
-  }).catch(function(e){if(typeof showToast==='function')showToast('❌ 저장 실패: '+e.message,'error');});
+    document.getElementById('qfLinkBox').scrollIntoView({behavior:'smooth'});
+    alert('✅ 견적서 저장 완료!\n\n링크가 아래에 생성됐습니다.\n복사 버튼을 눌러 고객에게 전송하세요.');
+  }).catch(function(e){ alert('❌ 저장 실패: '+e.message); });
+}
+
+function qfPreview(){
+  var link=document.getElementById('qfLinkUrl').value;
+  if(link) window.open(link,'_blank');
+  else alert('먼저 견적서를 저장해주세요.');
 }
 
 function qfCopy(){
