@@ -670,6 +670,7 @@ body { background:#f4faf7; padding-bottom:40px; }
   <button class="tab-btn" onclick="showTab('inquiry',this)">📩 문의 내역</button>
   <button class="tab-btn" onclick="showTab('gallery',this)">📸 갤러리 관리</button>
   <button class="tab-btn" onclick="showTab('profile',this)">👤 프로필 관리</button>
+  <button class="tab-btn" onclick="showTab('quotemake',this)">📋 견적서 작성</button>
 </div>
 
 <!-- ========== 대시보드 ========== -->
@@ -1232,6 +1233,206 @@ body { background:#f4faf7; padding-bottom:40px; }
     </div>
   </div>
 </div>
+
+
+<!-- ========== 견적서 작성 ========== -->
+<div class="panel" id="panel-quotemake" style="display:none;">
+  <div class="mgmt-card">
+    <div class="mgmt-title">📋 견적서 작성 &amp; 고객 링크 공유</div>
+
+    <!-- 환율 정보 -->
+    <div id="qf-rate-info" style="background:#eaf3ee;border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:#1b4332;font-weight:600;"></div>
+
+    <!-- 기본 정보 -->
+    <div style="font-size:13px;font-weight:800;color:#1b4332;margin:0 0 12px;border-left:3px solid #f4a261;padding-left:10px;">기본 정보</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:5px;">고객명</label>
+        <input type="text" id="qf-name" placeholder="홍길동" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:10px 12px;font-size:14px;font-family:'Nunito',sans-serif;"></div>
+      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:5px;">견적 번호</label>
+        <input type="text" id="qf-no" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:10px 12px;font-size:14px;font-family:'Nunito',sans-serif;"></div>
+      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:5px;">문서 종류</label>
+        <select id="qf-doctype" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:10px 12px;font-size:14px;font-family:'Nunito',sans-serif;">
+          <option value="견적서">견적서</option>
+          <option value="확정서">확정서</option>
+        </select></div>
+      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:5px;">인원 수</label>
+        <input type="number" id="qf-persons" value="1" min="1" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:10px 12px;font-size:14px;font-family:'Nunito',sans-serif;"></div>
+      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:5px;">체류 기간</label>
+        <input type="text" id="qf-duration" placeholder="7박 8일" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:10px 12px;font-size:14px;font-family:'Nunito',sans-serif;"></div>
+      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:5px;">도착일</label>
+        <input type="text" id="qf-checkin" placeholder="2026-07-10 (예상일)" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:10px 12px;font-size:14px;font-family:'Nunito',sans-serif;"></div>
+      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:5px;">출발일</label>
+        <input type="text" id="qf-checkout" placeholder="2026-07-17 (예상일)" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:10px 12px;font-size:14px;font-family:'Nunito',sans-serif;"></div>
+      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:5px;">골프장</label>
+        <input type="text" id="qf-course" value="프라데라 베르데" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:10px 12px;font-size:14px;font-family:'Nunito',sans-serif;"></div>
+      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:5px;">숙소</label>
+        <input type="text" id="qf-accom" value="iClark 로컬 전용숙소" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:10px 12px;font-size:14px;font-family:'Nunito',sans-serif;"></div>
+      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:5px;">고객 전화번호 뒷 4자리 (본인확인용)</label>
+        <input type="text" id="qf-pin" placeholder="0000" maxlength="4" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:10px 12px;font-size:14px;font-family:'Nunito',sans-serif;"></div>
+    </div>
+
+    <!-- 비용 항목 -->
+    <div style="font-size:13px;font-weight:800;color:#1b4332;margin:16px 0 12px;border-left:3px solid #f4a261;padding-left:10px;">⛳ 골프 비용</div>
+    <div id="qf-golf-items"></div>
+
+    <div style="font-size:13px;font-weight:800;color:#1b4332;margin:16px 0 12px;border-left:3px solid #f4a261;padding-left:10px;">🏋 레슨 비용</div>
+    <div id="qf-lesson-items"></div>
+
+    <div style="font-size:13px;font-weight:800;color:#1b4332;margin:16px 0 12px;border-left:3px solid #f4a261;padding-left:10px;">🏡 숙소 · 이동 비용</div>
+    <div id="qf-stay-items"></div>
+
+    <!-- Remarks -->
+    <div style="font-size:13px;font-weight:800;color:#1b4332;margin:16px 0 12px;border-left:3px solid #f4a261;padding-left:10px;">📝 Remarks</div>
+    <textarea id="qf-remarks" placeholder="특이사항 · 보충 설명" style="width:100%;min-height:80px;border:1.5px solid #e0d8ce;border-radius:8px;padding:10px 12px;font-size:14px;font-family:'Nunito',sans-serif;resize:vertical;"></textarea>
+
+    <!-- 저장 버튼 -->
+    <button onclick="qfSaveAndShare()" style="width:100%;margin-top:20px;padding:16px;background:#1b4332;color:#fff;border:none;border-radius:50px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;">📄 견적서 저장 &amp; 링크 만들기</button>
+
+    <!-- 링크 박스 -->
+    <div id="qf-link-box" style="display:none;margin-top:20px;background:#eaf3ee;border-radius:12px;padding:16px 20px;">
+      <div style="font-size:12px;font-weight:700;color:#1b4332;margin-bottom:10px;">🔗 고객 공유 링크</div>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="qf-link-url" readonly style="flex:1;border:1.5px solid #c8e6c9;border-radius:8px;padding:10px 12px;font-size:13px;background:#fff;">
+        <button onclick="qfCopyLink()" style="padding:10px 16px;background:#1b4332;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">📋 복사</button>
+        <button onclick="qfShareKakao()" style="padding:10px 16px;background:#FEE500;color:#000;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">💬 카톡</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// 견적서 작성 탭 초기화
+(function initQuoteForm() {
+  const QF_RATE = (function() {
+    try {
+      const s = localStorage.getItem('iclark_exchange');
+      if (s) return JSON.parse(s);
+    } catch(e){}
+    return { appliedUsdPhp:53.2, usdKrw:1380, updatedAt:null };
+  })();
+
+  // 환율 표시
+  const ri = document.getElementById('qf-rate-info');
+  if (ri) ri.innerHTML = '💱 적용 환율: <b>$1 = ₱' + (QF_RATE.appliedUsdPhp||53.2).toFixed(2) + '</b> &nbsp;|&nbsp; <b>$1 = ₩' + Number(QF_RATE.usdKrw||1380).toLocaleString() + '</b>' + (QF_RATE.updatedAt ? ' (' + QF_RATE.updatedAt + ')' : '');
+
+  function phpToUsd(php) { return Math.round((php/(QF_RATE.appliedUsdPhp||53.2))*100)/100; }
+
+  const GOLF_ITEMS = [
+    { key:'greenfee',  name:'그린피',   unit:'라운드', php:4500, included:true },
+    { key:'caddy',     name:'캐디피',   unit:'라운드', php:1800, included:false },
+    { key:'cart',      name:'카트비',   unit:'라운드', php:1200, included:false },
+    { key:'insurance', name:'보험료',   unit:'명',     php:150,  included:false },
+    { key:'consum',    name:'컨슘어블', unit:'라운드', php:500,  included:false },
+  ];
+  const LESSON_ITEMS = [
+    { key:'field_lesson', name:'필드 레슨비',   unit:'회', php:2500, included:true },
+    { key:'range_lesson', name:'연습장 레슨비', unit:'회', php:1500, included:true },
+    { key:'range_fee',    name:'연습장 이용료', unit:'일', php:500,  included:true },
+  ];
+  const STAY_ITEMS = [
+    { key:'accom',   name:'로컬 전용숙소 (식사포함)',  unit:'박', php:3000, included:true },
+    { key:'drop',    name:'숙소 ↔ 골프장 드롭 픽업', unit:'일', php:500,  included:true },
+    { key:'pickup',  name:'공항 픽업',                unit:'회', php:2000, included:true },
+    { key:'sendoff', name:'공항 샌딩',                unit:'회', php:2000, included:true },
+  ];
+
+  function renderItems(items, containerId) {
+    const c = document.getElementById(containerId);
+    if (!c) return;
+    c.innerHTML = '';
+    items.forEach(item => {
+      const bg = item.included ? '#f0f7f3' : '#f9f9f9';
+      const bc = item.included ? '#c8e6c9' : '#e8e0d5';
+      const nc = item.included ? '#1b4332' : '#999';
+      const badge = item.included ? '<span style="font-size:10px;background:#eaf3ee;color:#1b4332;padding:2px 8px;border-radius:20px;font-weight:700;">포함</span>' : '<span style="font-size:10px;background:#f3f3f3;color:#999;padding:2px 8px;border-radius:20px;font-weight:700;">별도</span>';
+      c.innerHTML += `<div style="display:grid;grid-template-columns:2fr 1fr 1fr 90px 60px;gap:8px;align-items:center;margin-bottom:8px;padding:8px 10px;border-radius:8px;background:${bg};border:1px solid ${bc};">
+        <div style="font-size:13px;font-weight:600;color:${nc};">${item.name}</div>
+        <input type="number" id="qfp_${item.key}" value="${item.php}" min="0" oninput="qfUpdateUsd('${item.key}')" style="border:1.5px solid #e0d8ce;border-radius:6px;padding:7px 8px;font-size:13px;text-align:right;width:100%;font-family:'Nunito',sans-serif;">
+        <input type="number" id="qfq_${item.key}" value="1" min="0" oninput="qfUpdateUsd('${item.key}')" style="border:1.5px solid #e0d8ce;border-radius:6px;padding:7px 8px;font-size:13px;text-align:right;width:100%;font-family:'Nunito',sans-serif;">
+        <div id="qfu_${item.key}" style="font-size:13px;font-weight:700;text-align:right;color:${item.included?'#1b4332':'#bbb'};">$0</div>
+        ${badge}
+      </div>`;
+    });
+    items.forEach(i => qfUpdateUsd(i.key));
+  }
+
+  window.qfUpdateUsd = function(key) {
+    const php = parseFloat(document.getElementById('qfp_'+key)?.value)||0;
+    const qty = parseFloat(document.getElementById('qfq_'+key)?.value)||0;
+    const el  = document.getElementById('qfu_'+key);
+    if (el) el.textContent = '$' + phpToUsd(php*qty).toFixed(2);
+  };
+
+  window.qfSaveAndShare = async function() {
+    const today = new Date();
+    const items = {};
+    [...GOLF_ITEMS,...LESSON_ITEMS,...STAY_ITEMS].forEach(item => {
+      items[item.key] = {
+        php: parseFloat(document.getElementById('qfp_'+item.key)?.value)||0,
+        qty: parseFloat(document.getElementById('qfq_'+item.key)?.value)||0,
+        included: item.included,
+      };
+    });
+    const data = {
+      clientName:    document.getElementById('qf-name').value||'고객',
+      quoteNo:       document.getElementById('qf-no').value||'QT-001',
+      docType:       document.getElementById('qf-doctype').value,
+      persons:       document.getElementById('qf-persons').value||'1',
+      duration:      document.getElementById('qf-duration').value||'-',
+      checkIn:       document.getElementById('qf-checkin').value||'-',
+      checkOut:      document.getElementById('qf-checkout').value||'-',
+      golfCourse:    document.getElementById('qf-course').value,
+      accommodation: document.getElementById('qf-accom').value,
+      clientPin:     document.getElementById('qf-pin').value||'0000',
+      remarks:       document.getElementById('qf-remarks').value,
+      items, rate: QF_RATE,
+      createdAt:     today.toISOString(),
+      status:        'active',
+    };
+    try {
+      const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+      const { getFirestore, doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+      const app = getApps().length ? getApps()[0] : initializeApp(cfg);
+      const db  = getFirestore(app);
+      const qId = data.quoteNo.replace(/[^a-zA-Z0-9-]/g,'_');
+      await setDoc(doc(db,'quotes',qId), data);
+      const link = 'https://iclarkgolf.com/my-quote.html?id=' + qId;
+      document.getElementById('qf-link-url').value = link;
+      document.getElementById('qf-link-box').style.display = 'block';
+      showToast('✅ 견적서 저장 완료! 링크를 고객에게 전송하세요.', 'success');
+    } catch(e) {
+      showToast('❌ 저장 실패: ' + e.message, 'error');
+    }
+  };
+
+  window.qfCopyLink = function() {
+    const link = document.getElementById('qf-link-url').value;
+    navigator.clipboard.writeText(link).then(()=>showToast('📋 링크 복사됨! 카카오톡에 붙여넣기 하세요.','success'));
+  };
+
+  window.qfShareKakao = function() {
+    const link  = document.getElementById('qf-link-url').value;
+    const name  = document.getElementById('qf-name').value||'고객';
+    const msg   = `[iCLARKGOLF 견적서]\n${name}님의 견적서가 준비됐습니다.\n아래 링크에서 확인하세요 👇\n${link}`;
+    navigator.clipboard.writeText(msg).then(()=>showToast('💬 카카오톡 메시지 복사됨! 카톡에 붙여넣기 하세요.','success'));
+  };
+
+  // 견적서 탭 클릭 시 초기화
+  const qfBtn = document.querySelector('[onclick="showTab('quotemake',this)"]');
+  if (qfBtn) {
+    qfBtn.addEventListener('click', function() {
+      if (!document.getElementById('qf-golf-items').innerHTML) {
+        renderItems(GOLF_ITEMS,   'qf-golf-items');
+        renderItems(LESSON_ITEMS, 'qf-lesson-items');
+        renderItems(STAY_ITEMS,   'qf-stay-items');
+        const t = new Date();
+        document.getElementById('qf-no').value = 'QT-'+t.getFullYear()+String(t.getMonth()+1).padStart(2,'0')+String(t.getDate()).padStart(2,'0')+'-001';
+      }
+    });
+  }
+})();
+</script>
 
 <!-- ========== 프로필 관리 ========== -->
 <div class="panel" id="panel-profile">
