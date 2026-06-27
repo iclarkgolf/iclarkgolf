@@ -1,6 +1,7 @@
 // iCLARKGOLF 블로그 글 목록 — 단일 소스. 새 글 추가 시 이 파일 맨 위에 한 줄만 추가하면
 // blog.html(전체 목록)과 index.html(최신 4개 미리보기) 양쪽에 자동 반영됩니다.
 const POSTS = [
+  {id:"p26",title:"클락 골프 전지훈련 숙소 완전 가이드 — 골프장 안 vs 시내 vs 로컬 숙소, 뭐가 다른가",cat:"전지훈련 가이드",date:"2026.06.27",thumb:"https://iclarkgolf.com/images/blog-p26-hero.jpg",excerpt:"먹자골 — 먹고 자고 골프만 하는 시스템이 실력을 바꿉니다. 20년 현지 경험으로 숙소 선택의 진실을 말합니다."},
   {id:"p25",title:"필리핀 골프유학, 클락에서 한 아이를 키운 기록 — 검정고시부터 AUF 졸업까지",cat:"골프유학",date:"2026.06.19",thumb:"https://iclarkgolf.com/images/blog-p25-hero.jpg",excerpt:"2013년 클락으로 건너간 골프 프로가 중학교 1학년 남자아이를 데려와 검정고시와 AUF 졸업까지 함께한 4년의 실화. 골프유학을 고민하는 학부모를 위한 체크리스트와 투어 루틴까지 담았다."},
   {id:"p24",title:"필리핀 어학연수 어학원 고르는 법 — SSP 확인부터 사기 피해 예방까지",cat:"필리핀 생활",date:"2026.06.18",thumb:"https://iclarkgolf.com/images/blog-p24-hero.jpg",excerpt:"방학마다 늘어나는 어학연수, 진짜 변수는 비자가 아니라 어학원 선택이다. SSP 자격 확인부터 실제 사기 피해 패턴까지 현지 기준으로 정리했다."},
   {id:"p23",title:"골프 전지훈련, 왜 필리핀 클락인가 — 현지 프로가 말하는 클락 전지훈련의 진실",cat:"전지훈련 가이드",date:"2026.06.18",thumb:"https://iclarkgolf.com/images/blog-p23-hero.jpg",excerpt:"마닐라 3년, 클락 10년 이상. 클락 시내 골프장은 왜 전지훈련에 맞지 않는지, 베버리와 프라데라 중 어디가 적합한지 현지 프로가 솔직하게 분석했다."},
