@@ -97,7 +97,7 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
 <body>
 
 <!-- 로딩 -->
-<div class="loading" id="loadingMsg">견적서를 불러오는 중...</div>
+<div class="loading" id="loadingMsg" style="display:none;">견적서를 불러오는 중...</div>
 
 <!-- 로그인 -->
 <div class="login-wrap" id="loginWrap" style="display:none;">
@@ -292,13 +292,31 @@ function renderQuote(data) {
   }
 }
 
-window.verifyAndShow = function() {
+window.verifyAndShow = async function() {
   const name = document.getElementById('inputName').value.trim();
   if (!name) { document.getElementById('errorMsg').style.display='block'; return; }
-  if (name !== quoteData.clientName) {
-    document.getElementById('errorMsg').style.display = 'block';
-    return;
+
+  if (quoteData) {
+    // 링크로 들어온 경우: 이름 대조
+    if (name !== quoteData.clientName) {
+      document.getElementById('errorMsg').style.display = 'block';
+      return;
+    }
+  } else {
+    // 메인에서 들어온 경우: 이름으로 Firebase 검색
+    const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const q = query(collection(db, 'quotes'), where('clientName', '==', name));
+    const snap = await getDocs(q);
+    if (snap.empty) {
+      document.getElementById('errorMsg').textContent = '해당 이름으로 등록된 견적서가 없습니다.';
+      document.getElementById('errorMsg').style.display = 'block';
+      return;
+    }
+    // 가장 최근 견적서 표시
+    const docs = snap.docs.sort((a,b) => (b.data().createdAt||0) - (a.data().createdAt||0));
+    quoteData = docs[0].data();
   }
+
   document.getElementById('loginWrap').style.display = 'none';
   renderQuote(quoteData);
   document.getElementById('quotePage').style.display = 'block';
@@ -331,8 +349,11 @@ const params  = new URLSearchParams(window.location.search);
 const quoteId = params.get('id');
 
 if (!quoteId) {
-  document.getElementById('loadingMsg').textContent = '견적서 ID가 없습니다. 올바른 링크를 사용해주세요.';
+  // ID 없이 들어온 경우 → 이름 검색 모드 바로 표시
+  document.getElementById('loginWrap').style.display = 'block';
 } else {
+  // 링크로 들어온 경우 → ID로 바로 조회
+  document.getElementById('loadingMsg').style.display = 'block';
   getDoc(doc(db, 'quotes', quoteId)).then(snap => {
     document.getElementById('loadingMsg').style.display = 'none';
     if (!snap.exists()) {
