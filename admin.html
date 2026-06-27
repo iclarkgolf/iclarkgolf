@@ -2767,8 +2767,8 @@ function qfInit(){
       var bd=item.i?'<span style="font-size:10px;background:#eaf3ee;color:#1b4332;padding:2px 7px;border-radius:20px;font-weight:700;">포함</span>':'<span style="font-size:10px;background:#f3f3f3;color:#999;padding:2px 7px;border-radius:20px;font-weight:700;">별도</span>';
       h+='<div style="display:grid;grid-template-columns:2fr 1fr 1fr 80px 55px;gap:6px;align-items:center;margin-bottom:7px;padding:7px 9px;border-radius:8px;background:'+bg+';">';
       h+='<div style="font-size:13px;font-weight:600;color:'+nc+';">'+item.n+'</div>';
-      h+='<input type="number" id="qfp_'+item.k+'" value="'+item.p+'" min="0" oninput="qfU(\"'+item.k+'\")" style="border:1.5px solid #e0d8ce;border-radius:6px;padding:6px 7px;font-size:13px;text-align:right;width:100%;">';
-      h+='<input type="number" id="qfq_'+item.k+'" value="1" min="0" oninput="qfU(\"'+item.k+'\")" style="border:1.5px solid #e0d8ce;border-radius:6px;padding:6px 7px;font-size:13px;text-align:right;width:100%;">';
+      h+='<input type="number" id="qfp_'+item.k+'" data-key="'+item.k+'" value="'+item.p+'" min="0" class="qf-inp" style="border:1.5px solid #e0d8ce;border-radius:6px;padding:6px 7px;font-size:13px;text-align:right;width:100%;">';
+      h+='<input type="number" id="qfq_'+item.k+'" data-key="'+item.k+'" value="1" min="0" class="qf-inp" style="border:1.5px solid #e0d8ce;border-radius:6px;padding:6px 7px;font-size:13px;text-align:right;width:100%;">';
       h+='<div id="qfu_'+item.k+'" style="font-size:13px;font-weight:700;text-align:right;color:'+uc+';">$0</div>';
       h+=bd+'</div>';
     });
@@ -2778,6 +2778,17 @@ function qfInit(){
   var t=new Date();
   var el=document.getElementById('qfNo');
   if(el&&!el.value)el.value='QT-'+t.getFullYear()+('0'+(t.getMonth()+1)).slice(-2)+('0'+t.getDate()).slice(-2)+'-001';
+
+  // 이벤트 위임 — 모든 .qf-inp 입력에 반응
+  ['qfGolf','qfLesson','qfStay'].forEach(function(gid){
+    var gc=document.getElementById(gid);
+    if(!gc) return;
+    gc.addEventListener('input', function(e){
+      var k=e.target.getAttribute('data-key');
+      if(k) { qfU(k); qfUpdateTotal(); }
+    });
+  });
+  qfUpdateTotal();
 }
 
 function qfSave(){
