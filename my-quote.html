@@ -264,7 +264,7 @@ function renderQuote(data) {
   const s = renderTable(STAY_ITEMS,   data, 'out-stay');
   const total = g + l + s;
 
-  document.getElementById('out-total-usd').textContent = '$' + total.toFixed(2);
+  document.getElementById('out-total-usd').textContent = '$' + Number(total.toFixed(2)).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
   document.getElementById('out-total-krw').textContent = '약 ₩' + Math.round(total*krwRate).toLocaleString() + ' (환율 ' + Number(krwRate).toLocaleString() + '원 기준)';
 
   // 포함/불포함
