@@ -2702,7 +2702,16 @@ async function loadVisitorStats() {
     </div>
     <div style="font-weight:800;color:#1b4332;margin:12px 0 8px;border-left:3px solid #f4a261;padding-left:10px;font-size:13px;">📝 Remarks</div>
     <textarea id="qfRemarks" placeholder="특이사항 보충 설명" style="width:100%;min-height:80px;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;resize:vertical;"></textarea>
-    <button onclick="qfSave()" style="width:100%;margin-top:16px;padding:14px;background:#1b4332;color:#fff;border:none;border-radius:50px;font-size:15px;font-weight:800;cursor:pointer;">📄 견적서 저장 &amp; 링크 만들기</button>
+    <!-- 기존 견적서 불러오기 -->
+    <div style="background:#f8f5f0;border-radius:12px;padding:14px 16px;margin-bottom:12px;border:1.5px solid #e0d8ce;">
+      <div style="font-size:12px;font-weight:700;color:#6b7280;margin-bottom:8px;">🔍 기존 견적서 불러오기 (고객 이름 입력)</div>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="qfLoadName" placeholder="이태주" style="flex:1;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;">
+        <button onclick="qfLoad()" style="padding:9px 16px;background:#534AB7;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">불러오기</button>
+      </div>
+      <div id="qfLoadMsg" style="font-size:12px;color:#e74c3c;margin-top:6px;display:none;"></div>
+    </div>
+    <button onclick="qfSave()" style="width:100%;margin-top:4px;padding:14px;background:#1b4332;color:#fff;border:none;border-radius:50px;font-size:15px;font-weight:800;cursor:pointer;">📄 견적서 저장 &amp; 링크 만들기</button>
     <div id="qfLinkBox" style="display:none;margin-top:16px;background:#eaf3ee;border-radius:12px;padding:16px;">
       <div style="font-size:12px;font-weight:700;color:#1b4332;margin-bottom:8px;">🔗 고객 공유 링크</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -2789,6 +2798,55 @@ function qfInit(){
     });
   });
   qfUpdateTotal();
+}
+
+function qfLoad(){
+  var name = (document.getElementById('qfLoadName').value||'').trim();
+  if(!name){ document.getElementById('qfLoadMsg').textContent='이름을 입력하세요.'; document.getElementById('qfLoadMsg').style.display='block'; return; }
+  document.getElementById('qfLoadMsg').style.display='none';
+  Promise.all([
+    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'),
+    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js')
+  ]).then(function(ms){
+    var iA=ms[0].initializeApp,gA=ms[0].getApps;
+    var gF=ms[1].getFirestore,cl=ms[1].collection,qr=ms[1].query,wh=ms[1].where,gD=ms[1].getDocs;
+    var cfg={apiKey:'AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU',authDomain:'iclarkgolf.firebaseapp.com',projectId:'iclarkgolf'};
+    var app=gA().length?gA()[0]:iA(cfg);
+    var q=qr(cl(gF(app),'quotes'),wh('clientName','==',name));
+    return gD(q);
+  }).then(function(snap){
+    if(snap.empty){ document.getElementById('qfLoadMsg').textContent='해당 이름의 견적서가 없습니다.'; document.getElementById('qfLoadMsg').style.display='block'; return; }
+    // 가장 최근 견적서
+    var docs=snap.docs.sort(function(a,b){return (b.data().createdAt||0)>(a.data().createdAt||0)?1:-1;});
+    var d=docs[0].data();
+    // 폼에 채우기
+    document.getElementById('qfName').value=d.clientName||'';
+    document.getElementById('qfNo').value=d.quoteNo||'';
+    document.getElementById('qfDoctype').value=d.docType||'견적서';
+    document.getElementById('qfPersons').value=d.persons||'1';
+    document.getElementById('qfDuration').value=d.duration||'';
+    document.getElementById('qfCheckin').value=d.checkIn||'';
+    document.getElementById('qfCheckout').value=d.checkOut||'';
+    document.getElementById('qfCourse').value=d.golfCourse||'';
+    document.getElementById('qfAccom').value=d.accommodation||'';
+    document.getElementById('qfRemarks').value=d.remarks||'';
+    // 항목 금액/수량 채우기
+    if(d.items){
+      Object.keys(d.items).forEach(function(k){
+        var php=document.getElementById('qfp_'+k);
+        var qty=document.getElementById('qfq_'+k);
+        if(php) php.value=d.items[k].php||0;
+        if(qty) qty.value=d.items[k].qty||0;
+      });
+    }
+    qfUpdateTotal();
+    document.getElementById('qfLoadMsg').style.display='none';
+    if(typeof showToast==='function') showToast('✅ '+d.clientName+' 견적서 불러오기 완료!','success');
+    else alert('✅ '+d.clientName+' 견적서 불러오기 완료!\n수정 후 저장 버튼을 누르세요.');
+  }).catch(function(e){
+    document.getElementById('qfLoadMsg').textContent='오류: '+e.message;
+    document.getElementById('qfLoadMsg').style.display='block';
+  });
 }
 
 function qfSave(){
