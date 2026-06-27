@@ -1075,12 +1075,29 @@ try {
 
 <script>
 (function(){
-  const ACCOMS = JSON.parse(localStorage.getItem('iclark_accoms') || 'null') || [
-    { id:'iclark',   type:'local', name:'iClark 전용숙소', stars:0, priceKRW:0,     priceUSD:45, location:'Barangay Prado Siongco, 프라데라 골프장 5분', amenities:'3식포함,픽업드롭,세탁,WiFi,에어컨', active:true },
-    { id:'clarkton', type:'hotel', name:'클락턴 호텔',     stars:3, priceKRW:53000, priceUSD:38, location:'말라바나스, 앙헬레스 / 클락 도심', amenities:'수영장,조식,주차,WiFi', active:true },
-    { id:'mango',    type:'hotel', name:'망고 스위트',     stars:4, priceKRW:34000, priceUSD:24, location:'시티센터, 앙헬레스 / 클락 도심 1.9km', amenities:'수영장,조식,주차,WiFi,에어컨', active:true },
-    { id:'emmaus',   type:'hotel', name:'엠마우스 콘도텔', stars:3, priceKRW:32000, priceUSD:23, location:'말라바나스, 앙헬레스 / 클락 도심 0.1km', amenities:'주차,WiFi,에어컨,세탁', active:true },
-    { id:'oasis',    type:'hotel', name:'오아시스 호텔',   stars:3, priceKRW:73000, priceUSD:52, location:'말라바나스, 앙헬레스 / 클락 도심', amenities:'수영장,조식,주차,WiFi,스파', active:true }
+  const FALLBACK_PHOTOS = {
+    clarkton: 'https://clarkton.com/wp-content/uploads/2021/11/clarkton-new-banner-2021.jpg',
+    mango:    'https://cf.bstatic.com/xdata/images/hotel/max1024x768/555307684.jpg?k=6a5c6c6c6f8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e&o=',
+    emmaus:   'https://cf.bstatic.com/xdata/images/hotel/max1024x768/400000000.jpg?k=emmaus&o=',
+    oasis:    'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0e/bc/4c/de/oasis-hotel.jpg?w=700&h=500&s=1',
+    iclark:   ''
+  };
+
+  // localStorage 숙소 데이터 + 사진 없으면 fallback 적용
+  const savedAccoms = JSON.parse(localStorage.getItem('iclark_accoms') || 'null');
+  const ACCOMS = savedAccoms ? savedAccoms.map(a => ({
+    ...a,
+    _thumb: (a.photos && a.photos[0]) || FALLBACK_PHOTOS[a.id] || ''
+  })) : [
+    { id:'iclark',   type:'local', name:'iClark 전용숙소', stars:0, priceKRW:0,     priceUSD:45, location:'Barangay Prado Siongco, 프라데라 골프장 5분', amenities:'3식포함,픽업드롭,세탁,WiFi,에어컨', active:true, _thumb:'' },
+    { id:'clarkton', type:'hotel', name:'클락턴 호텔',     stars:3, priceKRW:53000, priceUSD:38, location:'말라바나스, 앙헬레스 / 클락 도심', amenities:'수영장,조식,주차,WiFi', active:true,
+      _thumb:'https://clarkton.com/wp-content/uploads/2021/11/clarkton-new-banner-2021.jpg' },
+    { id:'mango',    type:'hotel', name:'망고 스위트',     stars:4, priceKRW:34000, priceUSD:24, location:'시티센터, 앙헬레스 / 클락 도심 1.9km', amenities:'수영장,조식,주차,WiFi,에어컨', active:true,
+      _thumb:'https://i.ibb.co/RpFJNbk8/slide-f07.jpg' },
+    { id:'emmaus',   type:'hotel', name:'엠마우스 콘도텔', stars:3, priceKRW:32000, priceUSD:23, location:'말라바나스, 앙헬레스 / 클락 도심 0.1km', amenities:'주차,WiFi,에어컨,세탁', active:true,
+      _thumb:'https://i.ibb.co/MxJ7rgy1/web-13-sq.jpg' },
+    { id:'oasis',    type:'hotel', name:'오아시스 호텔',   stars:3, priceKRW:73000, priceUSD:52, location:'말라바나스, 앙헬레스 / 클락 도심', amenities:'수영장,조식,주차,WiFi,스파', active:true,
+      _thumb:'https://i.ibb.co/hJnKBv71/slide-p05.jpg' }
   ];
 
   const active = ACCOMS.filter(a => a.active);
@@ -1092,9 +1109,9 @@ try {
     const tags = amenList.slice(0,4).map(t =>
       `<span class="lodging-tag${SPECIAL.includes(t)?' special':''}">${t}</span>`
     ).join('') + (amenList.length > 4 ? `<span class="lodging-tag">+${amenList.length-4}</span>` : '');
-    const firstPhoto = a.photos && a.photos.length > 0 ? a.photos[0] : null;
+    const firstPhoto = a._thumb || (a.photos && a.photos[0]) || null;
     const thumbHTML = firstPhoto
-      ? `<img src="${firstPhoto}" alt="${a.name}" loading="lazy">`
+      ? `<img src="${firstPhoto}" alt="${a.name}" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'thumb-emoji\\'>${a.type==='local'?'🏠':'🏨'}</span>'">`
       : `<span class="thumb-emoji">${a.type==='local'?'🏠':'🏨'}</span>`;
     const priceStr = a.type==='local'
       ? `<span style="font-size:11px;color:#6b7280;">ALL-IN </span>$${a.priceUSD}<span style="font-size:11px;">/일</span>`

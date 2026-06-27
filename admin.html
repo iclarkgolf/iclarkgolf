@@ -1943,6 +1943,14 @@ function saveAccoms(data) {
 }
 
 /* ── 숙소 렌더링 (패키지 썸네일 카드) ── */
+const ACCOM_FALLBACK_IMGS = {
+  clarkton: 'https://clarkton.com/wp-content/uploads/2021/11/clarkton-new-banner-2021.jpg',
+  mango:    'https://i.ibb.co/RpFJNbk8/slide-f07.jpg',
+  emmaus:   'https://i.ibb.co/MxJ7rgy1/web-13-sq.jpg',
+  oasis:    'https://i.ibb.co/hJnKBv71/slide-p05.jpg',
+  iclark:   ''
+};
+
 function renderAccomList() {
   const accoms = getAccoms();
   const container = document.getElementById('accom-list');
@@ -1960,11 +1968,12 @@ function renderAccomList() {
       `<span class="amenity-tag${SPECIAL.includes(t)?' special':''}">${t}</span>`
     ).join('') + (amenList.length > 4 ? `<span class="amenity-tag">+${amenList.length-4}</span>` : '');
 
-    /* 썸네일 — 저장된 이미지 있으면 사용, 없으면 이모지 배경 */
-    const firstPhoto = (a.photos && a.photos.length > 0) ? a.photos[0] : null;
-    const thumbHTML = firstPhoto
-      ? `<img src="${firstPhoto}" alt="${a.name}" loading="lazy">`
-      : `<span class="thumb-emoji">${a.type==='local' ? '🏠' : '🏨'}</span>`;
+    /* 썸네일 — 저장된 이미지 > fallback > 이모지 */
+    const thumbSrc = (a.photos && a.photos.length > 0) ? a.photos[0] : (ACCOM_FALLBACK_IMGS[a.id] || '');
+    const emoji = a.type==='local' ? '🏠' : '🏨';
+    const thumbHTML = thumbSrc
+      ? `<img src="${thumbSrc}" alt="${a.name}" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'thumb-emoji\\'>${emoji}</span>'">`
+      : `<span class="thumb-emoji">${emoji}</span>`;
 
     /* 가격 표시 */
     const priceStr = a.type==='local'
