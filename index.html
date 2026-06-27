@@ -1085,7 +1085,7 @@ try {
 
   // localStorage 숙소 데이터 + 사진 없으면 fallback 적용
   const savedAccoms = JSON.parse(localStorage.getItem('iclark_accoms') || 'null');
-  const ACCOMS = savedAccoms ? savedAccoms.map(a => ({
+  let ACCOMS = savedAccoms ? savedAccoms.map(a => ({
     ...a,
     _thumb: (a.photos && a.photos[0]) || FALLBACK_PHOTOS[a.id] || ''
   })) : [
@@ -1099,6 +1099,9 @@ try {
     { id:'oasis',    type:'hotel', name:'오아시스 호텔',   stars:3, priceKRW:73000, priceUSD:52, location:'말라바나스, 앙헬레스 / 클락 도심', amenities:'수영장,조식,주차,WiFi,스파', active:true,
       _thumb:'https://i.ibb.co/hJnKBv71/slide-p05.jpg' }
   ];
+
+  // iClark 전용숙소 항상 맨 앞
+  ACCOMS.sort((a, b) => (a.id === 'iclark' ? -1 : b.id === 'iclark' ? 1 : 0));
 
   const active = ACCOMS.filter(a => a.active);
   const SPECIAL = ['3식포함','픽업드롭','올인클루시브','조식'];
@@ -1115,7 +1118,7 @@ try {
       : `<span class="thumb-emoji">${a.type==='local'?'🏠':'🏨'}</span>`;
     const priceStr = a.type==='local'
       ? `<span style="font-size:11px;color:#6b7280;">ALL-IN </span>$${a.priceUSD}<span style="font-size:11px;">/일</span>`
-      : `₩${Number(a.priceKRW).toLocaleString()}<span style="font-size:11px;">/박</span>`;
+      : `$${a.priceUSD}<span style="font-size:11px;">/박</span>`;
 
     return `
     <div class="lodging-card">
