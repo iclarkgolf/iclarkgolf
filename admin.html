@@ -2693,6 +2693,13 @@ async function loadVisitorStats() {
     <div style="font-weight:800;color:#1b4332;margin:12px 0 8px;border-left:3px solid #f4a261;padding-left:10px;font-size:13px;">⛳ 골프 비용</div><div id="qfGolf"></div>
     <div style="font-weight:800;color:#1b4332;margin:12px 0 8px;border-left:3px solid #f4a261;padding-left:10px;font-size:13px;">🏋 레슨 비용</div><div id="qfLesson"></div>
     <div style="font-weight:800;color:#1b4332;margin:12px 0 8px;border-left:3px solid #f4a261;padding-left:10px;font-size:13px;">🏡 숙소 이동 비용</div><div id="qfStay"></div>
+    <div style="background:#0d1f17;border-radius:12px;padding:16px 20px;margin:16px 0;display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);">견적 합계 <span style="font-size:11px;font-weight:400;opacity:0.6;">(포함 항목만)</span></div>
+      <div>
+        <div id="qfTotalUsd" style="font-size:24px;font-weight:900;color:#f4a261;">$0.00</div>
+        <div id="qfTotalKrw" style="font-size:12px;color:rgba(255,255,255,0.4);text-align:right;"></div>
+      </div>
+    </div>
     <div style="font-weight:800;color:#1b4332;margin:12px 0 8px;border-left:3px solid #f4a261;padding-left:10px;font-size:13px;">📝 Remarks</div>
     <textarea id="qfRemarks" placeholder="특이사항 보충 설명" style="width:100%;min-height:80px;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;resize:vertical;"></textarea>
     <button onclick="qfSave()" style="width:100%;margin-top:16px;padding:14px;background:#1b4332;color:#fff;border:none;border-radius:50px;font-size:15px;font-weight:800;cursor:pointer;">📄 견적서 저장 &amp; 링크 만들기</button>
@@ -2725,6 +2732,23 @@ function qfU(k){
   var ue=document.getElementById('qfu_'+k);
   if(!pe||!qe||!ue)return;
   ue.textContent='$'+_qfP2U((parseFloat(pe.value)||0)*(parseFloat(qe.value)||0)).toFixed(2);
+  qfUpdateTotal();
+}
+function qfUpdateTotal(){
+  var total=0;
+  _qfItems.forEach(function(grp){
+    grp.list.forEach(function(item){
+      if(!item.i) return;
+      var p=parseFloat((document.getElementById('qfp_'+item.k)||{}).value)||0;
+      var q=parseFloat((document.getElementById('qfq_'+item.k)||{}).value)||0;
+      total+=_qfP2U(p*q);
+    });
+  });
+  var r=_qfGetR();
+  var tu=document.getElementById('qfTotalUsd');
+  var tk=document.getElementById('qfTotalKrw');
+  if(tu) tu.textContent='$'+total.toFixed(2);
+  if(tk) tk.textContent='약 ₩'+Math.round(total*(r.usdKrw||1380)).toLocaleString();
 }
 
 function qfInit(){
