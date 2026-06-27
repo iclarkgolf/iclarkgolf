@@ -2688,7 +2688,7 @@ async function loadVisitorStats() {
       <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">출발일</label><input type="text" id="qfCheckout" placeholder="2026-07-17 (예상일)" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
       <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">골프장</label><input type="text" id="qfCourse" value="프라데라 베르데" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
       <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">숙소</label><input type="text" id="qfAccom" value="iClark 로컬 전용숙소" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
-      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">전화번호 뒷 4자리</label><input type="text" id="qfPin" placeholder="0000" maxlength="4" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
+
     </div>
     <div style="font-weight:800;color:#1b4332;margin:12px 0 8px;border-left:3px solid #f4a261;padding-left:10px;font-size:13px;">⛳ 골프 비용</div><div id="qfGolf"></div>
     <div style="font-weight:800;color:#1b4332;margin:12px 0 8px;border-left:3px solid #f4a261;padding-left:10px;font-size:13px;">🏋 레슨 비용</div><div id="qfLesson"></div>
@@ -2773,7 +2773,7 @@ function qfSave(){
     docType:get('qfDoctype'),persons:get('qfPersons')||'1',
     duration:get('qfDuration')||'-',checkIn:get('qfCheckin')||'-',
     checkOut:get('qfCheckout')||'-',golfCourse:get('qfCourse'),
-    accommodation:get('qfAccom'),clientPin:get('qfPin')||'0000',
+    accommodation:get('qfAccom'),clientPin:'',
     remarks:get('qfRemarks'),items:items,rate:_qfGetR(),
     createdAt:new Date().toISOString(),status:'active'
   };

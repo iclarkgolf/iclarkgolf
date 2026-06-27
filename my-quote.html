@@ -106,24 +106,22 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
     <div class="login-title">내 견적서 확인</div>
   </div>
   <div class="login-body">
-    <p>본인 확인을 위해 이름과 전화번호 뒷 4자리를 입력해주세요.</p>
+    <p>본인 확인을 위해 견적서에 등록된 이름을 입력해주세요.</p>
     <div class="input-group">
       <label>이름</label>
       <input type="text" id="inputName" placeholder="홍길동">
     </div>
-    <div class="input-group">
-      <label>전화번호 뒷 4자리</label>
-      <input type="number" id="inputPin" placeholder="0000" maxlength="4">
-    </div>
+
     <button class="login-btn" onclick="verifyAndShow()">견적서 확인하기</button>
-    <div class="error-msg" id="errorMsg">이름 또는 전화번호가 일치하지 않습니다.</div>
+    <div class="error-msg" id="errorMsg">이름이 일치하지 않습니다. 견적서에 등록된 이름을 입력해주세요.</div>
   </div>
 </div>
 
 <!-- 버튼 행 -->
 <div class="btn-row" id="btnRow" style="display:none;">
-  <button class="print-btn" onclick="window.print()">🖨️ 저장 / 인쇄</button>
-  <button class="kakao-btn" onclick="contactKakao()">💬 카카오톡 문의</button>
+  <button class="print-btn" onclick="window.print()">🖨️ PDF 저장</button>
+  <button class="kakao-btn" onclick="shareLink()">🔗 링크 공유</button>
+  <button class="kakao-btn" onclick="contactKakao()" style="background:#06C755;color:#fff;">💬 카톡 문의</button>
 </div>
 
 <!-- 견적서 -->
@@ -296,9 +294,8 @@ function renderQuote(data) {
 
 window.verifyAndShow = function() {
   const name = document.getElementById('inputName').value.trim();
-  const pin  = document.getElementById('inputPin').value.trim();
-  if (!name || !pin) { document.getElementById('errorMsg').style.display='block'; return; }
-  if (name !== quoteData.clientName || pin !== quoteData.clientPin) {
+  if (!name) { document.getElementById('errorMsg').style.display='block'; return; }
+  if (name !== quoteData.clientName) {
     document.getElementById('errorMsg').style.display = 'block';
     return;
   }
@@ -306,6 +303,23 @@ window.verifyAndShow = function() {
   renderQuote(quoteData);
   document.getElementById('quotePage').style.display = 'block';
   document.getElementById('btnRow').style.display    = 'flex';
+};
+
+window.shareLink = function() {
+  var url = window.location.href;
+  if (navigator.share) {
+    // 모바일 네이티브 공유 (카톡, 문자, 이메일 등 전부)
+    navigator.share({
+      title: 'iCLARKGOLF 견적서',
+      text: '클락 골프 전지훈련 견적서를 확인해보세요.',
+      url: url
+    });
+  } else {
+    // PC는 클립보드 복사
+    navigator.clipboard.writeText(url).then(function() {
+      alert('링크가 복사됐습니다!\n카카오톡에 붙여넣기 해서 전송하세요.');
+    });
+  }
 };
 
 window.contactKakao = function() {
