@@ -762,6 +762,75 @@ footer {
 
   footer { padding: 32px 40px; }
 }
+/* ── 숙소 섹션 ── */
+.lodging-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+.lodging-card {
+  border: 1.5px solid #c8edd9;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  transition: all .22s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 2px 8px rgba(83,74,183,.06);
+  display: flex;
+  flex-direction: column;
+}
+.lodging-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(83,74,183,.14);
+  border-color: #534AB7;
+}
+.lodging-thumb {
+  position: relative;
+  width: 100%; height: 150px;
+  overflow: hidden;
+  background: linear-gradient(135deg,#E1F5EE 0%,#c8edd9 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.lodging-thumb img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform .35s ease;
+}
+.lodging-card:hover .lodging-thumb img { transform: scale(1.06); }
+.lodging-thumb .thumb-emoji { font-size: 48px; filter: drop-shadow(0 2px 6px rgba(0,0,0,.12)); }
+.lodging-type-badge {
+  position: absolute; top: 10px; left: 10px;
+  font-size: 10px; font-weight: 800; letter-spacing: .04em;
+  padding: 3px 9px; border-radius: 100px;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.lodging-type-badge.hotel { background: rgba(1,116,80,.85); color: #fff; }
+.lodging-type-badge.local { background: rgba(83,74,183,.9); color: #fff; }
+.lodging-body { padding: 13px 14px 14px; display: flex; flex-direction: column; flex: 1; }
+.lodging-stars { font-size: 11px; color: #f59e0b; margin-bottom: 2px; }
+.lodging-name  { font-size: 14px; font-weight: 800; color: #26215C; margin-bottom: 3px; }
+.lodging-price { font-size: 15px; font-weight: 800; color: #534AB7; margin-bottom: 3px; }
+.lodging-location { font-size: 11px; color: #6b7280; margin-bottom: 8px; }
+.lodging-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
+.lodging-tag {
+  font-size: 10px; font-weight: 600; color: #534AB7;
+  background: #f0effe; padding: 2px 7px; border-radius: 100px;
+}
+.lodging-tag.special { background: #E1F5EE; color: #085041; }
+.lodging-btn {
+  margin-top: auto;
+  display: block; width: 100%;
+  padding: 9px 0; border-radius: 10px;
+  background: linear-gradient(90deg,#1D9E75,#534AB7);
+  color: #fff; font-size: 13px; font-weight: 700;
+  text-align: center; text-decoration: none;
+  border: none; cursor: pointer;
+  transition: opacity .2s;
+}
+.lodging-btn:hover { opacity: .88; }
+@media (max-width: 480px) {
+  .lodging-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .lodging-thumb { height: 120px; }
+}
 </style>
 </head>
 <body>
@@ -992,6 +1061,64 @@ try {
 } catch(e) {
   renderCards(DEFAULT_CARDS);
 }
+</script>
+
+<!-- 추천 숙소 -->
+<div class="section" id="lodging" style="margin-top:28px;">
+  <div class="sec-head">
+    <div class="sec-title">🏨 추천 숙소</div>
+  </div>
+  <div class="lodging-grid" id="lodging-grid">
+    <div style="text-align:center;padding:40px 0;color:#9ca3af;font-size:13px;">⏳ 불러오는 중...</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const ACCOMS = JSON.parse(localStorage.getItem('iclark_accoms') || 'null') || [
+    { id:'iclark',   type:'local', name:'iClark 전용숙소', stars:0, priceKRW:0,     priceUSD:45, location:'Barangay Prado Siongco, 프라데라 골프장 5분', amenities:'3식포함,픽업드롭,세탁,WiFi,에어컨', active:true },
+    { id:'clarkton', type:'hotel', name:'클락턴 호텔',     stars:3, priceKRW:53000, priceUSD:38, location:'말라바나스, 앙헬레스 / 클락 도심', amenities:'수영장,조식,주차,WiFi', active:true },
+    { id:'mango',    type:'hotel', name:'망고 스위트',     stars:4, priceKRW:34000, priceUSD:24, location:'시티센터, 앙헬레스 / 클락 도심 1.9km', amenities:'수영장,조식,주차,WiFi,에어컨', active:true },
+    { id:'emmaus',   type:'hotel', name:'엠마우스 콘도텔', stars:3, priceKRW:32000, priceUSD:23, location:'말라바나스, 앙헬레스 / 클락 도심 0.1km', amenities:'주차,WiFi,에어컨,세탁', active:true },
+    { id:'oasis',    type:'hotel', name:'오아시스 호텔',   stars:3, priceKRW:73000, priceUSD:52, location:'말라바나스, 앙헬레스 / 클락 도심', amenities:'수영장,조식,주차,WiFi,스파', active:true }
+  ];
+
+  const active = ACCOMS.filter(a => a.active);
+  const SPECIAL = ['3식포함','픽업드롭','올인클루시브','조식'];
+
+  const html = active.map(a => {
+    const stars = a.stars > 0 ? '★'.repeat(a.stars) + '☆'.repeat(5 - a.stars) : '';
+    const amenList = a.amenities ? a.amenities.split(',').map(s=>s.trim()) : [];
+    const tags = amenList.slice(0,4).map(t =>
+      `<span class="lodging-tag${SPECIAL.includes(t)?' special':''}">${t}</span>`
+    ).join('') + (amenList.length > 4 ? `<span class="lodging-tag">+${amenList.length-4}</span>` : '');
+    const firstPhoto = a.photos && a.photos.length > 0 ? a.photos[0] : null;
+    const thumbHTML = firstPhoto
+      ? `<img src="${firstPhoto}" alt="${a.name}" loading="lazy">`
+      : `<span class="thumb-emoji">${a.type==='local'?'🏠':'🏨'}</span>`;
+    const priceStr = a.type==='local'
+      ? `<span style="font-size:11px;color:#6b7280;">ALL-IN </span>$${a.priceUSD}<span style="font-size:11px;">/일</span>`
+      : `₩${Number(a.priceKRW).toLocaleString()}<span style="font-size:11px;">/박</span>`;
+
+    return `
+    <div class="lodging-card">
+      <div class="lodging-thumb">
+        ${thumbHTML}
+        <span class="lodging-type-badge ${a.type==='local'?'local':'hotel'}">${a.type==='local'?'전지훈련 전용':'호텔'}</span>
+      </div>
+      <div class="lodging-body">
+        ${stars ? `<div class="lodging-stars">${stars}</div>` : ''}
+        <div class="lodging-name">${a.name}</div>
+        <div class="lodging-price">${priceStr}</div>
+        <div class="lodging-location">📍 ${a.location}</div>
+        ${tags ? `<div class="lodging-tags">${tags}</div>` : ''}
+        <a href="quote.html" class="lodging-btn">이 숙소로 견적 보기 →</a>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('lodging-grid').innerHTML = html || '<p style="color:#9ca3af;font-size:13px;padding:20px 0;">등록된 숙소가 없습니다.</p>';
+})();
 </script>
 
 <!-- 맞춤 견적 CTA -->
