@@ -86,11 +86,30 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
 .loading{text-align:center;padding:60px;font-size:16px;color:var(--gray);}
 @media print{.login-wrap,.btn-row{display:none!important;}.page{display:block!important;box-shadow:none;margin:0;border-radius:0;}}
 @media(max-width:600px){
-  .header,.client-section,.schedule-banner,.cost-section,.total-section,.include-section,.notice,.footer{padding-left:20px;padding-right:20px;}
-  .total-section{margin:0 20px 24px;}
-  .include-section{grid-template-columns:1fr;}
+  /* 전체 패딩 축소 */
+  .header,.client-section,.schedule-banner,.cost-section,.include-section,.notice,.footer{padding-left:16px;padding-right:16px;}
+  .total-section{margin:0 16px 24px;padding:16px 18px;}
+  /* 헤더: 로고/견적번호 세로 배열 */
+  .header{flex-direction:column;align-items:flex-start;gap:12px;padding:24px 16px;}
+  .header-right{text-align:left;}
+  /* 고객정보 2열 */
   .client-grid{grid-template-columns:1fr 1fr;}
+  /* 일정 배너: 2열 격자 */
+  .schedule-banner{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 16px;}
+  /* 테이블: 단가컬럼 숨기고 항목에 합침 */
+  thead th:nth-child(2),tbody td:nth-child(2){display:none;}
+  tbody td{font-size:12px;padding:8px 10px;}
+  thead th{font-size:10px;padding:8px 10px;}
+  /* 합계 박스: 세로 배열 */
+  .total-section{flex-direction:column;align-items:flex-start;gap:8px;}
+  .total-usd{font-size:22px;}
+  /* 포함사항: 1열 */
+  .include-section{grid-template-columns:1fr;padding:0 16px 20px;}
+  /* 버튼: 세로 배열 */
   .btn-row{flex-direction:column;padding:0 16px;}
+  /* 로그인 박스 여백 */
+  .login-wrap{margin:40px 16px;}
+  .login-body{padding:24px 20px;}
 }
 </style>
 </head>
