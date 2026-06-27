@@ -597,14 +597,81 @@ body { background:#f4faf7; padding-bottom:40px; }
 .tbl tr:last-child td { border-bottom:none; }
 .tbl-wrap { overflow-x:auto; border-radius:12px; border:1.5px solid #c8edd9; }
 
-/* 숙소 카드 그리드 */
-.accom-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; }
-.accom-item { border:1.5px solid #c8edd9; border-radius:14px; overflow:hidden; background:#fff; }
-.accom-item-img { width:100%; height:120px; object-fit:cover; background:#E1F5EE; display:flex; align-items:center; justify-content:center; font-size:32px; }
-.accom-item-body { padding:12px; }
-.accom-item-name { font-size:13px; font-weight:800; color:#26215C; margin-bottom:4px; }
-.accom-item-price { font-size:12px; color:#534AB7; font-weight:700; margin-bottom:8px; }
-.accom-item-btns { display:flex; gap:6px; }
+/* 숙소 카드 그리드 — 패키지 썸네일 스타일 */
+.accom-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px; }
+.accom-item {
+  border:1.5px solid #c8edd9; border-radius:16px; overflow:hidden;
+  background:#fff; transition:all .22s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 2px 8px rgba(83,74,183,.06);
+  display:flex; flex-direction:column;
+}
+.accom-item:hover { transform:translateY(-4px); box-shadow:0 12px 32px rgba(83,74,183,.14); border-color:#534AB7; }
+
+/* 썸네일 영역 */
+.accom-item-thumb {
+  position:relative; width:100%; height:150px; overflow:hidden;
+  background:linear-gradient(135deg,#E1F5EE 0%,#c8edd9 100%);
+  display:flex; align-items:center; justify-content:center;
+}
+.accom-item-thumb img {
+  width:100%; height:100%; object-fit:cover;
+  transition:transform .35s ease;
+}
+.accom-item:hover .accom-item-thumb img { transform:scale(1.06); }
+.accom-item-thumb .thumb-emoji {
+  font-size:48px; line-height:1;
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.12));
+}
+
+/* 썸네일 위 배지들 */
+.accom-thumb-badges {
+  position:absolute; top:10px; left:10px; right:10px;
+  display:flex; justify-content:space-between; align-items:flex-start;
+}
+.accom-type-badge {
+  font-size:10px; font-weight:800; letter-spacing:.04em;
+  padding:3px 9px; border-radius:100px;
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+}
+.accom-type-badge.hotel { background:rgba(1,116,80,.85); color:#fff; }
+.accom-type-badge.local { background:rgba(83,74,183,.9); color:#fff; }
+.accom-status-dot {
+  width:8px; height:8px; border-radius:50%;
+  border:2px solid rgba(255,255,255,.8);
+}
+.accom-status-dot.on  { background:#22c55e; box-shadow:0 0 0 3px rgba(34,197,94,.25); }
+.accom-status-dot.off { background:#ef4444; box-shadow:0 0 0 3px rgba(239,68,68,.2); }
+
+/* 별점 */
+.accom-item-stars { font-size:11px; color:#f59e0b; letter-spacing:.5px; margin-bottom:2px; }
+
+/* 본문 */
+.accom-item-body { padding:13px 14px 12px; display:flex; flex-direction:column; flex:1; }
+.accom-item-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; }
+.accom-item-name { font-size:14px; font-weight:800; color:#26215C; }
+.accom-status-badge {
+  font-size:10px; font-weight:700; padding:2px 8px; border-radius:100px;
+}
+.accom-status-badge.on  { background:#E1F5EE; color:#085041; }
+.accom-status-badge.off { background:#fee2e2; color:#b91c1c; }
+
+/* 가격 */
+.accom-item-price { font-size:15px; font-weight:800; color:#534AB7; margin-bottom:3px; }
+
+/* 위치 */
+.accom-item-location { font-size:11px; color:#6b7280; margin-bottom:8px; display:flex; align-items:center; gap:3px; }
+
+/* 어메니티 태그 */
+.accom-amenity-tags { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:10px; }
+.amenity-tag {
+  font-size:10px; font-weight:600; color:#534AB7;
+  background:#f0effe; padding:2px 7px; border-radius:100px;
+  white-space:nowrap;
+}
+.amenity-tag.special { background:#E1F5EE; color:#085041; }
+
+/* 버튼 */
+.accom-item-btns { display:flex; gap:6px; margin-top:auto; }
 
 /* 배지 */
 .badge-on  { background:#E1F5EE; color:#085041; font-size:11px; padding:2px 8px; border-radius:100px; font-weight:700; }
@@ -1875,27 +1942,60 @@ function saveAccoms(data) {
   localStorage.setItem('iclark_accoms', JSON.stringify(data));
 }
 
-/* ── 숙소 렌더링 ── */
+/* ── 숙소 렌더링 (패키지 썸네일 카드) ── */
 function renderAccomList() {
   const accoms = getAccoms();
   const container = document.getElementById('accom-list');
-  container.innerHTML = accoms.map(a => `
+
+  container.innerHTML = accoms.map(a => {
+    /* 별점 */
+    const stars = a.stars > 0
+      ? '★'.repeat(a.stars) + '☆'.repeat(Math.max(0, 5 - a.stars))
+      : '';
+
+    /* 어메니티 태그 (최대 4개) */
+    const amenList = a.amenities ? a.amenities.split(',').map(s=>s.trim()).filter(Boolean) : [];
+    const SPECIAL = ['3식포함','픽업드롭','올인클루시브','조식'];
+    const tagHTML = amenList.slice(0,4).map(t =>
+      `<span class="amenity-tag${SPECIAL.includes(t)?' special':''}">${t}</span>`
+    ).join('') + (amenList.length > 4 ? `<span class="amenity-tag">+${amenList.length-4}</span>` : '');
+
+    /* 썸네일 — 저장된 이미지 있으면 사용, 없으면 이모지 배경 */
+    const firstPhoto = (a.photos && a.photos.length > 0) ? a.photos[0] : null;
+    const thumbHTML = firstPhoto
+      ? `<img src="${firstPhoto}" alt="${a.name}" loading="lazy">`
+      : `<span class="thumb-emoji">${a.type==='local' ? '🏠' : '🏨'}</span>`;
+
+    /* 가격 표시 */
+    const priceStr = a.type==='local'
+      ? `<span style="font-size:11px;font-weight:600;color:#6b7280;">ALL-IN </span>$${a.priceUSD}<span style="font-size:11px;">/일</span>`
+      : `₩${Number(a.priceKRW).toLocaleString()}<span style="font-size:11px;">/박</span>`;
+
+    return `
     <div class="accom-item">
-      <div class="accom-item-img">${a.type==='local' ? '🏠' : '🏨'}</div>
-      <div class="accom-item-body">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-          <div class="accom-item-name">${a.name}</div>
-          <span class="${a.active ? 'badge-on' : 'badge-off'}">${a.active ? '활성' : '비활성'}</span>
+      <div class="accom-item-thumb">
+        ${thumbHTML}
+        <div class="accom-thumb-badges">
+          <span class="accom-type-badge ${a.type==='local'?'local':'hotel'}">${a.type==='local'?'전지훈련 전용':'호텔'}</span>
+          <span class="accom-status-dot ${a.active?'on':'off'}" title="${a.active?'활성':'비활성'}"></span>
         </div>
-        <div class="accom-item-price">${a.type==='local' ? '$'+a.priceUSD+'/일' : '₩'+Number(a.priceKRW).toLocaleString()+'/박'}</div>
-        <div style="font-size:11px;color:#6b7280;margin-bottom:8px;">${a.location}</div>
+      </div>
+      <div class="accom-item-body">
+        <div class="accom-item-header">
+          <div class="accom-item-name">${a.name}</div>
+          <span class="accom-status-badge ${a.active?'on':'off'}">${a.active?'활성':'비활성'}</span>
+        </div>
+        ${stars ? `<div class="accom-item-stars">${stars}</div>` : ''}
+        <div class="accom-item-price">${priceStr}</div>
+        <div class="accom-item-location">📍 ${a.location}</div>
+        ${tagHTML ? `<div class="accom-amenity-tags">${tagHTML}</div>` : ''}
         <div class="accom-item-btns">
           <button class="btn-edit" onclick="editAccom('${a.id}')">수정</button>
           <button class="btn-del" onclick="toggleAccom('${a.id}')">${a.active ? '비활성' : '활성화'}</button>
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 let editingAccomId = null;
