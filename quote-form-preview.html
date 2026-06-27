@@ -17,11 +17,9 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--cream);color:var(--d
 .input-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
 .input-group{display:flex;flex-direction:column;gap:6px;}
 .input-group label{font-size:12px;font-weight:700;color:var(--gray);letter-spacing:1px;}
-.input-group input,.input-group select{border:1.5px solid #e0d8ce;border-radius:8px;padding:10px 14px;font-size:14px;font-family:'Noto Sans KR',sans-serif;color:var(--dark);}
-.input-group input:focus{outline:none;border-color:var(--green);}
+.input-group input,.input-group select,.input-group textarea{border:1.5px solid #e0d8ce;border-radius:8px;padding:10px 14px;font-size:14px;font-family:'Noto Sans KR',sans-serif;color:var(--dark);}
+.input-group input:focus,.input-group select:focus{outline:none;border-color:var(--green);}
 .section-label{font-size:13px;font-weight:800;color:var(--green);margin:20px 0 12px;letter-spacing:1px;border-left:3px solid var(--gold);padding-left:10px;}
-
-/* 항목 행 */
 .col-headers{display:grid;grid-template-columns:2fr 1fr 1fr 90px 60px;gap:8px;margin-bottom:6px;}
 .col-headers span{font-size:11px;font-weight:700;color:var(--gray);letter-spacing:1px;text-align:right;}
 .col-headers span:first-child{text-align:left;}
@@ -39,7 +37,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--cream);color:var(--d
 .badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap;}
 .badge.in{background:#eaf3ee;color:var(--green);}
 .badge.ex{background:#f3f3f3;color:#999;}
-
 .generate-btn{width:100%;padding:16px;background:var(--green);color:#fff;border:none;border-radius:50px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Noto Sans KR',sans-serif;margin-top:24px;letter-spacing:1px;}
 .generate-btn:hover{background:var(--green-mid);}
 
@@ -73,12 +70,10 @@ tbody tr.ref-row td{color:#aaa;font-style:italic;}
 tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;padding:6px 14px;}
 .unit{font-size:11px;color:var(--gray);font-weight:400;}
 .ref-note{font-size:11px;color:#aaa;margin-left:4px;}
-
 .total-section{background:var(--dark);margin:0 48px 28px;border-radius:12px;padding:20px 28px;display:flex;justify-content:space-between;align-items:center;}
 .total-label{font-size:14px;font-weight:700;color:rgba(255,255,255,0.7);}
 .total-usd{font-size:28px;font-weight:900;color:var(--gold);}
 .total-krw{font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px;}
-
 .include-section{padding:0 48px 28px;display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 .inc-box{border-radius:10px;padding:16px 18px;}
 .inc-box.yes{background:#eaf3ee;border-left:4px solid var(--green);}
@@ -90,24 +85,36 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
 .inc-box ul li{font-size:12px;color:#444;padding:3px 0;}
 .inc-box.yes ul li::before{content:"✓ ";color:var(--green);font-weight:700;}
 .inc-box.no ul li::before{content:"✗ ";color:#e74c3c;}
-
 .notice{margin:0 48px 28px;background:#fffbf5;border:1px solid #fde8d0;border-radius:10px;padding:16px 18px;}
 .notice h4{font-size:11px;font-weight:800;color:#c07a30;margin-bottom:8px;letter-spacing:1px;}
 .notice ul{list-style:none;}
 .notice ul li{font-size:12px;color:#555;padding:3px 0;padding-left:12px;position:relative;}
 .notice ul li::before{content:"·";position:absolute;left:0;color:var(--gold);}
-
 .footer{background:var(--dark);padding:18px 48px;display:flex;justify-content:space-between;align-items:center;}
 .footer-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:#fff;}
 .footer-logo span{color:var(--gold);}
 .footer-contact p{font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:2px;text-align:right;}
 .footer-contact a{color:var(--gold);text-decoration:none;font-size:11px;}
 
-.btn-row{max-width:780px;margin:0 auto 16px;display:flex;gap:12px;}
-.print-btn{flex:1;padding:14px;background:var(--green);color:#fff;border:none;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+/* 버튼 행 */
+.btn-row{max-width:780px;margin:0 auto 16px;display:flex;gap:12px;flex-wrap:wrap;}
+.btn-share{flex:2;padding:14px;background:var(--gold);color:var(--dark);border:none;border-radius:50px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.btn-kakao{flex:1;padding:14px;background:#FEE500;color:#000;border:none;border-radius:50px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
 .back-btn{flex:1;padding:14px;background:#fff;color:var(--green);border:2px solid var(--green);border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
 
-@media print{body{background:#fff;}.page{display:block!important;box-shadow:none;margin:0;border-radius:0;}.input-mode,.btn-row{display:none!important;}}
+/* 링크 박스 */
+.link-box{max-width:780px;margin:0 auto 16px;background:#fff;border-radius:12px;padding:16px 20px;box-shadow:0 2px 12px rgba(0,0,0,0.08);display:none;}
+.link-box .link-label{font-size:12px;font-weight:700;color:var(--green);margin-bottom:8px;}
+.link-box .link-url{display:flex;gap:8px;align-items:center;}
+.link-box input{flex:1;border:1.5px solid #e0d8ce;border-radius:8px;padding:10px 14px;font-size:13px;color:#333;font-family:'Noto Sans KR',sans-serif;}
+.link-box .copy-btn{padding:10px 20px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.link-box .kakao-share-btn{padding:10px 20px;background:#FEE500;color:#000;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.saving-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:999;display:none;}
+.saving-box{background:#fff;border-radius:16px;padding:32px 40px;text-align:center;}
+.saving-box .saving-icon{font-size:40px;margin-bottom:12px;}
+.saving-box p{font-size:16px;font-weight:700;color:var(--green);}
+
+@media print{body{background:#fff;}.page{display:block!important;box-shadow:none;margin:0;border-radius:0;}.input-mode,.btn-row,.link-box{display:none!important;}}
 @media(max-width:600px){
   .col-headers,.cost-row{grid-template-columns:2fr 1fr 1fr 70px 50px;}
   .input-grid{grid-template-columns:1fr;}
@@ -115,11 +122,21 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
   .total-section{margin:0 20px 24px;}
   .include-section{grid-template-columns:1fr;}
   .client-grid{grid-template-columns:1fr 1fr;}
+  .btn-row{flex-direction:column;}
 }
 </style>
 </head>
 <body>
 
+<!-- 저장 중 오버레이 -->
+<div class="saving-overlay" id="savingOverlay">
+  <div class="saving-box">
+    <div class="saving-icon">💾</div>
+    <p>견적서 저장 중...</p>
+  </div>
+</div>
+
+<!-- 입력 모드 -->
 <div class="input-mode" id="inputMode">
   <h2>📋 견적서 작성</h2>
   <div class="rate-info" id="rateInfo">💱 적용 환율 로딩 중...</div>
@@ -129,10 +146,7 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
     <div class="input-group"><label>고객명</label><input type="text" id="clientName" placeholder="홍길동"></div>
     <div class="input-group"><label>견적 번호</label><input type="text" id="quoteNo"></div>
     <div class="input-group"><label>문서 종류</label>
-      <select id="docType">
-        <option value="견적서">견적서</option>
-        <option value="확정서">확정서</option>
-      </select>
+      <select id="docType"><option value="견적서">견적서</option><option value="확정서">확정서</option></select>
     </div>
     <div class="input-group"><label>인원 수</label><input type="number" id="persons" value="1" min="1"></div>
     <div class="input-group"><label>체류 기간</label><input type="text" id="duration" placeholder="7박 8일"></div>
@@ -140,40 +154,45 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
     <div class="input-group"><label>출발일</label><input type="text" id="checkOut" placeholder="2026-07-17 (예상일)"></div>
     <div class="input-group"><label>골프장</label><input type="text" id="golfCourse" value="프라데라 베르데"></div>
     <div class="input-group"><label>숙소</label><input type="text" id="accommodation" value="iClark 로컬 전용숙소"></div>
+    <div class="input-group"><label>고객 전화번호 뒷 4자리 (본인 확인용)</label><input type="text" id="clientPin" placeholder="0000" maxlength="4"></div>
   </div>
 
-  <!-- 골프 비용 -->
   <div class="section-label">⛳ 골프 비용</div>
-  <div class="col-headers">
-    <span>항목</span><span>단가 (₱)</span><span>수량</span><span>USD</span><span>구분</span>
-  </div>
+  <div class="col-headers"><span>항목</span><span>단가 (₱)</span><span>수량</span><span>USD</span><span>구분</span></div>
   <div id="golfItems"></div>
 
-  <!-- 레슨 비용 -->
   <div class="section-label">🏋 레슨 비용</div>
-  <div class="col-headers">
-    <span>항목</span><span>단가 (₱)</span><span>수량</span><span>USD</span><span>구분</span>
-  </div>
+  <div class="col-headers"><span>항목</span><span>단가 (₱)</span><span>수량</span><span>USD</span><span>구분</span></div>
   <div id="lessonItems"></div>
 
-  <!-- 숙소/이동 -->
   <div class="section-label">🏡 숙소 · 이동 비용</div>
-  <div class="col-headers">
-    <span>항목</span><span>단가 (₱)</span><span>수량</span><span>USD</span><span>구분</span>
-  </div>
+  <div class="col-headers"><span>항목</span><span>단가 (₱)</span><span>수량</span><span>USD</span><span>구분</span></div>
   <div id="stayItems"></div>
 
   <div class="section-label">📝 Remarks (특이사항 · 보충 설명)</div>
-  <textarea id="remarks" placeholder="예) 도착 편명: PR480 / 특별 요청사항 / 추가 안내 등 자유롭게 입력하세요" style="width:100%;min-height:100px;border:1.5px solid #e0d8ce;border-radius:8px;padding:12px 14px;font-size:14px;font-family:'Noto Sans KR',sans-serif;color:#333;resize:vertical;line-height:1.7;"></textarea>
+  <textarea id="remarks" placeholder="예) 도착 편명: PR480 / 특별 요청사항 / 추가 안내 등" style="width:100%;min-height:100px;border:1.5px solid #e0d8ce;border-radius:8px;padding:12px 14px;font-size:14px;font-family:'Noto Sans KR',sans-serif;color:#333;resize:vertical;line-height:1.7;"></textarea>
 
-  <button class="generate-btn" onclick="generateQuote()">📄 견적서 생성</button>
+  <button class="generate-btn" onclick="generateAndSave()">📄 견적서 생성 &amp; 링크 만들기</button>
 </div>
 
+<!-- 링크 박스 -->
+<div class="link-box" id="linkBox">
+  <div class="link-label">🔗 고객 공유 링크 (이 링크를 카톡으로 전송하세요)</div>
+  <div class="link-url">
+    <input type="text" id="shareLink" readonly>
+    <button class="copy-btn" onclick="copyLink()">📋 복사</button>
+    <button class="kakao-share-btn" onclick="shareKakao()">💬 카톡</button>
+  </div>
+</div>
+
+<!-- 버튼 행 -->
 <div class="btn-row" id="btnRow" style="display:none;">
   <button class="back-btn" onclick="goBack()">← 다시 수정</button>
-  <button class="print-btn" onclick="window.print()">🖨️ 인쇄 / PDF 저장</button>
+  <button class="btn-share" onclick="copyLink()">🔗 링크 복사해서 공유</button>
+  <button class="btn-kakao" onclick="shareKakao()">💬 카카오톡 공유</button>
 </div>
 
+<!-- 견적서 출력 -->
 <div class="page" id="quotePage">
   <div class="header">
     <div>
@@ -203,40 +222,28 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
     <div class="section-title">⛳ 골프 비용</div>
     <table><thead><tr><th>항목</th><th>단가</th><th>수량</th><th>금액</th></tr></thead>
     <tbody id="out-golf"></tbody></table>
-
     <div class="section-title">🏋 레슨 비용</div>
     <table><thead><tr><th>항목</th><th>단가</th><th>수량</th><th>금액</th></tr></thead>
     <tbody id="out-lesson"></tbody></table>
-
     <div class="section-title">🏡 숙소 · 이동 비용</div>
     <table><thead><tr><th>항목</th><th>단가</th><th>수량</th><th>금액</th></tr></thead>
     <tbody id="out-stay"></tbody></table>
   </div>
-
   <div class="total-section">
-    <div class="total-label">견적 합계 <span style="font-size:11px;font-weight:400;opacity:0.6;display:block;margin-top:4px;">※ 캐디피·카트비·보험료·컨슘어블은 현지 별도 지불</span></div>
+    <div class="total-label">견적 합계<br><span style="font-size:11px;font-weight:400;opacity:0.6;">※ 캐디피·카트비·보험료·컨슘어블은 현지 별도 지불</span></div>
     <div>
       <div class="total-usd" id="out-total-usd"></div>
       <div class="total-krw" id="out-total-krw"></div>
     </div>
   </div>
-
   <div class="include-section">
-    <div class="inc-box yes">
-      <h4>✅ 포함 사항</h4>
-      <ul id="out-includes"></ul>
-    </div>
-    <div class="inc-box no">
-      <h4>❌ 현지 별도 지불</h4>
-      <ul id="out-excludes"></ul>
-    </div>
+    <div class="inc-box yes"><h4>✅ 포함 사항</h4><ul id="out-includes"></ul></div>
+    <div class="inc-box no"><h4>❌ 현지 별도 지불</h4><ul id="out-excludes"></ul></div>
   </div>
-
   <div id="out-remarks-section" style="margin:0 48px 28px;background:#f8f5f0;border-radius:10px;padding:16px 18px;border-left:4px solid var(--green-mid);display:none;">
     <div style="font-size:11px;font-weight:800;color:var(--green-mid);letter-spacing:1px;margin-bottom:8px;">📝 REMARKS</div>
     <div id="out-remarks" style="font-size:13px;color:#333;line-height:1.8;white-space:pre-line;"></div>
   </div>
-
   <div class="notice">
     <h4>📋 안내사항</h4>
     <ul>
@@ -247,7 +254,6 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
       <li>문의: 카카오톡 채널 @iClarkGolf</li>
     </ul>
   </div>
-
   <div class="footer">
     <div class="footer-logo">i<span>Clark</span> Golf</div>
     <div class="footer-contact">
@@ -258,8 +264,18 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
   </div>
 </div>
 
-<script>
-let RATE = { appliedUsdPhp: 53.2, usdKrw: 1380 };
+<script type="module">
+// Firebase
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+const app = getApps().length ? getApps()[0] : initializeApp(cfg);
+const db  = getFirestore(app);
+
+// 환율
+let RATE = { appliedUsdPhp:53.2, usdKrw:1380 };
+let currentQuoteId = null;
 
 function loadRate() {
   try {
@@ -273,23 +289,19 @@ function loadRate() {
         '</span> &nbsp;|&nbsp; <span>$1 = ₩' + Number(RATE.usdKrw).toLocaleString() +
         '</span> &nbsp;(' + (r.updatedAt||'admin 설정값') + ')';
     } else {
-      document.getElementById('rateInfo').innerHTML =
-        '⚠️ admin에서 환율을 먼저 설정해주세요. 현재 기본값: <span>$1 = ₱53.2</span> 적용 중';
+      document.getElementById('rateInfo').innerHTML = '⚠️ admin에서 환율을 먼저 설정해주세요. 기본값: <span>$1 = ₱53.2</span>';
     }
   } catch(e){}
 }
 
-function phpToUsd(php) {
-  return Math.round((php / RATE.appliedUsdPhp) * 100) / 100;
-}
+function phpToUsd(php) { return Math.round((php / RATE.appliedUsdPhp)*100)/100; }
 
-// included:true → 합계에 포함 / included:false → 참고만 표시
 const GOLF_ITEMS = [
-  { key:'greenfee',  name:'그린피',    unit:'라운드', defaultPhp:4500, included:true },
-  { key:'caddy',     name:'캐디피',    unit:'라운드', defaultPhp:1800, included:false },
-  { key:'cart',      name:'카트비',    unit:'라운드', defaultPhp:1200, included:false },
-  { key:'insurance', name:'보험료',    unit:'명',     defaultPhp:150,  included:false },
-  { key:'consum',    name:'컨슘어블',  unit:'라운드', defaultPhp:500,  included:false },
+  { key:'greenfee',  name:'그린피',   unit:'라운드', defaultPhp:4500, included:true },
+  { key:'caddy',     name:'캐디피',   unit:'라운드', defaultPhp:1800, included:false },
+  { key:'cart',      name:'카트비',   unit:'라운드', defaultPhp:1200, included:false },
+  { key:'insurance', name:'보험료',   unit:'명',     defaultPhp:150,  included:false },
+  { key:'consum',    name:'컨슘어블', unit:'라운드', defaultPhp:500,  included:false },
 ];
 const LESSON_ITEMS = [
   { key:'field_lesson', name:'필드 레슨비',   unit:'회', defaultPhp:2500, included:true },
@@ -297,11 +309,12 @@ const LESSON_ITEMS = [
   { key:'range_fee',    name:'연습장 이용료', unit:'일', defaultPhp:500,  included:true },
 ];
 const STAY_ITEMS = [
-  { key:'accom',      name:'로컬 전용숙소 (식사포함)',    unit:'박', defaultPhp:3000, included:true },
-  { key:'drop',       name:'숙소 ↔ 골프장 드롭 픽업',   unit:'일', defaultPhp:500,  included:true },
-  { key:'pickup',     name:'공항 픽업',                  unit:'회', defaultPhp:2000, included:true },
-  { key:'sendoff',    name:'공항 샌딩',                  unit:'회', defaultPhp:2000, included:true },
+  { key:'accom',   name:'로컬 전용숙소 (식사포함)',  unit:'박', defaultPhp:3000, included:true },
+  { key:'drop',    name:'숙소 ↔ 골프장 드롭 픽업', unit:'일', defaultPhp:500,  included:true },
+  { key:'pickup',  name:'공항 픽업',                unit:'회', defaultPhp:2000, included:true },
+  { key:'sendoff', name:'공항 샌딩',                unit:'회', defaultPhp:2000, included:true },
 ];
+const ALL_ITEMS = [...GOLF_ITEMS, ...LESSON_ITEMS, ...STAY_ITEMS];
 
 function renderItems(items, containerId) {
   const container = document.getElementById(containerId);
@@ -311,162 +324,189 @@ function renderItems(items, containerId) {
     div.className = 'cost-row ' + (item.included ? 'included' : 'excluded');
     div.innerHTML = `
       <div class="item-name">${item.name}</div>
-      <input type="number" id="php_${item.key}" value="${item.defaultPhp}" min="0" oninput="updateUsd('${item.key}','${item.included}')">
-      <input type="number" id="qty_${item.key}" value="1" min="0" oninput="updateUsd('${item.key}','${item.included}')">
+      <input type="number" id="php_${item.key}" value="${item.defaultPhp}" min="0" oninput="updateUsd('${item.key}')">
+      <input type="number" id="qty_${item.key}" value="1" min="0" oninput="updateUsd('${item.key}')">
       <div class="usd-result" id="usd_${item.key}">$0</div>
-      <span class="badge ${item.included ? 'in' : 'ex'}">${item.included ? '포함' : '별도'}</span>
+      <span class="badge ${item.included?'in':'ex'}">${item.included?'포함':'별도'}</span>
     `;
     container.appendChild(div);
   });
-  items.forEach(item => updateUsd(item.key, item.included));
+  items.forEach(item => updateUsd(item.key));
 }
 
-function updateUsd(key) {
-  const php = parseFloat(document.getElementById('php_' + key)?.value) || 0;
-  const qty = parseFloat(document.getElementById('qty_' + key)?.value) || 0;
-  const usd = phpToUsd(php * qty);
-  const el = document.getElementById('usd_' + key);
-  if (el) el.textContent = '$' + usd.toFixed(2);
-}
+window.updateUsd = function(key) {
+  const php = parseFloat(document.getElementById('php_'+key)?.value)||0;
+  const qty = parseFloat(document.getElementById('qty_'+key)?.value)||0;
+  const el  = document.getElementById('usd_'+key);
+  if (el) el.textContent = '$' + phpToUsd(php*qty).toFixed(2);
+};
 
 function getRows(items) {
   return items.map(item => {
-    const php = parseFloat(document.getElementById('php_' + item.key)?.value) || 0;
-    const qty = parseFloat(document.getElementById('qty_' + item.key)?.value) || 0;
-    return { ...item, php, qty, unitUsd: phpToUsd(php), totalUsd: phpToUsd(php * qty) };
-  }).filter(r => r.qty > 0 && r.php > 0);
+    const php = parseFloat(document.getElementById('php_'+item.key)?.value)||0;
+    const qty = parseFloat(document.getElementById('qty_'+item.key)?.value)||0;
+    return {...item, php, qty, unitUsd:phpToUsd(php), totalUsd:phpToUsd(php*qty)};
+  }).filter(r=>r.qty>0&&r.php>0);
 }
 
 function renderTable(rows, tbodyId) {
   const tbody = document.getElementById(tbodyId);
   tbody.innerHTML = '';
   let subtotal = 0;
-
-  // 포함 항목 먼저
-  const included = rows.filter(r => r.included);
-  const excluded = rows.filter(r => !r.included);
-
+  const included = rows.filter(r=>r.included);
+  const excluded = rows.filter(r=>!r.included);
   included.forEach(r => {
     subtotal += r.totalUsd;
-    tbody.innerHTML += `<tr>
-      <td>${r.name}</td>
-      <td>$${r.unitUsd.toFixed(2)} <span class="unit">(₱${Number(r.php).toLocaleString()})</span></td>
-      <td>${r.qty}${r.unit}</td>
-      <td>$${r.totalUsd.toFixed(2)}</td>
-    </tr>`;
+    tbody.innerHTML += `<tr><td>${r.name}</td><td>$${r.unitUsd.toFixed(2)} <span class="unit">(₱${Number(r.php).toLocaleString()})</span></td><td>${r.qty}${r.unit}</td><td>$${r.totalUsd.toFixed(2)}</td></tr>`;
   });
-
-  if (included.length > 0) {
-    tbody.innerHTML += `<tr class="subtotal"><td colspan="3">소계</td><td>$${subtotal.toFixed(2)}</td></tr>`;
-  }
-
-  // 별도 항목 (참고)
-  if (excluded.length > 0) {
+  if (included.length>0) tbody.innerHTML += `<tr class="subtotal"><td colspan="3">소계</td><td>$${subtotal.toFixed(2)}</td></tr>`;
+  if (excluded.length>0) {
     tbody.innerHTML += `<tr class="ref-header"><td colspan="4">※ 현지 별도 지불 (참고 금액)</td></tr>`;
     excluded.forEach(r => {
-      tbody.innerHTML += `<tr class="ref-row">
-        <td>${r.name} <span class="ref-note">(현지 지불)</span></td>
-        <td>$${r.unitUsd.toFixed(2)} <span class="unit">(₱${Number(r.php).toLocaleString()})</span></td>
-        <td>${r.qty}${r.unit}</td>
-        <td style="color:#bbb;">$${r.totalUsd.toFixed(2)}</td>
-      </tr>`;
+      tbody.innerHTML += `<tr class="ref-row"><td>${r.name} <span class="ref-note">(현지 지불)</span></td><td>$${r.unitUsd.toFixed(2)} <span class="unit">(₱${Number(r.php).toLocaleString()})</span></td><td>${r.qty}${r.unit}</td><td style="color:#bbb;">$${r.totalUsd.toFixed(2)}</td></tr>`;
     });
   }
-
   return subtotal;
 }
 
-function generateQuote() {
-  const name     = document.getElementById('clientName').value || '고객';
-  const quoteNo  = document.getElementById('quoteNo').value || 'QT-001';
-  const persons  = document.getElementById('persons').value || '1';
-  const duration = document.getElementById('duration').value || '-';
-  const checkIn  = document.getElementById('checkIn').value;
-  const checkOut = document.getElementById('checkOut').value;
-  const course   = document.getElementById('golfCourse').value;
-  const accom    = document.getElementById('accommodation').value;
-  const fmtDate  = d => d ? d : '-';
-  const today    = new Date().toLocaleDateString('ko-KR', {year:'numeric',month:'long',day:'numeric'});
+function buildQuoteData() {
+  const items = {};
+  ALL_ITEMS.forEach(item => {
+    items[item.key] = {
+      php: parseFloat(document.getElementById('php_'+item.key)?.value)||0,
+      qty: parseFloat(document.getElementById('qty_'+item.key)?.value)||0,
+    };
+  });
+  return {
+    clientName:    document.getElementById('clientName').value||'고객',
+    quoteNo:       document.getElementById('quoteNo').value||'QT-001',
+    docType:       document.getElementById('docType').value,
+    persons:       document.getElementById('persons').value||'1',
+    duration:      document.getElementById('duration').value||'-',
+    checkIn:       document.getElementById('checkIn').value||'-',
+    checkOut:      document.getElementById('checkOut').value||'-',
+    golfCourse:    document.getElementById('golfCourse').value,
+    accommodation: document.getElementById('accommodation').value,
+    clientPin:     document.getElementById('clientPin').value||'0000',
+    remarks:       document.getElementById('remarks').value,
+    items,
+    rate:          RATE,
+    createdAt:     new Date().toISOString(),
+    status:        'active',
+  };
+}
 
-  const docType = document.getElementById('docType').value;
-  document.getElementById('out-docType').textContent  = docType;
-  document.getElementById('out-quoteNo').textContent  = quoteNo;
+function renderQuote(data) {
+  const today = new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('out-docType').textContent  = data.docType;
+  document.getElementById('out-quoteNo').textContent  = data.quoteNo;
   document.getElementById('out-date').textContent     = today;
-  document.getElementById('out-name').textContent     = name + ' 님';
-  document.getElementById('out-persons').textContent  = persons + '명';
-  document.getElementById('out-duration').textContent = duration;
-  document.getElementById('out-checkin').textContent  = fmtDate(checkIn);
-  document.getElementById('out-checkout').textContent = fmtDate(checkOut);
-  document.getElementById('out-course').textContent   = course;
-  document.getElementById('out-accom').textContent    = accom;
+  document.getElementById('out-name').textContent     = data.clientName + ' 님';
+  document.getElementById('out-persons').textContent  = data.persons + '명';
+  document.getElementById('out-duration').textContent = data.duration;
+  document.getElementById('out-checkin').textContent  = data.checkIn;
+  document.getElementById('out-checkout').textContent = data.checkOut;
+  document.getElementById('out-course').textContent   = data.golfCourse;
+  document.getElementById('out-accom').textContent    = data.accommodation;
 
   const golfRows   = getRows(GOLF_ITEMS);
   const lessonRows = getRows(LESSON_ITEMS);
   const stayRows   = getRows(STAY_ITEMS);
-
   const g = renderTable(golfRows,   'out-golf');
   const l = renderTable(lessonRows, 'out-lesson');
   const s = renderTable(stayRows,   'out-stay');
   const total = g + l + s;
 
   document.getElementById('out-total-usd').textContent = '$' + total.toFixed(2);
-  document.getElementById('out-total-krw').textContent =
-    '약 ₩' + Math.round(total * RATE.usdKrw).toLocaleString() + ' (환율 ' + Number(RATE.usdKrw).toLocaleString() + '원 기준)';
+  document.getElementById('out-total-krw').textContent = '약 ₩' + Math.round(total*RATE.usdKrw).toLocaleString() + ' (환율 ' + Number(RATE.usdKrw).toLocaleString() + '원 기준)';
 
-  // 포함 사항
   const inc = [];
-  if (stayRows.find(r=>r.key==='accom'&&r.included))   inc.push('로컬 숙소 ' + document.getElementById('qty_accom').value + '박 (식사포함)');
-  if (golfRows.find(r=>r.key==='greenfee'&&r.included)) inc.push('그린피 ' + document.getElementById('qty_greenfee').value + '라운드');
-  if (lessonRows.find(r=>r.key==='field_lesson'))        inc.push('필드 레슨 ' + document.getElementById('qty_field_lesson').value + '회');
-  if (lessonRows.find(r=>r.key==='range_lesson'))        inc.push('연습장 레슨 ' + document.getElementById('qty_range_lesson').value + '회');
-  if (lessonRows.find(r=>r.key==='range_fee'))           inc.push('연습장 이용료 ' + document.getElementById('qty_range_fee').value + '일');
-  if (stayRows.find(r=>r.key==='pickup'&&r.included))   inc.push('공항 픽업·샌딩');
+  if (stayRows.find(r=>r.key==='accom'))        inc.push('로컬 숙소 '+document.getElementById('qty_accom').value+'박 (식사포함)');
+  if (golfRows.find(r=>r.key==='greenfee'))      inc.push('그린피 '+document.getElementById('qty_greenfee').value+'라운드');
+  if (lessonRows.find(r=>r.key==='field_lesson'))inc.push('필드 레슨 '+document.getElementById('qty_field_lesson').value+'회');
+  if (lessonRows.find(r=>r.key==='range_lesson'))inc.push('연습장 레슨 '+document.getElementById('qty_range_lesson').value+'회');
+  if (lessonRows.find(r=>r.key==='range_fee'))   inc.push('연습장 이용료 '+document.getElementById('qty_range_fee').value+'일');
+  if (stayRows.find(r=>r.key==='drop'))          inc.push('숙소↔골프장 드롭 픽업');
+  if (stayRows.find(r=>r.key==='pickup'))        inc.push('공항 픽업·샌딩');
   document.getElementById('out-includes').innerHTML = inc.map(i=>`<li>${i}</li>`).join('');
 
-  // 현지 별도 지불
   const exc = [];
-  if (golfRows.find(r=>r.key==='caddy'))     exc.push('캐디피 (현지 직접 지불)');
-  if (golfRows.find(r=>r.key==='cart'))      exc.push('카트비 (현지 직접 지불)');
-  if (golfRows.find(r=>r.key==='insurance')) exc.push('보험료 (현지 직접 지불)');
-  if (golfRows.find(r=>r.key==='consum'))    exc.push('컨슘어블 (현지 직접 지불)');
-  exc.push('항공권');
-  exc.push('여행자 보험');
-  exc.push('중식 (자유 식사)');
+  if (golfRows.find(r=>r.key==='caddy'))         exc.push('캐디피 (현지 직접 지불)');
+  if (golfRows.find(r=>r.key==='cart'))          exc.push('카트비 (현지 직접 지불)');
+  if (golfRows.find(r=>r.key==='insurance'))     exc.push('보험료 (현지 직접 지불)');
+  if (golfRows.find(r=>r.key==='consum'))        exc.push('컨슘어블 (현지 직접 지불)');
+  exc.push('항공권'); exc.push('여행자 보험'); exc.push('중식 (자유 식사)');
   document.getElementById('out-excludes').innerHTML = exc.map(i=>`<li>${i}</li>`).join('');
 
-  // Remarks
-  const remarks = document.getElementById('remarks').value.trim();
+  const remarks = data.remarks||'';
   const remarksSection = document.getElementById('out-remarks-section');
-  if (remarks) {
-    document.getElementById('out-remarks').textContent = remarks;
-    remarksSection.style.display = 'block';
-  } else {
-    remarksSection.style.display = 'none';
+  if (remarks) { document.getElementById('out-remarks').textContent = remarks; remarksSection.style.display='block'; }
+  else remarksSection.style.display='none';
+}
+
+window.generateAndSave = async function() {
+  const overlay = document.getElementById('savingOverlay');
+  overlay.style.display = 'flex';
+
+  try {
+    const data = buildQuoteData();
+    const quoteId = data.quoteNo.replace(/[^a-zA-Z0-9-]/g,'_');
+    currentQuoteId = quoteId;
+
+    // Firebase 저장
+    await setDoc(doc(db, 'quotes', quoteId), data);
+
+    // 링크 생성
+    const link = `https://iclarkgolf.com/my-quote.html?id=${quoteId}`;
+    document.getElementById('shareLink').value = link;
+
+    // 견적서 렌더
+    renderQuote(data);
+
+    overlay.style.display = 'none';
+    document.getElementById('inputMode').style.display  = 'none';
+    document.getElementById('linkBox').style.display    = 'block';
+    document.getElementById('quotePage').style.display  = 'block';
+    document.getElementById('btnRow').style.display     = 'flex';
+    window.scrollTo(0,0);
+
+  } catch(e) {
+    overlay.style.display = 'none';
+    alert('저장 실패: ' + e.message);
   }
+};
 
-  document.getElementById('inputMode').style.display = 'none';
-  document.getElementById('quotePage').style.display = 'block';
-  document.getElementById('btnRow').style.display = 'flex';
-  window.scrollTo(0,0);
-}
+window.copyLink = function() {
+  const link = document.getElementById('shareLink').value;
+  navigator.clipboard.writeText(link).then(()=>{
+    alert('링크가 복사됐습니다!\n카카오톡에 붙여넣기 하세요.');
+  });
+};
 
-function goBack() {
-  document.getElementById('inputMode').style.display = 'block';
-  document.getElementById('quotePage').style.display = 'none';
-  document.getElementById('btnRow').style.display = 'none';
-}
+window.shareKakao = function() {
+  const link = document.getElementById('shareLink').value;
+  const name = document.getElementById('clientName')?.value || '고객';
+  // 카카오톡 앱으로 공유 (모바일)
+  const kakaoMsg = encodeURIComponent(`[iCLARKGOLF 견적서]\n${name}님의 견적서가 준비됐습니다.\n아래 링크에서 확인하세요 👇\n${link}`);
+  // 카카오톡 링크 복사 후 안내
+  navigator.clipboard.writeText(`[iCLARKGOLF 견적서]\n${name}님의 견적서가 준비됐습니다.\n아래 링크에서 확인하세요 👇\n${link}`)
+    .then(()=>alert('카카오톡 메시지가 복사됐습니다!\n카카오톡을 열어서 붙여넣기 하세요.'));
+};
+
+window.goBack = function() {
+  document.getElementById('inputMode').style.display  = 'block';
+  document.getElementById('quotePage').style.display  = 'none';
+  document.getElementById('btnRow').style.display     = 'none';
+  document.getElementById('linkBox').style.display    = 'none';
+};
 
 // 초기화
 loadRate();
 renderItems(GOLF_ITEMS,   'golfItems');
 renderItems(LESSON_ITEMS, 'lessonItems');
 renderItems(STAY_ITEMS,   'stayItems');
-
 const today = new Date();
-const fmt = d => d.toISOString().split('T')[0];
-document.getElementById('checkIn').value  = '';
-document.getElementById('checkOut').value = '';
-document.getElementById('quoteNo').value  = 'QT-' + today.getFullYear() +
+document.getElementById('quoteNo').value = 'QT-' + today.getFullYear() +
   String(today.getMonth()+1).padStart(2,'0') + String(today.getDate()).padStart(2,'0') + '-001';
 </script>
 </body>
