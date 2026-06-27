@@ -1121,7 +1121,7 @@ try {
       : `$${a.priceUSD}<span style="font-size:11px;">/박</span>`;
 
     return `
-    <div class="lodging-card">
+    <a href="lodging-detail.html?id=${a.id}" class="lodging-card" style="text-decoration:none;display:flex;flex-direction:column;cursor:pointer;">
       <div class="lodging-thumb">
         ${thumbHTML}
         <span class="lodging-type-badge ${a.type==='local'?'local':'hotel'}">${a.type==='local'?'전지훈련 전용':'호텔'}</span>
@@ -1132,9 +1132,9 @@ try {
         <div class="lodging-price">${priceStr}</div>
         <div class="lodging-location">📍 ${a.location}</div>
         ${tags ? `<div class="lodging-tags">${tags}</div>` : ''}
-        <a href="quote.html" class="lodging-btn">이 숙소로 견적 보기 →</a>
+        <div class="lodging-btn">자세히 보기 →</div>
       </div>
-    </div>`;
+    </a>`;
   }).join('');
 
   document.getElementById('lodging-grid').innerHTML = html || '<p style="color:#9ca3af;font-size:13px;padding:20px 0;">등록된 숙소가 없습니다.</p>';

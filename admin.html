@@ -1925,11 +1925,11 @@ function previewLicenses() {
 
 /* ── 숙소 데이터 (localStorage 기반, Firebase 연동 준비) ── */
 const DEFAULT_ACCOMS = [
-  { id:'iclark',   type:'local', name:'iClark 전용숙소', stars:0, priceKRW:0,     priceUSD:45, location:'Barangay Prado Siongco, 프라데라 골프장 5분', desc:'전지훈련 전용 숙소. 조·중·석식 + 픽업·드롭 + 세탁 ALL포함. 골프장 5분 거리.', amenities:'3식포함,픽업드롭,세탁,WiFi,에어컨', active:true },
-  { id:'clarkton', type:'hotel', name:'클락턴 호텔',     stars:3, priceKRW:53000, priceUSD:38, location:'말라바나스, 앙헬레스 / 클락 도심', desc:'클락 도심에 위치한 3성급 호텔. 수영장과 편의시설 완비. 골프장 접근성 우수.', amenities:'수영장,조식,주차,WiFi', active:true },
-  { id:'mango',    type:'hotel', name:'망고 스위트',     stars:4, priceKRW:34000, priceUSD:24, location:'시티센터, 앙헬레스 / 클락 도심 1.9km', desc:'4성급 스위트 호텔. 넓은 객실과 현대적 시설. 가족 여행에 최적.', amenities:'수영장,조식,주차,WiFi,에어컨', active:true },
-  { id:'emmaus',   type:'hotel', name:'엠마우스 콘도텔', stars:3, priceKRW:32000, priceUSD:23, location:'말라바나스, 앙헬레스 / 클락 도심 0.1km', desc:'도심 바로 위치한 콘도텔. 조용한 환경. 장기 체류에 적합.', amenities:'주차,WiFi,에어컨,세탁', active:true },
-  { id:'oasis',    type:'hotel', name:'오아시스 호텔',   stars:3, priceKRW:73000, priceUSD:52, location:'말라바나스, 앙헬레스 / 클락 도심', desc:'2025년 수상 호텔. 넓은 수영장과 정원. 가장 쾌적한 환경.', amenities:'수영장,조식,주차,WiFi,스파', active:true }
+  { id:'iclark',   type:'local', name:'iClark 전용숙소', stars:0, priceKRW:0,     priceUSD:45, location:'Barangay Prado Siongco, 프라데라 골프장 5분', desc:'프라데라에서 전지훈련을 하려면 근처에 숙소가 필요합니다.\n로컬 마을안에 위치한 방 6개의 단독 하우스입니다.\n매일 이웃들과 마주하며 로컬 체험을 합니다.\n\n조식·중식·석식 + 픽업·드롭 + 세탁 ALL 포함.', amenities:'3식포함,픽업드롭,세탁,WiFi,에어컨', photos:[], active:true },
+  { id:'clarkton', type:'hotel', name:'클락턴 호텔',     stars:3, priceKRW:53000, priceUSD:38, location:'말라바나스, 앙헬레스 / 클락 도심', desc:'클락 도심에 위치한 3성급 호텔. 수영장과 편의시설 완비. 골프장 접근성 우수.\n\n1992년부터 독일 관리 체제로 운영. 파노라마 레스토랑, 수영장, 스파 완비.', amenities:'수영장,조식,주차,WiFi,스파,레스토랑', photos:[], active:true },
+  { id:'mango',    type:'hotel', name:'망고 스위트',     stars:4, priceKRW:34000, priceUSD:24, location:'시티센터, 앙헬레스 / 클락 도심 1.9km', desc:'4성급 스위트 호텔. 넓은 객실과 현대적 시설. 가족 여행에 최적.\n\n클락 프리포트 존에서 차로 5분. 무료 주차 및 WiFi 제공.', amenities:'수영장,조식,주차,WiFi,에어컨,엘리베이터', photos:[], active:true },
+  { id:'emmaus',   type:'hotel', name:'엠마우스 콘도텔', stars:3, priceKRW:32000, priceUSD:23, location:'말라바나스, 앙헬레스 / 클락 도심 0.1km', desc:'도심 바로 위치한 콘도텔. 조용한 환경. 장기 체류에 적합.\n\nSM City Clark 도보 5분. 평점 8.2. 한국 교민 인기 숙소.', amenities:'주차,WiFi,에어컨,세탁,레스토랑,24시간프런트', photos:[], active:true },
+  { id:'oasis',    type:'hotel', name:'오아시스 호텔',   stars:3, priceKRW:73000, priceUSD:52, location:'말라바나스, 앙헬레스 / 클락 도심', desc:'넓은 수영장과 열대 정원이 있는 조용한 컴파운드 호텔.\n\n조식 뷔페 포함. 공항 5분 거리. 골프장 픽업 가능.', amenities:'수영장,조식,주차,WiFi,스파,풀바,레스토랑', photos:[], active:true }
 ];
 
 function getAccoms() {

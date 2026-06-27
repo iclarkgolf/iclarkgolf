@@ -799,6 +799,24 @@ function renderAll() {
   renderCart();
 }
 
+/* ── URL 파라미터로 숙소 자동 선택 ── */
+(function() {
+  const p = new URLSearchParams(location.search);
+  const hotelParam = p.get('hotel');
+  if (hotelParam && HOTELS.find(h => h.id === hotelParam)) {
+    selHotel = hotelParam;
+    const h = HOTELS.find(x => x.id === hotelParam);
+    if (h) {
+      const summaryEl = document.getElementById('hotel-summary');
+      if (summaryEl) summaryEl.textContent = h.name;
+    }
+    setTimeout(() => {
+      const el = document.querySelector('.hotel-item.on') || document.querySelector('.hotel-item');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 600);
+  }
+})();
+
 renderAll();
 initRateBanner();
 </script>

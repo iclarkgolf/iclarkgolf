@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>숙소 상세 — iCLARKGOLF</title>
+<meta name="description" content="필리핀 클락 추천 숙소 상세 정보. iCLARKGOLF가 엄선한 숙소를 확인하고 견적을 바로 만들어보세요.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root {
+  --mint:        #1D9E75;
+  --mint-light:  #E1F5EE;
+  --mint-border: #c8edd9;
+  --purple:      #534AB7;
+  --purple-pale: #f0effe;
+  --text-dark:   #26215C;
+  --text-gray:   #6b7280;
+  --white:       #ffffff;
+  --radius:      14px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Nunito', sans-serif; background: #f4faf7; color: var(--text-dark); -webkit-tap-highlight-color: transparent; }
+
+/* ── 네비 ── */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--white); border-bottom: 1px solid var(--mint-border);
+  padding: 0 16px; height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--text-dark); text-decoration: none; letter-spacing: .5px; }
+.nav-logo span { color: #ff4444; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: 0; }
+.nav-back {
+  font-size: 13px; font-weight: 700; color: var(--purple);
+  text-decoration: none; padding: 8px 12px; border-radius: 8px;
+  background: var(--purple-pale); min-height: 36px; display: flex; align-items: center;
+}
+
+/* ── 슬라이더 ── */
+.slider-wrap {
+  position: relative; width: 100%; height: 260px;
+  background: linear-gradient(135deg, #E1F5EE, #c8edd9);
+  overflow: hidden; touch-action: pan-y;
+}
+.slider-track {
+  display: flex; height: 100%;
+  transition: transform .35s cubic-bezier(.4,0,.2,1);
+  will-change: transform;
+}
+.slider-slide {
+  min-width: 100%; height: 100%; flex-shrink: 0; position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.slider-slide img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.slider-slide .emoji-bg { font-size: 72px; }
+.slider-btn {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(255,255,255,.9); border: none; border-radius: 50%;
+  width: 38px; height: 38px; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,.18);
+  transition: transform .15s, box-shadow .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.slider-btn:active { transform: translateY(-50%) scale(.92); }
+.slider-prev { left: 10px; }
+.slider-next { right: 10px; }
+.slider-dots {
+  position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 6px;
+}
+.dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: rgba(255,255,255,.5); transition: background .2s, transform .2s;
+}
+.dot.on { background: #fff; transform: scale(1.3); }
+.slide-count {
+  position: absolute; bottom: 10px; right: 12px;
+  background: rgba(0,0,0,.45); color: #fff;
+  font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 100px;
+}
+
+/* ── 본문 ── */
+.body-wrap { padding: 20px 16px 130px; max-width: 680px; margin: 0 auto; }
+
+.type-badge {
+  display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: .04em;
+  padding: 3px 10px; border-radius: 100px; margin-bottom: 8px;
+}
+.type-badge.hotel { background: rgba(1,116,80,.12); color: #085041; }
+.type-badge.local { background: var(--purple-pale); color: var(--purple); }
+
+.detail-stars { font-size: 14px; color: #f59e0b; margin-bottom: 4px; }
+.detail-name  { font-size: 22px; font-weight: 900; line-height: 1.2; margin-bottom: 6px; }
+.detail-loc   { font-size: 13px; color: var(--text-gray); margin-bottom: 18px; display: flex; align-items: flex-start; gap: 4px; }
+
+/* 가격 박스 */
+.price-box {
+  background: var(--mint-light); border: 1.5px solid var(--mint-border);
+  border-radius: var(--radius); padding: 14px 16px; margin-bottom: 22px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.price-main { font-size: 26px; font-weight: 900; color: var(--purple); line-height: 1; }
+.price-main sub { font-size: 13px; font-weight: 700; color: var(--text-gray); }
+.price-note { font-size: 12px; color: var(--text-gray); font-weight: 600; line-height: 1.5; text-align: right; }
+
+/* 편의시설 */
+.sec-title { font-size: 13px; font-weight: 800; color: var(--text-dark); margin-bottom: 10px; }
+.amenity-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px; }
+.chip {
+  font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 100px;
+  background: var(--mint-light); color: #085041; border: 1px solid var(--mint-border);
+}
+.chip.special { background: var(--purple-pale); color: var(--purple); border-color: #c4bef7; }
+
+/* 설명 */
+.desc-box {
+  background: var(--white); border-radius: var(--radius); padding: 16px;
+  border: 1.5px solid var(--mint-border); margin-bottom: 22px;
+  font-size: 14px; line-height: 1.85; color: #374151;
+}
+
+/* 위치 안내 */
+.location-box {
+  background: var(--white); border-radius: var(--radius);
+  border: 1.5px solid var(--mint-border); padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+.location-icon { font-size: 28px; flex-shrink: 0; }
+.location-text { font-size: 13px; color: var(--text-gray); line-height: 1.6; }
+.location-text strong { color: var(--text-dark); font-weight: 800; display: block; margin-bottom: 2px; }
+
+/* ── 하단 고정 CTA ── */
+.cta-bar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  background: var(--white); border-top: 1.5px solid var(--mint-border);
+  padding: 12px 16px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 -4px 20px rgba(83,74,183,.1);
+}
+.cta-price { flex-shrink: 0; }
+.cta-price strong { font-size: 20px; font-weight: 900; color: var(--purple); }
+.cta-price span { font-size: 11px; color: var(--text-gray); display: block; }
+.btn-cta {
+  flex: 1; padding: 14px 0; border-radius: 12px;
+  background: linear-gradient(90deg, #1D9E75, #534AB7);
+  color: #fff; font-size: 15px; font-weight: 800;
+  border: none; cursor: pointer;
+  transition: opacity .2s, transform .15s;
+  min-height: 48px;
+}
+.btn-cta:active { transform: scale(.97); opacity: .9; }
+
+/* ── 반응형 ── */
+@media (min-width: 640px) {
+  .slider-wrap { height: 380px; }
+  .body-wrap { padding: 28px 24px 130px; }
+  .detail-name { font-size: 28px; }
+}
+@media (min-width: 720px) {
+  .slider-wrap { height: 440px; border-radius: 0 0 20px 20px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo"><span>i</span>CLARKGOLF</a>
+  <a href="javascript:history.back()" class="nav-back">← 뒤로</a>
+</nav>
+
+<!-- 슬라이더 -->
+<div class="slider-wrap" id="slider-wrap">
+  <div class="slider-track" id="slider-track">
+    <div class="slider-slide"><div class="emoji-bg">🏨</div></div>
+  </div>
+  <button class="slider-btn slider-prev" id="btn-prev" onclick="slide(-1)" style="display:none">‹</button>
+  <button class="slider-btn slider-next" id="btn-next" onclick="slide(1)"  style="display:none">›</button>
+  <div class="slider-dots" id="slider-dots"></div>
+  <div class="slide-count" id="slide-count" style="display:none"></div>
+</div>
+
+<!-- 본문 -->
+<div class="body-wrap" id="body-wrap">
+  <div style="text-align:center;padding:40px 0;color:var(--text-gray);font-size:13px;">⏳ 불러오는 중...</div>
+</div>
+
+<!-- 하단 CTA -->
+<div class="cta-bar" id="cta-bar" style="display:none;">
+  <div class="cta-price" id="cta-price"></div>
+  <button class="btn-cta" onclick="selectAndGo()">이 숙소로 견적 보기 →</button>
+</div>
+
+<script>
+/* ────────────────────────────────
+   설정
+──────────────────────────────── */
+const ID_MAP = {
+  iclark:  'local',
+  clarkton:'h2',
+  mango:   'h1',
+  emmaus:  'h5',
+  oasis:   'h3'
+};
+
+const FALLBACK = {
+  clarkton: 'https://clarkton.com/wp-content/uploads/2021/11/clarkton-new-banner-2021.jpg',
+  mango:    'https://ik.imagekit.io/tvlk/apr-asset/TzEv3ZUmG4-4Dz22hvmO9NUDzw1DGCIdWl4oPtKumOg=/lodging/125000000/124030000/124022300/124022237/f7c5ddfc_z.jpg?tr=q-80,c-at_max,w-800,h-500&_src=imagekit',
+  emmaus:   'https://ik.imagekit.io/tvlk/apr-asset/TzEv3ZUmG4-4Dz22hvmO9NUDzw1DGCIdWl4oPtKumOg=/lodging/100000000/99410000/99406100/99406008/ea28c65e_z.jpg?tr=q-80,c-at_max,w-800,h-500&_src=imagekit',
+  oasis:    'https://ik.imagekit.io/tvlk/apr-asset/p8EuABHS2sbhHoBGG5-47sW9QD93WhQr5VVZ6b4cXGI=/giata/bigger/21/213520/213520a_hb_a_001.jpg?tr=q-80,c-at_max,w-800,h-500&_src=imagekit',
+  iclark:   ''
+};
+
+const SPECIAL = ['3식포함','픽업드롭','올인클루시브','조식'];
+
+/* ────────────────────────────────
+   데이터 로드
+──────────────────────────────── */
+const DEFAULT_ACCOMS = [
+  { id:'iclark',   type:'local', name:'iClark 전용숙소', stars:0, priceKRW:0, priceUSD:45,
+    location:'Barangay Prado Siongco, 프라데라 골프장 5분',
+    desc:'프라데라에서 전지훈련을 하려면 근처에 숙소가 필요합니다.\n로컬 마을안에 위치한 방 6개의 단독 하우스입니다.\n매일 이웃들과 마주하며 로컬 체험을 합니다.\n\n조식·중식·석식 + 픽업·드롭 + 세탁 ALL 포함.\n에어컨, WiFi, 주변 커피숍·맛사지 숍 완비.',
+    amenities:'3식포함,픽업드롭,세탁,WiFi,에어컨,커피숍,맛사지숍', photos:[], active:true },
+  { id:'clarkton', type:'hotel', name:'클락턴 호텔',     stars:3, priceKRW:53000, priceUSD:38,
+    location:'말라바나스, 앙헬레스 / 클락 도심',
+    desc:'클락 도심에 위치한 3성급 호텔. 수영장과 편의시설 완비. 골프장 접근성 우수.\n\n1992년부터 독일 관리 체제로 운영. 파노라마 레스토랑, 수영장, 스파 완비.',
+    amenities:'수영장,조식,주차,WiFi,스파,레스토랑', photos:[], active:true },
+  { id:'mango',    type:'hotel', name:'망고 스위트',     stars:4, priceKRW:34000, priceUSD:24,
+    location:'시티센터, 앙헬레스 / 클락 도심 1.9km',
+    desc:'4성급 스위트 호텔. 넓은 객실과 현대적 시설. 가족 여행에 최적.\n\n클락 프리포트 존에서 차로 5분. 무료 주차 및 WiFi 제공.',
+    amenities:'수영장,조식,주차,WiFi,에어컨,엘리베이터', photos:[], active:true },
+  { id:'emmaus',   type:'hotel', name:'엠마우스 콘도텔', stars:3, priceKRW:32000, priceUSD:23,
+    location:'말라바나스, 앙헬레스 / 클락 도심 0.1km',
+    desc:'도심 바로 위치한 콘도텔. 조용한 환경. 장기 체류에 적합.\n\nSM City Clark 도보 5분. 평점 8.2. 한국 교민 인기 숙소.',
+    amenities:'주차,WiFi,에어컨,세탁,레스토랑,24시간프런트', photos:[], active:true },
+  { id:'oasis',    type:'hotel', name:'오아시스 호텔',   stars:3, priceKRW:73000, priceUSD:52,
+    location:'말라바나스, 앙헬레스 / 클락 도심',
+    desc:'넓은 수영장과 열대 정원이 있는 조용한 컴파운드 호텔.\n\n조식 뷔페 포함. 공항 5분 거리. 골프장 픽업 서비스 가능. 풀바·영국 펍 운영.',
+    amenities:'수영장,조식,주차,WiFi,스파,풀바,레스토랑', photos:[], active:true }
+];
+
+const accomId  = new URLSearchParams(location.search).get('id') || 'iclark';
+const allData  = (() => {
+  try { return JSON.parse(localStorage.getItem('iclark_accoms')) || DEFAULT_ACCOMS; }
+  catch(e) { return DEFAULT_ACCOMS; }
+})();
+const accom = allData.find(a => a.id === accomId)
+           || DEFAULT_ACCOMS.find(a => a.id === accomId);
+
+/* ────────────────────────────────
+   슬라이더
+──────────────────────────────── */
+let photos = [];
+let curIdx  = 0;
+let touchX0 = 0;
+
+function buildSlider() {
+  const adminPhotos = (accom && accom.photos && accom.photos.length) ? accom.photos : [];
+  const fallback    = FALLBACK[accomId] || '';
+  photos = adminPhotos.length ? adminPhotos : (fallback ? [fallback] : []);
+
+  const track = document.getElementById('slider-track');
+  const emoji = accom && accom.type === 'local' ? '🏠' : '🏨';
+
+  if (!photos.length) {
+    track.innerHTML = `<div class="slider-slide"><div class="emoji-bg">${emoji}</div></div>`;
+    return;
+  }
+
+  track.innerHTML = photos.map((url, i) => `
+    <div class="slider-slide">
+      <img src="${url}" alt="숙소 사진 ${i+1}" loading="${i===0?'eager':'lazy'}"
+        onerror="this.parentElement.innerHTML='<div class=\\'emoji-bg\\'>${emoji}</div>'">
+    </div>`).join('');
+
+  if (photos.length > 1) {
+    document.getElementById('btn-prev').style.display = 'flex';
+    document.getElementById('btn-next').style.display = 'flex';
+    document.getElementById('slider-dots').innerHTML =
+      photos.map((_,i) => `<div class="dot${i===0?' on':''}" id="dot-${i}"></div>`).join('');
+    updateCount();
+    document.getElementById('slide-count').style.display = 'block';
+  }
+
+  /* 터치 스와이프 */
+  const wrap = document.getElementById('slider-wrap');
+  wrap.addEventListener('touchstart', e => { touchX0 = e.touches[0].clientX; }, { passive:true });
+  wrap.addEventListener('touchend',   e => {
+    const dx = e.changedTouches[0].clientX - touchX0;
+    if (Math.abs(dx) > 40) slide(dx < 0 ? 1 : -1);
+  }, { passive:true });
+}
+
+function slide(dir) {
+  if (!photos.length) return;
+  curIdx = (curIdx + dir + photos.length) % photos.length;
+  document.getElementById('slider-track').style.transform = `translateX(-${curIdx*100}%)`;
+  document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('on', i===curIdx));
+  updateCount();
+}
+
+function updateCount() {
+  const el = document.getElementById('slide-count');
+  if (el) el.textContent = `${curIdx+1} / ${photos.length}`;
+}
+
+/* ────────────────────────────────
+   본문 렌더
+──────────────────────────────── */
+function renderBody() {
+  if (!accom) {
+    document.getElementById('body-wrap').innerHTML = `
+      <p style="color:var(--text-gray);text-align:center;padding:40px 0;">숙소 정보를 찾을 수 없습니다.</p>
+      <a href="index.html" style="display:block;text-align:center;color:var(--purple);font-weight:700;">← 홈으로</a>`;
+    return;
+  }
+
+  document.title = `${accom.name} — iCLARKGOLF`;
+
+  const isLocal  = accom.type === 'local';
+  const stars    = accom.stars > 0 ? '★'.repeat(accom.stars) + '☆'.repeat(5 - accom.stars) : '';
+  const amenList = accom.amenities ? accom.amenities.split(',').map(s=>s.trim()).filter(Boolean) : [];
+  const chips    = amenList.map(t =>
+    `<span class="chip${SPECIAL.includes(t)?' special':''}">${t}</span>`).join('');
+  const descHTML = (accom.desc || '').replace(/\n/g, '<br>');
+
+  const priceBlock = isLocal
+    ? `<div class="price-main">$${accom.priceUSD}<sub>/일</sub></div>
+       <div class="price-note">숙박·3식·픽업·세탁<br>ALL 포함</div>`
+    : `<div class="price-main">$${accom.priceUSD}<sub>/박~</sub></div>
+       <div class="price-note">1인 기준 참고 요금<br>실제 요금은 날짜별 상이</div>`;
+
+  document.getElementById('body-wrap').innerHTML = `
+    <span class="type-badge ${isLocal?'local':'hotel'}">${isLocal?'전지훈련 전용':'호텔'}</span>
+    ${stars ? `<div class="detail-stars">${stars}</div>` : ''}
+    <div class="detail-name">${accom.name}</div>
+    <div class="detail-loc">📍 <span>${accom.location}</span></div>
+
+    <div class="price-box">${priceBlock}</div>
+
+    ${chips ? `<div class="sec-title">편의시설</div><div class="amenity-wrap">${chips}</div>` : ''}
+
+    <div class="sec-title">숙소 소개</div>
+    <div class="desc-box">${descHTML || '상세 설명을 준비 중입니다.'}</div>
+
+    <div class="location-box">
+      <div class="location-icon">🗺️</div>
+      <div class="location-text">
+        <strong>위치</strong>
+        ${accom.location}
+      </div>
+    </div>`;
+
+  /* CTA */
+  const ctaHTML = isLocal
+    ? `<strong>$${accom.priceUSD}</strong><span>ALL-IN / 일</span>`
+    : `<strong>$${accom.priceUSD}</strong><span>참고 / 박~</span>`;
+  document.getElementById('cta-price').innerHTML = ctaHTML;
+  document.getElementById('cta-bar').style.display = 'flex';
+}
+
+/* ────────────────────────────────
+   견적 이동
+──────────────────────────────── */
+function selectAndGo() {
+  const qId = ID_MAP[accomId];
+  location.href = qId ? `quote.html?hotel=${qId}` : 'quote.html';
+}
+
+/* ── 실행 ── */
+buildSlider();
+renderBody();
+</script>
+</body>
+</html>
