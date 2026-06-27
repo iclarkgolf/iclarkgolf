@@ -240,7 +240,7 @@ function renderTable(items, data, tbodyId) {
 }
 
 const GOLF_ITEMS   = [{key:'greenfee',name:'그린피',unit:'라운드',included:true},{key:'caddy',name:'캐디피',unit:'라운드',included:false},{key:'cart',name:'카트비',unit:'라운드',included:false},{key:'insurance',name:'보험료',unit:'명',included:false},{key:'consum',name:'컨슘어블',unit:'라운드',included:false}];
-const LESSON_ITEMS = [{key:'field_lesson',name:'필드 레슨비',unit:'회',included:true},{key:'range_lesson',name:'연습장 레슨비',unit:'회',included:true},{key:'range_fee',name:'연습장 이용료',unit:'일',included:true}];
+const LESSON_ITEMS = [{key:'fieldLesson',name:'필드 레슨비',unit:'회',included:true},{key:'rangeLesson',name:'연습장 레슨비',unit:'회',included:true},{key:'rangeFee',name:'연습장 이용료',unit:'일',included:true}];
 const STAY_ITEMS   = [{key:'accom',name:'로컬 전용숙소 (식사포함)',unit:'박',included:true},{key:'drop',name:'숙소 ↔ 골프장 드롭 픽업',unit:'일',included:true},{key:'pickup',name:'공항 픽업',unit:'회',included:true},{key:'sendoff',name:'공항 샌딩',unit:'회',included:true}];
 
 function renderQuote(data) {
@@ -271,9 +271,9 @@ function renderQuote(data) {
   const inc = [];
   if ((data.items?.accom?.qty||0)>0)        inc.push('로컬 숙소 '+data.items.accom.qty+'박 (식사포함)');
   if ((data.items?.greenfee?.qty||0)>0)     inc.push('그린피 '+data.items.greenfee.qty+'라운드');
-  if ((data.items?.field_lesson?.qty||0)>0) inc.push('필드 레슨 '+data.items.field_lesson.qty+'회');
-  if ((data.items?.range_lesson?.qty||0)>0) inc.push('연습장 레슨 '+data.items.range_lesson.qty+'회');
-  if ((data.items?.range_fee?.qty||0)>0)    inc.push('연습장 이용료 '+data.items.range_fee.qty+'일');
+  if ((data.items?.fieldLesson?.qty||0)>0) inc.push('필드 레슨 '+data.items.fieldLesson.qty+'회');
+  if ((data.items?.rangeLesson?.qty||0)>0) inc.push('연습장 레슨 '+data.items.rangeLesson.qty+'회');
+  if ((data.items?.rangeFee?.qty||0)>0)    inc.push('연습장 이용료 '+data.items.rangeFee.qty+'일');
   if ((data.items?.drop?.qty||0)>0)         inc.push('숙소↔골프장 드롭 픽업');
   if ((data.items?.pickup?.qty||0)>0)       inc.push('공항 픽업·샌딩');
   document.getElementById('out-includes').innerHTML = inc.map(i=>`<li>${i}</li>`).join('');
