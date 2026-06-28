@@ -1102,6 +1102,13 @@ try {
 
 <script>
 (function(){
+  // 버전 체크 — 이전 잘못된 데이터 자동 초기화
+  const ACCOM_VERSION = 'v3';
+  if (localStorage.getItem('iclark_accoms_ver') !== ACCOM_VERSION) {
+    localStorage.removeItem('iclark_accoms');
+    localStorage.setItem('iclark_accoms_ver', ACCOM_VERSION);
+  }
+
   const FALLBACK_PHOTOS = {
     clarkton: 'https://clarkton.com/wp-content/uploads/2021/11/clarkton-new-banner-2021.jpg',
     mango:    'https://ik.imagekit.io/tvlk/apr-asset/TzEv3ZUmG4-4Dz22hvmO9NUDzw1DGCIdWl4oPtKumOg=/lodging/125000000/124030000/124022300/124022237/f7c5ddfc_z.jpg?tr=q-80,c-at_max,w-600,h-400&_src=imagekit',
@@ -1120,11 +1127,11 @@ try {
     { id:'clarkton', type:'hotel', name:'클락턴 호텔',     stars:3, priceKRW:53000, priceUSD:38, location:'말라바나스, 앙헬레스 / 클락 도심', amenities:'수영장,조식,주차,WiFi', active:true,
       _thumb:'https://clarkton.com/wp-content/uploads/2021/11/clarkton-new-banner-2021.jpg' },
     { id:'mango',    type:'hotel', name:'망고 스위트',     stars:4, priceKRW:34000, priceUSD:24, location:'시티센터, 앙헬레스 / 클락 도심 1.9km', amenities:'수영장,조식,주차,WiFi,에어컨', active:true,
-      _thumb:'https://i.ibb.co/RpFJNbk8/slide-f07.jpg' },
+      _thumb:'https://ik.imagekit.io/tvlk/apr-asset/TzEv3ZUmG4-4Dz22hvmO9NUDzw1DGCIdWl4oPtKumOg=/lodging/125000000/124030000/124022300/124022237/f7c5ddfc_z.jpg?tr=q-80,c-at_max,w-600,h-400&_src=imagekit' },
     { id:'emmaus',   type:'hotel', name:'엠마우스 콘도텔', stars:3, priceKRW:32000, priceUSD:23, location:'말라바나스, 앙헬레스 / 클락 도심 0.1km', amenities:'주차,WiFi,에어컨,세탁', active:true,
-      _thumb:'https://i.ibb.co/MxJ7rgy1/web-13-sq.jpg' },
+      _thumb:'https://ik.imagekit.io/tvlk/apr-asset/TzEv3ZUmG4-4Dz22hvmO9NUDzw1DGCIdWl4oPtKumOg=/lodging/100000000/99410000/99406100/99406008/ea28c65e_z.jpg?tr=q-80,c-at_max,w-600,h-400&_src=imagekit' },
     { id:'oasis',    type:'hotel', name:'오아시스 호텔',   stars:3, priceKRW:73000, priceUSD:52, location:'말라바나스, 앙헬레스 / 클락 도심', amenities:'수영장,조식,주차,WiFi,스파', active:true,
-      _thumb:'https://i.ibb.co/hJnKBv71/slide-p05.jpg' }
+      _thumb:'https://ik.imagekit.io/tvlk/apr-asset/p8EuABHS2sbhHoBGG5-47sW9QD93WhQr5VVZ6b4cXGI=/giata/bigger/21/213520/213520a_hb_a_001.jpg?tr=q-80,c-at_max,w-600,h-400&_src=imagekit' }
   ];
 
   // iClark 전용숙소 항상 맨 앞
