@@ -765,7 +765,7 @@ footer {
 /* ── 숙소 섹션 ── */
 .lodging-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
   gap: 16px;
   margin-top: 16px;
 }
@@ -778,6 +778,7 @@ footer {
   box-shadow: 0 2px 8px rgba(83,74,183,.06);
   display: flex;
   flex-direction: column;
+  -webkit-tap-highlight-color: transparent;
 }
 .lodging-card:hover {
   transform: translateY(-4px);
@@ -786,14 +787,16 @@ footer {
 }
 .lodging-thumb {
   position: relative;
-  width: 100%; height: 150px;
+  width: 100%; height: 160px;
   overflow: hidden;
   background: linear-gradient(135deg,#E1F5EE 0%,#c8edd9 100%);
   display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
 }
 .lodging-thumb img {
   width: 100%; height: 100%; object-fit: cover;
   transition: transform .35s ease;
+  display: block;
 }
 .lodging-card:hover .lodging-thumb img { transform: scale(1.06); }
 .lodging-thumb .thumb-emoji { font-size: 48px; filter: drop-shadow(0 2px 6px rgba(0,0,0,.12)); }
@@ -809,27 +812,51 @@ footer {
 .lodging-stars { font-size: 11px; color: #f59e0b; margin-bottom: 2px; }
 .lodging-name  { font-size: 14px; font-weight: 800; color: #26215C; margin-bottom: 3px; }
 .lodging-price { font-size: 15px; font-weight: 800; color: #534AB7; margin-bottom: 3px; }
-.lodging-location { font-size: 11px; color: #6b7280; margin-bottom: 8px; }
+.lodging-location { font-size: 11px; color: #6b7280; margin-bottom: 8px; line-height: 1.4; }
 .lodging-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
 .lodging-tag {
   font-size: 10px; font-weight: 600; color: #534AB7;
   background: #f0effe; padding: 2px 7px; border-radius: 100px;
+  white-space: nowrap;
 }
 .lodging-tag.special { background: #E1F5EE; color: #085041; }
 .lodging-btn {
   margin-top: auto;
   display: block; width: 100%;
-  padding: 9px 0; border-radius: 10px;
+  padding: 10px 0; border-radius: 10px;
   background: linear-gradient(90deg,#1D9E75,#534AB7);
   color: #fff; font-size: 13px; font-weight: 700;
   text-align: center; text-decoration: none;
   border: none; cursor: pointer;
   transition: opacity .2s;
+  min-height: 40px; line-height: 20px;
+  box-sizing: border-box;
 }
 .lodging-btn:hover { opacity: .88; }
+
+/* 모바일 — 1열 */
 @media (max-width: 480px) {
-  .lodging-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .lodging-thumb { height: 120px; }
+  .lodging-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .lodging-thumb { height: 200px; }
+  .lodging-name { font-size: 15px; }
+  .lodging-price { font-size: 16px; }
+}
+/* 소형 태블릿 — 2열 */
+@media (min-width: 481px) and (max-width: 767px) {
+  .lodging-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .lodging-thumb { height: 130px; }
+  .lodging-name { font-size: 13px; }
+  .lodging-location { font-size: 10px; }
+}
+/* 태블릿 이상 — 3열 이상 자동 */
+@media (min-width: 768px) {
+  .lodging-thumb { height: 160px; }
 }
 </style>
 </head>
