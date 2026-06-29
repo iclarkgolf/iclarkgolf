@@ -19,22 +19,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Nunito',sans-serif;background:#f9f0f5;color:#1a1a2e;padding-bottom:80px;}
+body{font-family:'Nunito',sans-serif;background:#e4f5ed;color:#1a1a2e;padding-bottom:80px;}
 a{text-decoration:none;color:inherit;}
 :root{
-  --pink:#e8498a;--pink-pale:#fdf2f8;--pink-border:#fbcfe8;
-  --purple:#9333ea;--white:#ffffff;
+  --mint:#1D9E75;--mint-light:#E1F5EE;--mint-border:#c8edd9;--mint-mid:#9FE1CB;
+  --purple:#534AB7;--white:#ffffff;
   --gray-100:#f4f4f5;--gray-200:#e4e4e7;--gray-400:#a1a1aa;--gray-600:#52525b;--gray-900:#18181b;
   --radius:16px;--radius-full:100px;
 }
-.nav{position:sticky;top:0;z-index:200;background:#fff;border-bottom:1px solid var(--pink-border);
+.nav{position:sticky;top:0;z-index:200;background:#fff;border-bottom:1px solid var(--mint-border);
   padding:0 16px;height:52px;display:flex;align-items:center;justify-content:space-between;}
 .logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;
-  background:linear-gradient(135deg,var(--pink),var(--purple));
+  background:linear-gradient(135deg,var(--mint),var(--purple));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .nav-back{font-size:13px;font-weight:700;color:var(--gray-600);}
 /* Hero */
-.hero{background:linear-gradient(135deg,#ff6bac,#9333ea);padding:36px 20px 32px;text-align:center;}
+.hero{background:linear-gradient(135deg,#1D9E75,#534AB7);padding:36px 20px 32px;text-align:center;}
 .hero-avatar{width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.25);
   display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 16px;}
 .hero h1{font-size:22px;font-weight:800;color:#fff;margin-bottom:5px;}
@@ -44,7 +44,7 @@ a{text-decoration:none;color:inherit;}
   padding:5px 14px;border-radius:var(--radius-full);}
 /* Content */
 .content{max-width:600px;margin:0 auto;padding:20px 16px;}
-.card{background:#fff;border-radius:var(--radius);border:1.5px solid var(--gray-200);
+.card{background:#fff;border-radius:var(--radius);border:1.5px solid var(--mint-border);
   padding:20px 22px;margin-bottom:14px;}
 .card-title{font-size:16px;font-weight:800;color:var(--gray-900);margin-bottom:14px;
   display:flex;align-items:center;gap:8px;}
@@ -53,23 +53,23 @@ a{text-decoration:none;color:inherit;}
 /* 경력 타임라인 */
 .timeline{display:flex;flex-direction:column;gap:0;}
 .tl-item{display:flex;gap:14px;padding-bottom:20px;position:relative;}
-.tl-item:not(:last-child)::after{content:'';position:absolute;left:14px;top:28px;bottom:0;width:2px;background:var(--pink-border);}
-.tl-dot{width:28px;height:28px;border-radius:50%;background:var(--pink-pale);border:2px solid var(--pink-border);
+.tl-item:not(:last-child)::after{content:'';position:absolute;left:14px;top:28px;bottom:0;width:2px;background:var(--mint-border);}
+.tl-dot{width:28px;height:28px;border-radius:50%;background:var(--mint-light);border:2px solid var(--mint-border);
   display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
 .tl-body{flex:1;padding-top:2px;}
-.tl-year{font-size:11px;font-weight:800;color:var(--pink);margin-bottom:2px;}
+.tl-year{font-size:11px;font-weight:800;color:var(--mint);margin-bottom:2px;}
 .tl-title{font-size:14px;font-weight:800;color:var(--gray-900);margin-bottom:3px;}
 .tl-desc{font-size:12px;color:var(--gray-400);line-height:1.5;}
 /* 레슨 프로그램 */
 .lesson-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.lesson-card{background:var(--pink-pale);border:1.5px solid var(--pink-border);
+.lesson-card{background:var(--mint-light);border:1.5px solid var(--mint-border);
   border-radius:12px;padding:14px;text-align:center;}
 .lesson-icon{font-size:24px;margin-bottom:6px;}
 .lesson-name{font-size:13px;font-weight:800;color:var(--gray-900);margin-bottom:3px;}
-.lesson-price{font-size:14px;font-weight:800;color:var(--pink);}
+.lesson-price{font-size:14px;font-weight:800;color:var(--mint);}
 .lesson-desc{font-size:11px;color:var(--gray-400);margin-top:3px;}
 /* CTA */
-.cta{background:linear-gradient(135deg,var(--pink),var(--purple));border-radius:var(--radius);
+.cta{background:linear-gradient(135deg,var(--mint),var(--purple));border-radius:var(--radius);
   padding:24px 20px;text-align:center;margin-bottom:14px;}
 .cta h3{font-size:18px;font-weight:800;color:#fff;margin-bottom:6px;}
 .cta p{font-size:13px;color:rgba(255,255,255,.85);margin-bottom:16px;}
@@ -78,14 +78,14 @@ a{text-decoration:none;color:inherit;}
   font-size:14px;font-weight:800;color:#fff;min-height:48px;}
 /* Fixed */
 .fixed-kakao{position:fixed;bottom:0;left:0;right:0;z-index:400;
-  display:flex;padding:10px 16px 16px;gap:8px;background:#fff;border-top:1px solid var(--pink-border);}
+  display:flex;padding:10px 16px 16px;gap:8px;background:#fff;border-top:1px solid var(--mint-border);}
 .kakao-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
   padding:13px;border-radius:var(--radius-full);font-family:'Nunito',sans-serif;
   font-size:13px;font-weight:800;text-decoration:none;min-height:48px;background:#fee500;color:#1a1a1a;}
 .quote-btn{flex:1;display:flex;align-items:center;justify-content:center;
   padding:13px;border-radius:var(--radius-full);font-family:'Nunito',sans-serif;
   font-size:13px;font-weight:800;text-decoration:none;min-height:48px;
-  background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;}
+  background:linear-gradient(135deg,var(--mint),var(--purple));color:#fff;}
 </style>
 </head>
 <body>
@@ -112,12 +112,13 @@ a{text-decoration:none;color:inherit;}
   <!-- 소개 -->
   <div class="card">
     <div class="card-title">👋 안녕하세요</div>
-    <p>저는 필리핀 클락에서 20년 가까이 살아온 한국인 골프 인스트럭터 PJ입니다.</p>
-    <p>Beverly Country Club에서 2017년부터 2023년까지, Pradera Verde Golf & Country Club에서 2023년부터 2025년까지 클럽 프로로 근무하며 한국에서 클락으로 오는 골퍼들을 매일 코스에서 직접 만났습니다.</p>
-    <p>레슨만 해온 게 아니라, 한국 골퍼들이 클락에서 겪는 시행착오를 가장 가까이서 지켜본 사람이기도 합니다. 캐디와 말이 안 통해서 라운드 흐름이 끊기거나, 시즌마다 달라지는 그린피·카트비 구조를 모르고 당황하거나, 숙소와 골프장 사이 거리를 잘못 계산해서 일정이 꼬이는 경우를 수백 번 봐 왔습니다. iCLARKGOLF는 이런 시행착오를 줄이기 위해 만든 사이트입니다.</p>
-    <p>PGAP(필리핀 골프 프로 협회) 정회원(#0507)이며, GAB(Golf Association of the Philippines) 2024시즌 시니어 투어링 프로로 등록돼 있습니다. 자격증보다 더 중요한 건 실제로 매주 클락 코스를 걸어본 경험이라고 생각해서, 사이트의 골프장 정보와 견적은 전부 직접 확인한 내용을 기준으로 정리하고 있습니다.</p>
-    <p>2013년부터는 한국에서 건너온 학생을 데리고 검정고시부터 AUF(Angeles University Foundation) 졸업까지 함께한 적도 있습니다. 골프와 학업을 병행하는 유학이 현실적으로 어떻게 굴러가는지 가장 가까이서 지켜본 경험이라, 골프유학을 고민하는 분들께 도움이 될 이야기를 블로그에 따로 정리해 두었습니다.</p>
-    <p>지금은 레슨보다 클락 골프 여행을 준비하는 분들께 코스 선택, 캐디 매칭, 숙소 연계 같은 실질적인 정보를 정리해서 전달하는 데 더 많은 시간을 쓰고 있습니다.</p>
+    <p style="font-size:16px;font-weight:800;color:#1a1a2e;line-height:1.6;margin-bottom:18px;">1989년, 호주 골드코스트.</p>
+    <p>아직 "골프 유학"이라는 말조차 생소하던 시절, 저는 한국 주니어들을 데리고 매년 겨울방학마다 골드코스트로 날아갔습니다. 하나투어가 그 캠프를 그대로 따라하기 시작하던 날, 저는 미련 없이 5년간의 캠프를 접었습니다. 그리고 그 첫 세대 아이들 중 몇몇은, 지금 이름만 대면 누구나 고개를 끄덕이는 선수가 되었습니다.</p>
+    <p>그 후 저는 필리핀으로 왔습니다. 어느새 25년이 흘렀습니다. 골프장 안에서 살다시피 했고, 나이가 들어도 전지훈련의 끈만큼은 놓지 않았습니다.</p>
+    <p style="border-top:1px solid #e4e4e7;padding-top:16px;margin-top:6px;"><strong>제가 이 일을 계속하는 이유는 단순합니다.</strong></p>
+    <p>큰돈을 바라지 않습니다. 현상유지면 충분합니다. 그래서 경비는 거의 원가로 내놓습니다. 고급 리조트 대신 로컬 마을 숙소에서 머물며 필리핀 현지를 온몸으로 경험하고, 그러면서도 수준 높은 골프장에서 제대로 된 훈련을 하는 것 — 그게 제가 35년 넘게 지켜온 방식입니다.</p>
+    <p>화려하지 않아도 됩니다. 진짜면 됩니다.</p>
+    <p style="font-size:15px;font-weight:800;color:#1D9E75;margin-top:6px;">iClarkGolf에서 그 진짜를 경험하세요.</p>
   </div>
 
   <!-- 경력 -->
@@ -129,14 +130,14 @@ a{text-decoration:none;color:inherit;}
         <div class="tl-body">
           <div class="tl-year">현재</div>
           <div class="tl-title">iCLARKGOLF 운영</div>
-          <div class="tl-desc">Pradera Verde Golf Club · 클락 골프 여행 전문 컨설팅</div>
+          <div class="tl-desc">클락 골프 전지훈련 전문 컨설팅</div>
         </div>
       </div>
       <div class="tl-item">
         <div class="tl-dot">🏆</div>
         <div class="tl-body">
-          <div class="tl-year">10년+</div>
-          <div class="tl-title">Pradera Verde & Beverly Golf Club</div>
+          <div class="tl-year">19년</div>
+          <div class="tl-title">Beverly C.C & Pradera Verde Golf Club</div>
           <div class="tl-desc">클럽 프로 · 전문 인스트럭터 활동</div>
         </div>
       </div>
@@ -145,15 +146,15 @@ a{text-decoration:none;color:inherit;}
         <div class="tl-body">
           <div class="tl-year">2000년대</div>
           <div class="tl-title">필리핀 클락 정착</div>
-          <div class="tl-desc">앙헬레스 · 팜팡가 지역 20년 이상 거주</div>
+          <div class="tl-desc">앙헬레스 · 팜팡가 지역 25년 이상 거주</div>
         </div>
       </div>
       <div class="tl-item">
         <div class="tl-dot">📜</div>
         <div class="tl-body">
           <div class="tl-year">자격</div>
-          <div class="tl-title">골프 티칭 프로 자격 취득</div>
-          <div class="tl-desc">한국 · 필리핀 레슨 경험 다수</div>
+          <div class="tl-title">필리핀 투어링 프로 · 시니어 투어 프로 활동 중</div>
+          <div class="tl-desc">PGAP 정회원 #0507 · GAB 시니어 투어링 프로 등록</div>
         </div>
       </div>
     </div>
