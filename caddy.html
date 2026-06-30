@@ -687,25 +687,18 @@ nav {
             </select>
           </div>
           <div class="form-group">
+            <label class="form-label">Age</label>
+            <input type="number" class="form-input" id="regAge" placeholder="25" min="18" max="70">
+          </div>
+          <div class="form-group">
             <label class="form-label">Years of Experience</label>
             <input type="number" class="form-input" id="regExp" placeholder="5" min="1" max="30">
           </div>
-          <div class="form-group">
-            <label class="form-label">Korean Language Level</label>
-            <select class="form-select" id="regKo">
-              <option value="native">Native</option>
-              <option value="advanced">Advanced</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="basic">Basic</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">About Me</label>
-            <textarea class="form-input" id="regBio" rows="3" placeholder="Tell golfers about yourself..."></textarea>
-          </div>
-          <div class="form-group">
-            <label class="form-label">KakaoTalk ID</label>
-            <input type="text" class="form-input" id="regKakao" placeholder="kakao_id">
+          <!-- 숨김: 기존 함수 호환용 (한국어수준/자기소개/카카오는 더이상 폼에 안 보임) -->
+          <div style="display:none;">
+            <select id="regKo"><option value="basic" selected>basic</option></select>
+            <textarea id="regBio"></textarea>
+            <input id="regKakao" value="">
           </div>
           <!-- 사진 업로드 (실제 업로드) -->
           <div class="form-group">
@@ -1082,7 +1075,7 @@ function previewPhoto(input) {
 }
 
 // ── 캐디 가입용 실제 사진 업로드 (ImgBB) ──
-var IMGBB_API_KEY = '6d207e02198a847aa98d0a2a901485a5'; // 공용 데모 키 — 실제 운영시 본인 키로 교체 권장
+var IMGBB_API_KEY = 'b59ca0d334f2bbbc8e26c620c0936cf5'; // PJ 본인 키
 window._caddyPhotoFile = null;
 window._caddyPhotoUrl = '';
 
@@ -1309,6 +1302,7 @@ async function doRegisterCaddy() {
   var phone = document.getElementById('regPhone').value.trim();
   var email = document.getElementById('regEmailCaddy').value.trim();
   var pw = document.getElementById('regPwCaddy').value;
+  var age = document.getElementById('regAge').value.trim();
   if(!caddyId) { showToast('Please enter your Caddy ID.'); return; }
   if(!fullName) { showToast('Please enter your full name in English.'); return; }
   if(!phone) { showToast('Please enter your phone number.'); return; }
@@ -1316,6 +1310,10 @@ async function doRegisterCaddy() {
   if(!pw) { showToast('Please enter a password.'); return; }
   if(!window._caddyPhotoFile && !window._caddyPhotoUrl) { showToast(uiLang==='ko'?'프로필 사진을 선택해 주세요.':'Please select a profile photo.', 'error'); return; }
   if(users.find(function(u){return u.email===email;})) { showToast(uiLang==='ko'?'⚠ 이미 등록된 이메일입니다. 로그인 탭을 이용해주세요.':'⚠ Email already registered. Please use the Login tab.', 'error'); return; }
+
+  // 다음 번 가입 시 이메일/비밀번호 자동으로 채워지도록 저장
+  localStorage.setItem('caddyRegLastEmail', email);
+  localStorage.setItem('caddyRegLastPw', pw);
 
   var btn = document.getElementById('caddyRegisterBtn');
   if (btn) { btn.disabled = true; btn.textContent = 'Processing...'; }
@@ -1328,7 +1326,7 @@ async function doRegisterCaddy() {
 
   var user = {
     name: fullName, email: email, pw: pw, role: 'caddy',
-    caddyId: caddyId, fullName: fullName, phone: phone,
+    caddyId: caddyId, fullName: fullName, phone: phone, age: age,
     course: document.getElementById('regCourse').value,
     exp: document.getElementById('regExp').value,
     korean: document.getElementById('regKo').value,
@@ -1344,7 +1342,7 @@ async function doRegisterCaddy() {
       method: 'POST',
       headers: {'Content-Type': 'text/plain;charset=utf-8'},
       body: JSON.stringify({
-        name: user.name, email: user.email, phone: user.phone,
+        name: user.name, email: user.email, phone: user.phone, age: user.age,
         caddyId: user.caddyId, course: user.course, exp: user.exp,
         korean: user.korean, bio: user.bio, kakao: user.kakao,
         photo: user.photo
@@ -1903,6 +1901,17 @@ document.addEventListener('DOMContentLoaded', function() {
   }, 500);
 
   // 1. 자동 로그인 (저장된 정보)
+  var lastRegEmail = localStorage.getItem('caddyRegLastEmail');
+  var lastRegPw = localStorage.getItem('caddyRegLastPw');
+  if(lastRegEmail) {
+    var emailEl = document.getElementById('regEmailCaddy');
+    if(emailEl) emailEl.value = lastRegEmail;
+  }
+  if(lastRegPw) {
+    var pwEl = document.getElementById('regPwCaddy');
+    if(pwEl) pwEl.value = lastRegPw;
+  }
+
   var saveChecked = localStorage.getItem('saveLoginChecked');
   if(saveChecked === 'true') {
     var savedEmail = localStorage.getItem('savedEmail');
