@@ -391,12 +391,28 @@ nav {
 
 /* ── TOAST ── */
 .toast {
-  position:fixed; bottom:30px; left:50%; transform:translateX(-50%);
-  background:var(--dark); color:#fff; padding:12px 24px;
-  border-radius:30px; font-size:13px; font-weight:500;
-  opacity:0; transition:opacity 0.3s; z-index:999; white-space:nowrap;
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0.9);
+  background:var(--dark); color:#fff; padding:18px 28px;
+  border-radius:16px; font-size:15px; font-weight:700; line-height:1.5;
+  opacity:0; transition:opacity 0.25s, transform 0.25s; z-index:9999;
+  max-width:85vw; text-align:center; box-shadow:0 10px 40px rgba(0,0,0,0.3);
 }
-.toast.show { opacity:1; }
+.toast.show { opacity:1; transform:translate(-50%,-50%) scale(1); }
+.toast.success { background:#1b4332; }
+.toast.error { background:#c0392b; }
+
+/* 가입 성공 풀스크린 오버레이 */
+.regSuccessOverlay {
+  position:fixed; inset:0; background:rgba(13,31,23,0.92); z-index:10000;
+  display:none; align-items:center; justify-content:center; flex-direction:column;
+  text-align:center; padding:24px;
+}
+.regSuccessOverlay.show { display:flex; }
+.regSuccessOverlay .checkmark { font-size:64px; margin-bottom:16px; animation:popIn 0.4s ease; }
+.regSuccessOverlay h3 { color:#fff; font-size:20px; font-weight:800; margin-bottom:10px; }
+.regSuccessOverlay p { color:rgba(255,255,255,0.8); font-size:14px; line-height:1.6; max-width:320px; }
+@keyframes popIn { 0%{transform:scale(0);} 70%{transform:scale(1.15);} 100%{transform:scale(1);} }
+
 
 /* ── USER STATUS BAR ── */
 .user-bar {
@@ -761,6 +777,11 @@ nav {
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
+<div class="regSuccessOverlay" id="regSuccessOverlay">
+  <div class="checkmark">✅</div>
+  <h3 id="regSuccessTitle">가입 완료!</h3>
+  <p><span id="regSuccessName"></span>님, 환영합니다.<br>관리자 승인 후 프로필이 공개됩니다.</p>
+</div>
 
 <script>
 // ── 언어 ──
@@ -1293,8 +1314,8 @@ async function doRegisterCaddy() {
   if(!phone) { showToast('Please enter your phone number.'); return; }
   if(!email) { showToast('Please enter your email.'); return; }
   if(!pw) { showToast('Please enter a password.'); return; }
-  if(!window._caddyPhotoFile && !window._caddyPhotoUrl) { showToast(uiLang==='ko'?'프로필 사진을 선택해 주세요.':'Please select a profile photo.'); return; }
-  if(users.find(function(u){return u.email===email;})) { showToast('Email already registered.'); return; }
+  if(!window._caddyPhotoFile && !window._caddyPhotoUrl) { showToast(uiLang==='ko'?'프로필 사진을 선택해 주세요.':'Please select a profile photo.', 'error'); return; }
+  if(users.find(function(u){return u.email===email;})) { showToast(uiLang==='ko'?'⚠ 이미 등록된 이메일입니다. 로그인 탭을 이용해주세요.':'⚠ Email already registered. Please use the Login tab.', 'error'); return; }
 
   var btn = document.getElementById('caddyRegisterBtn');
   if (btn) { btn.disabled = true; btn.textContent = 'Processing...'; }
@@ -1348,9 +1369,10 @@ async function doRegisterCaddy() {
   window._caddyPhotoUrl = '';
 
   if (sheetSaved) {
-    showToast('Welcome, '+fullName+'! Your profile will be visible after admin approval.');
+    closeModal('authModal');
+    showRegSuccessOverlay(fullName);
   } else {
-    showToast(uiLang==='ko' ? '⚠ 가입은 됐지만 서버 저장에 문제가 있었습니다. 관리자에게 알려주세요.' : '⚠ Registered, but server save had an issue. Please notify admin.');
+    showToast(uiLang==='ko' ? '⚠ 가입은 됐지만 서버 저장에 문제가 있었습니다. 관리자에게 알려주세요.' : '⚠ Registered, but server save had an issue. Please notify admin.', 'error');
   }
 }
 
@@ -1753,10 +1775,22 @@ document.querySelectorAll('.modal-overlay').forEach(function(el) {
 });
 
 // ── TOAST ──
-function showToast(msg) {
+function showToast(msg, type) {
   var t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); }, 3000);
+  t.textContent = msg;
+  t.classList.remove('success','error');
+  if (type === 'success') t.classList.add('success');
+  if (type === 'error') t.classList.add('error');
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 4000);
+}
+
+function showRegSuccessOverlay(name) {
+  var ov = document.getElementById('regSuccessOverlay');
+  if (!ov) return;
+  document.getElementById('regSuccessName').textContent = name;
+  ov.classList.add('show');
+  setTimeout(function(){ ov.classList.remove('show'); }, 2500);
 }
 
 // ── SCROLL ──
