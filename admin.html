@@ -2448,7 +2448,8 @@ function loadCaddyData() {
           korean: row.c[7]?.v || '',
           desc: row.c[8]?.v || '',
           kakao: row.c[9]?.v || '',
-          status: row.c[10]?.v || 'pending'
+          status: row.c[10]?.v || 'pending',
+          photo: row.c[11]?.v || ''
         };
         if (caddy.status === '승인' || caddy.status === 'approved') approved.push(caddy);
         else pending.push(caddy);
@@ -2457,30 +2458,96 @@ function loadCaddyData() {
       document.getElementById('caddy-approved-count').textContent = approved.length + '명';
       document.getElementById('stat-caddy').textContent = approved.length;
       document.getElementById('caddy-pending-body').innerHTML = pending.length ?
-        pending.map(c => `<tr>
+        pending.map((c,i) => `<tr>
           <td style="font-weight:700;">${c.name}</td>
           <td>${c.course}</td>
           <td>${c.exp}년</td>
           <td>${c.korean}</td>
           <td><span class="badge-pending">대기</span></td>
-          <td><button class="btn-edit">승인</button> <button class="btn-del">거절</button></td>
+          <td>
+            <button class="btn-edit" onclick="approveCaddy(${c.idx+1})">승인</button>
+            <button class="btn-del" onclick="rejectCaddy(${c.idx+1}, '${c.name}')">거절</button>
+          </td>
         </tr>`).join('') :
         '<tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:20px;">승인 대기 없음</td></tr>';
       document.getElementById('caddy-approved-body').innerHTML = approved.length ?
         approved.map(c => `<tr>
-          <td>🏌️</td>
+          <td>${c.photo ? `<img src="${c.photo}" style="width:44px;height:44px;object-fit:cover;border-radius:50%;border:2px solid #9FE1CB;">` : '🏌️'}</td>
           <td style="font-weight:700;">${c.name}</td>
           <td>${c.course}</td>
           <td>${c.exp}년</td>
           <td>${c.korean}</td>
           <td><span class="badge-on">활성</span></td>
-          <td><button class="btn-edit">수정</button></td>
+          <td><button class="btn-edit" onclick="openEditCaddy(${JSON.stringify(c).replace(/"/g,'&quot;')})">수정</button></td>
         </tr>`).join('') :
         '<tr><td colspan="7" style="text-align:center;color:#9ca3af;padding:20px;">승인된 캐디 없음</td></tr>';
     })
     .catch(() => {
       document.getElementById('caddy-pending-body').innerHTML = '<tr><td colspan="6" style="text-align:center;color:#e74c3c;padding:20px;">데이터 로드 실패 — 구글 시트 연결 확인 필요</td></tr>';
     });
+}
+
+/* ── 캐디 승인 / 거절 / 수정 ── */
+const CADDY_GAS_URL = 'https://script.google.com/macros/s/AKfycbz7JLSat2vrPEagEYDnqz0zpaG_Ph482fPsC4fTe9-HVvUnYEe_azr59A9SOoU-_BU/exec';
+
+function approveCaddy(rowNum) {
+  if (!confirm('이 캐디를 승인하시겠어요?')) return;
+  fetch(CADDY_GAS_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain;charset=utf-8'},
+    body: JSON.stringify({ action: 'approve', row: rowNum })
+  }).then(() => { showToast('✅ 승인 완료!'); setTimeout(loadCaddyData, 1000); })
+    .catch(() => showToast('오류 발생 — 구글 시트에서 직접 승인해주세요', 'error'));
+}
+
+function rejectCaddy(rowNum, name) {
+  if (!confirm(name + ' 캐디를 거절/삭제하시겠어요?')) return;
+  fetch(CADDY_GAS_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain;charset=utf-8'},
+    body: JSON.stringify({ action: 'reject', row: rowNum })
+  }).then(() => { showToast('삭제 완료'); setTimeout(loadCaddyData, 1000); })
+    .catch(() => showToast('오류 발생 — 구글 시트에서 직접 삭제해주세요', 'error'));
+}
+
+function openEditCaddy(c) {
+  if (typeof c === 'string') c = JSON.parse(c);
+  const html = `
+    <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;" onclick="if(event.target===this)this.remove()">
+      <div style="background:#fff;border-radius:16px;padding:28px;width:90%;max-width:440px;max-height:90vh;overflow-y:auto;">
+        <h3 style="margin:0 0 18px;font-size:16px;">캐디 정보 수정 — ${c.name}</h3>
+        ${c.photo ? `<img src="${c.photo}" style="width:80px;height:80px;object-fit:cover;border-radius:50%;margin-bottom:12px;border:2px solid #9FE1CB;">` : ''}
+        <div style="margin-bottom:10px;"><label style="font-size:12px;color:#6b7280;">이름</label><input id="ec-name" value="${c.name}" style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:14px;box-sizing:border-box;margin-top:4px;"></div>
+        <div style="margin-bottom:10px;"><label style="font-size:12px;color:#6b7280;">골프장</label><input id="ec-course" value="${c.course}" style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:14px;box-sizing:border-box;margin-top:4px;"></div>
+        <div style="margin-bottom:10px;"><label style="font-size:12px;color:#6b7280;">경력(년)</label><input id="ec-exp" type="number" value="${c.exp}" style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:14px;box-sizing:border-box;margin-top:4px;"></div>
+        <div style="margin-bottom:10px;"><label style="font-size:12px;color:#6b7280;">한국어 수준</label><select id="ec-korean" style="width:100%;padding:8px 10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:14px;box-sizing:border-box;margin-top:4px;"><option ${c.korean==='native'?'selected':''}>native</option><option ${c.korean==='advanced'?'selected':''}>advanced</option><option ${c.korean==='intermediate'?'selected':''}>intermediate</option><option ${c.korean==='basic'?'selected':''}>basic</option></select></div>
+        <div style="display:flex;gap:10px;margin-top:18px;">
+          <button onclick="saveEditCaddy(${c.idx+1})" style="flex:1;padding:10px;background:#534AB7;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">저장</button>
+          <button onclick="this.closest('[onclick]').remove()" style="flex:1;padding:10px;background:#f3f4f6;color:#374151;border:none;border-radius:10px;font-size:14px;cursor:pointer;">취소</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function saveEditCaddy(rowNum) {
+  const data = {
+    action: 'edit',
+    row: rowNum,
+    name: document.getElementById('ec-name').value,
+    course: document.getElementById('ec-course').value,
+    exp: document.getElementById('ec-exp').value,
+    korean: document.getElementById('ec-korean').value
+  };
+  fetch(CADDY_GAS_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain;charset=utf-8'},
+    body: JSON.stringify(data)
+  }).then(() => {
+    document.querySelector('[onclick*="remove"]')?.closest('[style*="position:fixed"]')?.remove();
+    showToast('✅ 수정 완료!');
+    setTimeout(loadCaddyData, 1000);
+  }).catch(() => showToast('오류 발생', 'error'));
 }
 
 /* ── 카드 에디터 사진 배열 관리 ── */
