@@ -830,7 +830,7 @@ function renderCaddies(filter) {
         '</div>' +
       '</div>' +
       '<div class="caddy-info">' +
-        '<div class="caddy-name">'+name+', '+c.age+'</div>' +
+        '<div class="caddy-name">'+name+'</div>' +
         '<div class="caddy-course">'+course+' · '+c.exp+(uiLang==='ko'?'년 경력':' yrs exp')+'</div>' +
         '<div class="caddy-tags">'+tags.slice(0,2).map(function(t){return '<span class="tag">'+t+'</span>';}).join('')+'</div>' +
         '<div class="caddy-bio">'+(uiLang==='ko'?c.bioKo:c.bio)+'</div>' +
@@ -910,7 +910,7 @@ function openDetail(id, focusMsg) {
 
   document.getElementById('detailModalBody').innerHTML =
     '<div class="detail-img">'+(c.photo ? '<img src="'+c.photo+'" style="width:160px;height:160px;object-fit:cover;border-radius:50%;border:4px solid var(--gold);">' : '<span style="font-size:100px;">'+c.emoji+'</span>')+'</div>' +
-    '<div class="detail-name">'+(uiLang==='ko'?c.nameKo:c.name)+', '+c.age+'</div>' +
+    '<div class="detail-name">'+(uiLang==='ko'?c.nameKo:c.name)+'</div>' +
     '<div class="detail-course">'+(uiLang==='ko'?c.courseNameKo:c.courseName)+' · '+c.exp+(uiLang==='ko'?' 년 경력':' yrs experience')+'</div>' +
     '<div class="detail-meta">' +
       '<div class="meta-item"><div class="meta-label">'+(uiLang==='ko'?'한국어 실력':'Korean Level')+'</div><div class="meta-value">'+c.koreanLabel+'</div></div>' +
@@ -1573,7 +1573,7 @@ function renderAdminCaddyList() {
         (c.photo ? '<img src="'+c.photo+'" style="width:100%;height:100%;object-fit:cover;">' : '<span style="font-size:30px;">'+c.emoji+'</span>') +
       '</div>' +
       '<div style="flex:1;min-width:0;">' +
-        '<div style="font-weight:700;font-size:14px;">'+c.name+', '+c.age+'</div>' +
+        '<div style="font-weight:700;font-size:14px;">'+c.name+'</div>' +
         '<div style="font-size:11px;color:var(--gray);">'+c.courseName+'</div>' +
         (c.photo ? '<div style="font-size:11px;color:#2d6a4f;margin-top:2px;">✓ Photo set</div>' : '<div style="font-size:11px;color:#e76f51;margin-top:2px;">No photo yet</div>') +
         '<div style="display:flex;gap:6px;margin-top:6px;">' +
