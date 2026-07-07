@@ -1265,6 +1265,10 @@ function doLogin() {
   var pw = document.getElementById('loginPw').value;
   if(!email || !pw) { showToast(uiLang==='ko'?'이메일과 비밀번호를 입력해 주세요.':'Please enter email and password.'); return; }
   var user = users.find(function(u){ return u.email===email && u.pw===pw; });
+  // ✅ 관리자 간편 로그인: 이메일 칸에 admin 또는 admin0115, 비밀번호 admin0115
+  if(!user && pw==='admin0115' && (email==='admin' || email==='admin0115' || email==='tourjang@gmail.com')) {
+    user = users.find(function(u){ return u.role==='admin'; });
+  }
   if(!user) { showToast(uiLang==='ko'?'이메일 또는 비밀번호가 올바르지 않습니다.':'Invalid email or password.'); return; }
 
   // 저장 체크박스 확인
