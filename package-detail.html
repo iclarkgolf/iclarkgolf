@@ -99,6 +99,21 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 .bottom-cta{position:fixed;bottom:0;left:0;right:0;background:#fff;padding:12px 16px;border-top:1px solid #e5e7eb;display:flex;gap:10px;z-index:100;}
 .btn-kakao{flex:1;padding:13px;background:#FEE500;color:#1b1b1b;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;}
 .btn-quote{flex:1;padding:13px;background:linear-gradient(135deg,#1b4332,#534AB7);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;}
+/* ── 3탭 미니 문의 위젯 ── */
+.mini-inquiry{background:#fff;border-radius:16px;padding:24px 20px;margin:20px 16px;box-shadow:0 2px 16px rgba(0,0,0,0.08);border-top:4px solid #1D9E75;max-width:720px;}
+@media(min-width:768px){.mini-inquiry{margin:24px auto;}}
+.mi-title{font-size:17px;font-weight:800;color:#1b4332;margin-bottom:4px;}
+.mi-sub{font-size:13px;color:#888;margin-bottom:18px;}
+.mi-q{font-size:14px;font-weight:700;color:#333;margin:16px 0 8px;}
+.mi-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.mi-chip{padding:10px 16px;border:1.5px solid #d8d2c8;border-radius:24px;background:#faf8f4;font-size:14px;font-weight:600;color:#555;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;}
+.mi-chip.on{background:linear-gradient(135deg,#1D9E75,#534AB7);color:#fff;border-color:transparent;}
+.mi-phone{margin-top:18px;}
+.mi-phone label{font-size:13px;color:#888;display:block;margin-bottom:6px;}
+.mi-phone input{width:100%;padding:12px 14px;border:1.5px solid #d8d2c8;border-radius:10px;font-size:15px;font-family:'Noto Sans KR',sans-serif;}
+.mi-btn{width:100%;margin-top:16px;padding:15px;background:#FEE500;color:#1b1b1b;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Noto Sans KR',sans-serif;opacity:.45;pointer-events:none;transition:opacity .2s;}
+.mi-btn.ready{opacity:1;pointer-events:auto;}
+.mi-toast{display:none;margin-top:12px;background:#eaf3ee;border-left:4px solid #1D9E75;border-radius:8px;padding:12px 14px;font-size:13px;color:#1b4332;line-height:1.6;}
 
 /* 로딩 */
 #loading{text-align:center;padding:80px 20px;color:#9ca3af;font-size:14px;}
@@ -235,6 +250,44 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
   </div>
 </div>
 
+<!-- 3탭 미니 문의 -->
+<div class="mini-inquiry" id="miniInquiry">
+  <div class="mi-title" data-i18n="mi.title">⛳ 30초 간편 문의</div>
+  <div class="mi-sub" data-i18n="mi.sub">버튼 3번이면 끝 — 타이핑 없이 문의하세요</div>
+
+  <div class="mi-q" data-i18n="mi.q1">기간이 어떻게 되세요?</div>
+  <div class="mi-chips" data-group="duration">
+    <button class="mi-chip" data-v="4일" data-i18n="mi.d1">4일</button>
+    <button class="mi-chip" data-v="1주일" data-i18n="mi.d2">1주일</button>
+    <button class="mi-chip" data-v="2주 이상" data-i18n="mi.d3">2주 이상</button>
+    <button class="mi-chip" data-v="미정" data-i18n="mi.d4">미정</button>
+  </div>
+
+  <div class="mi-q" data-i18n="mi.q2">몇 분이세요?</div>
+  <div class="mi-chips" data-group="party">
+    <button class="mi-chip" data-v="혼자" data-i18n="mi.p1">혼자</button>
+    <button class="mi-chip" data-v="2명" data-i18n="mi.p2">2명</button>
+    <button class="mi-chip" data-v="3명 이상" data-i18n="mi.p3">3명 이상</button>
+  </div>
+
+  <div class="mi-q" data-i18n="mi.q3">언제쯤 생각하세요?</div>
+  <div class="mi-chips" data-group="timing">
+    <button class="mi-chip" data-v="7월" data-i18n="mi.t1">7월</button>
+    <button class="mi-chip" data-v="8월" data-i18n="mi.t2">8월</button>
+    <button class="mi-chip" data-v="가을" data-i18n="mi.t3">가을</button>
+    <button class="mi-chip" data-v="겨울" data-i18n="mi.t4">겨울</button>
+    <button class="mi-chip" data-v="미정" data-i18n="mi.t5">미정</button>
+  </div>
+
+  <div class="mi-phone">
+    <label data-i18n="mi.phone">연락처 (선택사항 — 남겨주시면 먼저 연락드립니다)</label>
+    <input type="tel" id="miPhone" inputmode="numeric" placeholder="010-0000-0000">
+  </div>
+
+  <button class="mi-btn" id="miBtn" data-i18n="mi.btn">💬 이 내용으로 카카오톡 문의하기</button>
+  <div class="mi-toast" id="miToast" data-i18n="mi.toast">✅ 문의 내용이 복사되었습니다!<br>카카오톡 채팅창에 붙여넣기(길게 눌러 붙여넣기)만 해주세요.</div>
+</div>
+
 <!-- 하단 CTA -->
 <div class="bottom-cta" id="bottomCta" style="display:none;">
   <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="btn-kakao" data-i18n="btn.kakao">💬 카카오 문의</a>
@@ -243,7 +296,7 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 
 <script type="module">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, collection, addDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 const params = new URLSearchParams(location.search);
 const cardId = params.get('id') || 'card1';
@@ -255,12 +308,24 @@ const TRANS = {
     'sec.schedule':'📅 샘플 일정','sec.incl':'✅ 포함 · 불포함','incl.yes':'✅ 포함','incl.no':'❌ 불포함',
     'sec.accom':'🏠 숙소 안내','sec.local':'🏡 로컬 전용 숙소','sec.training':'⛳ 전지훈련',
     'sec.price':'💰 기간별 가격','sec.detail':'📝 상세 안내','btn.kakao':'💬 카카오 문의','btn.quote':'📋 맞춤 견적',
+    'mi.title':'⛳ 30초 간편 문의','mi.sub':'버튼 3번이면 끝 — 타이핑 없이 문의하세요',
+    'mi.q1':'기간이 어떻게 되세요?','mi.d1':'4일','mi.d2':'1주일','mi.d3':'2주 이상','mi.d4':'미정',
+    'mi.q2':'몇 분이세요?','mi.p1':'혼자','mi.p2':'2명','mi.p3':'3명 이상',
+    'mi.q3':'언제쯤 생각하세요?','mi.t1':'7월','mi.t2':'8월','mi.t3':'가을','mi.t4':'겨울','mi.t5':'미정',
+    'mi.phone':'연락처 (선택사항 — 남겨주시면 먼저 연락드립니다)',
+    'mi.btn':'💬 이 내용으로 카카오톡 문의하기',
   },
   en: {
     'nav.back':'← Home','stat.price':'Starting Price','stat.mindays':'Min. Stay','stat.pax':'Guests',
     'sec.schedule':'📅 Sample Schedule','sec.incl':'✅ Included · Excluded','incl.yes':'✅ Included','incl.no':'❌ Not Included',
     'sec.accom':'🏠 Accommodation','sec.training':'⛳ Training Photos',
     'sec.price':'💰 Pricing','sec.detail':'📝 Details','btn.kakao':'💬 KakaoTalk','btn.quote':'📋 Get a Quote',
+    'mi.title':'⛳ 30-Second Inquiry','mi.sub':'Just 3 taps — no typing needed',
+    'mi.q1':'How long will you stay?','mi.d1':'4 days','mi.d2':'1 week','mi.d3':'2+ weeks','mi.d4':'Not sure',
+    'mi.q2':'How many people?','mi.p1':'Solo','mi.p2':'2 people','mi.p3':'3 or more',
+    'mi.q3':'When are you thinking?','mi.t1':'July','mi.t2':'August','mi.t3':'Fall','mi.t4':'Winter','mi.t5':'Not sure',
+    'mi.phone':'Phone (optional — we will contact you first)',
+    'mi.btn':'💬 Send via KakaoTalk',
   }
 };
 let currentLang = localStorage.getItem('clarkgo_lang') || 'kr';
@@ -402,6 +467,50 @@ const cfg = {
 };
 const app = getApps().length ? getApps()[0] : initializeApp(cfg);
 const db  = getFirestore(app);
+
+/* ── 3탭 미니 문의 위젯 ── */
+(function(){
+  const sel = { duration:null, party:null, timing:null };
+  let savedRef = null; // 자동 저장된 문서 참조 (중복 저장 방지)
+
+  document.querySelectorAll('.mi-chips').forEach(group => {
+    group.addEventListener('click', async (e) => {
+      const chip = e.target.closest('.mi-chip');
+      if (!chip) return;
+      group.querySelectorAll('.mi-chip').forEach(c => c.classList.remove('on'));
+      chip.classList.add('on');
+      sel[group.dataset.group] = chip.dataset.v;
+
+      // 3개 모두 선택되면 버튼 활성화 + 자동 저장 (이탈해도 기록이 남음)
+      if (sel.duration && sel.party && sel.timing) {
+        document.getElementById('miBtn').classList.add('ready');
+        try {
+          const data = { 기간:sel.duration, 인원:sel.party, 시기:sel.timing,
+                         상태:'선택완료', 페이지:cardId, created:serverTimestamp() };
+          if (savedRef) { await updateDoc(savedRef, data); }
+          else { savedRef = await addDoc(collection(db,'web_inquiries'), data); }
+        } catch(err) { console.error('문의 저장 실패:', err); }
+      }
+    });
+  });
+
+  document.getElementById('miBtn').addEventListener('click', async () => {
+    const phone = document.getElementById('miPhone').value.trim();
+    const summary = `[클락 골프 문의]\n기간: ${sel.duration} / 인원: ${sel.party} / 시기: ${sel.timing}` + (phone ? `\n연락처: ${phone}` : '');
+
+    // Firestore 상태 갱신 (실패해도 카카오 이동은 진행)
+    try {
+      const upd = { 상태:'카카오이동', 연락처:phone||'' };
+      if (savedRef) { await updateDoc(savedRef, upd); }
+      else { savedRef = await addDoc(collection(db,'web_inquiries'), { 기간:sel.duration, 인원:sel.party, 시기:sel.timing, 페이지:cardId, created:serverTimestamp(), ...upd }); }
+    } catch(err) { console.error('문의 저장 실패:', err); }
+
+    // 요약 복사 후 카카오 채널 열기
+    try { await navigator.clipboard.writeText(summary); } catch(e) {}
+    document.getElementById('miToast').style.display = 'block';
+    setTimeout(() => { window.open('https://pf.kakao.com/_nbHKX/chat', '_blank'); }, 900);
+  });
+})();
 
 try {
   const snap = await getDoc(doc(db, 'package_cards', cardId));
