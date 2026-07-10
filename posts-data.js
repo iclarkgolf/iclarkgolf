@@ -1,6 +1,7 @@
 // iCLARKGOLF 블로그 글 목록 — 단일 소스. 새 글 추가 시 이 파일 맨 위에 한 줄만 추가하면
 // blog.html(전체 목록)과 index.html(최신 4개 미리보기) 양쪽에 자동 반영됩니다.
 const POSTS = [
+  {id:"p29",title:"클락 에어포스시티 골프장에서 만난 아이 — 주니어 골프유학, 무엇이 아이를 살리고 무엇이 아이를 망치는가",cat:"골프유학",date:"2026.07.10",thumb:"https://iclarkgolf.com/images/blog-p29-hero.jpg",excerpt:"2013년 앙헬레스 연습장 시절 만난 중학교 2학년 소년 S군의 실화. 벙커에서 살다시피 한 6주, 전국체전 우승, 미국 유학의 실패, 그리고 태국 프로투어 퀄리파잉까지 — 25년 클락 골프 현장의 기록."},
   {id:"p28",title:"우기의 클락 골프 — 비는 오후 4시에 온다",cat:"클락 여름 골프",date:"2026.07.09",thumb:"https://iclarkgolf.com/images/blog-p28-hero.jpg",excerpt:"클락의 날씨 앱은 자주 틀린다. 국지성 스콜의 원리, 아침 하늘로 오후 비를 읽는 25년의 공식, 그리고 태풍과 겹쳤던 6년 전 모녀의 이야기 — 우기 실전편."},
   {id:"p27",title:"클락 전지훈련 4일의 기록 — 퍼팅 고치러 온 손님이 베버리에서 77타를 치기까지",cat:"전지훈련 후기",date:"2026.07.06",thumb:"https://iclarkgolf.com/images/blog-p27-hero.jpg",excerpt:"웹사이트를 열고 맞은 첫 손님. 공항 BAY 5 기둥에서 시작된 4일 — 원플레인 스윙 진단, 비거리 40야드, 그네 같은 퍼팅의 원리, 그리고 베버리 77타의 기록."},
   {id:"p26",title:"클락 골프 전지훈련 숙소 완전 가이드 — 골프장 안 vs 시내 vs 로컬 숙소, 뭐가 다른가",cat:"전지훈련 가이드",date:"2026.06.27",thumb:"https://iclarkgolf.com/images/blog-p26-hero.jpg",excerpt:"먹자골 — 먹고 자고 골프만 하는 시스템이 실력을 바꿉니다. 20년 현지 경험으로 숙소 선택의 진실을 말합니다."},
