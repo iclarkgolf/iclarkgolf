@@ -1605,17 +1605,44 @@ async function loadCards() {
 
 function renderCardList(cards) {
   const box = document.getElementById('card-list');
-  box.innerHTML = cards.map(c => `
-    <div onclick="openCardEditor('${c.id}')" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:#fff;border:1.5px solid #e5e7eb;border-radius:12px;cursor:pointer;transition:border-color .2s;" onmouseover="this.style.borderColor='#534AB7'" onmouseout="this.style.borderColor='#e5e7eb'">
-      <div style="width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,${c.color1||'#054535'},${c.color2||'#1D9E75'});flex-shrink:0;"></div>
-      <div style="flex:1;min-width:0;">
-        <div style="font-size:13px;font-weight:800;color:#18181b;margin-bottom:2px;">${c.titleEn} · ${c.sub1}${c.sub2 ? ' · '+c.sub2 : ''}</div>
-        <div style="font-size:11px;color:#9ca3af;">${c.tag||''}</div>
+  box.innerHTML = cards.map((c, idx) => `
+    <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;background:#fff;border:1.5px solid #e5e7eb;border-radius:12px;flex-wrap:wrap;">
+      <div style="display:flex;flex-direction:column;gap:2px;flex-shrink:0;">
+        <button onclick="event.stopPropagation();moveCard('${c.id}','up')" ${idx===0?'disabled':''} style="width:36px;height:32px;border:1.5px solid #e5e7eb;border-radius:6px;background:${idx===0?'#f4f4f5':'#fff'};color:${idx===0?'#d1d5db':'#534AB7'};font-size:14px;cursor:${idx===0?'default':'pointer'};touch-action:manipulation;">▲</button>
+        <button onclick="event.stopPropagation();moveCard('${c.id}','down')" ${idx===cards.length-1?'disabled':''} style="width:36px;height:32px;border:1.5px solid #e5e7eb;border-radius:6px;background:${idx===cards.length-1?'#f4f4f5':'#fff'};color:${idx===cards.length-1?'#d1d5db':'#534AB7'};font-size:14px;cursor:${idx===cards.length-1?'default':'pointer'};touch-action:manipulation;">▼</button>
       </div>
-      <div style="font-size:12px;font-weight:700;color:#534AB7;">${c.price||''}</div>
-      <div style="font-size:12px;color:#9ca3af;">✏️</div>
+      <div onclick="openCardEditor('${c.id}')" style="display:flex;align-items:center;gap:14px;flex:1;min-width:200px;cursor:pointer;">
+        <div style="width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,${c.color1||'#054535'},${c.color2||'#1D9E75'});flex-shrink:0;overflow:hidden;">
+          ${c.heroImg ? `<img src="${c.heroImg}" style="width:100%;height:100%;object-fit:cover;">` : ''}
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:800;color:#18181b;margin-bottom:2px;">${c.titleEn} · ${c.sub1}${c.sub2 ? ' · '+c.sub2 : ''}</div>
+          <div style="font-size:11px;color:#9ca3af;">${c.tag||''}</div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#534AB7;white-space:nowrap;">${c.price||''}</div>
+        <div style="font-size:12px;color:#9ca3af;">✏️</div>
+      </div>
     </div>
   `).join('');
+}
+
+/* 카드 순서 변경 — 바로 위/아래 카드와 order 값을 맞바꿈 */
+async function moveCard(id, direction) {
+  try {
+    const db = await initCardDB();
+    const { collection, getDocs, doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDocs(collection(db, 'package_cards'));
+    let cards = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    cards.sort((a,b) => (a.order||0) - (b.order||0));
+    const idx = cards.findIndex(c => c.id === id);
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (idx === -1 || swapIdx < 0 || swapIdx >= cards.length) return;
+    const a = cards[idx], b = cards[swapIdx];
+    const orderA = a.order ?? idx, orderB = b.order ?? swapIdx;
+    await updateDoc(doc(db, 'package_cards', a.id), { order: orderB });
+    await updateDoc(doc(db, 'package_cards', b.id), { order: orderA });
+    loadCards();
+  } catch(e) { console.error('순서 변경 실패:', e); alert('순서 변경에 실패했습니다. 다시 시도해주세요.'); }
 }
 
 function openCardEditor(cardId) {
