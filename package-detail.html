@@ -349,13 +349,15 @@ window.setLang = function(lang) {
 
 /* ── 렌더링 ── */
 window.render = function render(D) {
-  // 히어로
-  document.getElementById('heroBg').style.background = `linear-gradient(135deg,${D.color1||'#054535'},${D.color2||'#1D9E75'})`;
+  // 히어로 — 사진이 있으면 색상 배경은 그리지 않고 사진을 100% 불투명으로 표시 (텍스트 가독성은 hero-overlay가 담당)
   if (D.heroImg) {
+    document.getElementById('heroBg').style.background = 'none';
     const hi = document.getElementById('heroImg');
     hi.style.backgroundImage = `url(${D.heroImg})`;
     hi.style.backgroundPosition = `center ${D.heroPos || 45}%`;
-    hi.style.opacity = D.heroOpacity || 0.9;
+    hi.style.opacity = D.heroOpacity || 1;
+  } else {
+    document.getElementById('heroBg').style.background = `linear-gradient(135deg,${D.color1||'#054535'},${D.color2||'#1D9E75'})`;
   }
   document.getElementById('heroTag').textContent   = D.tag    || '';
   document.getElementById('heroTitle').textContent = D.titleEn|| '';
@@ -524,6 +526,6 @@ try {
   document.getElementById('loading').textContent = '⚠️ 불러오기 실패 — 새로고침 해주세요.';
 }
 </script>
-<script type="module" src="visitor-counter.js"></script>
+
 </body>
 </html>
