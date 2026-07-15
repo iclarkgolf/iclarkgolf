@@ -1043,6 +1043,17 @@ body { background:#f4faf7; padding-bottom:40px; }
         </div>
       </div>
 
+      <!-- 숙소 이름·설명 (호텔 등 — 위 사진과 같이 "숙소 안내" 섹션에 표시됨) -->
+      <div style="background:#f0f7f4;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #c8edd9;">
+        <div style="font-size:13px;font-weight:800;color:#085041;margin-bottom:10px;">🏨 숙소 이름 · 설명</div>
+        <div style="display:grid;gap:10px;">
+          <input id="ce-accom-name" type="text" placeholder="숙소 이름 (예: 망고 스위트 호텔)"
+            style="width:100%;padding:10px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;box-sizing:border-box;font-family:'Nunito',sans-serif;">
+          <textarea id="ce-accom-desc" rows="3" placeholder="숙소 설명 (예: 편안한 시설과 위치, 예약 링크 등)"
+            style="width:100%;padding:10px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;box-sizing:border-box;resize:vertical;font-family:'Nunito',sans-serif;"></textarea>
+        </div>
+      </div>
+
       <!-- 전지훈련 사진 관리 -->
       <div style="background:#f0f7f4;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #c8edd9;">
         <div style="font-size:13px;font-weight:800;color:#085041;margin-bottom:4px;">⛳ 전지훈련 사진 관리</div>
@@ -1053,6 +1064,9 @@ body { background:#f4faf7; padding-bottom:40px; }
             style="flex:1;padding:10px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;outline:none;font-family:'Nunito',sans-serif;"
             onkeydown="if(event.key==='Enter'){event.preventDefault();ceAddTrainingImg();}">
           <button onclick="ceAddTrainingImg()"
+            style="padding:10px 16px;background:#1D9E75;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;font-family:'Nunito',sans-serif;">+ 추가</button>
+        </div>
+      </div>
             style="padding:10px 16px;background:#1D9E75;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;font-family:'Nunito',sans-serif;">+ 추가</button>
         </div>
       </div>
@@ -1673,7 +1687,7 @@ function openCardEditor(cardId) {
     ceRenderIncl('yes', []);
     ceRenderIncl('no',  []);
     ceRenderPrices([]);
-    ['ce-local-name','ce-local-desc','ce-training-name','ce-training-desc'].forEach(id => document.getElementById(id).value = '');
+    ['ce-accom-name','ce-accom-desc','ce-local-name','ce-local-desc','ce-training-name','ce-training-desc'].forEach(id => document.getElementById(id).value = '');
     updateCePreview();
     return;
   }
@@ -1712,6 +1726,8 @@ function openCardEditor(cardId) {
         try { ceRenderIncl('no',  c.inclNo  || []); } catch(e) { console.warn('inclNo 오류', e); }
         try { ceRenderPrices(c.prices || []); } catch(e) { console.warn('prices 오류', e); }
         // 숙소·훈련 이름/설명 — 에러와 무관하게 항상 실행
+        document.getElementById('ce-accom-name').value     = c.accomName    || '';
+        document.getElementById('ce-accom-desc').value     = c.accomDesc    || '';
         document.getElementById('ce-local-name').value    = c.localName    || '';
         document.getElementById('ce-local-desc').value    = c.localDesc    || '';
         document.getElementById('ce-training-name').value = c.trainingName || '';
@@ -1772,11 +1788,13 @@ async function saveCard() {
   const heroImgVal = document.getElementById('ce-hero-img-input').value.trim()
                   || document.getElementById('ce-hero-img').value.trim();
 
+  const accomNameVal = document.getElementById('ce-accom-name').value.trim();
+  const accomDescVal = document.getElementById('ce-accom-desc').value.trim();
   const localNameVal = document.getElementById('ce-local-name').value.trim();
   const localDescVal = document.getElementById('ce-local-desc').value.trim();
   const trainingNameVal = document.getElementById('ce-training-name').value.trim();
   const trainingDescVal = document.getElementById('ce-training-desc').value.trim();
-  console.log('저장 직전 값 확인:', { localNameVal, localDescVal, trainingNameVal, trainingDescVal });
+  console.log('저장 직전 값 확인:', { accomNameVal, accomDescVal, localNameVal, localDescVal, trainingNameVal, trainingDescVal });
 
   const formData = {
     tag: document.getElementById('ce-tag').value.trim(),
@@ -1798,6 +1816,8 @@ async function saveCard() {
     inclYes:      ceGetIncl('yes'),
     inclNo:       ceGetIncl('no'),
     prices:       ceGetPrices(),
+    accomName:    accomNameVal,
+    accomDesc:    accomDescVal,
     localName:    localNameVal,
     localDesc:    localDescVal,
     trainingName: trainingNameVal,
