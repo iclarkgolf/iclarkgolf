@@ -1183,6 +1183,7 @@ body { background:#f4faf7; padding-bottom:40px; }
           <button onclick="ceFormat('hr')" title="구분선" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;">— 구분선</button>
           <button onclick="ceInsertImg()" title="사진 삽입" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;">🖼 사진</button>
           <button onclick="ceInsertLink()" title="링크 삽입" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;">🔗 링크</button>
+          <button onclick="ceOpenHtmlModal()" title="HTML 코드 붙여넣기" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;">🧩 HTML 소스</button>
           <!-- 폰트 크기 -->
           <select onchange="ceFontSize(this.value);this.value=''" style="padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;background:#f4f4f5;">
             <option value="">글자 크기</option>
@@ -1225,6 +1226,19 @@ body { background:#f4faf7; padding-bottom:40px; }
         <div id="ce-editor" contenteditable="true"
           style="min-height:400px;border:1.5px solid #e5e7eb;border-radius:8px;padding:16px;font-size:14px;line-height:1.9;font-family:'Noto Sans KR',sans-serif;outline:none;background:#fff;"
           placeholder="여기에 상세 내용을 작성하세요..."></div>
+
+        <!-- HTML 소스 붙여넣기 모달 -->
+        <div id="ce-html-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:20px;">
+          <div style="background:#fff;border-radius:14px;padding:20px;width:100%;max-width:640px;max-height:80vh;display:flex;flex-direction:column;">
+            <div style="font-size:15px;font-weight:800;color:#18181b;margin-bottom:10px;">🧩 HTML 코드 붙여넣기</div>
+            <div style="font-size:12px;color:#6b7280;margin-bottom:10px;">아래 칸에 HTML 코드를 붙여넣고 "적용"을 누르면, 기존 상세 내용을 대체하여 서식이 적용된 상태로 들어갑니다.</div>
+            <textarea id="ce-html-source" rows="14" style="width:100%;flex:1;padding:12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:12px;font-family:monospace;box-sizing:border-box;resize:vertical;"></textarea>
+            <div style="display:flex;gap:8px;margin-top:12px;">
+              <button onclick="ceCloseHtmlModal()" style="flex:1;padding:12px;background:#f4f4f5;color:#374151;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">취소</button>
+              <button onclick="ceApplyHtmlSource()" style="flex:1;padding:12px;background:#534AB7;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;">적용</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- 저장/취소 -->
@@ -1937,6 +1951,20 @@ function ceInsertLink() {
   document.execCommand('insertHTML', false, `<a href="${url}" target="_blank" style="color:#1D9E75;text-decoration:underline;">${text}</a>`);
 }
 
+function ceOpenHtmlModal() {
+  document.getElementById('ce-html-source').value = '';
+  document.getElementById('ce-html-modal').style.display = 'flex';
+}
+function ceCloseHtmlModal() {
+  document.getElementById('ce-html-modal').style.display = 'none';
+}
+function ceApplyHtmlSource() {
+  const html = document.getElementById('ce-html-source').value;
+  if (!html.trim()) { alert('붙여넣은 코드가 없습니다.'); return; }
+  document.getElementById('ce-editor').innerHTML = html;
+  ceCloseHtmlModal();
+}
+
 async function saveProfile() {
   const pf = {
     nameKo:   document.getElementById('pf-name-ko').value.trim(),
@@ -1979,6 +2007,7 @@ function previewLicenses() {
     document.getElementById('pf-lic1').value.trim(),
     document.getElementById('pf-lic2').value.trim(),
     document.getElementById('pf-lic3').value.trim(),
+    document.getElementById('pf-lic4').value.trim(),
   ].filter(u => u);
   const box = document.getElementById('pf-preview');
   if (!urls.length) { alert('사진 URL을 먼저 입력해주세요'); return; }
