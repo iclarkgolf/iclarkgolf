@@ -1546,12 +1546,23 @@ function showTab(name, el) {
   if (name === 'inquiry') loadInquiries();
   if (name === 'gallery') loadGalleryAdmin();
   if (name === 'package') loadCards();
+  if (name === 'profile') loadProfile();
   if (name === 'quotemake') { if(typeof qfInit==='function') qfInit(); }
 }
 
 /* ── 프로필 관리 ── */
-function loadProfile() {
-  const pf = JSON.parse(localStorage.getItem('iclark_profile') || '{}');
+async function loadProfile() {
+  let pf = {};
+  try {
+    const db = await initCardDB();
+    const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDoc(doc(db, 'settings', 'profile'));
+    if (snap.exists()) pf = snap.data();
+    else pf = JSON.parse(localStorage.getItem('iclark_profile') || '{}'); // 아직 Firestore에 없으면 예전 로컬 데이터로 폴백
+  } catch(e) {
+    console.error('프로필 불러오기 실패:', e);
+    pf = JSON.parse(localStorage.getItem('iclark_profile') || '{}');
+  }
   document.getElementById('pf-name-ko').value  = pf.nameKo   || '장수남';
   document.getElementById('pf-name-en').value  = pf.nameEn   || 'Paulo Jang';
   document.getElementById('pf-title').value    = pf.title    || 'PGAP MEMBER · CLUB PRO';
@@ -1926,7 +1937,7 @@ function ceInsertLink() {
   document.execCommand('insertHTML', false, `<a href="${url}" target="_blank" style="color:#1D9E75;text-decoration:underline;">${text}</a>`);
 }
 
-function saveProfile() {
+async function saveProfile() {
   const pf = {
     nameKo:   document.getElementById('pf-name-ko').value.trim(),
     nameEn:   document.getElementById('pf-name-en').value.trim(),
@@ -1943,13 +1954,24 @@ function saveProfile() {
     youtube:  document.getElementById('pf-youtube').value.trim(),
     openchat: document.getElementById('pf-openchat').value.trim(),
   };
-  localStorage.setItem('iclark_profile', JSON.stringify(pf));
+  localStorage.setItem('iclark_profile', JSON.stringify(pf)); // 로컬 캐시(참고용) — 실제 반영은 아래 Firestore 저장
   const msg = document.getElementById('pf-save-msg');
-  msg.style.display = 'block';
-  msg.style.background = '#f0fdf4';
-  msg.style.color = '#16a34a';
-  msg.textContent = '✅ 저장됐어요! index.html을 새로고침하면 반영돼요.';
-  setTimeout(() => msg.style.display = 'none', 3000);
+  try {
+    const db = await initCardDB();
+    const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await setDoc(doc(db, 'settings', 'profile'), pf);
+    msg.style.display = 'block';
+    msg.style.background = '#f0fdf4';
+    msg.style.color = '#16a34a';
+    msg.textContent = '✅ 저장됐어요! 잠시 후 index.html에서 모든 방문자에게 반영돼요.';
+  } catch(e) {
+    console.error('프로필 저장 실패:', e);
+    msg.style.display = 'block';
+    msg.style.background = '#fef2f2';
+    msg.style.color = '#dc2626';
+    msg.textContent = '❌ 저장에 실패했어요. 다시 시도해주세요.';
+  }
+  setTimeout(() => msg.style.display = 'none', 3500);
 }
 
 function previewLicenses() {

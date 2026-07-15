@@ -1388,9 +1388,23 @@ try {
   <div id="pf-sns" style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;"></div>
 </div>
 
-<script>
-(function() {
-  const pf = JSON.parse(localStorage.getItem('iclark_profile') || '{}');
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+(async function() {
+  const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+  let pf = {};
+  try {
+    const app = getApps().find(a=>a.name==='profile') || initializeApp(cfg,'profile');
+    const db = getFirestore(app);
+    const snap = await getDoc(doc(db, 'settings', 'profile'));
+    if (snap.exists()) pf = snap.data();
+    else pf = JSON.parse(localStorage.getItem('iclark_profile') || '{}'); // 아직 Firestore에 저장된 적 없으면 예전 방식 폴백
+  } catch(e) {
+    console.error('프로필 불러오기 실패:', e);
+    pf = JSON.parse(localStorage.getItem('iclark_profile') || '{}');
+  }
   const isEn = (localStorage.getItem('clarkgo_lang') || 'kr') === 'en';
 
   // 이름
