@@ -212,6 +212,7 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
     <div class="photo-grid" id="accomGrid"></div>
     <div style="font-size:15px;font-weight:700;color:#18181b;margin-bottom:4px;" id="accomName"></div>
     <div style="font-size:12px;color:#6b7280;line-height:1.7;" id="accomDesc"></div>
+    <a id="accomLinkBtn" href="#" target="_blank" style="display:none;align-items:center;gap:4px;margin-top:10px;padding:7px 14px;background:#1b4332;color:#fff;font-size:12px;font-weight:700;border-radius:20px;text-decoration:none;"></a>
   </div>
 </div>
 
@@ -398,6 +399,14 @@ window.render = function render(D) {
   renderPhotoGrid('accomGrid', D.accomImgs || []);
   document.getElementById('accomName').textContent = D.accomName || '';
   document.getElementById('accomDesc').innerHTML   = (D.accomDesc||'').replace(/\n/g,'<br>');
+  const accomBtn = document.getElementById('accomLinkBtn');
+  if (D.accomLinkUrl) {
+    accomBtn.href = D.accomLinkUrl;
+    accomBtn.textContent = D.accomLinkText || '📍 상세 정보·후기 보기';
+    accomBtn.style.display = 'inline-flex';
+  } else {
+    accomBtn.style.display = 'none';
+  }
 
   // 전지훈련 사진
   renderPhotoGrid('trainingGrid', D.trainingImgs || []);
@@ -433,7 +442,7 @@ window.render = function render(D) {
     document.getElementById(id).style.display = 'block';
   });
   // 사진 없는 섹션은 숨기기
-  if (!D.accomImgs || D.accomImgs.length === 0) document.getElementById('accomSection').style.display = D.accomName ? 'block' : 'none';
+  if (!D.accomImgs || D.accomImgs.length === 0) document.getElementById('accomSection').style.display = (D.accomName || D.accomLinkUrl) ? 'block' : 'none';
   if (!D.trainingImgs || D.trainingImgs.length === 0) document.getElementById('trainingSection').style.display = (D.trainingName || D.trainingDesc || D.trainingSchedule) ? 'block' : 'none';
 
   applyTranslations();

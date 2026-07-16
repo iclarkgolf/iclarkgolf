@@ -1049,8 +1049,15 @@ body { background:#f4faf7; padding-bottom:40px; }
         <div style="display:grid;gap:10px;">
           <input id="ce-accom-name" type="text" placeholder="숙소 이름 (예: 망고 스위트 호텔)"
             style="width:100%;padding:10px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;box-sizing:border-box;font-family:'Nunito',sans-serif;">
-          <textarea id="ce-accom-desc" rows="8" placeholder="자유롭게 작성하세요 (편안한 시설과 위치, 특징 등). 링크 버튼은 여기가 아니라 아래 '상세 페이지 내용'의 🧩 HTML 소스에서 넣으세요."
+          <textarea id="ce-accom-desc" rows="8" placeholder="자유롭게 작성하세요 (편안한 시설과 위치, 특징 등)"
             style="width:100%;padding:10px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;box-sizing:border-box;resize:vertical;font-family:'Nunito',sans-serif;line-height:1.6;"></textarea>
+          <div style="border-top:1px dashed #c8edd9;padding-top:10px;margin-top:2px;">
+            <div style="font-size:12px;font-weight:700;color:#085041;margin-bottom:6px;">🔗 예약 링크 버튼 (선택 — 비워두면 버튼 안 보임)</div>
+            <input id="ce-accom-link-url" type="text" placeholder="아고다 등 예약 페이지 URL (https://...)"
+              style="width:100%;padding:9px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;box-sizing:border-box;font-family:'Nunito',sans-serif;margin-bottom:8px;">
+            <input id="ce-accom-link-text" type="text" placeholder="버튼 문구 (예: 📍 아고다에서 상세 정보·후기 보기)"
+              style="width:100%;padding:9px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;box-sizing:border-box;font-family:'Nunito',sans-serif;">
+          </div>
         </div>
       </div>
 
@@ -1717,7 +1724,7 @@ function openCardEditor(cardId) {
     ceRenderIncl('yes', []);
     ceRenderIncl('no',  []);
     ceRenderPrices([]);
-    ['ce-accom-name','ce-accom-desc','ce-local-name','ce-local-desc','ce-training-name','ce-training-desc'].forEach(id => document.getElementById(id).value = '');
+    ['ce-accom-name','ce-accom-desc','ce-accom-link-url','ce-accom-link-text','ce-local-name','ce-local-desc','ce-training-name','ce-training-desc'].forEach(id => document.getElementById(id).value = '');
     updateCePreview();
     return;
   }
@@ -1758,6 +1765,8 @@ function openCardEditor(cardId) {
         // 숙소·훈련 이름/설명 — 에러와 무관하게 항상 실행
         document.getElementById('ce-accom-name').value     = c.accomName    || '';
         document.getElementById('ce-accom-desc').value     = c.accomDesc    || '';
+        document.getElementById('ce-accom-link-url').value  = c.accomLinkUrl  || '';
+        document.getElementById('ce-accom-link-text').value = c.accomLinkText || '';
         document.getElementById('ce-local-name').value    = c.localName    || '';
         document.getElementById('ce-local-desc').value    = c.localDesc    || '';
         document.getElementById('ce-training-name').value = c.trainingName || '';
@@ -1820,11 +1829,13 @@ async function saveCard() {
 
   const accomNameVal = document.getElementById('ce-accom-name').value.trim();
   const accomDescVal = document.getElementById('ce-accom-desc').value.trim();
+  const accomLinkUrlVal  = document.getElementById('ce-accom-link-url').value.trim();
+  const accomLinkTextVal = document.getElementById('ce-accom-link-text').value.trim();
   const localNameVal = document.getElementById('ce-local-name').value.trim();
   const localDescVal = document.getElementById('ce-local-desc').value.trim();
   const trainingNameVal = document.getElementById('ce-training-name').value.trim();
   const trainingDescVal = document.getElementById('ce-training-desc').value.trim();
-  console.log('저장 직전 값 확인:', { accomNameVal, accomDescVal, localNameVal, localDescVal, trainingNameVal, trainingDescVal });
+  console.log('저장 직전 값 확인:', { accomNameVal, accomDescVal, accomLinkUrlVal, accomLinkTextVal, localNameVal, localDescVal, trainingNameVal, trainingDescVal });
 
   const formData = {
     tag: document.getElementById('ce-tag').value.trim(),
@@ -1848,6 +1859,8 @@ async function saveCard() {
     prices:       ceGetPrices(),
     accomName:    accomNameVal,
     accomDesc:    accomDescVal,
+    accomLinkUrl:  accomLinkUrlVal,
+    accomLinkText: accomLinkTextVal,
     localName:    localNameVal,
     localDesc:    localDescVal,
     trainingName: trainingNameVal,
