@@ -1043,14 +1043,14 @@ body { background:#f4faf7; padding-bottom:40px; }
         </div>
       </div>
 
-      <!-- 숙소 이름·설명 (호텔 등 — 위 사진과 같이 "숙소 안내" 섹션에 표시됨) -->
+      <!-- 숙소 안내 (호텔 등 — package-detail.html "숙소 안내" 섹션에 표시됨) -->
       <div style="background:#f0f7f4;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #c8edd9;">
-        <div style="font-size:13px;font-weight:800;color:#085041;margin-bottom:10px;">🏨 숙소 이름 · 설명</div>
+        <div style="font-size:13px;font-weight:800;color:#085041;margin-bottom:10px;">🏠 숙소 안내</div>
         <div style="display:grid;gap:10px;">
           <input id="ce-accom-name" type="text" placeholder="숙소 이름 (예: 망고 스위트 호텔)"
             style="width:100%;padding:10px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;box-sizing:border-box;font-family:'Nunito',sans-serif;">
-          <textarea id="ce-accom-desc" rows="3" placeholder="숙소 설명 (예: 편안한 시설과 위치, 예약 링크 등)"
-            style="width:100%;padding:10px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;box-sizing:border-box;resize:vertical;font-family:'Nunito',sans-serif;"></textarea>
+          <textarea id="ce-accom-desc" rows="8" placeholder="자유롭게 작성하세요 (편안한 시설과 위치, 특징 등). 링크 버튼은 여기가 아니라 아래 '상세 페이지 내용'의 🧩 HTML 소스에서 넣으세요."
+            style="width:100%;padding:10px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;box-sizing:border-box;resize:vertical;font-family:'Nunito',sans-serif;line-height:1.6;"></textarea>
         </div>
       </div>
 
@@ -1140,12 +1140,9 @@ body { background:#f4faf7; padding-bottom:40px; }
         </div>
       </div>
 
-      <!-- 로컬 전용 숙소 이름·설명 -->
-      <div style="background:#f0f7f4;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #c8edd9;">
-        <div style="font-size:13px;font-weight:800;color:#085041;margin-bottom:10px;">🏡 로컬 전용 숙소 이름 · 설명</div>
-        <input id="ce-local-name" type="text" placeholder="숙소 이름 (예: 로컬 마을 전용 숙소)" style="width:100%;padding:9px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;outline:none;font-family:'Nunito',sans-serif;box-sizing:border-box;margin-bottom:8px;">
-        <textarea id="ce-local-desc" rows="2" placeholder="숙소 설명 (예: 1인1실 / 조식,중식,석식 / 세탁 / 인터넷 와이파이 / 로컬 체험)" style="width:100%;padding:9px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;outline:none;font-family:'Nunito',sans-serif;box-sizing:border-box;resize:vertical;"></textarea>
-      </div>
+      <!-- 로컬 전용 숙소 이름·설명: 사업 종료로 화면에서 제거함. 저장/불러오기 코드가 참조하므로 숨김 필드로만 유지 -->
+      <input id="ce-local-name" type="text" style="display:none;">
+      <textarea id="ce-local-desc" style="display:none;"></textarea>
 
       <!-- 전지훈련 이름·설명 -->
       <div style="background:#f0f7f4;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #c8edd9;">

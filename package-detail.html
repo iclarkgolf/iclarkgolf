@@ -215,15 +215,6 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
   </div>
 </div>
 
-<!-- ⑥ 로컬 전용 숙소 -->
-<div class="section" id="localSection" style="display:none;">
-  <div class="section-header" data-i18n="sec.local">🏡 로컬 전용 숙소</div>
-  <div class="section-body">
-    <div class="photo-grid" id="localGrid"></div>
-    <div style="font-size:15px;font-weight:700;color:#18181b;margin-bottom:4px;" id="localName"></div>
-    <div style="font-size:12px;color:#6b7280;line-height:1.7;" id="localDesc"></div>
-  </div>
-</div>
 
 <!-- ⑦ 전지훈련 -->
 <div class="section" id="trainingSection" style="display:none;">
@@ -307,7 +298,7 @@ const TRANS = {
   kr: {
     'nav.back':'← 홈으로','stat.price':'시작 가격','stat.mindays':'최소 기간','stat.pax':'인원',
     'sec.schedule':'📅 샘플 일정','sec.incl':'✅ 포함 · 불포함','incl.yes':'✅ 포함','incl.no':'❌ 불포함',
-    'sec.accom':'🏠 숙소 안내','sec.local':'🏡 로컬 전용 숙소','sec.training':'⛳ 전지훈련',
+    'sec.accom':'🏠 숙소 안내','sec.training':'⛳ 전지훈련',
     'sec.price':'💰 기간별 가격','sec.detail':'📝 상세 안내','btn.kakao':'💬 카카오 문의','btn.quote':'📋 맞춤 견적',
     'mi.title':'⛳ 30초 간편 문의','mi.sub':'버튼 3번이면 끝 — 타이핑 없이 문의하세요',
     'mi.q1':'기간이 어떻게 되세요?','mi.d1':'3일','mi.d2':'4일','mi.d3':'5일','mi.d4':'7일','mi.d5':'14일',
@@ -408,11 +399,6 @@ window.render = function render(D) {
   document.getElementById('accomName').textContent = D.accomName || '';
   document.getElementById('accomDesc').innerHTML   = (D.accomDesc||'').replace(/\n/g,'<br>');
 
-  // 로컬 전용 숙소 사진
-  renderPhotoGrid('localGrid', D.localImgs || []);
-  document.getElementById('localName').textContent = D.localName || '';
-  document.getElementById('localDesc').innerHTML   = (D.localDesc||'').replace(/\n/g,'<br>');
-
   // 전지훈련 사진
   renderPhotoGrid('trainingGrid', D.trainingImgs || []);
   document.getElementById('trainingName').textContent = D.trainingName || '';
@@ -443,12 +429,11 @@ window.render = function render(D) {
   document.getElementById('heroSection').style.display = 'flex';
   document.getElementById('statsBar').style.display = 'grid';
   document.getElementById('bottomCta').style.display = 'flex';
-  ['scheduleSection','inclSection','accomSection','localSection','trainingSection','priceSection'].forEach(id => {
+  ['scheduleSection','inclSection','accomSection','trainingSection','priceSection'].forEach(id => {
     document.getElementById(id).style.display = 'block';
   });
   // 사진 없는 섹션은 숨기기
   if (!D.accomImgs || D.accomImgs.length === 0) document.getElementById('accomSection').style.display = D.accomName ? 'block' : 'none';
-  if (!D.localImgs || D.localImgs.length === 0) document.getElementById('localSection').style.display = D.localName ? 'block' : 'none';
   if (!D.trainingImgs || D.trainingImgs.length === 0) document.getElementById('trainingSection').style.display = (D.trainingName || D.trainingDesc || D.trainingSchedule) ? 'block' : 'none';
 
   applyTranslations();
