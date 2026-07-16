@@ -894,17 +894,17 @@ footer {
     <button class="lang-btn" onclick="setLang('en')">🇺🇸 English</button>
   </div>
   <div class="drawer-menu">
-    <a href="https://iclarkgolf.com" class="drawer-item"><span class="drawer-item-icon">🏠</span>홈</a>
+    <a href="https://iclarkgolf.com" class="drawer-item"><span class="drawer-item-icon">🏠</span><span data-i18n="drawer.home">홈</span></a>
     <div class="drawer-divider"></div>
-    <a href="#packages" class="drawer-item" onclick="toggleDrawer()"><span class="drawer-item-icon">⛳</span>골프 패키지</a>
-    <a href="quote.html" class="drawer-item"><span class="drawer-item-icon">🛒</span>맞춤 견적</a>
-    <a href="greenfee.html" class="drawer-item"><span class="drawer-item-icon">🏌️</span>골프장 요금표</a>
-    <a href="caddy.html" class="drawer-item"><span class="drawer-item-icon">🤝</span>캐디 매칭</a>
-    <a href="blog.html" class="drawer-item"><span class="drawer-item-icon">📝</span>여행 블로그</a>
-    <a href="gallery.html" class="drawer-item"><span class="drawer-item-icon">📸</span>갤러리</a>
-    <a href="payment.html" class="drawer-item"><span class="drawer-item-icon">💳</span>입금 안내</a>
+    <a href="#packages" class="drawer-item" onclick="toggleDrawer()"><span class="drawer-item-icon">⛳</span><span data-i18n="quick.packages">골프 패키지</span></a>
+    <a href="quote.html" class="drawer-item"><span class="drawer-item-icon">🛒</span><span data-i18n="quick.quote">맞춤 견적</span></a>
+    <a href="greenfee.html" class="drawer-item"><span class="drawer-item-icon">🏌️</span><span data-i18n="drawer.greenfee">골프장 요금표</span></a>
+    <a href="caddy.html" class="drawer-item"><span class="drawer-item-icon">🤝</span><span data-i18n="quick.caddy">캐디 매칭</span></a>
+    <a href="blog.html" class="drawer-item"><span class="drawer-item-icon">📝</span><span data-i18n="drawer.blog">여행 블로그</span></a>
+    <a href="gallery.html" class="drawer-item"><span class="drawer-item-icon">📸</span><span data-i18n="quick.gallery">갤러리</span></a>
+    <a href="payment.html" class="drawer-item"><span class="drawer-item-icon">💳</span><span data-i18n="drawer.payment">입금 안내</span></a>
     <div class="drawer-divider"></div>
-    <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="drawer-item"><span class="drawer-item-icon">💬</span>카카오 문의</a>
+    <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="drawer-item"><span class="drawer-item-icon">💬</span><span data-i18n="drawer.kakao">카카오 문의</span></a>
   </div>
   <a href="index.html#admin" onclick="goAdmin(event);toggleDrawer();" class="drawer-admin">⚙ 관리자</a>
 </div>
@@ -1692,6 +1692,11 @@ const TRANSLATIONS = {
     'quick.blog.sub': '여행 정보',
     'quick.shop': '쇼핑',
     'quick.shop.sub': '준비중',
+    'drawer.home': '홈',
+    'drawer.greenfee': '골프장 요금표',
+    'drawer.blog': '여행 블로그',
+    'drawer.payment': '입금 안내',
+    'drawer.kakao': '카카오 문의',
     'banner.main.badge': '✨ 지금 인기',
     'banner.main.title1': '나만의 골프 여행',
     'banner.main.title2': '직접 설계하기',
@@ -1802,6 +1807,11 @@ const TRANSLATIONS = {
     'quick.blog.sub': 'Travel tips',
     'quick.shop': 'Shopping',
     'quick.shop.sub': 'Coming soon',
+    'drawer.home': 'Home',
+    'drawer.greenfee': 'Green Fee Rates',
+    'drawer.blog': 'Travel Blog',
+    'drawer.payment': 'Payment Info',
+    'drawer.kakao': 'KakaoTalk',
     'banner.main.badge': '✨ Popular Now',
     'banner.main.title1': 'Your Custom Golf Trip',
     'banner.main.title2': 'Design It Yourself',
