@@ -699,7 +699,7 @@ footer {
 @media (min-width: 640px) {
   body { padding-bottom: 0; }
   .fixed-kakao { display: none; }
-  .quick-grid { grid-template-columns: repeat(7, 1fr); }
+  .quick-grid { grid-template-columns: repeat(8, 1fr); }
   .golf-grid { grid-template-columns: repeat(4, 1fr); }
   .coming-grid { grid-template-columns: repeat(3, 1fr); }
   .hero h1 { font-size: 36px; }
@@ -901,6 +901,7 @@ footer {
     <a href="greenfee.html" class="drawer-item"><span class="drawer-item-icon">🏌️</span>골프장 요금표</a>
     <a href="caddy.html" class="drawer-item"><span class="drawer-item-icon">🤝</span>캐디 매칭</a>
     <a href="blog.html" class="drawer-item"><span class="drawer-item-icon">📝</span>여행 블로그</a>
+    <a href="gallery.html" class="drawer-item"><span class="drawer-item-icon">📸</span>갤러리</a>
     <a href="payment.html" class="drawer-item"><span class="drawer-item-icon">💳</span>입금 안내</a>
     <div class="drawer-divider"></div>
     <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="drawer-item"><span class="drawer-item-icon">💬</span>카카오 문의</a>
@@ -963,6 +964,11 @@ footer {
       <div class="quick-icon" style="background:#e8f4ff">📋</div>
       <div class="quick-label">내 견적서</div>
       <div class="quick-sub">견적 확인</div>
+    </a>
+    <a href="gallery.html" class="quick-item">
+      <div class="quick-icon" style="background:#E1F5EE">📸</div>
+      <div class="quick-label" data-i18n="quick.gallery">갤러리</div>
+      <div class="quick-sub" data-i18n="quick.gallery.sub">사진·후기</div>
     </a>
   </div>
 </div>
@@ -1678,6 +1684,8 @@ const TRANSLATIONS = {
     'quick.quote.sub': '직접 구성',
     'quick.golf': '골프장',
     'quick.golf.sub': '코스 정보',
+    'quick.gallery': '갤러리',
+    'quick.gallery.sub': '사진·후기',
     'quick.caddy': '캐디 매칭',
     'quick.caddy.sub': '실시간',
     'quick.blog': '블로그',
@@ -1786,6 +1794,8 @@ const TRANSLATIONS = {
     'quick.quote.sub': 'Build your own',
     'quick.golf': 'Golf Courses',
     'quick.golf.sub': 'Course info',
+    'quick.gallery': 'Gallery',
+    'quick.gallery.sub': 'Photos & stories',
     'quick.caddy': 'Caddy Match',
     'quick.caddy.sub': 'Real-time',
     'quick.blog': 'Blog',
