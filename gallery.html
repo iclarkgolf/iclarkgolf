@@ -35,6 +35,8 @@ a{text-decoration:none;color:inherit;}
   background:linear-gradient(135deg,var(--green),var(--purple));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .nav-back{font-size:13px;font-weight:700;color:var(--gray-600);}
+.lang-btn{font-size:11px;padding:4px 9px;border:1px solid var(--gray-200);border-radius:6px;background:#fff;cursor:pointer;font-weight:700;font-family:'Nunito',sans-serif;}
+.lang-btn.on{background:var(--green);color:#fff;border-color:var(--green);}
 .page-header{background:linear-gradient(135deg,#1D9E75,#534AB7);padding:28px 20px 24px;text-align:center;}
 .page-header h1{font-size:24px;font-weight:800;color:#fff;margin-bottom:6px;}
 .page-header p{font-size:13px;color:rgba(255,255,255,.85);font-weight:600;}
@@ -122,64 +124,70 @@ a{text-decoration:none;color:inherit;}
 
 <nav class="nav">
   <a href="index.html" class="logo"><span style="color:#ff4444!important;font-family:'Nunito',sans-serif;font-weight:800;font-size:22px;letter-spacing:0;vertical-align:middle;-webkit-text-fill-color:#ff4444!important;background:none;">i</span>CLARKGOLF</a>
-  <a href="index.html" class="nav-back">← 홈으로</a>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div style="display:flex;gap:4px;">
+      <button class="lang-btn" onclick="setLang('kr')">KOR</button>
+      <button class="lang-btn" onclick="setLang('en')">ENG</button>
+    </div>
+    <a href="index.html" class="nav-back" data-i18n="nav.back">← 홈으로</a>
+  </div>
 </nav>
 
 <div class="page-header">
-  <h1>📸 클락 골프 갤러리</h1>
-  <p>라운드 사진, 코스 풍경, 추억을 함께 나눠요</p>
+  <h1 data-i18n="page.title">📸 클락 골프 갤러리</h1>
+  <p data-i18n="page.sub">라운드 사진, 코스 풍경, 추억을 함께 나눠요</p>
 </div>
 
 <div class="upload-bar">
-  <button class="upload-btn" onclick="openUpload()">📸 사진 올리기 · 커뮤니티 참여하기</button>
+  <button class="upload-btn" onclick="openUpload()" data-i18n="upload.bar">📸 사진 올리기 · 커뮤니티 참여하기</button>
 </div>
 
 <div class="gallery-header">
-  <div class="gallery-count-label">최신 사진 <span id="gallery-count"></span></div>
+  <div class="gallery-count-label"><span data-i18n="gallery.count.label">최신 사진</span> <span id="gallery-count"></span></div>
 </div>
 
 <div class="g-scroll" id="g-scroll">
-  <div class="g-loading">불러오는 중...</div>
+  <div class="g-loading" data-i18n="g.loading">불러오는 중...</div>
 </div>
 
-<div class="more-btn" id="more-btn" onclick="showAll()">📸 전체 사진 모두 보기 →</div>
+<div class="more-btn" id="more-btn" onclick="showAll()">📸 <span data-i18n="more.btn">전체 사진 모두 보기</span> →</div>
 
 <!-- 업로드 모달 -->
 <div class="overlay" id="upload-overlay" onclick="overlayClose(event)">
   <div class="upload-sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title">📸 사진 올리기</div>
-    <div style="background:#E1F5EE;border-radius:10px;padding:10px 14px;font-size:12px;color:#085041;margin-bottom:14px;line-height:1.7;">
+    <div class="sheet-title" data-i18n="up.title">📸 사진 올리기</div>
+    <div style="background:#E1F5EE;border-radius:10px;padding:10px 14px;font-size:12px;color:#085041;margin-bottom:14px;line-height:1.7;" data-i18n="up.notice">
       ✅ 누구나 자유롭게 사진을 올릴 수 있어요!<br>⚠️ 부적절한 사진은 관리자에 의해 삭제될 수 있습니다.
     </div>
     <div class="form-group">
-      <label class="form-label">제목 *</label>
-      <input id="f-title" class="form-input" placeholder="예: 프라데라 베르데 라운드">
+      <label class="form-label" data-i18n="up.titlelabel">제목 *</label>
+      <input id="f-title" class="form-input" placeholder="예: 프라데라 베르데 라운드" data-i18n-ph="up.titleph">
     </div>
     <div class="form-group">
-      <label class="form-label">사진 선택 *</label>
+      <label class="form-label" data-i18n="up.photolabel">사진 선택 *</label>
       <input type="file" id="f-file" accept="image/*" onchange="previewFile(this)" style="display:none">
       <div onclick="document.getElementById('f-file').click()"
         style="border:2px dashed var(--green-border);border-radius:12px;padding:20px;text-align:center;cursor:pointer;background:var(--green-pale);margin-bottom:8px;">
         <div id="img-preview-wrap" style="display:none;"><img id="img-preview" style="max-height:160px;border-radius:8px;object-fit:cover;"></div>
         <div id="img-placeholder"><div style="font-size:32px;margin-bottom:6px;">📷</div>
-          <div style="font-size:13px;font-weight:700;color:var(--green);">사진을 탭해서 선택하세요</div>
-          <div style="font-size:11px;color:var(--gray-400);margin-top:3px;">JPG, PNG (최대 5MB)</div></div>
+          <div style="font-size:13px;font-weight:700;color:var(--green);" data-i18n="up.tap">사진을 탭해서 선택하세요</div>
+          <div style="font-size:11px;color:var(--gray-400);margin-top:3px;" data-i18n="up.limit">JPG, PNG (최대 5MB)</div></div>
       </div>
-      <input id="f-imgurl" class="form-input" type="url" placeholder="또는 URL 직접 입력 (https://...)" oninput="clearFileSelect()">
-      <div class="form-hint" id="upload-status">💡 사진을 선택하면 자동으로 업로드됩니다</div>
+      <input id="f-imgurl" class="form-input" type="url" placeholder="또는 URL 직접 입력 (https://...)" data-i18n-ph="up.urlph" oninput="clearFileSelect()">
+      <div class="form-hint" id="upload-status" data-i18n="up.hint">💡 사진을 선택하면 자동으로 업로드됩니다</div>
     </div>
     <div class="form-group">
-      <label class="form-label">닉네임 *</label>
-      <input id="f-nick" class="form-input" placeholder="예: 클락골퍼">
+      <label class="form-label" data-i18n="up.nicklabel">닉네임 *</label>
+      <input id="f-nick" class="form-input" placeholder="예: 클락골퍼" data-i18n-ph="up.nickph">
     </div>
     <div class="form-group">
-      <label class="form-label">이야기 들려주세요 (선택)</label>
-      <textarea id="f-desc" class="form-input" rows="6" placeholder="이 사진에 얽힌 이야기를 자유롭게 남겨보세요. 라운드 후기, 코스 팁, 그날의 날씨나 캐디 이야기까지 뭐든 좋아요."></textarea>
+      <label class="form-label" data-i18n="up.storylabel">이야기 들려주세요 (선택)</label>
+      <textarea id="f-desc" class="form-input" rows="6" placeholder="이 사진에 얽힌 이야기를 자유롭게 남겨보세요. 라운드 후기, 코스 팁, 그날의 날씨나 캐디 이야기까지 뭐든 좋아요." data-i18n-ph="up.storyph"></textarea>
     </div>
     <div class="sheet-btns">
-      <button class="btn-cancel" onclick="closeUpload()">취소</button>
-      <button id="submit-btn" class="btn-submit" onclick="submitPost()">📸 사진 올리기</button>
+      <button class="btn-cancel" onclick="closeUpload()" data-i18n="up.cancel">취소</button>
+      <button id="submit-btn" class="btn-submit" onclick="submitPost()" data-i18n="up.submit">📸 사진 올리기</button>
     </div>
   </div>
 </div>
@@ -194,16 +202,16 @@ a{text-decoration:none;color:inherit;}
       <div class="modal-desc" id="modal-desc"></div>
       <button class="modal-translate" id="modal-translate-btn" onclick="toggleTranslate()" style="display:none;">🌐 번역 보기</button>
       <div class="modal-actions">
-        <button class="modal-like" onclick="likePost(window._modalId)">❤️ 좋아요 <span id="modal-likes">0</span></button>
-        <button class="modal-close-btn" onclick="closeModal()">닫기</button>
+        <button class="modal-like" onclick="likePost(window._modalId)">❤️ <span data-i18n="modal.like">좋아요</span> <span id="modal-likes">0</span></button>
+        <button class="modal-close-btn" onclick="closeModal()" data-i18n="modal.close">닫기</button>
       </div>
     </div>
   </div>
 </div>
 
 <div class="fixed-bottom">
-  <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="fixed-btn" style="background:#FEE500;color:#1a1a1a;">💬 카카오 문의</a>
-  <a href="index.html" class="fixed-btn" style="background:linear-gradient(135deg,var(--green),var(--purple));color:#fff;">🏠 홈으로</a>
+  <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="fixed-btn" style="background:#FEE500;color:#1a1a1a;" data-i18n="fixed.kakao">💬 카카오 문의</a>
+  <a href="index.html" class="fixed-btn" style="background:linear-gradient(135deg,var(--green),var(--purple));color:#fff;" data-i18n="fixed.home">🏠 홈으로</a>
 </div>
 
 <!-- Firebase -->
@@ -246,15 +254,15 @@ window.loadPosts = async function() {
   const scrl = document.getElementById('g-scroll');
   const moreBtn = document.getElementById('more-btn');
   const countEl = document.getElementById('gallery-count');
-  scrl.innerHTML = '<div class="g-loading">불러오는 중...</div>';
+  scrl.innerHTML = '<div class="g-loading">'+t('g.loading')+'</div>';
   try {
     let snap;
     try { snap = await getDocs(query(col, orderBy('createdAt','desc'))); }
     catch(e) { snap = await getDocs(col); }
 
     if (snap.empty) {
-      scrl.innerHTML = '<div class="g-empty">아직 게시물이 없어요. 첫 번째 사진을 올려보세요! 📸</div>';
-      if(countEl) countEl.textContent='0개';
+      scrl.innerHTML = '<div class="g-empty">'+t('g.empty')+'</div>';
+      if(countEl) countEl.textContent = (currentLang==='en') ? '0' : '0개';
       if(moreBtn) moreBtn.style.display='none';
       return;
     }
@@ -263,7 +271,7 @@ window.loadPosts = async function() {
     snap.forEach(d => all.push({id:d.id,...d.data()}));
     all.sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
 
-    if(countEl) countEl.textContent = all.length+'개';
+    if(countEl) countEl.textContent = (currentLang==='en') ? all.length : all.length+'개';
 
     const limit = window.innerWidth < 640 ? 4 : 10;
     const list = window._showAll ? all : all.slice(0, limit);
@@ -271,7 +279,7 @@ window.loadPosts = async function() {
     if(moreBtn) {
       if(!window._showAll && all.length > limit) {
         moreBtn.style.display = 'flex';
-        moreBtn.textContent = '📸 전체 '+all.length+'장 모두 보기 →';
+        moreBtn.textContent = t('more.btn.n').replace('{n}', all.length);
       } else {
         moreBtn.style.display = 'none';
       }
@@ -285,7 +293,7 @@ window.loadPosts = async function() {
     scrl.appendChild(grid);
 
   } catch(e) {
-    scrl.innerHTML = '<div class="g-empty">불러오기 실패. <button onclick="loadPosts()" style="padding:8px 16px;border-radius:100px;border:1.5px solid #c8edd9;background:#E1F5EE;color:#085041;font-weight:700;cursor:pointer;margin-top:8px;">다시 시도</button></div>';
+    scrl.innerHTML = '<div class="g-empty">'+t('g.loaderr')+' <button onclick="loadPosts()" style="padding:8px 16px;border-radius:100px;border:1.5px solid #c8edd9;background:#E1F5EE;color:#085041;font-weight:700;cursor:pointer;margin-top:8px;">'+t('g.retry')+'</button></div>';
   }
 };
 
@@ -296,21 +304,21 @@ window.submitPost = async function() {
   let imgUrl=document.getElementById('f-imgurl').value.trim();
   const fileInput=document.getElementById('f-file');
   const btn=document.getElementById('submit-btn');
-  if(!title||!nick){alert('제목과 닉네임은 필수입니다.');return;}
+  if(!title||!nick){alert(t('alert.required'));return;}
   btn.disabled=true;
   if(fileInput.files&&fileInput.files[0]){
-    btn.textContent='업로드 중...';
-    document.getElementById('upload-status').textContent='⏳ 업로드 중...';
+    btn.textContent=t('btn.uploading');
+    document.getElementById('upload-status').textContent=t('status.uploading');
     try{
       const fd=new FormData();fd.append('image',fileInput.files[0]);
       const res=await fetch('https://api.imgbb.com/1/upload?key=b59ca0d334f2bbbc8e26c620c0936cf5',{method:'POST',body:fd});
       const data=await res.json();
-      if(data.success){imgUrl=data.data.url;document.getElementById('upload-status').textContent='✅ 완료!';}
-      else{alert('업로드 실패');btn.textContent='📸 사진 올리기';btn.disabled=false;return;}
-    }catch(e){alert('업로드 오류');btn.textContent='📸 사진 올리기';btn.disabled=false;return;}
+      if(data.success){imgUrl=data.data.url;document.getElementById('upload-status').textContent=t('status.done');}
+      else{alert(t('alert.uploadfail'));btn.textContent=t('up.submit');btn.disabled=false;return;}
+    }catch(e){alert(t('alert.uploaderr'));btn.textContent=t('up.submit');btn.disabled=false;return;}
   }
-  if(!imgUrl||!imgUrl.startsWith('http')){alert('사진을 선택하거나 URL을 입력해주세요.');btn.textContent='📸 사진 올리기';btn.disabled=false;return;}
-  btn.textContent='저장 중...';
+  if(!imgUrl||!imgUrl.startsWith('http')){alert(t('alert.needphoto'));btn.textContent=t('up.submit');btn.disabled=false;return;}
+  btn.textContent=t('btn.saving');
   try{
     await addDoc(col,{title,imgUrl,nickname:nick,desc,likes:0,createdAt:new Date().toISOString()});
     closeUpload();
@@ -318,10 +326,10 @@ window.submitPost = async function() {
     document.getElementById('f-file').value='';
     document.getElementById('img-preview-wrap').style.display='none';
     document.getElementById('img-placeholder').style.display='block';
-    document.getElementById('upload-status').textContent='💡 사진을 선택하면 자동으로 업로드됩니다';
+    document.getElementById('upload-status').textContent=t('status.default');
     await loadPosts();
-  }catch(e){alert('저장 실패: '+e.message);}
-  btn.textContent='📸 사진 올리기';btn.disabled=false;
+  }catch(e){alert(t('alert.savefail')+e.message);}
+  btn.textContent=t('up.submit');btn.disabled=false;
 };
 
 window.likePost = async function(id) {
@@ -338,24 +346,156 @@ document.addEventListener('DOMContentLoaded',()=>{window._showAll=false;loadPost
 
 <script>
 function esc(s){return String(s||'').replace(/'/g,"&#39;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+// ── 한/영 전환 ──
+const TRANSLATIONS = {
+  kr: {
+    'nav.back': '← 홈으로',
+    'page.title': '📸 클락 골프 갤러리',
+    'page.sub': '라운드 사진, 코스 풍경, 추억을 함께 나눠요',
+    'upload.bar': '📸 사진 올리기 · 커뮤니티 참여하기',
+    'gallery.count.label': '최신 사진',
+    'g.loading': '불러오는 중...',
+    'g.empty': '아직 게시물이 없어요. 첫 번째 사진을 올려보세요! 📸',
+    'g.loaderr': '불러오기 실패.',
+    'g.retry': '다시 시도',
+    'more.btn': '전체 사진 모두 보기',
+    'more.btn.n': '📸 전체 {n}장 모두 보기 →',
+    'up.title': '📸 사진 올리기',
+    'up.notice': '✅ 누구나 자유롭게 사진을 올릴 수 있어요!<br>⚠️ 부적절한 사진은 관리자에 의해 삭제될 수 있습니다.',
+    'up.titlelabel': '제목 *',
+    'up.titleph': '예: 프라데라 베르데 라운드',
+    'up.photolabel': '사진 선택 *',
+    'up.tap': '사진을 탭해서 선택하세요',
+    'up.limit': 'JPG, PNG (최대 5MB)',
+    'up.urlph': '또는 URL 직접 입력 (https://...)',
+    'up.hint': '💡 사진을 선택하면 자동으로 업로드됩니다',
+    'up.nicklabel': '닉네임 *',
+    'up.nickph': '예: 클락골퍼',
+    'up.storylabel': '이야기 들려주세요 (선택)',
+    'up.storyph': '이 사진에 얽힌 이야기를 자유롭게 남겨보세요. 라운드 후기, 코스 팁, 그날의 날씨나 캐디 이야기까지 뭐든 좋아요.',
+    'up.cancel': '취소',
+    'up.submit': '📸 사진 올리기',
+    'modal.like': '좋아요',
+    'modal.close': '닫기',
+    'fixed.kakao': '💬 카카오 문의',
+    'fixed.home': '🏠 홈으로',
+    'status.selected': '✅ 사진 선택됨 — 올리기 버튼을 누르면 업로드됩니다',
+    'status.default': '💡 사진을 선택하면 자동으로 업로드됩니다',
+    'status.clear': '💡 또는 사진을 탭해서 선택하세요',
+    'status.uploading': '⏳ 업로드 중...',
+    'status.done': '✅ 완료!',
+    'btn.uploading': '업로드 중...',
+    'btn.saving': '저장 중...',
+    'alert.required': '제목과 닉네임은 필수입니다.',
+    'alert.filesize': '5MB 이하로 해주세요.',
+    'alert.uploadfail': '업로드 실패',
+    'alert.uploaderr': '업로드 오류',
+    'alert.needphoto': '사진을 선택하거나 URL을 입력해주세요.',
+    'alert.savefail': '저장 실패: ',
+    'translate.view': '🌐 번역 보기',
+    'translate.original': '🌐 원문 보기',
+    'translate.loading': '번역 중...',
+    'translate.fail': '번역에 실패했어요. 잠시 후 다시 시도해주세요.',
+  },
+  en: {
+    'nav.back': '← Home',
+    'page.title': '📸 Clark Golf Gallery',
+    'page.sub': 'Share your round photos, course views, and memories',
+    'upload.bar': '📸 Upload Photo · Join the Community',
+    'gallery.count.label': 'Latest Photos',
+    'g.loading': 'Loading...',
+    'g.empty': 'No posts yet. Be the first to share a photo! 📸',
+    'g.loaderr': 'Failed to load.',
+    'g.retry': 'Retry',
+    'more.btn': 'View All Photos',
+    'more.btn.n': '📸 View all {n} photos →',
+    'up.title': '📸 Upload Photo',
+    'up.notice': '✅ Anyone can freely upload photos!<br>⚠️ Inappropriate photos may be removed by the admin.',
+    'up.titlelabel': 'Title *',
+    'up.titleph': 'e.g. Pradera Verde Round',
+    'up.photolabel': 'Photo *',
+    'up.tap': 'Tap to select a photo',
+    'up.limit': 'JPG, PNG (up to 5MB)',
+    'up.urlph': 'Or enter a URL directly (https://...)',
+    'up.hint': '💡 Selecting a photo uploads it automatically',
+    'up.nicklabel': 'Nickname *',
+    'up.nickph': 'e.g. ClarkGolfer',
+    'up.storylabel': 'Tell your story (optional)',
+    'up.storyph': 'Share the story behind this photo — a round recap, course tips, the day\'s weather, or a caddie story. Anything goes.',
+    'up.cancel': 'Cancel',
+    'up.submit': '📸 Upload Photo',
+    'modal.like': 'Like',
+    'modal.close': 'Close',
+    'fixed.kakao': '💬 KakaoTalk',
+    'fixed.home': '🏠 Home',
+    'status.selected': '✅ Photo selected — tap Upload to submit',
+    'status.default': '💡 Selecting a photo uploads it automatically',
+    'status.clear': '💡 Or tap to select a photo',
+    'status.uploading': '⏳ Uploading...',
+    'status.done': '✅ Done!',
+    'btn.uploading': 'Uploading...',
+    'btn.saving': 'Saving...',
+    'alert.required': 'Title and nickname are required.',
+    'alert.filesize': 'Please use a file under 5MB.',
+    'alert.uploadfail': 'Upload failed',
+    'alert.uploaderr': 'Upload error',
+    'alert.needphoto': 'Please select a photo or enter a URL.',
+    'alert.savefail': 'Failed to save: ',
+    'translate.view': '🌐 Translate',
+    'translate.original': '🌐 Show Original',
+    'translate.loading': 'Translating...',
+    'translate.fail': 'Translation failed. Please try again later.',
+  }
+};
+let currentLang = localStorage.getItem('clarkgo_lang') || 'kr';
+function t(key){ return (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || (TRANSLATIONS.kr[key]) || key; }
+function setLang(lang){
+  currentLang = lang;
+  localStorage.setItem('clarkgo_lang', lang);
+  applyTranslations();
+  document.querySelectorAll('.lang-btn').forEach(btn=>{
+    btn.classList.toggle('on', btn.textContent.trim().toLowerCase().startsWith(lang));
+  });
+  if (typeof loadPosts === 'function') loadPosts();
+}
+function applyTranslations(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    const val = t(key);
+    if (val) el.innerHTML = val;
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    const key = el.getAttribute('data-i18n-ph');
+    const val = t(key);
+    if (val) el.placeholder = val;
+  });
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  applyTranslations();
+  document.querySelectorAll('.lang-btn').forEach(btn=>{
+    btn.classList.toggle('on', btn.textContent.trim().toLowerCase().startsWith(currentLang));
+  });
+});
+
 function showAll(){window._showAll=true;loadPosts();}
 function previewFile(input){
   const file=input.files[0];if(!file)return;
-  if(file.size>5*1024*1024){alert('5MB 이하로 해주세요.');input.value='';return;}
+  if(file.size>5*1024*1024){alert(t('alert.filesize'));input.value='';return;}
   const reader=new FileReader();
   reader.onload=e=>{
     document.getElementById('img-preview').src=e.target.result;
     document.getElementById('img-preview-wrap').style.display='block';
     document.getElementById('img-placeholder').style.display='none';
     document.getElementById('f-imgurl').value='';
-    document.getElementById('upload-status').textContent='✅ 사진 선택됨 — 올리기 버튼을 누르면 업로드됩니다';
+    document.getElementById('upload-status').textContent=t('status.selected');
   };reader.readAsDataURL(file);
 }
 function clearFileSelect(){
   document.getElementById('f-file').value='';
   document.getElementById('img-preview-wrap').style.display='none';
   document.getElementById('img-placeholder').style.display='block';
-  document.getElementById('upload-status').textContent='💡 또는 사진을 탭해서 선택하세요';
+  document.getElementById('upload-status').textContent=t('status.clear');
 }
 function openUpload(){document.getElementById('upload-overlay').classList.add('open');document.body.style.overflow='hidden';}
 function closeUpload(){document.getElementById('upload-overlay').classList.remove('open');document.body.style.overflow='';}
@@ -371,7 +511,7 @@ function openModal(id,imgUrl,title,nick,likes,desc){
   document.getElementById('modal-likes').textContent=likes;
   document.getElementById('modal-desc').textContent=desc||'';
   const tbtn=document.getElementById('modal-translate-btn');
-  tbtn.textContent='🌐 번역 보기';
+  tbtn.textContent=t('translate.view');
   tbtn.classList.remove('loading');
   tbtn.style.display=(title||desc)?'inline-flex':'none';
   document.getElementById('modal-overlay').classList.add('open');
@@ -397,7 +537,7 @@ window.toggleTranslate = async function(){
   if(window._modalShowingTranslated){
     titleEl.textContent = orig.title;
     descEl.textContent = orig.desc || '';
-    tbtn.textContent = '🌐 번역 보기';
+    tbtn.textContent = t('translate.view');
     window._modalShowingTranslated = false;
     return;
   }
@@ -406,7 +546,7 @@ window.toggleTranslate = async function(){
   if(window._modalTranslated){
     titleEl.textContent = window._modalTranslated.title;
     descEl.textContent = window._modalTranslated.desc;
-    tbtn.textContent = '🌐 원문 보기';
+    tbtn.textContent = t('translate.original');
     window._modalShowingTranslated = true;
     return;
   }
@@ -415,7 +555,7 @@ window.toggleTranslate = async function(){
   const hasHangul = /[가-힣]/.test((orig.title||'') + (orig.desc||''));
   const langpair = hasHangul ? 'ko|en' : 'en|ko';
 
-  tbtn.textContent = '번역 중...';
+  tbtn.textContent = t('translate.loading');
   tbtn.classList.add('loading');
   try{
     const [tTitle, tDesc] = await Promise.all([
@@ -425,11 +565,11 @@ window.toggleTranslate = async function(){
     window._modalTranslated = {title: tTitle, desc: tDesc};
     titleEl.textContent = tTitle;
     descEl.textContent = tDesc;
-    tbtn.textContent = '🌐 원문 보기';
+    tbtn.textContent = t('translate.original');
     window._modalShowingTranslated = true;
   }catch(e){
-    alert('번역에 실패했어요. 잠시 후 다시 시도해주세요.');
-    tbtn.textContent = '🌐 번역 보기';
+    alert(t('translate.fail'));
+    tbtn.textContent = t('translate.view');
   }
   tbtn.classList.remove('loading');
 };
