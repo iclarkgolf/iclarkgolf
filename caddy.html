@@ -13,7 +13,7 @@
 <meta charset="UTF-8">
 <meta name="google" content="notranslate">
 <meta http-equiv="Content-Language" content="en">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Caddy Match — iCLARKGOLF</title>
 <meta name="description" content="필리핀 클락 골프 전문 캐디 매칭 서비스. 한국어 소통 가능한 현지 캐디를 실시간으로 연결해드립니다.">
 <meta name="robots" content="index, follow">
@@ -44,13 +44,14 @@
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior:smooth; }
+html,body{overflow-x:hidden;max-width:100%;}
 body { font-family:'Noto Sans KR',sans-serif; background:#f4faf7; color:var(--dark); min-height:100vh; }
 
 /* ── NAV ── */
 nav {
   position:fixed; top:0; left:0; right:0; z-index:200;
   display:flex; justify-content:space-between; align-items:center;
-  padding:14px 40px;
+  padding:calc(14px + env(safe-area-inset-top)) 40px 14px;
   background:linear-gradient(135deg,#26215C,#534AB7);
   backdrop-filter:blur(12px);
 }
@@ -78,7 +79,7 @@ nav {
 
 /* ── HERO ── */
 .hero {
-  padding-top:72px;
+  padding-top:calc(72px + env(safe-area-inset-top));
   background: linear-gradient(135deg, #26215C 0%, #1D9E75 60%, #0F6E56 100%);
   padding-bottom:20px;
   text-align:center;
@@ -433,7 +434,7 @@ nav {
 
 /* ── RESPONSIVE ── */
 @media(max-width:600px) {
-  nav { padding:14px 20px; }
+  nav { padding:calc(14px + env(safe-area-inset-top)) 20px 14px; }
   .stats { flex-wrap:wrap; }
   .stat-item { border-right:none; padding:10px 20px; }
   .section { padding:40px 16px; }

@@ -11,7 +11,7 @@
 </script>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>갤러리 · iCLARKGOLF</title>
 <meta name="description" content="필리핀 클락 골프 여행 사진 커뮤니티 — 방문자들의 라운드 사진, 코스 풍경, 캐디 사진을 공유하세요">
 <meta name="robots" content="index, follow">
@@ -20,7 +20,8 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{font-family:'Nunito',sans-serif;background:#f4faf7;color:#1a1a2e;min-height:100vh;padding-bottom:80px;}
+html,body{overflow-x:hidden;max-width:100%;}
+body{font-family:'Nunito',sans-serif;background:#f4faf7;color:#1a1a2e;min-height:100vh;padding-bottom:calc(80px + env(safe-area-inset-bottom));}
 a{text-decoration:none;color:inherit;}
 :root{
   --green:#1D9E75;--green2:#9FE1CB;--green-pale:#E1F5EE;--green-border:#c8edd9;
@@ -105,7 +106,7 @@ a{text-decoration:none;color:inherit;}
   border-radius:var(--radius-full);font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--gray-600);cursor:pointer;}
 
 .fixed-bottom{position:fixed;bottom:0;left:0;right:0;z-index:400;
-  display:flex;padding:10px 16px 16px;gap:8px;background:#fff;border-top:1px solid var(--green-border);}
+  display:flex;padding:10px 16px calc(16px + env(safe-area-inset-bottom));gap:8px;background:#fff;border-top:1px solid var(--green-border);}
 .fixed-btn{display:flex;align-items:center;justify-content:center;gap:6px;flex:1;
   padding:13px;border-radius:var(--radius-full);font-family:'Nunito',sans-serif;
   font-size:13px;font-weight:800;text-decoration:none;min-height:48px;border:none;cursor:pointer;}
