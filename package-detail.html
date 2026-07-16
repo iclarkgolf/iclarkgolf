@@ -10,15 +10,16 @@
   gtag('config', 'G-8S6Z4PD9VZ');
 </script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>iClark Golf — 패키지 상세</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Noto Sans KR',sans-serif;background:#f4f4f0;color:#18181b;padding-bottom:100px;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+html,body{overflow-x:hidden;max-width:100%;}
+body{font-family:'Noto Sans KR',sans-serif;background:#f4f4f0;color:#18181b;padding-bottom:calc(100px + env(safe-area-inset-bottom));}
 
 /* 네비 */
-nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);border-bottom:1px solid #e5e7eb;}
+nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:calc(14px + env(safe-area-inset-top)) 18px 14px;background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);border-bottom:1px solid #e5e7eb;}
 .nav-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#18181b;text-decoration:none;}
 .nav-logo .i{color:#e03131;}
 .nav-logo .clark{color:#1b4332;}
@@ -34,7 +35,7 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 .hero-line{position:absolute;left:0;top:0;bottom:0;width:4px;background:rgba(255,255,255,0.35);}
 .hero-content{position:relative;z-index:2;}
 .hero-tag{font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:.08em;margin-bottom:8px;}
-.hero-title{font-family:'Bebas Neue',sans-serif;font-size:46px;color:#fff;line-height:.9;letter-spacing:.02em;text-shadow:0 2px 16px rgba(0,0,0,0.3);}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,8vw,46px);color:#fff;line-height:1.0;letter-spacing:.02em;text-shadow:0 2px 16px rgba(0,0,0,0.3);word-break:keep-all;}
 .hero-subs{display:flex;align-items:center;gap:8px;margin-top:8px;}
 .hero-sub1{font-size:18px;font-weight:700;color:#fff;}
 .hero-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.6);}
@@ -63,6 +64,7 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 
 /* 포함/불포함 */
 .inc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:350px){.inc-grid{grid-template-columns:1fr;}}
 .inc-col-title{font-size:12px;font-weight:700;margin-bottom:8px;}
 .inc-col-title.yes{color:#1b4332;}
 .inc-col-title.no{color:#dc2626;}
@@ -96,9 +98,9 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 .free-content p{margin-bottom:8px;}
 
 /* 하단 CTA */
-.bottom-cta{position:fixed;bottom:0;left:0;right:0;background:#fff;padding:12px 16px;border-top:1px solid #e5e7eb;display:flex;gap:10px;z-index:100;}
-.btn-kakao{flex:1;padding:13px;background:#FEE500;color:#1b1b1b;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;}
-.btn-quote{flex:1;padding:13px;background:linear-gradient(135deg,#1b4332,#534AB7);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;}
+.bottom-cta{position:fixed;bottom:0;left:0;right:0;background:#fff;padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid #e5e7eb;display:flex;gap:10px;z-index:100;}
+.btn-kakao{flex:1;min-height:48px;padding:13px;background:#FEE500;color:#1b1b1b;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;touch-action:manipulation;}
+.btn-quote{flex:1;min-height:48px;padding:13px;background:linear-gradient(135deg,#1b4332,#534AB7);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;touch-action:manipulation;}
 /* ── 3탭 미니 문의 위젯 ── */
 .mini-inquiry{background:#fff;border-radius:16px;padding:24px 20px;margin:20px 16px;box-shadow:0 2px 16px rgba(0,0,0,0.08);border-top:4px solid #1D9E75;max-width:720px;}
 @media(min-width:768px){.mini-inquiry{margin:24px auto;}}
@@ -110,7 +112,7 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 .mi-chip.on{background:linear-gradient(135deg,#1D9E75,#534AB7);color:#fff;border-color:transparent;}
 .mi-phone{margin-top:18px;}
 .mi-phone label{font-size:13px;color:#888;display:block;margin-bottom:6px;}
-.mi-phone input{width:100%;padding:12px 14px;border:1.5px solid #d8d2c8;border-radius:10px;font-size:15px;font-family:'Noto Sans KR',sans-serif;}
+.mi-phone input{width:100%;padding:12px 14px;border:1.5px solid #d8d2c8;border-radius:10px;font-size:16px;font-family:'Noto Sans KR',sans-serif;}
 .mi-btn{width:100%;margin-top:16px;padding:15px;background:#FEE500;color:#1b1b1b;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Noto Sans KR',sans-serif;opacity:.45;pointer-events:none;transition:opacity .2s;}
 .mi-btn.ready{opacity:1;pointer-events:auto;}
 .mi-toast{display:none;margin-top:12px;background:#eaf3ee;border-left:4px solid #1D9E75;border-radius:8px;padding:12px 14px;font-size:13px;color:#1b4332;line-height:1.6;}
