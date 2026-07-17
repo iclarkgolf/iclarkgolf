@@ -19,7 +19,44 @@
 <meta property="og:title" content="iCLARKGOLF — 필리핀 클락의 모든 것">
 <meta property="og:description" content="골프 · 호텔 · 캐디 · 레슨 · 맞춤 견적 — 클락 여행 포털">
 <meta property="og:url" content="https://iclarkgolf.com">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://iclarkgolf.com/web-h12.jpg">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="iCLARKGOLF — 필리핀 클락의 모든 것">
+<meta name="twitter:description" content="골프 · 호텔 · 캐디 · 레슨 · 맞춤 견적 — 클락 여행 포털">
+<meta name="twitter:image" content="https://iclarkgolf.com/web-h12.jpg">
 <link rel="canonical" href="https://iclarkgolf.com">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TravelAgency",
+  "name": "iCLARKGOLF",
+  "url": "https://iclarkgolf.com",
+  "description": "필리핀 클락 골프 전지훈련 및 나홀로 골프여행 전문 — 골프 패키지, 호텔, 캐디 매칭, 맞춤 견적을 한 곳에서 제공합니다.",
+  "areaServed": {
+    "@type": "Place",
+    "name": "Clark, Pampanga, Philippines"
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Angeles City",
+    "addressRegion": "Pampanga",
+    "addressCountry": "PH"
+  },
+  "sameAs": [
+    "https://pf.kakao.com/_nbHKX/chat"
+  ],
+  "makesOffer": {
+    "@type": "Offer",
+    "itemOffered": {
+      "@type": "Service",
+      "name": "필리핀 클락 골프 전지훈련 패키지",
+      "description": "골프장, 호텔, 캐디, 레슨을 포함한 나홀로 골프여행 패키지"
+    }
+  }
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
@@ -319,13 +356,20 @@ img { max-width: 100%; }
 
 /* ── 공통 섹션 ── */
 .section { padding: 20px 16px 0; }
+.intro-block {
+  max-width: 720px; margin: 0 auto; padding: 24px 20px 4px;
+  font-size: 14px; line-height: 1.8; color: var(--gray-600);
+}
+.intro-block p { margin-bottom: 10px; }
+.intro-block p:last-child { margin-bottom: 0; }
+@media (min-width: 640px) { .intro-block { font-size: 15px; padding: 32px 20px 8px; } }
 .sec-head {
   display: flex; align-items: center;
   justify-content: space-between; margin-bottom: 12px;
 }
 .sec-title {
   font-size: 17px; font-weight: 800; color: var(--gray-900);
-  display: flex; align-items: center; gap: 7px;
+  display: flex; align-items: center; gap: 7px; margin: 0;
 }
 .sec-more {
   font-size: 12px; font-weight: 700; color: var(--pink);
@@ -909,6 +953,7 @@ footer {
   <a href="index.html#admin" onclick="goAdmin(event);toggleDrawer();" class="drawer-admin">⚙ 관리자</a>
 </div>
 
+<main>
 <!-- 히어로 -->
 <div class="hero">
   <div class="hero-badge" data-i18n="hero.badge">📍 필리핀 팜팡가 · 앙헬레스 · 클락</div>
@@ -1007,10 +1052,16 @@ footer {
   </a>
 </div>
 
+<!-- 소개 (SEO 서론 문단) -->
+<div class="intro-block">
+  <p data-i18n="intro.p1">iCLARKGOLF는 필리핀 클락(팜팡가·앙헬레스)에서 25년째 현지에 머물며 골프를 가르치고 안내해온 전문가가 직접 운영하는 나홀로 골프여행 플랫폼입니다.</p>
+  <p data-i18n="intro.p2">그린피 걱정 없는 골프 패키지부터 검증된 캐디 매칭, 편안한 숙소, 나에게 맞춘 견적까지 — 혼자 떠나는 첫 골프여행도 여기서는 어렵지 않습니다. 프라데라 베르데와 베벌리 컨트리클럽을 중심으로, 골프장·연습장·숙소·경비 네 가지를 꼼꼼히 살펴 안내해 드립니다.</p>
+</div>
+
 <!-- 골프 패키지 -->
 <div class="section" id="packages">
   <div class="sec-head">
-    <div class="sec-title" data-i18n="sec.packages">⛳ 골프 패키지</div>
+    <h2 class="sec-title" data-i18n="sec.packages">⛳ 골프 패키지</h2>
   </div>
   <div class="pkg-wrap">
     <div id="pkg-cards" class="pkg-grid">
@@ -1104,7 +1155,7 @@ try {
 <!-- 추천 숙소 -->
 <div class="section" id="lodging" style="margin-top:28px;">
   <div class="sec-head">
-    <div class="sec-title">🏨 추천 숙소</div>
+    <h2 class="sec-title">🏨 추천 숙소</h2>
   </div>
   <div class="lodging-grid" id="lodging-grid">
     <div style="text-align:center;padding:40px 0;color:#9ca3af;font-size:13px;">⏳ 불러오는 중...</div>
@@ -1199,7 +1250,7 @@ try {
 <!-- 골프장 -->
 <div class="section" id="golf">
   <div class="sec-head">
-    <div class="sec-title" data-i18n="sec.golf">🗺️ 클락 골프장</div>
+    <h2 class="sec-title" data-i18n="sec.golf">🗺️ 클락 골프장</h2>
     <a href="greenfee.html" class="sec-more"><span data-i18n="sec.more">전체보기</span> <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
   </div>
   <div class="golf-grid">
@@ -1250,7 +1301,7 @@ try {
 <!-- 캐디 매칭 -->
 <div class="section">
   <div class="sec-head">
-    <div class="sec-title" data-i18n="sec.caddy">🤝 캐디 매칭</div>
+    <h2 class="sec-title" data-i18n="sec.caddy">🤝 캐디 매칭</h2>
     <a href="caddy.html" class="sec-more"><span data-i18n="sec.more">전체보기</span> <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
   </div>
   <div class="hscroll-wrap caddy-hscroll-wrap">
@@ -1316,7 +1367,7 @@ try {
 <!-- 블로그 -->
 <div class="section">
   <div class="sec-head">
-    <div class="sec-title" data-i18n="sec.blog">📝 여행 정보</div>
+    <h2 class="sec-title" data-i18n="sec.blog">📝 여행 정보</h2>
     <a href="blog.html" class="sec-more"><span data-i18n="sec.more">전체보기</span> <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
   </div>
   <div class="hscroll-wrap blog-hscroll-wrap">
@@ -1330,7 +1381,7 @@ try {
 <!-- 갤러리 미리보기 -->
 <div class="section">
   <div class="sec-head">
-    <div class="sec-title" data-i18n="sec.gallery">📸 갤러리 · 커뮤니티</div>
+    <h2 class="sec-title" data-i18n="sec.gallery">📸 갤러리 · 커뮤니티</h2>
     <a href="gallery.html" class="sec-more"><span data-i18n="sec.more">전체보기</span> <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
   </div>
   <div class="hscroll-wrap">
@@ -1534,6 +1585,8 @@ import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10
 </div>
 
 <!-- 푸터 -->
+</main>
+
 <footer>
   <div class="footer-logo"><span style="color:#ff4444!important;font-family:'Nunito',sans-serif;font-weight:800;font-size:22px;letter-spacing:0;vertical-align:middle;-webkit-text-fill-color:#ff4444!important;background:none;">i</span>CLARKGOLF</div>
   <div class="footer-links">
@@ -1671,6 +1724,8 @@ const TRANSLATIONS = {
     'hero.title1': '클락의 모든 것,',
     'hero.title2': '한 곳에서',
     'hero.sub': '골프 · 호텔 · 캐디 · 레슨 · 맞춤 견적',
+    'intro.p1': 'iCLARKGOLF는 필리핀 클락(팜팡가·앙헬레스)에서 25년째 현지에 머물며 골프를 가르치고 안내해온 전문가가 직접 운영하는 나홀로 골프여행 플랫폼입니다.',
+    'intro.p2': '그린피 걱정 없는 골프 패키지부터 검증된 캐디 매칭, 편안한 숙소, 나에게 맞춘 견적까지 — 혼자 떠나는 첫 골프여행도 여기서는 어렵지 않습니다. 프라데라 베르데와 베벌리 컨트리클럽을 중심으로, 골프장·연습장·숙소·경비 네 가지를 꼼꼼히 살펴 안내해 드립니다.',
     'hero.search': '어떤 여행을 계획하고 계세요?',
     'hero.search.btn': '검색',
     'hero.tag1': '골프 패키지',
@@ -1786,6 +1841,8 @@ const TRANSLATIONS = {
     'hero.title1': 'Everything in Clark,',
     'hero.title2': 'All in One Place',
     'hero.sub': 'Golf · Hotel · Caddy · Lessons · Custom Quote',
+    'intro.p1': 'iCLARKGOLF is a solo-golf-travel platform run directly by a golf professional who has lived and taught in Clark, Pampanga (Angeles City), Philippines for 25 years.',
+    'intro.p2': 'From golf packages with no green fee surprises, to vetted caddy matching, comfortable lodging, and quotes built around you — even a first solo golf trip is easy here. Centered on Pradera Verde and Beverly Country Club, we look closely at four things for you: the course, the practice range, lodging, and cost.',
     'hero.search': 'What kind of trip are you planning?',
     'hero.search.btn': 'Search',
     'hero.tag1': 'Golf Packages',
