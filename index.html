@@ -1054,8 +1054,8 @@ footer {
 
 <!-- 소개 (SEO 서론 문단) -->
 <div class="intro-block">
-  <p data-i18n="intro.p1">iCLARKGOLF는 필리핀 클락(팜팡가·앙헬레스)에서 25년째 현지에 머물며 골프를 가르치고 안내해온 전문가가 직접 운영하는 나홀로 골프여행 플랫폼입니다.</p>
-  <p data-i18n="intro.p2">그린피 걱정 없는 골프 패키지부터 검증된 캐디 매칭, 편안한 숙소, 나에게 맞춘 견적까지 — 혼자 떠나는 첫 골프여행도 여기서는 어렵지 않습니다. 프라데라 베르데와 베벌리 컨트리클럽을 중심으로, 골프장·연습장·숙소·경비 네 가지를 꼼꼼히 살펴 안내해 드립니다.</p>
+  <p data-i18n="intro.p1">iCLARKGOLF는 필리핀 클락(팜팡가·앙헬레스)에서 <b>25년째</b> 현지에 머물며 골프를 가르치고 안내해온 <b>전문가가 직접 운영하는</b> 나홀로 골프여행 플랫폼입니다.</p>
+  <p data-i18n="intro.p2"><b>그린피 걱정 없는 골프 패키지</b>부터 <b>검증된 캐디 매칭</b>, 편안한 숙소, <b>나에게 맞춘 견적</b>까지 — 혼자 떠나는 첫 골프여행도 여기서는 어렵지 않습니다. <b>PRADERA C.C</b>와 <b>BEVERLY C.C</b>를 중심으로, 골프장·연습장·숙소·경비 네 가지를 꼼꼼히 살펴 안내해 드립니다.</p>
 </div>
 
 <!-- 골프 패키지 -->
@@ -1724,8 +1724,8 @@ const TRANSLATIONS = {
     'hero.title1': '클락의 모든 것,',
     'hero.title2': '한 곳에서',
     'hero.sub': '골프 · 호텔 · 캐디 · 레슨 · 맞춤 견적',
-    'intro.p1': 'iCLARKGOLF는 필리핀 클락(팜팡가·앙헬레스)에서 25년째 현지에 머물며 골프를 가르치고 안내해온 전문가가 직접 운영하는 나홀로 골프여행 플랫폼입니다.',
-    'intro.p2': '그린피 걱정 없는 골프 패키지부터 검증된 캐디 매칭, 편안한 숙소, 나에게 맞춘 견적까지 — 혼자 떠나는 첫 골프여행도 여기서는 어렵지 않습니다. 프라데라 베르데와 베벌리 컨트리클럽을 중심으로, 골프장·연습장·숙소·경비 네 가지를 꼼꼼히 살펴 안내해 드립니다.',
+    'intro.p1': 'iCLARKGOLF는 필리핀 클락(팜팡가·앙헬레스)에서 <b>25년째</b> 현지에 머물며 골프를 가르치고 안내해온 <b>전문가가 직접 운영하는</b> 나홀로 골프여행 플랫폼입니다.',
+    'intro.p2': '<b>그린피 걱정 없는 골프 패키지</b>부터 <b>검증된 캐디 매칭</b>, 편안한 숙소, <b>나에게 맞춘 견적</b>까지 — 혼자 떠나는 첫 골프여행도 여기서는 어렵지 않습니다. <b>PRADERA C.C</b>와 <b>BEVERLY C.C</b>를 중심으로, 골프장·연습장·숙소·경비 네 가지를 꼼꼼히 살펴 안내해 드립니다.',
     'hero.search': '어떤 여행을 계획하고 계세요?',
     'hero.search.btn': '검색',
     'hero.tag1': '골프 패키지',
@@ -1841,8 +1841,8 @@ const TRANSLATIONS = {
     'hero.title1': 'Everything in Clark,',
     'hero.title2': 'All in One Place',
     'hero.sub': 'Golf · Hotel · Caddy · Lessons · Custom Quote',
-    'intro.p1': 'iCLARKGOLF is a solo-golf-travel platform run directly by a golf professional who has lived and taught in Clark, Pampanga (Angeles City), Philippines for 25 years.',
-    'intro.p2': 'From golf packages with no green fee surprises, to vetted caddy matching, comfortable lodging, and quotes built around you — even a first solo golf trip is easy here. Centered on Pradera Verde and Beverly Country Club, we look closely at four things for you: the course, the practice range, lodging, and cost.',
+    'intro.p1': 'iCLARKGOLF is a solo-golf-travel platform run directly by <b>a golf professional</b> who has lived and taught in Clark, Pampanga (Angeles City), Philippines for <b>25 years</b>.',
+    'intro.p2': 'From <b>golf packages with no green fee surprises</b>, to <b>vetted caddy matching</b>, comfortable lodging, and <b>quotes built around you</b> — even a first solo golf trip is easy here. Centered on <b>PRADERA C.C</b> and <b>BEVERLY C.C</b>, we look closely at four things for you: the course, the practice range, lodging, and cost.',
     'hero.search': 'What kind of trip are you planning?',
     'hero.search.btn': 'Search',
     'hero.tag1': 'Golf Packages',
@@ -1969,7 +1969,7 @@ function applyTranslations() {
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS['kr'];
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    if (t[key]) el.textContent = t[key];
+    if (t[key]) el.innerHTML = t[key];
   });
   document.querySelectorAll('[data-i18n-ph]').forEach(el => {
     const key = el.getAttribute('data-i18n-ph');
