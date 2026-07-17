@@ -211,7 +211,7 @@ a{text-decoration:none;color:inherit;}
         <div id="img-preview-wrap" style="display:none;"><img id="img-preview" style="max-height:160px;border-radius:8px;object-fit:cover;"></div>
         <div id="img-placeholder"><div style="font-size:32px;margin-bottom:6px;">📷</div>
           <div style="font-size:13px;font-weight:700;color:var(--green);" data-i18n="up.tap">사진을 탭해서 선택하세요</div>
-          <div style="font-size:11px;color:var(--gray-400);margin-top:3px;" data-i18n="up.limit">JPG, PNG (최대 5MB)</div></div>
+          <div style="font-size:11px;color:var(--gray-400);margin-top:3px;" data-i18n="up.limit">JPG, PNG (용량 자동 최적화)</div></div>
       </div>
       <input id="f-imgurl" class="form-input" type="url" placeholder="또는 URL 직접 입력 (https://...)" data-i18n-ph="up.urlph" oninput="clearFileSelect()">
       <div class="form-hint" id="upload-status" data-i18n="up.hint">💡 사진을 선택하면 자동으로 업로드됩니다</div>
@@ -367,7 +367,8 @@ window.submitPost = async function() {
     btn.textContent=t('btn.uploading');
     document.getElementById('upload-status').textContent=t('status.uploading');
     try{
-      const fd=new FormData();fd.append('image',fileInput.files[0]);
+      const uploadFile=window._compressedFile||fileInput.files[0];
+      const fd=new FormData();fd.append('image',uploadFile);
       const res=await fetch('https://api.imgbb.com/1/upload?key=b59ca0d334f2bbbc8e26c620c0936cf5',{method:'POST',body:fd});
       const data=await res.json();
       if(data.success){imgUrl=data.data.url;document.getElementById('upload-status').textContent=t('status.done');}
@@ -381,6 +382,7 @@ window.submitPost = async function() {
     closeUpload();
     ['f-title','f-imgurl','f-nick','f-desc'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('f-file').value='';
+    window._compressedFile=null;
     document.getElementById('img-preview-wrap').style.display='none';
     document.getElementById('img-placeholder').style.display='block';
     document.getElementById('upload-status').textContent=t('status.default');
@@ -550,9 +552,9 @@ const TRANSLATIONS = {
     'up.titleph': '예: 프라데라 베르데 라운드',
     'up.photolabel': '사진 선택 *',
     'up.tap': '사진을 탭해서 선택하세요',
-    'up.limit': 'JPG, PNG (최대 5MB)',
+    'up.limit': 'JPG, PNG (용량 자동 최적화)',
     'up.urlph': '또는 URL 직접 입력 (https://...)',
-    'up.hint': '💡 사진을 선택하면 자동으로 업로드됩니다',
+    'up.hint': '💡 사진을 선택하면 자동으로 최적화 후 업로드됩니다',
     'up.nicklabel': '닉네임 *',
     'up.nickph': '예: 클락골퍼',
     'up.storylabel': '이야기 들려주세요 (선택)',
@@ -564,14 +566,16 @@ const TRANSLATIONS = {
     'fixed.kakao': '💬 카카오 문의',
     'fixed.home': '🏠 홈으로',
     'status.selected': '✅ 사진 선택됨 — 올리기 버튼을 누르면 업로드됩니다',
-    'status.default': '💡 사진을 선택하면 자동으로 업로드됩니다',
+    'status.default': '💡 사진을 선택하면 자동으로 최적화 후 업로드됩니다',
     'status.clear': '💡 또는 사진을 탭해서 선택하세요',
     'status.uploading': '⏳ 업로드 중...',
+    'status.compressing': '🗜️ 사진 최적화 중...',
     'status.done': '✅ 완료!',
     'btn.uploading': '업로드 중...',
     'btn.saving': '저장 중...',
     'alert.required': '제목과 닉네임은 필수입니다.',
-    'alert.filesize': '5MB 이하로 해주세요.',
+    'alert.filesize': '25MB 이하 사진만 올릴 수 있어요.',
+    'alert.compressfail': '사진 최적화에 실패했어요. 다른 사진으로 다시 시도해주세요.',
     'alert.uploadfail': '업로드 실패',
     'alert.uploaderr': '업로드 오류',
     'alert.needphoto': '사진을 선택하거나 URL을 입력해주세요.',
@@ -607,9 +611,9 @@ const TRANSLATIONS = {
     'up.titleph': 'e.g. Pradera Verde Round',
     'up.photolabel': 'Photo *',
     'up.tap': 'Tap to select a photo',
-    'up.limit': 'JPG, PNG (up to 5MB)',
+    'up.limit': 'JPG, PNG (auto-optimized)',
     'up.urlph': 'Or enter a URL directly (https://...)',
-    'up.hint': '💡 Selecting a photo uploads it automatically',
+    'up.hint': '💡 Selecting a photo optimizes and uploads it automatically',
     'up.nicklabel': 'Nickname *',
     'up.nickph': 'e.g. ClarkGolfer',
     'up.storylabel': 'Tell your story (optional)',
@@ -621,14 +625,16 @@ const TRANSLATIONS = {
     'fixed.kakao': '💬 KakaoTalk',
     'fixed.home': '🏠 Home',
     'status.selected': '✅ Photo selected — tap Upload to submit',
-    'status.default': '💡 Selecting a photo uploads it automatically',
+    'status.default': '💡 Selecting a photo optimizes and uploads it automatically',
     'status.clear': '💡 Or tap to select a photo',
     'status.uploading': '⏳ Uploading...',
+    'status.compressing': '🗜️ Optimizing photo...',
     'status.done': '✅ Done!',
     'btn.uploading': 'Uploading...',
     'btn.saving': 'Saving...',
     'alert.required': 'Title and nickname are required.',
-    'alert.filesize': 'Please use a file under 5MB.',
+    'alert.filesize': 'Please use a file under 25MB.',
+    'alert.compressfail': 'Photo optimization failed. Please try a different photo.',
     'alert.uploadfail': 'Upload failed',
     'alert.uploaderr': 'Upload error',
     'alert.needphoto': 'Please select a photo or enter a URL.',
@@ -678,20 +684,60 @@ document.addEventListener('DOMContentLoaded', ()=>{
 });
 
 function showAll(){window._showAll=true;loadPosts();}
-function previewFile(input){
+
+// 사진을 가로/세로 최대 1600px, JPEG 품질 82%로 자동 압축(리사이즈)
+function compressImage(file, maxDim, quality){
+  return new Promise((resolve,reject)=>{
+    const objUrl=URL.createObjectURL(file);
+    const img=new Image();
+    img.onload=()=>{
+      URL.revokeObjectURL(objUrl);
+      let w=img.naturalWidth,h=img.naturalHeight;
+      if(w>maxDim||h>maxDim){
+        if(w>=h){h=Math.round(h*maxDim/w);w=maxDim;}
+        else{w=Math.round(w*maxDim/h);h=maxDim;}
+      }
+      const canvas=document.createElement('canvas');
+      canvas.width=w;canvas.height=h;
+      const ctx=canvas.getContext('2d');
+      ctx.drawImage(img,0,0,w,h);
+      canvas.toBlob(blob=>{
+        if(!blob){reject(new Error('compress-fail'));return;}
+        resolve(new File([blob], 'gallery.jpg', {type:'image/jpeg'}));
+      }, 'image/jpeg', quality);
+    };
+    img.onerror=()=>{URL.revokeObjectURL(objUrl);reject(new Error('load-fail'));};
+    img.src=objUrl;
+  });
+}
+
+window._compressedFile=null;
+async function previewFile(input){
   const file=input.files[0];if(!file)return;
-  if(file.size>5*1024*1024){alert(t('alert.filesize'));input.value='';return;}
-  const reader=new FileReader();
-  reader.onload=e=>{
-    document.getElementById('img-preview').src=e.target.result;
-    document.getElementById('img-preview-wrap').style.display='block';
-    document.getElementById('img-placeholder').style.display='none';
-    document.getElementById('f-imgurl').value='';
-    document.getElementById('upload-status').textContent=t('status.selected');
-  };reader.readAsDataURL(file);
+  // 원본이 25MB를 넘는 극단적인 경우만 차단(브라우저 압축 처리 한계 보호용)
+  if(file.size>25*1024*1024){alert(t('alert.filesize'));input.value='';return;}
+  document.getElementById('upload-status').textContent=t('status.compressing');
+  try{
+    const compressed=await compressImage(file, 1600, 0.82);
+    window._compressedFile=compressed;
+    const reader=new FileReader();
+    reader.onload=e=>{
+      document.getElementById('img-preview').src=e.target.result;
+      document.getElementById('img-preview-wrap').style.display='block';
+      document.getElementById('img-placeholder').style.display='none';
+      document.getElementById('f-imgurl').value='';
+      document.getElementById('upload-status').textContent=t('status.selected');
+    };reader.readAsDataURL(compressed);
+  }catch(e){
+    window._compressedFile=null;
+    alert(t('alert.compressfail'));
+    input.value='';
+    document.getElementById('upload-status').textContent=t('status.default');
+  }
 }
 function clearFileSelect(){
   document.getElementById('f-file').value='';
+  window._compressedFile=null;
   document.getElementById('img-preview-wrap').style.display='none';
   document.getElementById('img-placeholder').style.display='block';
   document.getElementById('upload-status').textContent=t('status.clear');
