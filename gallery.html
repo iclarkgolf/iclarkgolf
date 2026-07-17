@@ -129,6 +129,19 @@ a{text-decoration:none;color:inherit;}
 .comment-item{background:var(--gray-100);border-radius:12px;padding:10px 12px;}
 .comment-nick{font-size:12px;font-weight:800;color:var(--green);margin-bottom:3px;}
 .comment-text{font-size:13px;color:var(--gray-900);line-height:1.6;white-space:pre-line;}
+.comment-reply-btn{margin-top:6px;background:none;border:none;padding:0;font-family:'Nunito',sans-serif;
+  font-size:11px;font-weight:700;color:var(--gray-400);cursor:pointer;touch-action:manipulation;}
+.comment-reply-btn:hover{color:var(--green);}
+.comment-replies{margin-top:8px;padding-left:14px;border-left:2px solid var(--green-border);display:flex;flex-direction:column;gap:8px;}
+.comment-reply-item{background:#fff;border-radius:10px;padding:8px 10px;}
+.comment-reply-form{display:none;margin-top:8px;padding-left:14px;border-left:2px solid var(--green-border);gap:6px;flex-direction:column;}
+.comment-reply-form.open{display:flex;}
+.comment-reply-form input{width:100%;border:1.5px solid var(--gray-200);border-radius:8px;
+  padding:8px 10px;font-family:'Nunito',sans-serif;font-size:16px;color:var(--gray-900);outline:none;box-sizing:border-box;}
+.comment-reply-form-row{display:flex;gap:6px;}
+.comment-reply-form-row input{flex:1;min-width:0;}
+.comment-reply-submit{padding:8px 12px;min-height:38px;background:var(--green);color:#fff;border:none;
+  border-radius:8px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;touch-action:manipulation;white-space:nowrap;}
 .comment-form{display:flex;flex-direction:column;gap:8px;}
 .comment-input-nick{width:100%;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);
   padding:10px 12px;font-family:'Nunito',sans-serif;font-size:16px;color:var(--gray-900);outline:none;}
@@ -441,12 +454,59 @@ window.renderComments = function(list){
     listEl.innerHTML = '<div class="comment-empty">'+t('comment.empty')+'</div>';
     return;
   }
-  listEl.innerHTML = list.map(c => `
+  const top = list.filter(c => !c.parentId);
+  const repliesByParent = {};
+  list.filter(c => c.parentId).forEach(c => {
+    (repliesByParent[c.parentId] = repliesByParent[c.parentId] || []).push(c);
+  });
+
+  listEl.innerHTML = top.map(c => `
     <div class="comment-item">
       <div class="comment-nick">${esc(c.nickname)}</div>
       <div class="comment-text">${esc(c.text)}</div>
+      <button class="comment-reply-btn" onclick="toggleReplyForm('${c.id}')">↩ ${t('comment.reply')}</button>
+      ${(repliesByParent[c.id]||[]).length ? `
+      <div class="comment-replies">
+        ${repliesByParent[c.id].map(r => `
+          <div class="comment-reply-item">
+            <div class="comment-nick">${esc(r.nickname)}</div>
+            <div class="comment-text">${esc(r.text)}</div>
+          </div>`).join('')}
+      </div>` : ''}
+      <div class="comment-reply-form" id="reply-form-${c.id}">
+        <input id="reply-nick-${c.id}" data-i18n-ph="comment.nickph" placeholder="${t('comment.nickph')}" value="${esc(localStorage.getItem('gallery_comment_nick')||'')}">
+        <div class="comment-reply-form-row">
+          <input id="reply-text-${c.id}" data-i18n-ph="comment.textph" placeholder="${t('comment.textph')}" onkeydown="if(event.key==='Enter')submitReply('${c.id}')">
+          <button class="comment-reply-submit" onclick="submitReply('${c.id}')">${t('comment.submit')}</button>
+        </div>
+      </div>
     </div>`).join('');
 }
+
+window.toggleReplyForm = function(commentId){
+  document.querySelectorAll('.comment-reply-form.open').forEach(f => {
+    if(f.id !== 'reply-form-'+commentId) f.classList.remove('open');
+  });
+  const form = document.getElementById('reply-form-'+commentId);
+  if(form) form.classList.toggle('open');
+};
+
+window.submitReply = async function(parentId){
+  const postId = window._modalId;
+  const nickEl = document.getElementById('reply-nick-'+parentId);
+  const textEl = document.getElementById('reply-text-'+parentId);
+  const nick = nickEl.value.trim();
+  const text = textEl.value.trim();
+  if(!nick || !text){ alert(t('comment.required')); return; }
+  try{
+    await addDoc(commentsCol, {postId, parentId, nickname:nick, text, createdAt:new Date().toISOString()});
+    localStorage.setItem('gallery_comment_nick', nick);
+    await loadComments(postId);
+    loadCommentPreviews([postId]);
+  }catch(e){
+    alert(t('comment.fail'));
+  }
+};
 
 window.submitComment = async function() {
   const postId = window._modalId;
@@ -527,6 +587,7 @@ const TRANSLATIONS = {
     'comment.submit': '등록',
     'comment.required': '닉네임과 댓글 내용을 입력해주세요.',
     'comment.fail': '댓글 등록에 실패했어요. 잠시 후 다시 시도해주세요.',
+    'comment.reply': '답글',
   },
   en: {
     'nav.back': '← Home',
@@ -583,6 +644,7 @@ const TRANSLATIONS = {
     'comment.submit': 'Post',
     'comment.required': 'Please enter your nickname and a comment.',
     'comment.fail': 'Failed to post comment. Please try again later.',
+    'comment.reply': 'Reply',
   }
 };
 let currentLang = localStorage.getItem('clarkgo_lang') || 'kr';
