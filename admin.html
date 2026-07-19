@@ -1531,8 +1531,8 @@ const QUOTE_KEY='iclark_quote_draft';
 function saveQuoteDraft(data){localStorage.setItem(QUOTE_KEY,JSON.stringify(data));}
 function loadQuoteDraft(){try{return JSON.parse(localStorage.getItem(QUOTE_KEY)||'null');}catch{return null;}}
 function clearQuoteDraft(){localStorage.removeItem(QUOTE_KEY);}
-const PURPOSES=[{value:'golf-tour',label:'골프 여행',emoji:'⛳',desc:'골프 + 관광·쇼핑·휴식',recAccom:['clarkton','mango','emmaus','oasis']},{value:'golf-rest',label:'골프 휴식',emoji:'🌴',desc:'여유로운 골프 + 리조트 휴가',recAccom:['oasis','mango','clarkton','emmaus']},{value:'training',label:'전지훈련',emoji:'🏋️',desc:'집중 훈련, 스코어 향상',recAccom:['iclark']},{value:'family',label:'가족 동반',emoji:'👨‍👩‍👧',desc:'가족과 함께하는 클락 여행',recAccom:['oasis','mango','clarkton','emmaus']},{value:'group',label:'단체 투어',emoji:'🤝',desc:'동호회·팀 단체 골프 여행',recAccom:['iclark','clarkton','oasis','mango','emmaus']}];
-const ACCOMMODATIONS=[{id:'clarkton',type:'hotel',name:'클락턴 호텔',stars:3,price:'시세 적용',tag:'호텔'},{id:'mango',type:'hotel',name:'망고 스위트',stars:4,price:'시세 적용',tag:'호텔'},{id:'emmaus',type:'hotel',name:'엠마우스 콘도텔',stars:3,price:'시세 적용',tag:'호텔'},{id:'oasis',type:'hotel',name:'오아시스 호텔',stars:3,price:'시세 적용',tag:'호텔'},{id:'iclark',type:'local',name:'iClark 전용숙소',stars:0,price:'$45/일 (올인클루시브)',tag:'전지훈련 전용'}];
+const PURPOSES=[{value:'golf-tour',label:'골프 여행',emoji:'⛳',desc:'골프 + 관광·쇼핑·휴식',recAccom:['clarkton','mango','emmaus','oasis']},{value:'golf-rest',label:'골프 휴식',emoji:'🌴',desc:'여유로운 골프 + 리조트 휴가',recAccom:['oasis','mango','clarkton','emmaus']},{value:'training',label:'전지훈련',emoji:'🏋️',desc:'집중 훈련, 스코어 향상',recAccom:['clarkton','emmaus','mango','oasis']},{value:'family',label:'가족 동반',emoji:'👨‍👩‍👧',desc:'가족과 함께하는 클락 여행',recAccom:['oasis','mango','clarkton','emmaus']},{value:'group',label:'단체 투어',emoji:'🤝',desc:'동호회·팀 단체 골프 여행',recAccom:['clarkton','oasis','mango','emmaus']}];
+const ACCOMMODATIONS=[{id:'clarkton',type:'hotel',name:'클락턴 호텔',stars:3,price:'시세 적용',tag:'호텔'},{id:'mango',type:'hotel',name:'망고 스위트',stars:4,price:'시세 적용',tag:'호텔'},{id:'emmaus',type:'hotel',name:'엠마우스 콘도텔',stars:3,price:'시세 적용',tag:'호텔'},{id:'oasis',type:'hotel',name:'오아시스 호텔',stars:3,price:'시세 적용',tag:'호텔'}];
 const GOLF_COURSES=[{id:'pradera',name:'프라데라',weekday:2500,weekend:3000},{id:'korea-cc',name:'코리아 CC',weekday:1800,weekend:2200},{id:'luisita',name:'루이시타',weekday:1600,weekend:1800},{id:'dheights',name:'디하이츠',weekday:2900,weekend:3400},{id:'mimosa',name:'미모사',weekday:3900,weekend:4400},{id:'new-asia',name:'뉴 아시아',weekday:1000,weekend:1000},{id:'beverly',name:'베벌리',weekday:1000,weekend:1000},{id:'royal',name:'로얄 센트럴',weekday:1500,weekend:2000},{id:'lakewood',name:'레이크우드',weekday:800,weekend:800},{id:'vista-am',name:'비스타 오전',weekday:3600,weekend:4000},{id:'vista-pm',name:'비스타 오후',weekday:3200,weekend:3600},{id:'hann',name:'한 리저브',weekday:8600,weekend:8600},{id:'subic',name:'수빅 인터내셔널',weekday:6000,weekend:10000},{id:'puning',name:'푸닝',weekday:4800,weekend:4800}];
 const CADDY_FEE=600,CART_FEE=1500,CONSUM_FEE=300,INS_FEE=150,PHP_TO_USD=0.018;
 function phpToUsd(php){return Math.round(php*PHP_TO_USD*100)/100;}
@@ -2053,12 +2053,22 @@ function previewLicenses() {
 
 /* ── 숙소 데이터 (localStorage 기반, Firebase 연동 준비) ── */
 const DEFAULT_ACCOMS = [
-  { id:'iclark',   type:'local', name:'iClark 전용숙소', stars:0, priceKRW:0,     priceUSD:45, location:'Barangay Prado Siongco, 프라데라 골프장 5분', desc:'프라데라에서 전지훈련을 하려면 근처에 숙소가 필요합니다.\n로컬 마을안에 위치한 방 6개의 단독 하우스입니다.\n매일 이웃들과 마주하며 로컬 체험을 합니다.\n\n조식·중식·석식 + 픽업·드롭 + 세탁 ALL 포함.', amenities:'3식포함,픽업드롭,세탁,WiFi,에어컨', photos:[], active:true },
   { id:'clarkton', type:'hotel', name:'클락턴 호텔',     stars:3, priceKRW:53000, priceUSD:38, location:'말라바나스, 앙헬레스 / 클락 도심', desc:'클락 도심에 위치한 3성급 호텔. 수영장과 편의시설 완비. 골프장 접근성 우수.\n\n1992년부터 독일 관리 체제로 운영. 파노라마 레스토랑, 수영장, 스파 완비.', amenities:'수영장,조식,주차,WiFi,스파,레스토랑', photos:[], active:true },
   { id:'mango',    type:'hotel', name:'망고 스위트',     stars:4, priceKRW:34000, priceUSD:24, location:'시티센터, 앙헬레스 / 클락 도심 1.9km', desc:'4성급 스위트 호텔. 넓은 객실과 현대적 시설. 가족 여행에 최적.\n\n클락 프리포트 존에서 차로 5분. 무료 주차 및 WiFi 제공.', amenities:'수영장,조식,주차,WiFi,에어컨,엘리베이터', photos:[], active:true },
   { id:'emmaus',   type:'hotel', name:'엠마우스 콘도텔', stars:3, priceKRW:32000, priceUSD:23, location:'말라바나스, 앙헬레스 / 클락 도심 0.1km', desc:'도심 바로 위치한 콘도텔. 조용한 환경. 장기 체류에 적합.\n\nSM City Clark 도보 5분. 평점 8.2. 한국 교민 인기 숙소.', amenities:'주차,WiFi,에어컨,세탁,레스토랑,24시간프런트', photos:[], active:true },
   { id:'oasis',    type:'hotel', name:'오아시스 호텔',   stars:3, priceKRW:73000, priceUSD:52, location:'말라바나스, 앙헬레스 / 클락 도심', desc:'넓은 수영장과 열대 정원이 있는 조용한 컴파운드 호텔.\n\n조식 뷔페 포함. 공항 5분 거리. 골프장 픽업 가능.', amenities:'수영장,조식,주차,WiFi,스파,풀바,레스토랑', photos:[], active:true }
 ];
+
+// 2026-07-19: iClark 전용숙소 폐업 — 이미 브라우저에 저장되어 있던 기존 캐시에서도 완전히 제거
+(function(){
+  try {
+    const saved = localStorage.getItem('iclark_accoms');
+    if (saved) {
+      const cleaned = JSON.parse(saved).filter(a => a.id !== 'iclark');
+      localStorage.setItem('iclark_accoms', JSON.stringify(cleaned));
+    }
+  } catch (e) {}
+})();
 
 function getAccoms() {
   const saved = localStorage.getItem('iclark_accoms');

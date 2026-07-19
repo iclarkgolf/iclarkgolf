@@ -62,7 +62,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
 
 <style>
-button,a,input,select,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 /* ── 리셋 & 기본 ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html { scroll-behavior: smooth; overflow-x: hidden; }
@@ -1166,7 +1165,7 @@ try {
 <script>
 (function(){
   // 버전 체크 — 이전 잘못된 데이터 자동 초기화
-  const ACCOM_VERSION = 'v6';
+  const ACCOM_VERSION = 'v7';
   if (localStorage.getItem('iclark_accoms_ver') !== ACCOM_VERSION) {
     localStorage.removeItem('iclark_accoms');
     localStorage.setItem('iclark_accoms_ver', ACCOM_VERSION);
@@ -1176,8 +1175,7 @@ try {
     clarkton: 'https://clarkton.com/wp-content/uploads/2021/11/clarkton-new-banner-2021.jpg',
     mango:    'https://ik.imagekit.io/tvlk/apr-asset/TzEv3ZUmG4-4Dz22hvmO9NUDzw1DGCIdWl4oPtKumOg=/lodging/125000000/124030000/124022300/124022237/f7c5ddfc_z.jpg?tr=q-80,c-at_max,w-600,h-400&_src=imagekit',
     emmaus:   'https://ik.imagekit.io/tvlk/apr-asset/TzEv3ZUmG4-4Dz22hvmO9NUDzw1DGCIdWl4oPtKumOg=/lodging/100000000/99410000/99406100/99406008/ea28c65e_z.jpg?tr=q-80,c-at_max,w-600,h-400&_src=imagekit',
-    oasis:    'https://ik.imagekit.io/tvlk/apr-asset/p8EuABHS2sbhHoBGG5-47sW9QD93WhQr5VVZ6b4cXGI=/giata/bigger/21/213520/213520a_hb_a_001.jpg?tr=q-80,c-at_max,w-600,h-400&_src=imagekit',
-    iclark:   'https://iclarkgolf.com/web-h12.jpg'
+    oasis:    'https://ik.imagekit.io/tvlk/apr-asset/p8EuABHS2sbhHoBGG5-47sW9QD93WhQr5VVZ6b4cXGI=/giata/bigger/21/213520/213520a_hb_a_001.jpg?tr=q-80,c-at_max,w-600,h-400&_src=imagekit'
   };
 
   // localStorage 숙소 데이터 + 사진 없으면 fallback 적용
@@ -1186,7 +1184,6 @@ try {
     ...a,
     _thumb: (a.photos && a.photos[0]) || FALLBACK_PHOTOS[a.id] || ''
   })) : [
-    { id:'iclark',   type:'local', name:'iClark 전용숙소', stars:0, priceKRW:0,     priceUSD:45, location:'Barangay Prado Siongco, 프라데라 골프장 5분', amenities:'3식포함,픽업드롭,세탁,WiFi,에어컨', active:true, _thumb:'https://iclarkgolf.com/web-h12.jpg' },
     { id:'clarkton', type:'hotel', name:'클락턴 호텔',     stars:3, priceKRW:53000, priceUSD:38, location:'말라바나스, 앙헬레스 / 클락 도심', amenities:'수영장,조식,주차,WiFi', active:true,
       _thumb:'https://clarkton.com/wp-content/uploads/2021/11/clarkton-new-banner-2021.jpg' },
     { id:'mango',    type:'hotel', name:'망고 스위트',     stars:4, priceKRW:34000, priceUSD:24, location:'시티센터, 앙헬레스 / 클락 도심 1.9km', amenities:'수영장,조식,주차,WiFi,에어컨', active:true,
@@ -1196,9 +1193,6 @@ try {
     { id:'oasis',    type:'hotel', name:'오아시스 호텔',   stars:3, priceKRW:73000, priceUSD:52, location:'말라바나스, 앙헬레스 / 클락 도심', amenities:'수영장,조식,주차,WiFi,스파', active:true,
       _thumb:'https://ik.imagekit.io/tvlk/apr-asset/p8EuABHS2sbhHoBGG5-47sW9QD93WhQr5VVZ6b4cXGI=/giata/bigger/21/213520/213520a_hb_a_001.jpg?tr=q-80,c-at_max,w-600,h-400&_src=imagekit' }
   ];
-
-  // iClark 전용숙소 항상 맨 앞
-  ACCOMS.sort((a, b) => (a.id === 'iclark' ? -1 : b.id === 'iclark' ? 1 : 0));
 
   const active = ACCOMS.filter(a => a.active);
   const SPECIAL = ['3식포함','픽업드롭','올인클루시브','조식'];
