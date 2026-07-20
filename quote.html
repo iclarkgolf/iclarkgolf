@@ -53,6 +53,20 @@ nav{background:linear-gradient(135deg,#26215C,#534AB7);padding:14px 24px;display
 .hero h1 span{color:var(--mint-mid);}
 .hero p{font-size:15px;opacity:.8;max-width:480px;margin:0 auto;}
 
+/* 소개 카피 섹션 */
+.intro-copy{background:var(--white);border-bottom:1px solid var(--mint-border);}
+.intro-copy-inner{max-width:720px;margin:0 auto;padding:32px 20px;}
+.intro-copy h2{font-family:'Nunito',sans-serif;font-weight:800;font-size:21px;color:var(--purple-deep);margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--mint);line-height:1.4;}
+.intro-copy h3{font-family:'Nunito',sans-serif;font-weight:800;font-size:16px;color:var(--purple);margin:22px 0 10px;padding-left:10px;border-left:4px solid var(--mint);line-height:1.4;}
+.intro-copy p{font-size:14.5px;line-height:1.9;color:#4b5563;margin-bottom:12px;}
+.intro-copy p:last-of-type{margin-bottom:0;}
+.intro-copy strong{color:var(--purple-deep);font-weight:800;}
+.intro-copy ul{list-style:none;margin:12px 0 4px;padding:0;}
+.intro-copy ul li{font-size:14px;line-height:1.8;color:#374151;padding:6px 0 6px 26px;position:relative;}
+.intro-copy ul li::before{content:'✓';position:absolute;left:0;top:6px;color:var(--mint);font-weight:800;}
+.intro-tip{margin-top:18px;background:var(--mint-light);border:1.5px solid var(--mint-border);border-radius:12px;padding:14px 18px;font-size:13.5px;line-height:1.8;color:#085041;font-weight:700;}
+@media(max-width:480px){.intro-copy-inner{padding:24px 16px;}.intro-copy h2{font-size:18px;}.intro-copy h3{font-size:15px;}.intro-copy p{font-size:14px;}}
+
 /* 환율 배너 */
 .rate-banner{background:#fff;border-bottom:1.5px solid var(--mint-border);padding:8px 20px;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;font-size:12px;}
 .rate-item{display:flex;align-items:center;gap:5px;color:var(--muted);}
@@ -217,6 +231,29 @@ footer a{color:rgba(255,255,255,.8);}
   <div class="hero-badge">맞춤 견적</div>
   <h1>나만의 <span>골프 전지훈련</span><br>직접 설계하기</h1>
   <p>원하는 항목을 골라 담으면 자동으로 견적이 계산됩니다</p>
+</div>
+
+<div class="intro-copy">
+  <div class="intro-copy-inner">
+    <h2>클락 골프 여행, 왜 다른 동남아 골프 지역과 다른가</h2>
+
+    <h3>태국·베트남과 달리, 혼자서도 다닐 수 있는 곳</h3>
+    <p><strong>태국이나 베트남으로 골프 여행</strong>을 떠난다면 십중팔구 여행사를 거치게 됩니다. 현지에 아는 사람이 없는 한 그게 정석이니까요. 그런데 <strong>클락과 앙헬레스</strong>는 다릅니다. 최소한의 정보만 있으면 <strong>혼자서도 얼마든지 다닐 수 있는 지역</strong>입니다. 골프장 밖에서는 한국의 신생 도시에 여행 온 것과 크게 다르지 않은 느낌을 받으실 겁니다.</p>
+
+    <h3>다만 골프장 부킹·레슨·차량은 다릅니다</h3>
+    <p>문제는 <strong>골프와 엮이는 순간</strong>부터입니다. <strong>골프장 부킹</strong>, <strong>레슨</strong>, 그리고 <strong>차량과 기사</strong> — 이 세 가지가 개인이 혼자 준비하기엔 까다로운 부분입니다. 특히 필리핀은 <strong>차량만 렌트해주는 곳이 드뭅니다</strong>. 대부분 기사가 함께 붙는 방식이라, 현지 사정을 모르면 적정 가격을 가늠하기가 쉽지 않습니다.</p>
+
+    <h3>이 페이지가 해결해 드립니다</h3>
+    <p>이 페이지는 바로 그 부분만 콕 집어서 해결하기 위해 만들었습니다. 숙소는 원하시는 대로 따로 정하셔도 됩니다. 여기서는 다음 항목만 골라 담아 견적을 만들어 보세요.</p>
+    <ul>
+      <li><strong>골프장</strong> — 그린피·카트·캐디비까지 실비 기준으로 확인</li>
+      <li><strong>차량과 기사</strong> — 공항 픽업부터 전용 차량까지</li>
+      <li><strong>레슨</strong> — 필드 레슨·연습장 레슨 선택</li>
+    </ul>
+    <p><strong>20년 넘게 현장에서 직접 다져온 단가</strong>라, 이보다 낮은 가격은 어디서도 찾기 어려우실 겁니다.</p>
+
+    <div class="intro-tip">💡 먼저 원하는 항목으로 직접 견적을 맞춰보세요. 그다음 <strong>"견적 신청하기"</strong>를 눌러 실제 견적과 비교해 보시기 바랍니다.</div>
+  </div>
 </div>
 
 <div class="main">
