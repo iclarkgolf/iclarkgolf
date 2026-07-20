@@ -426,8 +426,8 @@ function initRateBanner() {
   safeSet('banner-updated', r.updatedAt ? r.updatedAt + ' 기준' : '관리자 설정 필요');
 }
 
-/* ── 데이터 ── */
-const HOTELS = [
+/* ── 데이터 (기본값 — Firestore 설정이 없거나 로드 실패 시 이 값 사용) ── */
+const DEFAULT_HOTELS = [
   {id:'local',icon:'🏠',name:'iClark 전용숙소',note:'프라데라 골프장 5분 · 조·중·석식+픽업+세탁 ALL포함',price:45,tag:'전지훈련 추천',local:true},
   {id:'h1',icon:'🏨',name:'망고 스위트 (Mango Suites)',note:'앙헬레스 시티 센터 · ⭐⭐⭐⭐ · 평점 8.7',price:25},
   {id:'h2',icon:'🏨',name:'클락턴 호텔 (Clarkton Hotel)',note:'앙헬레스 도심 · ⭐⭐⭐ · 수영장 · 평점 8.3',price:40},
@@ -435,8 +435,9 @@ const HOTELS = [
   {id:'h5',icon:'🏨',name:'엠마우스 콘도텔 (Emmaus Condotel)',note:'클락 도심 0.1km · ⭐⭐⭐ · 평점 8.9',price:23},
   {id:'h4',icon:'🔍',name:'아고다에서 직접 선택',note:'날짜 확인 후 요금 직접 입력',price:0,custom:true},
 ];
+let HOTELS = DEFAULT_HOTELS;
 
-const GOLF = [
+const DEFAULT_GOLF = [
   {id:'g1', icon:'⛳',name:'프라데라 베르데',      note:'36홀 챔피언십 · iClark 전용 코스',  price:75,
    fee:{wd_walk:'3,000',we_walk:'3,500',wd_sell:'2,500',we_sell:'3,000'},
    extras:[{k:'카트',v:'1,500'},{k:'캐디',v:'600'},{k:'컨섬',v:'300'},{k:'보험',v:'150'}],
@@ -490,23 +491,48 @@ const GOLF = [
    extras:[],
    remark:'⚠️ 수요일 휴장 · 2인 추가 3,000씩 · 6/1~10/31',closed:true},
 ];
+let GOLF = DEFAULT_GOLF;
 
-const TRANSFERS = [
+const DEFAULT_TRANSFERS = [
   {id:'t1',icon:'✈️',name:'클락 공항 → 숙소 픽업',note:'클락(CRK) 도착 편도',price:35,unit:'회'},
   {id:'t2',icon:'✈️',name:'마닐라 공항 → 숙소 픽업',note:'NAIA 도착 편도 (2시간+)',price:80,unit:'회'},
   {id:'t3',icon:'🚗',name:'전용 차량 + 기사',note:'8시간 기준',price:90,unit:'일'},
 ];
+let TRANSFERS = DEFAULT_TRANSFERS;
 
-const LESSONS = [
+const DEFAULT_LESSONS = [
   {id:'l1',icon:'🏌️',name:'필드 레슨',note:'18홀 라운드 중 프로 동반 지도',price:90,unit:'회'},
   {id:'l2',icon:'🎯',name:'연습장 레슨',note:'2시간 기준 · 1:1 개인 지도',price:60,unit:'회'},
 ];
+let LESSONS = DEFAULT_LESSONS;
 
-const EXTRAS = [
+const DEFAULT_EXTRAS = [
   {id:'e1',icon:'🍳',name:'조식',note:'숙소 조식 · 1인 기준',price:12,unit:'일×인',perPerson:true},
   {id:'e2',icon:'🍽️',name:'석식',note:'현지 식당 석식 · 1인 기준',price:20,unit:'일×인',perPerson:true},
   {id:'e3',icon:'🗣️',name:'한국어 통역 가이드',note:'통역 동행 · 8시간 기준',price:80,unit:'일'},
 ];
+let EXTRAS = DEFAULT_EXTRAS;
+
+/* ── Firestore에서 맞춤견적 항목/가격 불러오기 (관리자 설정) ── */
+async function loadQuoteConfig() {
+  try {
+    const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const { getFirestore, doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const cfg = { apiKey:'AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU', authDomain:'iclarkgolf.firebaseapp.com', projectId:'iclarkgolf' };
+    const app = getApps().length ? getApps()[0] : initializeApp(cfg);
+    const db = getFirestore(app);
+    const snap = await getDoc(doc(db, 'settings', 'quote_config'));
+    if (snap.exists()) {
+      const d = snap.data();
+      // 숙소·골프장 가격은 이 설정에서 제외 — 각각 "숙소 관리"/"요금표" 탭에서 별도 관리됨
+      if (Array.isArray(d.transfers) && d.transfers.length) TRANSFERS = d.transfers;
+      if (Array.isArray(d.lessons)   && d.lessons.length)   LESSONS   = d.lessons;
+      if (Array.isArray(d.extras)    && d.extras.length)    EXTRAS    = d.extras;
+    }
+  } catch(e) {
+    console.error('맞춤견적 설정 불러오기 실패 — 기본값 사용:', e);
+  }
+}
 
 /* ── 상태 ── */
 let selPurpose=null, selHotel=null, selGolf={}, selCheck={}, pax={g:2,n:0};
@@ -801,8 +827,10 @@ function renderAll() {
   renderCart();
 }
 
-/* ── URL 파라미터로 숙소 자동 선택 ── */
-(function() {
+/* ── URL 파라미터로 숙소 자동 선택 + 전체 초기화 ── */
+(async function initQuotePage() {
+  await loadQuoteConfig();
+
   const p = new URLSearchParams(location.search);
   const hotelParam = p.get('hotel');
   if (hotelParam && HOTELS.find(h => h.id === hotelParam)) {
@@ -817,10 +845,11 @@ function renderAll() {
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 600);
   }
+
+  renderAll();
+  initRateBanner();
 })();
 
-renderAll();
-initRateBanner();
 </script>
 <!-- ========== 견적 신청 모달 ========== -->
 <div id="inquiry-modal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.6);align-items:center;justify-content:center;">

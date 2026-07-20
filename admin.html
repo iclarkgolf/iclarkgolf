@@ -738,6 +738,7 @@ body { background:#f4faf7; padding-bottom:40px; }
   <button class="tab-btn" onclick="showTab('gallery',this)">📸 갤러리 관리</button>
   <button class="tab-btn" onclick="showTab('profile',this)">👤 프로필 관리</button>
   <button class="tab-btn" onclick="showTab('quotemake',this)">📋 견적서 작성</button>
+  <button class="tab-btn" onclick="showTab('quoteitems',this)">🎯 맞춤견적 항목</button>
 </div>
 
 <!-- ========== 대시보드 ========== -->
@@ -898,6 +899,55 @@ body { background:#f4faf7; padding-bottom:40px; }
       </div>
       <div style="font-size:11px;color:#6b7280;margin-top:6px;text-align:center;" id="calc-note">위에서 환율을 저장하면 자동 계산됩니다</div>
     </div>
+  </div>
+</div>
+
+<!-- ========== 맞춤견적 항목 관리 ========== -->
+<div class="panel" id="panel-quoteitems">
+  <div class="mgmt-card">
+    <div class="mgmt-title">🎯 맞춤견적(quote.html) 항목·가격 관리
+      <span>변경 후 반드시 하단 저장 버튼을 눌러야 사이트에 반영됩니다</span>
+    </div>
+    <div style="font-size:12px;color:#6b7280;background:#f4faf7;border:1.5px solid #c8edd9;border-radius:10px;padding:10px 14px;margin-bottom:14px;">
+      여기서는 차량·레슨·기타 항목만 관리합니다. 숙소 가격은 "🏨 숙소 관리" 탭에서, 골프장 요금은 "⛳ 요금표" 탭에서 각각 관리해 주세요.
+    </div>
+    <button onclick="saveQuoteItems()" style="width:100%;padding:13px;background:#1D9E75;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;margin-bottom:8px;">💾 전체 저장 (사이트에 반영)</button>
+    <div id="qi-save-msg" style="text-align:center;font-size:12px;color:#085041;font-weight:700;min-height:16px;"></div>
+  </div>
+
+  <!-- 차량/기사 -->
+  <div class="mgmt-card">
+    <div class="mgmt-title">🚗 차량·기사·픽업 <button class="btn-add" onclick="qiAddRow('transfers')">+ 항목 추가</button></div>
+
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>아이콘</th><th>이름</th><th>설명</th><th>$</th><th>단위</th><th></th></tr></thead>
+        <tbody id="qi-body-transfers"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 레슨 -->
+  <div class="mgmt-card">
+    <div class="mgmt-title">🏌️ 레슨 <button class="btn-add" onclick="qiAddRow('lessons')">+ 항목 추가</button></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>아이콘</th><th>이름</th><th>설명</th><th>$</th><th>단위</th><th></th></tr></thead>
+        <tbody id="qi-body-lessons"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 기타 -->
+  <div class="mgmt-card">
+    <div class="mgmt-title">🍽️ 기타(식사·통역 등) <button class="btn-add" onclick="qiAddRow('extras')">+ 항목 추가</button></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>아이콘</th><th>이름</th><th>설명</th><th>$</th><th>단위</th><th>인당</th><th></th></tr></thead>
+        <tbody id="qi-body-extras"></tbody>
+      </table>
+    </div>
+    <button onclick="saveQuoteItems()" style="width:100%;padding:13px;background:#1D9E75;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:14px;">💾 전체 저장 (사이트에 반영)</button>
   </div>
 </div>
 
@@ -1584,6 +1634,139 @@ function showTab(name, el) {
   if (name === 'package') loadCards();
   if (name === 'profile') loadProfile();
   if (name === 'quotemake') { if(typeof qfInit==='function') qfInit(); }
+  if (name === 'quoteitems') { if(typeof loadQuoteItems==='function') loadQuoteItems(); }
+}
+
+/* ===== 맞춤견적(quote.html) 항목·가격 관리 — 차량·레슨·기타만 (호텔·골프장은 각자 페이지에서 관리) ===== */
+const QI_DEFAULTS = {
+  transfers: [
+    {id:'t1',icon:'✈️',name:'클락 공항 → 숙소 픽업',note:'클락(CRK) 도착 편도',price:35,unit:'회'},
+    {id:'t2',icon:'✈️',name:'마닐라 공항 → 숙소 픽업',note:'NAIA 도착 편도 (2시간+)',price:80,unit:'회'},
+    {id:'t3',icon:'🚗',name:'전용 차량 + 기사',note:'8시간 기준',price:90,unit:'일'},
+  ],
+  lessons: [
+    {id:'l1',icon:'🏌️',name:'필드 레슨',note:'18홀 라운드 중 프로 동반 지도',price:90,unit:'회'},
+    {id:'l2',icon:'🎯',name:'연습장 레슨',note:'2시간 기준 · 1:1 개인 지도',price:60,unit:'회'},
+  ],
+  extras: [
+    {id:'e1',icon:'🍳',name:'조식',note:'숙소 조식 · 1인 기준',price:12,unit:'일×인',perPerson:true},
+    {id:'e2',icon:'🍽️',name:'석식',note:'현지 식당 석식 · 1인 기준',price:20,unit:'일×인',perPerson:true},
+    {id:'e3',icon:'🗣️',name:'한국어 통역 가이드',note:'통역 동행 · 8시간 기준',price:80,unit:'일'},
+  ],
+};
+
+let qiState = null; // 현재 편집 중인 상태 (로드 후 채워짐)
+
+async function loadQuoteItems() {
+  const wrap = document.getElementById('panel-quoteitems');
+  if (!wrap) return;
+  try {
+    const db = await initCardDB();
+    const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDoc(doc(db, 'settings', 'quote_config'));
+    if (snap.exists()) {
+      const d = snap.data();
+      qiState = {
+        transfers: Array.isArray(d.transfers) && d.transfers.length ? d.transfers : JSON.parse(JSON.stringify(QI_DEFAULTS.transfers)),
+        lessons:   Array.isArray(d.lessons)   && d.lessons.length   ? d.lessons   : JSON.parse(JSON.stringify(QI_DEFAULTS.lessons)),
+        extras:    Array.isArray(d.extras)    && d.extras.length    ? d.extras    : JSON.parse(JSON.stringify(QI_DEFAULTS.extras)),
+      };
+    } else {
+      qiState = JSON.parse(JSON.stringify(QI_DEFAULTS));
+    }
+  } catch(e) {
+    console.error('맞춤견적 항목 불러오기 실패, 기본값 표시:', e);
+    qiState = JSON.parse(JSON.stringify(QI_DEFAULTS));
+  }
+  qiRenderAll();
+}
+
+function qiRenderAll() {
+  qiRenderSimple('transfers');
+  qiRenderSimple('lessons');
+  qiRenderExtras();
+}
+
+function qiAddRow(cat) {
+  if (!qiState) return;
+  const newId = cat.slice(0,1) + 'x' + Date.now().toString(36);
+  if (cat === 'transfers') qiState.transfers.push({id:newId,icon:'🚗',name:'',note:'',price:0,unit:'회'});
+  else if (cat === 'lessons') qiState.lessons.push({id:newId,icon:'🏌️',name:'',note:'',price:0,unit:'회'});
+  else if (cat === 'extras') qiState.extras.push({id:newId,icon:'🍽️',name:'',note:'',price:0,unit:'일',perPerson:false});
+  qiRenderAll();
+}
+
+function qiRemoveRow(cat, idx) {
+  if (!qiState) return;
+  if (!confirm('이 항목을 삭제할까요? (저장 버튼을 눌러야 실제 반영됩니다)')) return;
+  qiState[cat].splice(idx, 1);
+  qiRenderAll();
+}
+
+function qiField(cat, idx, field, value) {
+  if (!qiState) return;
+  qiState[cat][idx][field] = value;
+}
+
+function qiInput(cat, idx, field, val, type='text', width='90px') {
+  const safe = (val===undefined||val===null) ? '' : val;
+  return `<input type="${type}" value="${String(safe).replace(/"/g,'&quot;')}" style="width:${width};border:1.5px solid #E1F5EE;border-radius:6px;padding:6px 8px;font-family:'Nunito',sans-serif;font-size:12px;" oninput="qiField('${cat}',${idx},'${field}',this.value)">`;
+}
+function qiNumInput(cat, idx, field, val, width='70px') {
+  return `<input type="number" value="${val||0}" style="width:${width};border:1.5px solid #E1F5EE;border-radius:6px;padding:6px 8px;font-family:'Nunito',sans-serif;font-size:12px;" oninput="qiField('${cat}',${idx},'${field}',parseFloat(this.value)||0)">`;
+}
+function qiCheck(cat, idx, field, val) {
+  return `<input type="checkbox" ${val?'checked':''} style="width:18px;height:18px;" onchange="qiField('${cat}',${idx},'${field}',this.checked)">`;
+}
+
+function qiRenderSimple(cat) {
+  const body = document.getElementById('qi-body-'+cat);
+  if (!body || !qiState) return;
+  body.innerHTML = qiState[cat].map((x,i)=>`
+    <tr>
+      <td>${qiInput(cat,i,'icon',x.icon,'text','40px')}</td>
+      <td>${qiInput(cat,i,'name',x.name,'text','180px')}</td>
+      <td>${qiInput(cat,i,'note',x.note,'text','260px')}</td>
+      <td>${qiNumInput(cat,i,'price',x.price)}</td>
+      <td>${qiInput(cat,i,'unit',x.unit,'text','60px')}</td>
+      <td><button class="btn-del" onclick="qiRemoveRow('${cat}',${i})">삭제</button></td>
+    </tr>`).join('');
+}
+
+function qiRenderExtras() {
+  const body = document.getElementById('qi-body-extras');
+  if (!body || !qiState) return;
+  body.innerHTML = qiState.extras.map((x,i)=>`
+    <tr>
+      <td>${qiInput('extras',i,'icon',x.icon,'text','40px')}</td>
+      <td>${qiInput('extras',i,'name',x.name,'text','150px')}</td>
+      <td>${qiInput('extras',i,'note',x.note,'text','220px')}</td>
+      <td>${qiNumInput('extras',i,'price',x.price)}</td>
+      <td>${qiInput('extras',i,'unit',x.unit,'text','60px')}</td>
+      <td style="text-align:center;">${qiCheck('extras',i,'perPerson',x.perPerson)}</td>
+      <td><button class="btn-del" onclick="qiRemoveRow('extras',${i})">삭제</button></td>
+    </tr>`).join('');
+}
+
+async function saveQuoteItems() {
+  if (!qiState) return;
+  const msg = document.getElementById('qi-save-msg');
+  if (msg) msg.textContent = '저장 중...';
+  try {
+    const db = await initCardDB();
+    const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await setDoc(doc(db, 'settings', 'quote_config'), {
+      transfers: qiState.transfers,
+      lessons: qiState.lessons,
+      extras: qiState.extras,
+      updatedAt: new Date().toLocaleString('ko-KR'),
+    }, { merge: true });
+    if (msg) msg.textContent = '✅ 저장 완료 — 사이트에 반영되었습니다';
+    setTimeout(()=>{ if(msg) msg.textContent=''; }, 4000);
+  } catch(e) {
+    console.error('맞춤견적 항목 저장 실패:', e);
+    if (msg) msg.textContent = '❌ 저장 실패 — 콘솔을 확인해 주세요';
+  }
 }
 
 /* ── 프로필 관리 ── */
