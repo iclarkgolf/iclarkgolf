@@ -376,6 +376,8 @@ img { max-width: 100%; }
   display: flex; align-items: center; gap: 3px;
 }
 .sec-more svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+.sec-desc { font-size: 13px; line-height: 1.75; color: var(--gray-600); margin: -4px 0 14px; max-width: 640px; }
+@media (min-width: 640px) { .sec-desc { font-size: 14px; } }
 
 /* ── 메인 배너 ── */
 .banner-main {
@@ -1299,6 +1301,7 @@ try {
     <h2 class="sec-title" data-i18n="sec.caddy">🤝 캐디 매칭</h2>
     <a href="caddy.html" class="sec-more"><span data-i18n="sec.more">전체보기</span> <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
   </div>
+  <p class="sec-desc" data-i18n="sec.caddy.desc">캐디는 보통 그날 순번대로 무작위 배정되지만, 여기서는 다릅니다. 경력과 소통 가능 언어를 미리 확인하고 <b>원하는 캐디를 직접 선택</b>하세요.</p>
   <div class="hscroll-wrap caddy-hscroll-wrap">
     <div class="hscroll-inner caddy-hscroll-inner">
       <a href="caddy.html" class="caddy-card">
@@ -1764,6 +1767,7 @@ const TRANSLATIONS = {
     'sec.packages': '⛳ 골프 패키지',
     'sec.golf': '🏌️ 클락 골프장',
     'sec.caddy': '🤝 캐디 매칭',
+    'sec.caddy.desc': '캐디는 보통 그날 순번대로 무작위 배정되지만, 여기서는 다릅니다. 경력과 소통 가능 언어를 미리 확인하고 <b>원하는 캐디를 직접 선택</b>하세요.',
     'sec.blog': '📝 여행 블로그',
     'sec.gallery': '📸 갤러리',
     'sec.more': '전체보기',
@@ -1881,6 +1885,7 @@ const TRANSLATIONS = {
     'sec.packages': '⛳ Golf Packages',
     'sec.golf': '🏌️ Clark Golf Courses',
     'sec.caddy': '🤝 Caddy Matching',
+    'sec.caddy.desc': 'Caddies are usually assigned at random by rotation. Here, it\'s different — check experience and language before you go, and <b>pick your own caddy</b>.',
     'sec.blog': '📝 Travel Blog',
     'sec.gallery': '📸 Gallery',
     'sec.more': 'View All',
