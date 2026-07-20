@@ -178,7 +178,7 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
     <div class="section-title">🏋 레슨 비용</div>
     <table><thead><tr><th>항목</th><th>단가</th><th>수량</th><th>금액</th></tr></thead>
     <tbody id="out-lesson"></tbody></table>
-    <div class="section-title">🏡 숙소 · 이동 비용</div>
+    <div class="section-title">🏡 HOTEL & 숙소 · 이동 비용</div>
     <table><thead><tr><th>항목</th><th>단가</th><th>수량</th><th>금액</th></tr></thead>
     <tbody id="out-stay"></tbody></table>
   </div>
@@ -262,7 +262,7 @@ function renderTable(items, data, tbodyId) {
 
 const GOLF_ITEMS   = [{key:'greenfee',name:'그린피',unit:'라운드',included:true},{key:'caddy',name:'캐디피',unit:'라운드',included:false},{key:'cart',name:'카트비',unit:'라운드',included:false},{key:'insurance',name:'보험료',unit:'라운드',included:false},{key:'consum',name:'컨슘어블',unit:'라운드',included:false}];
 const LESSON_ITEMS = [{key:'fieldLesson',name:'필드 레슨비',unit:'회',included:true},{key:'rangeLesson',name:'연습장 레슨비',unit:'회',included:true},{key:'rangeFee',name:'연습장 이용료',unit:'일',included:true}];
-const STAY_ITEMS   = [{key:'accom',name:'로컬 전용숙소 (식사포함)',unit:'박',included:true},{key:'drop',name:'숙소 ↔ 골프장 드롭 픽업',unit:'일',included:true},{key:'pickup',name:'공항 픽업',unit:'회',included:true},{key:'sendoff',name:'공항 샌딩',unit:'회',included:true}];
+const STAY_ITEMS   = [{key:'accom',name:'HOTEL & 숙소',unit:'박',included:true},{key:'drop',name:'숙소 ↔ 골프장 드롭 픽업',unit:'일',included:true},{key:'pickup',name:'공항 픽업',unit:'회',included:true},{key:'sendoff',name:'공항 샌딩',unit:'회',included:true}];
 
 function renderQuote(data) {
   const rate = data.rate?.appliedUsdPhp || 53.2;
@@ -290,7 +290,7 @@ function renderQuote(data) {
 
   // 포함/불포함
   const inc = [];
-  if ((data.items?.accom?.qty||0)>0)        inc.push('로컬 숙소 '+data.items.accom.qty+'박 (식사포함)');
+  if ((data.items?.accom?.qty||0)>0)        inc.push('HOTEL & 숙소 '+data.items.accom.qty+'박');
   if ((data.items?.greenfee?.qty||0)>0)     inc.push('그린피 '+data.items.greenfee.qty+'라운드');
   if ((data.items?.fieldLesson?.qty||0)>0) inc.push('필드 레슨 '+data.items.fieldLesson.qty+'회');
   if ((data.items?.rangeLesson?.qty||0)>0) inc.push('연습장 레슨 '+data.items.rangeLesson.qty+'회');
@@ -304,7 +304,7 @@ function renderQuote(data) {
   if ((data.items?.cart?.qty||0)>0)      exc.push('카트비 (현지 직접 지불)');
   if ((data.items?.insurance?.qty||0)>0) exc.push('보험료 (현지 직접 지불)');
   if ((data.items?.consum?.qty||0)>0)    exc.push('컨슘어블 (현지 직접 지불)');
-  exc.push('항공권'); exc.push('여행자 보험'); exc.push('중식 (자유 식사)');
+  exc.push('항공권'); exc.push('여행자 보험'); exc.push('식사는 모두 불포함');
   document.getElementById('out-excludes').innerHTML = exc.map(i=>`<li>${i}</li>`).join('');
 
   if (data.remarks) {
