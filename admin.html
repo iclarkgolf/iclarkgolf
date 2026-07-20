@@ -2877,7 +2877,9 @@ function saveEditCaddy(rowNum) {
 function ceRenderImgs(containerId, urls) {
   const box = document.getElementById(containerId);
   if (!box) return;
-  if (!urls || urls.length === 0) {
+  urls = urls || [];
+  box.dataset.urls = JSON.stringify(urls); // 빈 배열이어도 항상 최신 상태로 기록 (삭제 후 저장 누락 버그 방지)
+  if (urls.length === 0) {
     box.innerHTML = '<div style="font-size:12px;color:#9ca3af;padding:8px 0;">아직 사진이 없습니다</div>';
     return;
   }
@@ -2890,8 +2892,6 @@ function ceRenderImgs(containerId, urls) {
         style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;background:#dc2626;color:#fff;border:none;border-radius:50%;font-size:11px;font-weight:800;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;">✕</button>
     </div>
   `).join('');
-  // dataset에 url 배열 보관
-  box.dataset.urls = JSON.stringify(urls);
 }
 
 // 사진 추가
