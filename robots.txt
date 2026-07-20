@@ -11,6 +11,7 @@ Disallow: /blog-template.html
 Disallow: /index-new.html
 Disallow: /payment
 Disallow: /payment.html
+Disallow: /my-quote.html
 
 # 구글봇
 User-agent: Googlebot
@@ -22,6 +23,7 @@ Disallow: /blog-template.html
 Disallow: /index-new.html
 Disallow: /payment
 Disallow: /payment.html
+Disallow: /my-quote.html
 Crawl-delay: 1
 
 # 네이버봇
@@ -34,6 +36,7 @@ Disallow: /blog-template.html
 Disallow: /index-new.html
 Disallow: /payment
 Disallow: /payment.html
+Disallow: /my-quote.html
 Crawl-delay: 1
 
 # 다음봇
@@ -46,6 +49,7 @@ Disallow: /blog-template.html
 Disallow: /index-new.html
 Disallow: /payment
 Disallow: /payment.html
+Disallow: /my-quote.html
 Crawl-delay: 1
 
 # 페이스북/카카오 크롤러 (링크 미리보기용 — 차단 없이 전체 허용 유지)

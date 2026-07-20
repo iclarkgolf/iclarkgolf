@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iCLARKGOLF 내 견적서 확인</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="iCLARKGOLF 고객 전용 견적서 조회 페이지입니다.">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--green:#1b4332;--green-mid:#2d6a4f;--gold:#f4a261;--cream:#f8f5f0;--dark:#0d1f17;--gray:#6b7280;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--cream);color:var(--dark);}
+
+/* 로그인 화면 */
+.login-wrap{max-width:420px;margin:80px auto;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.12);}
+.login-header{background:linear-gradient(135deg,var(--dark),var(--green));padding:36px;text-align:center;}
+.login-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;color:#fff;}
+.login-logo span{color:var(--gold);}
+.login-title{color:rgba(255,255,255,0.7);font-size:14px;margin-top:8px;}
+.login-body{padding:32px;}
+.login-body p{font-size:14px;color:var(--gray);margin-bottom:20px;line-height:1.7;}
+.input-group{margin-bottom:16px;}
+.input-group label{font-size:12px;font-weight:700;color:var(--gray);letter-spacing:1px;display:block;margin-bottom:6px;}
+.input-group input{width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:12px 14px;font-size:15px;font-family:'Noto Sans KR',sans-serif;color:var(--dark);}
+.input-group input:focus{outline:none;border-color:var(--green);}
+.login-btn{width:100%;padding:14px;background:var(--green);color:#fff;border:none;border-radius:50px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Noto Sans KR',sans-serif;margin-top:8px;}
+.login-btn:hover{background:var(--green-mid);}
+.error-msg{color:#e74c3c;font-size:13px;margin-top:10px;text-align:center;display:none;}
+
+/* 견적서 */
+.page{max-width:780px;margin:30px auto 40px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 40px rgba(0,0,0,0.12);display:none;}
+.header{background:linear-gradient(135deg,var(--dark),var(--green));padding:36px 48px;display:flex;justify-content:space-between;align-items:center;}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:4px;color:#fff;}
+.logo span{color:var(--gold);}
+.header-right{text-align:right;}
+.header-right .label{font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:2px;margin-bottom:4px;}
+.header-right .quote-no{font-size:18px;font-weight:700;color:var(--gold);}
+.header-right .quote-date{font-size:12px;color:rgba(255,255,255,0.6);margin-top:4px;}
+.client-section{padding:24px 48px;background:#f8f5f0;border-bottom:2px solid #e8e0d5;}
+.client-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.client-item label{font-size:11px;font-weight:700;color:var(--gray);letter-spacing:1px;display:block;margin-bottom:6px;}
+.client-item .value{font-size:15px;font-weight:700;color:var(--dark);}
+.schedule-banner{background:var(--green);padding:14px 48px;display:flex;gap:40px;}
+.sch-item .sch-label{font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:1px;margin-bottom:2px;}
+.sch-item .sch-value{font-size:14px;font-weight:700;color:#fff;}
+.cost-section{padding:28px 48px;}
+.section-title{font-size:12px;font-weight:800;color:var(--green);letter-spacing:2px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--gold);}
+table{width:100%;border-collapse:collapse;margin-bottom:24px;}
+thead tr{background:var(--green);}
+thead th{padding:10px 14px;font-size:11px;font-weight:700;color:#fff;letter-spacing:1px;text-align:left;}
+thead th:last-child{text-align:right;}
+tbody tr{border-bottom:1px solid #f0ece6;}
+tbody td{padding:10px 14px;font-size:13px;color:#333;}
+tbody td:last-child{text-align:right;font-weight:600;}
+tbody tr.subtotal td{font-weight:800;color:var(--green);background:#f0f7f3;}
+tbody tr.ref-row td{color:#aaa;font-style:italic;}
+tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#999;padding:6px 14px;}
+.unit{font-size:11px;color:var(--gray);font-weight:400;}
+.total-section{background:var(--dark);margin:0 48px 28px;border-radius:12px;padding:20px 28px;display:flex;justify-content:space-between;align-items:center;}
+.total-label{font-size:14px;font-weight:700;color:rgba(255,255,255,0.7);}
+.total-usd{font-size:28px;font-weight:900;color:var(--gold);}
+.total-krw{font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px;}
+.include-section{padding:0 48px 28px;display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.inc-box{border-radius:10px;padding:16px 18px;}
+.inc-box.yes{background:#eaf3ee;border-left:4px solid var(--green);}
+.inc-box.no{background:#fff3f3;border-left:4px solid #e74c3c;}
+.inc-box h4{font-size:11px;font-weight:800;letter-spacing:1px;margin-bottom:10px;}
+.inc-box.yes h4{color:var(--green);}
+.inc-box.no h4{color:#e74c3c;}
+.inc-box ul{list-style:none;}
+.inc-box ul li{font-size:12px;color:#444;padding:3px 0;}
+.inc-box.yes ul li::before{content:"✓ ";color:var(--green);font-weight:700;}
+.inc-box.no ul li::before{content:"✗ ";color:#e74c3c;}
+.notice{margin:0 48px 28px;background:#fffbf5;border:1px solid #fde8d0;border-radius:10px;padding:16px 18px;}
+.notice h4{font-size:11px;font-weight:800;color:#c07a30;margin-bottom:8px;letter-spacing:1px;}
+.notice ul{list-style:none;}
+.notice ul li{font-size:12px;color:#555;padding:3px 0;padding-left:12px;position:relative;}
+.notice ul li::before{content:"·";position:absolute;left:0;color:var(--gold);}
+.footer{background:var(--dark);padding:18px 48px;display:flex;justify-content:space-between;align-items:center;}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:#fff;}
+.footer-logo span{color:var(--gold);}
+.footer-contact p{font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:2px;text-align:right;}
+.footer-contact a{color:var(--gold);text-decoration:none;font-size:11px;}
+.btn-row{max-width:780px;margin:0 auto 30px;display:flex;gap:12px;}
+.print-btn{flex:1;padding:14px;background:var(--green);color:#fff;border:none;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.kakao-btn{flex:1;padding:14px;background:#FEE500;color:#000;border:none;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.loading{text-align:center;padding:60px;font-size:16px;color:var(--gray);}
+@media print{.login-wrap,.btn-row{display:none!important;}.page{display:block!important;box-shadow:none;margin:0;border-radius:0;}}
+@media(max-width:600px){
+  /* 전체 패딩 축소 */
+  .header,.client-section,.schedule-banner,.cost-section,.include-section,.notice,.footer{padding-left:16px;padding-right:16px;}
+  .total-section{margin:0 16px 24px;padding:16px 18px;}
+  /* 헤더: 로고/견적번호 세로 배열 */
+  .header{flex-direction:column;align-items:flex-start;gap:12px;padding:24px 16px;}
+  .header-right{text-align:left;}
+  /* 고객정보 2열 */
+  .client-grid{grid-template-columns:1fr 1fr;}
+  /* 일정 배너: 2열 격자 */
+  .schedule-banner{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 16px;}
+  /* 테이블: 단가컬럼 숨기고 항목에 합침 */
+  thead th:nth-child(2),tbody td:nth-child(2){display:none;}
+  tbody td{font-size:12px;padding:8px 10px;}
+  thead th{font-size:10px;padding:8px 10px;}
+  /* 합계 박스: 세로 배열 */
+  .total-section{flex-direction:column;align-items:flex-start;gap:8px;}
+  .total-usd{font-size:22px;}
+  /* 포함사항: 1열 */
+  .include-section{grid-template-columns:1fr;padding:0 16px 20px;}
+  /* 버튼: 세로 배열 */
+  .btn-row{flex-direction:column;padding:0 16px;}
+  /* 로그인 박스 여백 */
+  .login-wrap{margin:40px 16px;}
+  .login-body{padding:24px 20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- 로딩 -->
+<div class="loading" id="loadingMsg" style="display:none;">견적서를 불러오는 중...</div>
+
+<!-- 로그인 -->
+<div class="login-wrap" id="loginWrap" style="display:none;">
+  <div class="login-header">
+    <div class="login-logo">i<span>Clark</span> Golf</div>
+    <div class="login-title">내 견적서 확인</div>
+  </div>
+  <div class="login-body">
+    <p>본인 확인을 위해 견적서에 등록된 이름을 입력해주세요.</p>
+    <div class="input-group">
+      <label>이름</label>
+      <input type="text" id="inputName" placeholder="홍길동">
+    </div>
+
+    <button class="login-btn" onclick="verifyAndShow()">견적서 확인하기</button>
+    <div class="error-msg" id="errorMsg">이름이 일치하지 않습니다. 견적서에 등록된 이름을 입력해주세요.</div>
+  </div>
+</div>
+
+<!-- 버튼 행 -->
+<div class="btn-row" id="btnRow" style="display:none;">
+  <button class="print-btn" onclick="window.print()">🖨️ PDF 저장</button>
+  <button class="kakao-btn" onclick="shareLink()">🔗 링크 공유</button>
+  <button class="kakao-btn" onclick="contactKakao()" style="background:#06C755;color:#fff;">💬 카톡 문의</button>
+</div>
+
+<!-- 견적서 -->
+<div class="page" id="quotePage">
+  <div class="header">
+    <div>
+      <div class="logo">i<span>Clark</span> Golf</div>
+      <div id="out-docType" style="font-family:'Noto Sans KR',sans-serif;font-size:22px;font-weight:900;color:var(--gold);letter-spacing:4px;margin-top:6px;"></div>
+    </div>
+    <div class="header-right">
+      <div class="label">QUOTATION NO.</div>
+      <div class="quote-no" id="out-quoteNo"></div>
+      <div class="quote-date" id="out-date"></div>
+    </div>
+  </div>
+  <div class="client-section">
+    <div class="client-grid">
+      <div class="client-item"><label>고객명</label><div class="value" id="out-name"></div></div>
+      <div class="client-item"><label>인원</label><div class="value" id="out-persons"></div></div>
+      <div class="client-item"><label>체류 기간</label><div class="value" id="out-duration"></div></div>
+    </div>
+  </div>
+  <div class="schedule-banner">
+    <div class="sch-item"><div class="sch-label">도착</div><div class="sch-value" id="out-checkin"></div></div>
+    <div class="sch-item"><div class="sch-label">출발</div><div class="sch-value" id="out-checkout"></div></div>
+    <div class="sch-item"><div class="sch-label">골프장</div><div class="sch-value" id="out-course"></div></div>
+    <div class="sch-item"><div class="sch-label">숙소</div><div class="sch-value" id="out-accom"></div></div>
+  </div>
+  <div class="cost-section">
+    <div class="section-title">⛳ 골프 비용</div>
+    <table><thead><tr><th>항목</th><th>단가</th><th>수량</th><th>금액</th></tr></thead>
+    <tbody id="out-golf"></tbody></table>
+    <div class="section-title">🏋 레슨 비용</div>
+    <table><thead><tr><th>항목</th><th>단가</th><th>수량</th><th>금액</th></tr></thead>
+    <tbody id="out-lesson"></tbody></table>
+    <div class="section-title">🏡 숙소 · 이동 비용</div>
+    <table><thead><tr><th>항목</th><th>단가</th><th>수량</th><th>금액</th></tr></thead>
+    <tbody id="out-stay"></tbody></table>
+  </div>
+  <div class="total-section">
+    <div class="total-label">견적 합계<br><span style="font-size:11px;font-weight:400;opacity:0.6;">※ 캐디피·카트비·보험료·컨슘어블은 현지 별도 지불</span></div>
+    <div>
+      <div class="total-usd" id="out-total-usd"></div>
+      <div class="total-krw" id="out-total-krw"></div>
+    </div>
+  </div>
+  <div class="include-section">
+    <div class="inc-box yes"><h4>✅ 포함 사항</h4><ul id="out-includes"></ul></div>
+    <div class="inc-box no"><h4>❌ 현지 별도 지불</h4><ul id="out-excludes"></ul></div>
+  </div>
+  <div id="out-remarks-section" style="margin:0 48px 28px;background:#f8f5f0;border-radius:10px;padding:16px 18px;border-left:4px solid var(--green-mid);display:none;">
+    <div style="font-size:11px;font-weight:800;color:var(--green-mid);letter-spacing:1px;margin-bottom:8px;">📝 REMARKS</div>
+    <div id="out-remarks" style="font-size:13px;color:#333;line-height:1.8;white-space:pre-line;"></div>
+  </div>
+  <div class="notice">
+    <h4>📋 안내사항</h4>
+    <ul>
+      <li>본 견적서는 발행일로부터 14일간 유효합니다.</li>
+      <li>예약 확정 시 총액의 30% 계약금이 필요합니다.</li>
+      <li>취소 규정: 출발 7일 전 전액 환불 / 3일 전 50% 환불 / 이후 환불 불가</li>
+      <li>그린피는 골프장 사정에 따라 변동될 수 있습니다.</li>
+      <li>문의: 카카오톡 채널 @iClarkGolf</li>
+    </ul>
+  </div>
+  <div class="footer">
+    <div class="footer-logo">i<span>Clark</span> Golf</div>
+    <div class="footer-contact">
+      <p>iclarkgolf.com</p>
+      <p>Clark, Pampanga, Philippines</p>
+      <a href="http://pf.kakao.com/_nbHKX/chat">카카오톡 채널 문의</a>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+const app = getApps().length ? getApps()[0] : initializeApp(cfg);
+const db  = getFirestore(app);
+
+let quoteData = null;
+
+function phpToUsd(php, rate) { return Math.round((php/rate)*100)/100; }
+
+function renderTable(items, data, tbodyId) {
+  const tbody = document.getElementById(tbodyId);
+  const rate  = data.rate?.appliedUsdPhp || 53.2;
+  tbody.innerHTML = '';
+  let subtotal = 0;
+  const included = items.filter(i=>i.included);
+  const excluded = items.filter(i=>!i.included);
+
+  included.forEach(item => {
+    const d = data.items?.[item.key] || {php:0,qty:0};
+    if (!d.php||!d.qty) return;
+    const usd = phpToUsd(d.php*d.qty, rate);
+    subtotal += usd;
+    tbody.innerHTML += `<tr><td>${item.name}</td><td>$${phpToUsd(d.php,rate).toFixed(2)} <span class="unit">(₱${Number(d.php).toLocaleString()})</span></td><td>${d.qty}${item.unit}</td><td>$${usd.toFixed(2)}</td></tr>`;
+  });
+  if (included.some(i=>(data.items?.[i.key]?.qty||0)>0))
+    tbody.innerHTML += `<tr class="subtotal"><td colspan="3">소계</td><td>$${subtotal.toFixed(2)}</td></tr>`;
+
+  const hasExcluded = excluded.some(i=>(data.items?.[i.key]?.qty||0)>0);
+  if (hasExcluded) {
+    tbody.innerHTML += `<tr class="ref-header"><td colspan="4">※ 현지 별도 지불 (참고 금액)</td></tr>`;
+    excluded.forEach(item => {
+      const d = data.items?.[item.key] || {php:0,qty:0};
+      if (!d.php||!d.qty) return;
+      const usd = phpToUsd(d.php*d.qty, rate);
+      tbody.innerHTML += `<tr class="ref-row"><td>${item.name} <span style="font-size:11px;color:#aaa;">(현지 지불)</span></td><td>$${phpToUsd(d.php,rate).toFixed(2)} <span class="unit">(₱${Number(d.php).toLocaleString()})</span></td><td>${d.qty}${item.unit}</td><td style="color:#bbb;">$${usd.toFixed(2)}</td></tr>`;
+    });
+  }
+  return subtotal;
+}
+
+const GOLF_ITEMS   = [{key:'greenfee',name:'그린피',unit:'라운드',included:true},{key:'caddy',name:'캐디피',unit:'라운드',included:false},{key:'cart',name:'카트비',unit:'라운드',included:false},{key:'insurance',name:'보험료',unit:'라운드',included:false},{key:'consum',name:'컨슘어블',unit:'라운드',included:false}];
+const LESSON_ITEMS = [{key:'fieldLesson',name:'필드 레슨비',unit:'회',included:true},{key:'rangeLesson',name:'연습장 레슨비',unit:'회',included:true},{key:'rangeFee',name:'연습장 이용료',unit:'일',included:true}];
+const STAY_ITEMS   = [{key:'accom',name:'로컬 전용숙소 (식사포함)',unit:'박',included:true},{key:'drop',name:'숙소 ↔ 골프장 드롭 픽업',unit:'일',included:true},{key:'pickup',name:'공항 픽업',unit:'회',included:true},{key:'sendoff',name:'공항 샌딩',unit:'회',included:true}];
+
+function renderQuote(data) {
+  const rate = data.rate?.appliedUsdPhp || 53.2;
+  const krwRate = data.rate?.usdKrw || 1380;
+  const createdDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'}) : '-';
+
+  document.getElementById('out-docType').textContent  = data.docType || '견적서';
+  document.getElementById('out-quoteNo').textContent  = data.quoteNo;
+  document.getElementById('out-date').textContent     = createdDate;
+  document.getElementById('out-name').textContent     = data.clientName + ' 님';
+  document.getElementById('out-persons').textContent  = data.persons + '명';
+  document.getElementById('out-duration').textContent = data.duration;
+  document.getElementById('out-checkin').textContent  = data.checkIn;
+  document.getElementById('out-checkout').textContent = data.checkOut;
+  document.getElementById('out-course').textContent   = data.golfCourse;
+  document.getElementById('out-accom').textContent    = data.accommodation;
+
+  const g = renderTable(GOLF_ITEMS,   data, 'out-golf');
+  const l = renderTable(LESSON_ITEMS, data, 'out-lesson');
+  const s = renderTable(STAY_ITEMS,   data, 'out-stay');
+  const total = g + l + s;
+
+  document.getElementById('out-total-usd').textContent = '$' + Number(total.toFixed(2)).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+  document.getElementById('out-total-krw').textContent = '약 ₩' + Math.round(total*krwRate).toLocaleString() + ' (환율 ' + Number(krwRate).toLocaleString() + '원 기준)';
+
+  // 포함/불포함
+  const inc = [];
+  if ((data.items?.accom?.qty||0)>0)        inc.push('로컬 숙소 '+data.items.accom.qty+'박 (식사포함)');
+  if ((data.items?.greenfee?.qty||0)>0)     inc.push('그린피 '+data.items.greenfee.qty+'라운드');
+  if ((data.items?.fieldLesson?.qty||0)>0) inc.push('필드 레슨 '+data.items.fieldLesson.qty+'회');
+  if ((data.items?.rangeLesson?.qty||0)>0) inc.push('연습장 레슨 '+data.items.rangeLesson.qty+'회');
+  if ((data.items?.rangeFee?.qty||0)>0)    inc.push('연습장 이용료 '+data.items.rangeFee.qty+'일');
+  if ((data.items?.drop?.qty||0)>0)         inc.push('숙소↔골프장 드롭 픽업');
+  if ((data.items?.pickup?.qty||0)>0)       inc.push('공항 픽업·샌딩');
+  document.getElementById('out-includes').innerHTML = inc.map(i=>`<li>${i}</li>`).join('');
+
+  const exc = [];
+  if ((data.items?.caddy?.qty||0)>0)     exc.push('캐디피 (현지 직접 지불)');
+  if ((data.items?.cart?.qty||0)>0)      exc.push('카트비 (현지 직접 지불)');
+  if ((data.items?.insurance?.qty||0)>0) exc.push('보험료 (현지 직접 지불)');
+  if ((data.items?.consum?.qty||0)>0)    exc.push('컨슘어블 (현지 직접 지불)');
+  exc.push('항공권'); exc.push('여행자 보험'); exc.push('중식 (자유 식사)');
+  document.getElementById('out-excludes').innerHTML = exc.map(i=>`<li>${i}</li>`).join('');
+
+  if (data.remarks) {
+    document.getElementById('out-remarks').textContent = data.remarks;
+    document.getElementById('out-remarks-section').style.display = 'block';
+  }
+}
+
+window.verifyAndShow = async function() {
+  const name = document.getElementById('inputName').value.trim();
+  if (!name) { document.getElementById('errorMsg').style.display='block'; return; }
+
+  if (quoteData) {
+    // 링크로 들어온 경우: 이름 대조
+    if (name !== quoteData.clientName) {
+      document.getElementById('errorMsg').style.display = 'block';
+      return;
+    }
+  } else {
+    // 메인에서 들어온 경우: 이름으로 Firebase 검색
+    const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const q = query(collection(db, 'quotes'), where('clientName', '==', name));
+    const snap = await getDocs(q);
+    if (snap.empty) {
+      document.getElementById('errorMsg').textContent = '해당 이름으로 등록된 견적서가 없습니다.';
+      document.getElementById('errorMsg').style.display = 'block';
+      return;
+    }
+    // 가장 최근 견적서 표시
+    const docs = snap.docs.sort((a,b) => (b.data().createdAt||0) - (a.data().createdAt||0));
+    quoteData = docs[0].data();
+  }
+
+  document.getElementById('loginWrap').style.display = 'none';
+  renderQuote(quoteData);
+  document.getElementById('quotePage').style.display = 'block';
+  document.getElementById('btnRow').style.display    = 'flex';
+};
+
+window.shareLink = function() {
+  var url = window.location.href;
+  if (navigator.share) {
+    // 모바일 네이티브 공유 (카톡, 문자, 이메일 등 전부)
+    navigator.share({
+      title: 'iCLARKGOLF 견적서',
+      text: '클락 골프 전지훈련 견적서를 확인해보세요.',
+      url: url
+    });
+  } else {
+    // PC는 클립보드 복사
+    navigator.clipboard.writeText(url).then(function() {
+      alert('링크가 복사됐습니다!\n카카오톡에 붙여넣기 해서 전송하세요.');
+    });
+  }
+};
+
+window.contactKakao = function() {
+  window.open('http://pf.kakao.com/_nbHKX/chat', '_blank');
+};
+
+// URL에서 id 파라미터 추출
+const params  = new URLSearchParams(window.location.search);
+const quoteId = params.get('id');
+
+if (!quoteId) {
+  // ID 없이 들어온 경우 → 이름 검색 모드 바로 표시
+  document.getElementById('loginWrap').style.display = 'block';
+} else {
+  // 링크로 들어온 경우 → ID로 바로 조회
+  document.getElementById('loadingMsg').style.display = 'block';
+  getDoc(doc(db, 'quotes', quoteId)).then(snap => {
+    document.getElementById('loadingMsg').style.display = 'none';
+    if (!snap.exists()) {
+      document.getElementById('loadingMsg').style.display = 'block';
+      document.getElementById('loadingMsg').textContent = '견적서를 찾을 수 없습니다.';
+      return;
+    }
+    quoteData = snap.data();
+    document.getElementById('loginWrap').style.display = 'block';
+  }).catch(e => {
+    document.getElementById('loadingMsg').textContent = '오류가 발생했습니다: ' + e.message;
+  });
+}
+</script>
+</body>
+</html>
