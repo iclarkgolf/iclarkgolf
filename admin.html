@@ -3222,12 +3222,12 @@ async function loadVisitorStats() {
       <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">도착일</label><input type="text" id="qfCheckin" placeholder="2026-07-10 (예상일)" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
       <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">출발일</label><input type="text" id="qfCheckout" placeholder="2026-07-17 (예상일)" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
       <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">골프장</label><input type="text" id="qfCourse" value="프라데라 베르데" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
-      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">숙소</label><input type="text" id="qfAccom" value="iClark 로컬 전용숙소" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
+      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">숙소</label><input type="text" id="qfAccom" value="HOTEL & 숙소" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div></div>
 
     </div>
     <div style="font-weight:800;color:#1b4332;margin:12px 0 8px;border-left:3px solid #f4a261;padding-left:10px;font-size:13px;">⛳ 골프 비용</div><div id="qfGolf"></div>
     <div style="font-weight:800;color:#1b4332;margin:12px 0 8px;border-left:3px solid #f4a261;padding-left:10px;font-size:13px;">🏋 레슨 비용</div><div id="qfLesson"></div>
-    <div style="font-weight:800;color:#1b4332;margin:12px 0 8px;border-left:3px solid #f4a261;padding-left:10px;font-size:13px;">🏡 숙소 이동 비용</div><div id="qfStay"></div>
+    <div style="font-weight:800;color:#1b4332;margin:12px 0 8px;border-left:3px solid #f4a261;padding-left:10px;font-size:13px;">🏡 HOTEL & 숙소 · 이동 비용</div><div id="qfStay"></div>
     <div style="background:#0d1f17;border-radius:12px;padding:16px 20px;margin:16px 0;display:flex;justify-content:space-between;align-items:center;">
       <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);">견적 합계 <span style="font-size:11px;font-weight:400;opacity:0.6;">(포함 항목만)</span></div>
       <div>
@@ -3264,7 +3264,7 @@ var _qfDone=false;
 var _qfItems=[
   {g:'qfGolf',   list:[{k:'greenfee',n:'그린피',u:'라운드',p:4500,i:1},{k:'caddy',n:'캐디피',u:'라운드',p:1800,i:0},{k:'cart',n:'카트비',u:'라운드',p:1200,i:0},{k:'insurance',n:'보험료',u:'라운드',p:150,i:0},{k:'consum',n:'컨슘어블',u:'라운드',p:500,i:0}]},
   {g:'qfLesson', list:[{k:'fieldLesson',n:'필드 레슨비',u:'회',p:2500,i:1},{k:'rangeLesson',n:'연습장 레슨비',u:'회',p:1500,i:1},{k:'rangeFee',n:'연습장 이용료',u:'일',p:500,i:1}]},
-  {g:'qfStay',   list:[{k:'accom',n:'로컬 숙소(식사포함)',u:'박',p:3000,i:1},{k:'drop',n:'숙소-골프장 드롭',u:'일',p:500,i:1},{k:'pickup',n:'공항 픽업',u:'회',p:2000,i:1},{k:'sendoff',n:'공항 샌딩',u:'회',p:2000,i:1}]}
+  {g:'qfStay',   list:[{k:'accom',n:'HOTEL & 숙소',u:'박',p:3000,i:1},{k:'drop',n:'숙소-골프장 드롭',u:'일',p:500,i:1},{k:'pickup',n:'공항 픽업',u:'회',p:2000,i:1},{k:'sendoff',n:'공항 샌딩',u:'회',p:2000,i:1}]}
 ];
 
 function _qfGetR(){try{var s=localStorage.getItem('iclark_exchange');if(s){var r=JSON.parse(s);return r;}}catch(e){}return {appliedUsdPhp:53.2,usdKrw:1380};}
