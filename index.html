@@ -256,10 +256,14 @@ img { max-width: 100%; }
   padding: 5px 14px;
   font-size: 11px; font-weight: 700; color: var(--pink);
   margin-bottom: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 .hero h1 {
   font-size: 28px; font-weight: 800; line-height: 1.25;
   color: var(--gray-900); margin-bottom: 8px;
+}
+.hero h1 span {
+  text-shadow: 0 1px 6px rgba(255,255,255,0.55);
 }
 .hero h1 em {
   font-style: normal;
@@ -267,10 +271,12 @@ img { max-width: 100%; }
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  filter: drop-shadow(0 1px 4px rgba(255,255,255,0.7));
 }
 .hero-sub {
   font-size: 13px; color: var(--gray-400);
   font-weight: 600; margin-bottom: 20px;
+  text-shadow: 0 1px 3px rgba(255,255,255,0.8);
 }
 .hero-searchbar {
   display: flex; align-items: center; gap: 0;
@@ -313,6 +319,7 @@ img { max-width: 100%; }
   cursor: pointer; transition: all .2s;
   min-height: 36px; display: flex; align-items: center;
   text-decoration: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }
 .hero-tag:active { background: var(--pink); color: var(--white); }
 
