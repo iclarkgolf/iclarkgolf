@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -713,7 +714,57 @@ body { background:#f4faf7; padding-bottom:40px; }
 .modal-close { float:right; background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280; }
 </style>
 </head>
-<body style="display:none;">
+<body>
+
+
+<!-- ── Firebase Auth 로그인 오버레이 ── -->
+<div id="admin-login-overlay" style="display:flex;position:fixed;inset:0;z-index:9999;background:#f4faf7;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:16px;padding:32px 28px;width:100%;max-width:360px;box-shadow:0 8px 32px rgba(83,74,183,.15);">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;text-align:center;margin-bottom:24px;">
+      <span style="color:#ff4444;">i</span>CLARKGOLF 관리자
+    </div>
+    <div style="margin-bottom:12px;">
+      <label style="font-size:12px;font-weight:700;color:#6b7280;display:block;margin-bottom:6px;">이메일</label>
+      <input id="admin-login-email" type="email" style="width:100%;padding:11px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:14px;box-sizing:border-box;" autocomplete="username">
+    </div>
+    <div style="margin-bottom:18px;">
+      <label style="font-size:12px;font-weight:700;color:#6b7280;display:block;margin-bottom:6px;">비밀번호</label>
+      <input id="admin-login-pw" type="password" style="width:100%;padding:11px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:14px;box-sizing:border-box;" autocomplete="current-password" onkeydown="if(event.key==='Enter')adminLogin()">
+    </div>
+    <button onclick="adminLogin()" style="width:100%;padding:13px;background:#534AB7;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;">로그인</button>
+    <div id="admin-login-err" style="color:#dc2626;font-size:12px;margin-top:10px;text-align:center;display:none;"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+const AUTH_CFG = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+const authApp = getApps().find(a=>a.name==='admin-auth') || initializeApp(AUTH_CFG, 'admin-auth');
+const auth = getAuth(authApp);
+onAuthStateChanged(auth, (user) => {
+  const overlay = document.getElementById('admin-login-overlay');
+  if (user) {
+    overlay.style.display = 'none';
+    if (typeof window.initAdminDashboard === 'function') window.initAdminDashboard();
+  } else {
+    overlay.style.display = 'flex';
+  }
+});
+window.adminLogin = function() {
+  const email = document.getElementById('admin-login-email').value.trim();
+  const pw = document.getElementById('admin-login-pw').value;
+  const errEl = document.getElementById('admin-login-err');
+  errEl.style.display = 'none';
+  signInWithEmailAndPassword(auth, email, pw).catch(() => {
+    errEl.textContent = '로그인 실패: 이메일 또는 비밀번호를 확인해주세요.';
+    errEl.style.display = 'block';
+  });
+};
+window.adminLogout = function() {
+  signOut(auth).then(() => { window.location.href = 'index.html'; });
+};
+</script>
 
 <!-- 헤더 -->
 <div class="admin-header">
@@ -1564,8 +1615,6 @@ body { background:#f4faf7; padding-bottom:40px; }
 <script>
 const FIREBASE_CONFIG={apiKey:"AIzaSyClarkGolfAcademyKey",authDomain:"iclarkgolf.firebaseapp.com",projectId:"iclarkgolf",storageBucket:"iclarkgolf.appspot.com",messagingSenderId:"123456789",appId:"1:123456789:web:abcdef"};
 const DB={BLOGS:'blogs',ACCOMMODATIONS:'accommodations',GREENFEE:'greenfee',CADDIES:'caddies',QUOTES:'quotes',PACKAGES:'packages',SETTINGS:'settings'};
-const ADMIN_PW='admin0115';
-function checkAdmin(){const pw=localStorage.getItem('iclark_admin');if(pw!==ADMIN_PW){const input=prompt('관리자 비밀번호를 입력하세요:');if(input!==ADMIN_PW){alert('비밀번호가 틀렸습니다.');window.location.href='index.html';return false;}localStorage.setItem('iclark_admin',input);}return true;}
 function formatDate(date){if(!date)return '';const d=date instanceof Date?date:new Date(date);return d.toLocaleDateString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'});}
 function formatDateRange(start,end){if(!start||!end)return '';const s=new Date(start),e=new Date(end);const nights=Math.round((e-s)/(1000*60*60*24));return formatDate(s)+' ~ '+formatDate(e)+' ('+nights+'박 '+(nights+1)+'일)';}
 function getNights(start,end){if(!start||!end)return 0;return Math.round((new Date(end)-new Date(start))/(1000*60*60*24));}
@@ -1589,25 +1638,6 @@ function phpToUsd(php){return Math.round(php*PHP_TO_USD*100)/100;}
 function goAdmin(e){if(e)e.preventDefault();window.location.href='admin.html';}
 </script>
 <script>
-/* ── 관리자 인증 ── */
-const ADMIN_PASSWORD = 'admin0115';
-(function() {
-  const saved = localStorage.getItem('iclark_admin');
-  if (saved === ADMIN_PASSWORD) {
-    // 이미 이 브라우저에서 로그인한 적 있음 — 다시 묻지 않고 바로 통과
-    document.body.style.display = 'block';
-    return;
-  }
-  const input = prompt('관리자 비밀번호를 입력하세요:');
-  if (input !== ADMIN_PASSWORD) {
-    alert('비밀번호가 틀렸습니다.');
-    window.location.href = 'index.html';
-  } else {
-    localStorage.setItem('iclark_admin', input); // 저장 — 다음부터는 이 브라우저에서 안 물어봄
-    document.body.style.display = 'block';
-  }
-})();
-
 function markInquiry(btn) {
   const row = btn.closest('tr');
   const badge = row ? row.querySelector('.badge-pending') : null;
@@ -1616,8 +1646,8 @@ function markInquiry(btn) {
 }
 
 function logout() {
-  localStorage.removeItem('iclark_admin');
-  window.location.href = 'index.html';
+  if (window.adminLogout) { window.adminLogout(); }
+  else { window.location.href = 'index.html'; }
 }
 
 /* ── 탭 전환 ── */
@@ -3141,7 +3171,7 @@ async function loadWebInquiries() {
 
 
 /* ── 초기화 ── */
-window.addEventListener('DOMContentLoaded', () => {
+window.initAdminDashboard = function() {
   loadInquiries();
   loadCaddyData();
   document.getElementById('stat-accom').textContent = getAccoms().length;
@@ -3163,7 +3193,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // Firebase 카드 4장 color1/color2 강제 0으로 초기화
   resetAllCardColors();
-});
+};
 
 async function resetAllCardColors() {
   try {
