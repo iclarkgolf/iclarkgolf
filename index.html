@@ -286,8 +286,6 @@ img { max-width: 100%; }
   padding: 4px 4px 4px 16px;
   box-shadow: var(--shadow);
   margin-bottom: 16px;
-  max-width: 420px;
-  margin-left: auto; margin-right: auto;
 }
 .hero-searchbar:focus-within { border-color: var(--pink); }
 .hero-searchbar input {
@@ -311,6 +309,39 @@ img { max-width: 100%; }
   display: flex; gap: 7px;
   flex-wrap: wrap; justify-content: center;
 }
+.hero-search-wrap { position: relative; max-width: 420px; margin: 0 auto 16px; }
+.hero-search-wrap .hero-searchbar { margin-bottom: 0; }
+.hero-search-results {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px); left: 0; right: 0;
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.22);
+  overflow: hidden;
+  max-height: 320px; overflow-y: auto;
+  text-align: left;
+  z-index: 40;
+}
+.hero-search-results.open { display: block; }
+.hsr-item {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 11px 16px;
+  text-decoration: none;
+  border-bottom: 1px solid var(--gray-100);
+  min-height: 44px; justify-content: center;
+}
+.hsr-item:last-child { border-bottom: none; }
+.hsr-item:active { background: var(--pink-pale); }
+.hsr-cat {
+  font-size: 10px; font-weight: 700; color: var(--pink);
+  letter-spacing: .02em;
+}
+.hsr-label {
+  font-size: 13px; font-weight: 700; color: var(--gray-900);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.hsr-empty { padding: 16px; font-size: 12px; color: var(--gray-400); text-align: center; }
 .hero-tag {
   background: var(--white);
   border: 1.5px solid var(--pink-border);
@@ -771,7 +802,7 @@ footer {
   .hero { padding: 56px 24px 44px; }
   .hero h1 { font-size: 48px; }
   .hero-sub { font-size: 16px; }
-  .hero-searchbar { max-width: 460px; margin-left: auto; margin-right: auto; }
+  .hero-search-wrap { max-width: 460px; }
 
   /* 네비 최대 너비 */
   .nav { padding: 0 40px; }
@@ -972,17 +1003,13 @@ footer {
   <div class="hero-badge" data-i18n="hero.badge">📍 필리핀 팜팡가 · 앙헬레스 · 클락</div>
   <h1><span data-i18n="hero.title1">클락 골프의 모든 것,</span><br><em data-i18n="hero.title2">한 곳에서</em></h1>
   <p class="hero-sub" data-i18n="hero.sub">골프 · 호텔 · 캐디 · 레슨 · 맞춤 견적</p>
-  <form class="hero-searchbar" id="heroSearchForm" onsubmit="return false;">
-    <input id="heroSearchInput" data-i18n-ph="hero.search" placeholder="어떤 여행을 계획하고 계세요?">
-    <button type="submit" data-i18n="hero.search.btn">검색</button>
-  </form>
-  <script>
-    document.getElementById('heroSearchForm').addEventListener('submit', function(e){
-      e.preventDefault();
-      var q = document.getElementById('heroSearchInput').value.trim();
-      window.location.href = 'quote.html' + (q ? ('?q=' + encodeURIComponent(q)) : '');
-    });
-  </script>
+  <div class="hero-search-wrap">
+    <form class="hero-searchbar" id="heroSearchForm" autocomplete="off">
+      <input id="heroSearchInput" data-i18n-ph="hero.search" placeholder="어떤 여행을 계획하고 계세요?" autocomplete="off">
+      <button type="submit" data-i18n="hero.search.btn">검색</button>
+    </form>
+    <div id="heroSearchResults" class="hero-search-results"></div>
+  </div>
   <div class="hero-tags">
     <a href="package-detail.html?id=card1" class="hero-tag" data-i18n="hero.tag1">골프 패키지</a>
     <a href="greenfee.html" class="hero-tag" data-i18n="hero.tag2">골프장 정보</a>
@@ -2081,5 +2108,97 @@ try {
 }
 </script>
 <script type="module" src="visitor-counter.js"></script>
+
+<script>
+// ── 히어로 검색 자동완성 (사이트 내 실제 데이터 기반, 다른 섹션 코드는 건드리지 않음) ──
+(function(){
+  var GOLF_COURSES = [
+    '프라데라 베르데','미모사 G&CC','코리아 CC','루이시타 G&CC',"D' HEIGHTS",
+    '뉴 아시아','베벌리 G&CC','로얄 센트럴','레이크우드','비스타','한 리저브','수빅 인터내셔널'
+  ];
+
+  function buildIndex(){
+    var idx = [];
+
+    // 골프 패키지 (실제 렌더된 카드에서 추출)
+    document.querySelectorAll('#pkg-cards a.pkg-item').forEach(function(a){
+      var title = (a.querySelector('[style*="Bebas Neue"]') || {}).textContent || '';
+      var sub = a.textContent.replace(/\s+/g,' ').trim().slice(0, 40);
+      idx.push({ cat:'골프 패키지', label: (title || sub || '골프 패키지').trim(), text: a.textContent, href: a.getAttribute('href') });
+    });
+
+    // 추천 숙소 (실제 렌더된 카드에서 추출)
+    document.querySelectorAll('#lodging-grid a.lodging-card').forEach(function(a){
+      var name = a.querySelector('.lodging-name');
+      idx.push({ cat:'숙소', label: name ? name.textContent.trim() : '숙소', text: a.textContent, href: a.getAttribute('href') });
+    });
+
+    // 블로그 글 (posts-data.js의 POSTS)
+    if (typeof POSTS !== 'undefined') {
+      POSTS.forEach(function(p){
+        idx.push({ cat:'블로그', label: p.title, text: p.title + ' ' + (p.cat||'') + ' ' + (p.excerpt||''), href: 'blog-' + p.id + '.html' });
+      });
+    }
+
+    // 골프장 정보
+    GOLF_COURSES.forEach(function(name){
+      idx.push({ cat:'골프장', label: name, text: name, href: 'greenfee.html' });
+    });
+
+    // 캐디 매칭
+    idx.push({ cat:'캐디', label: '캐디 매칭 서비스', text: '캐디 매칭 캐디 매칭 서비스 한국어 캐디', href: 'caddy.html' });
+
+    return idx;
+  }
+
+  var SEARCH_INDEX = [];
+  window.addEventListener('load', function(){ SEARCH_INDEX = buildIndex(); });
+
+  var form = document.getElementById('heroSearchForm');
+  var input = document.getElementById('heroSearchInput');
+  var resultsBox = document.getElementById('heroSearchResults');
+  if (!form || !input || !resultsBox) return;
+
+  var debounceTimer;
+  function renderResults(query){
+    var q = query.trim().toLowerCase();
+    if (!q){ resultsBox.classList.remove('open'); resultsBox.innerHTML=''; return; }
+    var matches = SEARCH_INDEX.filter(function(item){
+      return item.text.toLowerCase().indexOf(q) !== -1;
+    }).slice(0, 7);
+
+    if (matches.length === 0){
+      resultsBox.innerHTML = '<div class="hsr-empty">일치하는 결과가 없습니다 — 맞춤 견적으로 문의해보세요</div>';
+    } else {
+      resultsBox.innerHTML = matches.map(function(m){
+        return '<a class="hsr-item" href="' + m.href + '"><span class="hsr-cat">' + m.cat + '</span><span class="hsr-label">' + m.label + '</span></a>';
+      }).join('');
+    }
+    resultsBox.classList.add('open');
+  }
+
+  input.addEventListener('input', function(){
+    clearTimeout(debounceTimer);
+    var val = input.value;
+    debounceTimer = setTimeout(function(){ renderResults(val); }, 150);
+  });
+  input.addEventListener('focus', function(){ if (input.value.trim()) renderResults(input.value); });
+
+  document.addEventListener('click', function(e){
+    if (!form.parentElement.contains(e.target)) resultsBox.classList.remove('open');
+  });
+  input.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') resultsBox.classList.remove('open');
+  });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var q = input.value.trim();
+    var first = resultsBox.querySelector('.hsr-item');
+    if (first) { window.location.href = first.getAttribute('href'); return; }
+    window.location.href = 'quote.html' + (q ? ('?q=' + encodeURIComponent(q)) : '');
+  });
+})();
+</script>
 </body>
 </html>
