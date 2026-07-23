@@ -2160,12 +2160,26 @@ try {
   if (!form || !input || !resultsBox) return;
 
   var debounceTimer;
+  var CATEGORY_SLOTS = { '골프장':2, '골프 패키지':2, '블로그':2, '숙소':1, '캐디':1 };
+
   function renderResults(query){
     var q = query.trim().toLowerCase();
     if (!q){ resultsBox.classList.remove('open'); resultsBox.innerHTML=''; return; }
-    var matches = SEARCH_INDEX.filter(function(item){
+    var all = SEARCH_INDEX.filter(function(item){
       return item.text.toLowerCase().indexOf(q) !== -1;
-    }).slice(0, 7);
+    });
+
+    // 카테고리별로 정해진 개수만큼만 뽑아서 한 카테고리가 결과를 독점하지 않게 함
+    var used = {};
+    var matches = [];
+    all.forEach(function(item){
+      var slot = CATEGORY_SLOTS[item.cat] || 1;
+      used[item.cat] = used[item.cat] || 0;
+      if (used[item.cat] < slot){
+        matches.push(item);
+        used[item.cat]++;
+      }
+    });
 
     if (matches.length === 0){
       resultsBox.innerHTML = '<div class="hsr-empty">일치하는 결과가 없습니다 — 맞춤 견적으로 문의해보세요</div>';
