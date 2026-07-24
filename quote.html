@@ -766,7 +766,7 @@ function renderGolf() {
           <div class="golf-name">${g.name}${g.tag?'<span class="hotel-tag">'+g.tag+'</span>':''}</div>
           <div class="golf-note">${g.note}</div>
         </div>
-        <div class="golf-price">$${g.price}/인 <span style="font-size:10px;color:var(--muted);">(≈PHP ${usdToPhp(g.price).toLocaleString()})</span></div>
+        <div class="golf-price">$${g.price}/인 <span style="font-size:10px;color:var(--muted);">(≈PHP ${usdToPhp(g.price).toLocaleString()})</span>${g.extras && g.extras.length ? `<br><span style="font-size:10px;color:var(--muted);font-weight:400;">+ 부대비용(카트·캐디 등) 약 $${Math.round(phpToUsd(g.extras.reduce((s,e)=>s+(parseFloat(String(e.v).replace(/,/g,''))||0),0)))}</span>` : ''}</div>
         <div class="golf-check">${on?'✓':''}</div>
       </div>
       ${feeBox}
