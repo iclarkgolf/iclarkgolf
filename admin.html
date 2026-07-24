@@ -1981,8 +1981,8 @@ function openCardEditor(cardId) {
         document.getElementById('ce-editor').innerHTML = c.freeContent || c.content || '';
         document.getElementById('ce-hero-img').value = c.heroImg || '';
         document.getElementById('ce-hero-img-input').value = c.heroImg || '';
-        document.getElementById('ce-hero-pos-y').value = (c.heroImgPosY !== undefined ? c.heroImgPosY : 50);
-        document.getElementById('ce-hero-pos-y-val').textContent = (c.heroImgPosY !== undefined ? c.heroImgPosY : 50) + '%';
+        document.getElementById('ce-hero-pos-y').value = (c.heroImgPosY !== undefined ? c.heroImgPosY : (c.heroPos !== undefined ? c.heroPos : 50));
+        document.getElementById('ce-hero-pos-y-val').textContent = (c.heroImgPosY !== undefined ? c.heroImgPosY : (c.heroPos !== undefined ? c.heroPos : 50)) + '%';
         updateCeHeroPreview();
         // 사진 배열 렌더링
         try { ceRenderImgs('ce-accom-imgs', c.accomImgs || []); } catch(e) { console.warn('accomImgs 렌더 오류', e); }
@@ -2100,6 +2100,7 @@ async function saveCard() {
   };
   if (heroImgVal) formData.heroImg = heroImgVal;
   formData.heroImgPosY = parseInt(document.getElementById('ce-hero-pos-y').value, 10) || 50;
+  formData.heroPos = formData.heroImgPosY; // package-detail.html 히어로 배너가 읽는 필드명 — 값을 동일하게 유지
 
   try {
     const db = await initCardDB();
