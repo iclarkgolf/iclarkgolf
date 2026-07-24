@@ -511,11 +511,7 @@ const DEFAULT_GOLF = [
    fee:{wd_walk:'1,400',we_walk:'1,400',wd_sell:'800',we_sell:'800'},
    extras:[{k:'카트',v:'1,600'},{k:'캐디',v:'600'},{k:'컨섬',v:'300'},{k:'보험',v:'150'}],
    remark:'7일 옵션 데이트 · 3/1~',closed:false},
-  {id:'g10',icon:'⛳',name:'비스타 오전 (6:30~)',  note:'고급 코스 · 오전 티타임',          price:88,
-   fee:{wd_walk:'4,000',we_walk:'4,400',wd_sell:'3,600',we_sell:'4,000'},
-   extras:[],
-   remark:'F&B 200 포함 · 7일 옵션 · 5/1~7/31',closed:false},
-  {id:'g11',icon:'⛳',name:'비스타 오후 (10:30~)', note:'고급 코스 · 오후 티타임',          price:80,
+  {id:'g11',icon:'⛳',name:'비스타',               note:'고급 코스 · 오후 티타임(10:30~)',  price:80,
    fee:{wd_walk:'4,000',we_walk:'4,400',wd_sell:'3,200',we_sell:'3,600'},
    extras:[],
    remark:'F&B 200 포함 · 7일 옵션 · 5/1~7/31',closed:false},
@@ -568,6 +564,79 @@ async function loadQuoteConfig() {
     }
   } catch(e) {
     console.error('맞춤견적 설정 불러오기 실패 — 기본값 사용:', e);
+  }
+}
+
+/* ── 골프장 그린피·환율 실시간 연동 (요금표 admin 탭과 실제로 동기화) ──
+   기존 문제: GOLF 배열의 price(USD)·fee(PHP)가 처음 만들 때 값으로 고정되어
+   있어서, admin "요금표" 탭에서 그린피를 올리거나 환율을 갱신해도
+   quote.html에는 전혀 반영되지 않았음. 아래 함수가 greenfee.html과 동일한
+   Firestore 문서(settings/exchange, settings/greenfee)를 직접 읽어와서
+   매주 갱신하는 실제 판매가·환율을 이 페이지에도 그대로 적용한다. */
+const GOLF_NAME_MAP = {
+  'pradera':  '프라데라',
+  'mimosa':   '미모사',
+  'korea-cc': '코리아',
+  'luisita':  '루이시타',
+  'dheights': '디하이츠',
+  'new-asia': '뉴 아시아',
+  'beverly':  '베벌리',
+  'royal':    '로얄',
+  'lakewood': '레이크우드',
+  'subic':    '수빅',
+  'hann':     '한 리저브',
+};
+
+async function loadGolfPricingFromFirebase() {
+  try {
+    const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const { getFirestore, doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const cfg = { apiKey:'AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU', authDomain:'iclarkgolf.firebaseapp.com', projectId:'iclarkgolf' };
+    const app = getApps().length ? getApps()[0] : initializeApp(cfg);
+    const db = getFirestore(app);
+
+    // 1) 환율 — 이 문서를 localStorage에 저장해두면 기존 getExchangeRate()/
+    //    usdToPhp()/phpToUsd()가 자동으로 이 최신 값을 사용하게 됨 (코드 변경 불필요)
+    const exSnap = await getDoc(doc(db, 'settings', 'exchange'));
+    if (exSnap.exists()) {
+      localStorage.setItem('iclark_exchange', JSON.stringify(exSnap.data()));
+    }
+
+    // 2) 골프장 그린피 — admin "요금표" 탭 데이터를 이름으로 매칭해서
+    //    fee(PHP 판매가)와 price(USD 헤드라인)를 실제 값으로 갱신
+    const gfSnap = await getDoc(doc(db, 'settings', 'greenfee'));
+    if (gfSnap.exists()) {
+      const list = gfSnap.data().data || [];
+      list.forEach(g => {
+        const keyword = GOLF_NAME_MAP[g.id];
+        if (!keyword) return;
+        const target = GOLF.find(x => x.name.includes(keyword));
+        if (!target) return;
+        if (g.weekday) {
+          target.fee = target.fee || {};
+          target.fee.wd_sell = g.weekday.toLocaleString();
+          target.price = Math.round(phpToUsd(g.weekday));
+        }
+        if (g.weekend) target.fee.we_sell = g.weekend.toLocaleString();
+        if (target.extras) {
+          target.extras.forEach(e => {
+            if (e.k === '카트' && g.cart)  e.v = g.cart.toLocaleString();
+            if (e.k === '캐디' && g.caddy) e.v = g.caddy.toLocaleString();
+          });
+        }
+      });
+    }
+    // 3) 요금표 admin에 등록되지 않은 코스(예: 비스타)도 환율이 바뀔 때마다
+    //    가격이 같이 움직이도록, 각 코스의 fee.wd_sell(PHP)을 기준으로
+    //    현재 환율로 다시 계산해서 덮어씀 (2번에서 이미 갱신된 코스는 결과가 동일함)
+    GOLF.forEach(item => {
+      if (!item.fee || !item.fee.wd_sell) return;
+      const php = parseFloat(String(item.fee.wd_sell).replace(/,/g, ''));
+      if (!php || isNaN(php)) return;
+      item.price = Math.round(phpToUsd(php));
+    });
+  } catch(e) {
+    console.error('골프장 그린피 실시간 동기화 실패 — 기존(고정) 값 사용:', e);
   }
 }
 
@@ -867,6 +936,7 @@ function renderAll() {
 /* ── URL 파라미터로 숙소 자동 선택 + 전체 초기화 ── */
 (async function initQuotePage() {
   await loadQuoteConfig();
+  await loadGolfPricingFromFirebase();
 
   const p = new URLSearchParams(location.search);
   const hotelParam = p.get('hotel');
