@@ -1141,7 +1141,7 @@ function renderCards(cards) {
     <a href="package-detail.html?id=${c.id}" class="pkg-item" style="border-radius:16px;overflow:hidden;text-decoration:none;display:block;box-shadow:0 4px 20px rgba(0,0,0,0.15);">
       <!-- 썸네일: 사진만 -->
       <div style="background:#000;position:relative;height:200px;overflow:hidden;">
-        ${c.heroImg ? `<img src="${c.heroImg}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block;" loading="lazy">` : '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40px;">⛳</div>'}
+        ${c.heroImg ? `<img src="${c.heroImg}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center ${c.heroImgPosY !== undefined ? c.heroImgPosY : 50}%;display:block;" loading="lazy">` : '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40px;">⛳</div>'}
         <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.15) 0%,rgba(0,0,0,0.05) 30%,rgba(0,0,0,0.55) 100%);"></div>
         <!-- 오버레이 텍스트: flex 세로쌓기로 겹침 방지, 각 줄은 말줄임 처리 -->
         <div style="position:absolute;inset:0;padding:14px;display:flex;flex-direction:column;overflow:hidden;">
@@ -1182,6 +1182,7 @@ try {
       ...def,
       ...fireData,
       heroImg: safeVal(fireData.heroImg, def.heroImg),
+      heroImgPosY: (fireData.heroImgPosY !== undefined ? fireData.heroImgPosY : (def.heroImgPosY !== undefined ? def.heroImgPosY : 50)),
       tag:     safeVal(fireData.tag,     def.tag),
       titleEn: safeVal(fireData.titleEn, def.titleEn),
       sub1:    safeVal(fireData.sub1,    def.sub1),

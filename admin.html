@@ -1114,6 +1114,13 @@ window.adminLogout = function() {
           <div>
             <label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">🖼 썸네일 대표 사진 URL</label>
             <input id="ce-hero-img-input" type="text" placeholder="https://i.ibb.co/... 사진 URL 입력" style="width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box;" oninput="document.getElementById('ce-hero-img').value=this.value; updateCeHeroPreview();">
+            <div style="margin-top:10px;">
+              <label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">📐 사진 세로 위치 (위 0% · 가운데 50% · 아래 100%)</label>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <input id="ce-hero-pos-y" type="range" min="0" max="100" value="50" style="flex:1;" oninput="document.getElementById('ce-hero-pos-y-val').textContent=this.value+'%'; updateCeHeroPreview();">
+                <span id="ce-hero-pos-y-val" style="font-size:12px;font-weight:700;color:#374151;width:36px;text-align:right;">50%</span>
+              </div>
+            </div>
             <div id="ce-hero-preview" style="margin-top:8px;width:100%;height:120px;border-radius:8px;background:#f4f4f5;background-size:cover;background-position:center;border:1.5px solid #e5e7eb;display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:12px;">사진 URL 입력 시 미리보기</div>
           </div>
           <div id="ce-preview" style="border-radius:12px;padding:20px;background:linear-gradient(135deg,#054535,#1D9E75);color:#fff;margin-top:4px;min-height:80px;position:relative;">
@@ -1883,7 +1890,7 @@ function renderCardList(cards) {
       </div>
       <div onclick="openCardEditor('${c.id}')" style="display:flex;align-items:center;gap:14px;flex:1;min-width:200px;cursor:pointer;">
         <div style="width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,${c.color1||'#054535'},${c.color2||'#1D9E75'});flex-shrink:0;overflow:hidden;">
-          ${c.heroImg ? `<img src="${c.heroImg}" style="width:100%;height:100%;object-fit:cover;">` : ''}
+          ${c.heroImg ? `<img src="${c.heroImg}" style="width:100%;height:100%;object-fit:cover;object-position:center ${c.heroImgPosY !== undefined ? c.heroImgPosY : 50}%;">` : ''}
         </div>
         <div style="flex:1;min-width:0;">
           <div style="font-size:13px;font-weight:800;color:#18181b;margin-bottom:2px;">${c.titleEn} · ${c.sub1}${c.sub2 ? ' · '+c.sub2 : ''}</div>
@@ -1937,6 +1944,8 @@ function openCardEditor(cardId) {
     document.getElementById('ce-color1-hex').value = '#054535';
     document.getElementById('ce-color2').value = '#1D9E75';
     document.getElementById('ce-color2-hex').value = '#1D9E75';
+    document.getElementById('ce-hero-pos-y').value = 50;
+    document.getElementById('ce-hero-pos-y-val').textContent = '50%';
     ceRenderImgs('ce-accom-imgs', []);
     ceRenderImgs('ce-training-imgs', []);
     document.getElementById('ce-schedule-editor').innerHTML = '';
@@ -1972,6 +1981,8 @@ function openCardEditor(cardId) {
         document.getElementById('ce-editor').innerHTML = c.freeContent || c.content || '';
         document.getElementById('ce-hero-img').value = c.heroImg || '';
         document.getElementById('ce-hero-img-input').value = c.heroImg || '';
+        document.getElementById('ce-hero-pos-y').value = (c.heroImgPosY !== undefined ? c.heroImgPosY : 50);
+        document.getElementById('ce-hero-pos-y-val').textContent = (c.heroImgPosY !== undefined ? c.heroImgPosY : 50) + '%';
         updateCeHeroPreview();
         // 사진 배열 렌더링
         try { ceRenderImgs('ce-accom-imgs', c.accomImgs || []); } catch(e) { console.warn('accomImgs 렌더 오류', e); }
@@ -2003,11 +2014,12 @@ function closeCardEditor() {
 
 function updateCeHeroPreview() {
   const url = document.getElementById('ce-hero-img-input').value.trim();
+  const posY = document.getElementById('ce-hero-pos-y').value;
   const prev = document.getElementById('ce-hero-preview');
   if (url) {
     prev.style.backgroundImage = `url(${url})`;
     prev.style.backgroundSize = 'cover';
-    prev.style.backgroundPosition = 'center';
+    prev.style.backgroundPosition = `center ${posY}%`;
     prev.textContent = '';
   } else {
     prev.style.backgroundImage = '';
@@ -2087,6 +2099,7 @@ async function saveCard() {
     updatedAt: new Date().toISOString(),
   };
   if (heroImgVal) formData.heroImg = heroImgVal;
+  formData.heroImgPosY = parseInt(document.getElementById('ce-hero-pos-y').value, 10) || 50;
 
   try {
     const db = await initCardDB();
