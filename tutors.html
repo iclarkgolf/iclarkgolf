@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>튜터 목록 | 말문</title>
+<style>
+  :root{
+    --bg: #FFF9F0;
+    --card: #FFFFFF;
+    --card-border: #E8E4D8;
+    --text: #2C2C2A;
+    --text-secondary: #5F5E5A;
+    --text-muted: #8A8880;
+    --accent: #EF9F27;
+    --accent-text: #412402;
+    --coral: #D85A30;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; text-decoration:none; }
+  .wrap{ max-width:480px; margin:0 auto; padding:0 20px 32px; }
+
+  .header{ padding:24px 0 14px; display:flex; justify-content:space-between; align-items:flex-start; }
+  .header p.sub{ font-size:12px; color:var(--text-muted); margin:0 0 4px; }
+  .header p.title{ font-size:17px; font-weight:600; margin:0; }
+  #langToggle{
+    background:none; border:1px solid var(--card-border); color:var(--text-secondary);
+    border-radius:16px; padding:6px 12px; font-size:12px; font-weight:600;
+    cursor:pointer; display:flex; align-items:center; gap:4px; flex-shrink:0;
+  }
+  #langToggle .cur{ color:var(--text); }
+
+  .chips{ display:flex; gap:8px; overflow-x:auto; padding:0 0 18px; margin:0 -20px; padding-left:20px; padding-right:20px; scrollbar-width:none; }
+  .chips::-webkit-scrollbar{ display:none; }
+  .chip{
+    flex-shrink:0; font-size:12px; padding:8px 14px; border-radius:16px; white-space:nowrap;
+    border:1px solid var(--card-border); color:var(--text-secondary); cursor:pointer; background:none;
+  }
+  .chip.active{ background:var(--accent); color:var(--accent-text); border:none; font-weight:600; }
+
+  .tutor-list{ display:flex; flex-direction:column; gap:12px; }
+  .tutor-card{
+    display:flex; gap:12px; align-items:flex-start;
+    background:var(--card); border:1px solid var(--card-border); border-radius:14px; padding:14px;
+    cursor:pointer; width:100%; text-align:left; color:var(--text);
+  }
+  .avatar{ width:52px; height:52px; border-radius:50%; flex-shrink:0; }
+  .info{ flex:1; }
+  .info-top{ display:flex; justify-content:space-between; align-items:baseline; }
+  .name{ font-size:14px; font-weight:600; margin:0; }
+  .price{ font-size:13px; color:var(--coral); font-weight:600; margin:0; }
+  .desc{ font-size:12px; color:var(--text-muted); margin:4px 0 6px; }
+  .meta{ font-size:12px; color:var(--text-secondary); display:flex; align-items:center; gap:4px; }
+  .meta .star{ color:var(--accent); }
+
+  body{ padding-bottom:76px; }
+  .bottom-nav{
+    position:fixed; bottom:0; left:0; right:0; z-index:20;
+    background:rgba(255,255,255,0.92); backdrop-filter:blur(10px);
+    border-top:1px solid var(--card-border);
+    display:flex; padding:8px 8px calc(8px + env(safe-area-inset-bottom));
+  }
+  .nav-item{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
+    padding:6px 0; color:var(--text-muted); background:none; border:none; cursor:pointer;
+  }
+  .nav-item.active{ color:var(--accent); }
+  .nav-item span{ font-size:11px; }
+
+  @media (min-width:900px){
+    body{ padding-bottom:0; }
+    .bottom-nav{ display:none; }
+    .wrap{ max-width:1080px; }
+    .tutor-list{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="header">
+    <div>
+      <p class="sub" data-i18n="tutors.level">내 등급: 중급 2단계</p>
+      <p class="title" data-i18n="tutors.count">튜터 24명이 매칭됐어요</p>
+    </div>
+    <button id="langToggle" aria-label="언어 전환">
+      <span class="cur" id="langCur">한국어</span> / <span id="langOther">EN</span>
+    </button>
+  </div>
+
+  <div class="chips">
+    <button class="chip active" data-filter="all" data-i18n="tutors.f.all">전체</button>
+    <button class="chip" data-filter="rating" data-i18n="tutors.f.rating">평점순</button>
+    <button class="chip" data-filter="exam" data-i18n="tutors.f.exam">시험 대비</button>
+    <button class="chip" data-filter="biz" data-i18n="tutors.f.biz">비즈니스</button>
+  </div>
+
+  <div class="tutor-list">
+    <button class="tutor-card" onclick="location.href='tutor-profile.html?id=jieun'">
+      <div class="avatar" style="background:#3b5f8f;"></div>
+      <div class="info">
+        <div class="info-top"><p class="name">지은</p><p class="price">₩28,000<span data-i18n="unit.perLesson">/회</span></p></div>
+        <p class="desc" data-i18n="tutor.jieun.desc">전 항공사 승무원 · 비즈니스 한국어</p>
+        <div class="meta"><span class="star">★</span> 4.9 · <span data-i18n="tutor.jieun.reviews">후기 132개</span></div>
+      </div>
+    </button>
+
+    <button class="tutor-card" onclick="location.href='tutor-profile.html?id=hyunwoo'">
+      <div class="avatar" style="background:#6a4f8f;"></div>
+      <div class="info">
+        <div class="info-top"><p class="name">현우</p><p class="price">₩24,000<span data-i18n="unit.perLesson">/회</span></p></div>
+        <p class="desc" data-i18n="tutor.hyunwoo.desc">前 한국어교원 · TOPIK 전문</p>
+        <div class="meta"><span class="star">★</span> 5.0 · <span data-i18n="tutor.hyunwoo.reviews">후기 89개</span></div>
+      </div>
+    </button>
+
+    <button class="tutor-card" onclick="location.href='tutor-profile.html?id=soojin'">
+      <div class="avatar" style="background:#8f4f5f;"></div>
+      <div class="info">
+        <div class="info-top"><p class="name">수진</p><p class="price">₩22,000<span data-i18n="unit.perLesson">/회</span></p></div>
+        <p class="desc" data-i18n="tutor.soojin.desc">대학원생 · 일상 회화 전문</p>
+        <div class="meta"><span class="star">★</span> 4.8 · <span data-i18n="tutor.soojin.reviews">후기 61개</span></div>
+      </div>
+    </button>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <button class="nav-item" onclick="location.href='index.html'">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg>
+    <span data-i18n="nav.home">홈</span>
+  </button>
+  <button class="nav-item active" onclick="location.href='tutors.html'">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <span data-i18n="nav.tutors">튜터</span>
+  </button>
+  <button class="nav-item" onclick="location.href='curriculum.html'">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+    <span data-i18n="nav.curriculum">커리큘럼</span>
+  </button>
+  <button class="nav-item" onclick="location.href='blog.html'">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    <span data-i18n="nav.community">커뮤니티</span>
+  </button>
+  <button class="nav-item" onclick="location.href='mypage.html'">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span data-i18n="nav.mypage">마이페이지</span>
+  </button>
+</nav>
+
+<script>
+const TRANSLATIONS = {
+  ko: {
+    "tutors.level": "내 등급: 중급 2단계",
+    "tutors.count": "튜터 24명이 매칭됐어요",
+    "tutors.f.all": "전체", "tutors.f.rating": "평점순", "tutors.f.exam": "시험 대비", "tutors.f.biz": "비즈니스",
+    "unit.perLesson": "/회",
+    "tutor.jieun.desc": "전 항공사 승무원 · 비즈니스 한국어",
+    "tutor.jieun.reviews": "후기 132개",
+    "tutor.hyunwoo.desc": "前 한국어교원 · TOPIK 전문",
+    "tutor.hyunwoo.reviews": "후기 89개",
+    "tutor.soojin.desc": "대학원생 · 일상 회화 전문",
+    "tutor.soojin.reviews": "후기 61개",
+    "nav.home": "홈", "nav.tutors": "튜터", "nav.curriculum": "커리큘럼",
+    "nav.community": "커뮤니티", "nav.mypage": "마이페이지"
+  },
+  en: {
+    "tutors.level": "Your level: Intermediate stage 2",
+    "tutors.count": "24 tutors matched",
+    "tutors.f.all": "All", "tutors.f.rating": "Top rated", "tutors.f.exam": "Exam prep", "tutors.f.biz": "Business",
+    "unit.perLesson": "/lesson",
+    "tutor.jieun.desc": "Former flight attendant · Business Korean",
+    "tutor.jieun.reviews": "132 reviews",
+    "tutor.hyunwoo.desc": "Former Korean language teacher · TOPIK specialist",
+    "tutor.hyunwoo.reviews": "89 reviews",
+    "tutor.soojin.desc": "Grad student · Everyday conversation specialist",
+    "tutor.soojin.reviews": "61 reviews",
+    "nav.home": "Home", "nav.tutors": "Tutors", "nav.curriculum": "Curriculum",
+    "nav.community": "Community", "nav.mypage": "My page"
+  }
+};
+
+function applyLang(lang){
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const dict = TRANSLATIONS[lang] || TRANSLATIONS.ko;
+    if(dict[key] !== undefined){
+      el.innerHTML = dict[key];
+    }
+  });
+  document.getElementById('langCur').textContent = (lang === 'ko') ? '한국어' : 'English';
+  document.getElementById('langOther').textContent = (lang === 'ko') ? 'EN' : '한글';
+  localStorage.setItem('malmun_lang', lang);
+}
+
+(function initLang(){
+  const saved = localStorage.getItem('malmun_lang') || 'ko';
+  applyLang(saved);
+})();
+
+document.getElementById('langToggle').addEventListener('click', () => {
+  const current = localStorage.getItem('malmun_lang') || 'ko';
+  applyLang(current === 'ko' ? 'en' : 'ko');
+});
+
+const chips = document.querySelectorAll('.chip');
+chips.forEach(chip => {
+  chip.addEventListener('click', () => {
+    chips.forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    // 실제 서비스에서는 chip.dataset.filter 값으로 튜터 목록을 재정렬/필터링
+  });
+});
+</script>
+
+</body>
+</html>
