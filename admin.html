@@ -1581,12 +1581,12 @@ window.adminLogout = function() {
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label>1박 요금 (KRW)</label>
-        <input type="number" id="m-price-krw" placeholder="53000">
+        <label>1박 판매가 (PHP)</label>
+        <input type="number" id="m-price-php" placeholder="2100" oninput="updateAccomUsdPreview()">
       </div>
       <div class="form-group">
-        <label>1박 요금 (USD)</label>
-        <input type="number" id="m-price-usd" placeholder="45">
+        <label>달러 환산 (자동계산)</label>
+        <input type="text" id="m-price-usd-preview" disabled style="background:#f4f4f5;color:#6b7280;">
       </div>
     </div>
     <div class="form-group" style="margin-bottom:12px;">
@@ -1662,7 +1662,7 @@ function showTab(name, el) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('on'));
   document.getElementById('panel-' + name).classList.add('on');
   if(el) el.classList.add('on');
-  if (name === 'accommodation') renderAccomList();
+  if (name === 'accommodation') loadAccoms();
   if (name === 'greenfee') renderGreenfeeTbl();
   if (name === 'caddy') loadCaddyData();
   if (name === 'inquiry') { loadInquiries(); loadWebInquiries(); }
@@ -2279,11 +2279,13 @@ function previewLicenses() {
 
 /* ── 숙소 데이터 (localStorage 기반, Firebase 연동 준비) ── */
 const DEFAULT_ACCOMS = [
-  { id:'clarkton', type:'hotel', name:'클락턴 호텔',     stars:3, priceKRW:53000, priceUSD:38, location:'말라바나스, 앙헬레스 / 클락 도심', desc:'클락 도심에 위치한 3성급 호텔. 수영장과 편의시설 완비. 골프장 접근성 우수.\n\n1992년부터 독일 관리 체제로 운영. 파노라마 레스토랑, 수영장, 스파 완비.', amenities:'수영장,조식,주차,WiFi,스파,레스토랑', photos:[], active:true },
-  { id:'mango',    type:'hotel', name:'망고 스위트',     stars:4, priceKRW:34000, priceUSD:24, location:'시티센터, 앙헬레스 / 클락 도심 1.9km', desc:'4성급 스위트 호텔. 넓은 객실과 현대적 시설. 가족 여행에 최적.\n\n클락 프리포트 존에서 차로 5분. 무료 주차 및 WiFi 제공.', amenities:'수영장,조식,주차,WiFi,에어컨,엘리베이터', photos:[], active:true },
-  { id:'emmaus',   type:'hotel', name:'엠마우스 콘도텔', stars:3, priceKRW:32000, priceUSD:23, location:'말라바나스, 앙헬레스 / 클락 도심 0.1km', desc:'도심 바로 위치한 콘도텔. 조용한 환경. 장기 체류에 적합.\n\nSM City Clark 도보 5분. 평점 8.2. 한국 교민 인기 숙소.', amenities:'주차,WiFi,에어컨,세탁,레스토랑,24시간프런트', photos:[], active:true },
-  { id:'oasis',    type:'hotel', name:'오아시스 호텔',   stars:3, priceKRW:73000, priceUSD:52, location:'말라바나스, 앙헬레스 / 클락 도심', desc:'넓은 수영장과 열대 정원이 있는 조용한 컴파운드 호텔.\n\n조식 뷔페 포함. 공항 5분 거리. 골프장 픽업 가능.', amenities:'수영장,조식,주차,WiFi,스파,풀바,레스토랑', photos:[], active:true }
+  { id:'clarkton', type:'hotel', name:'클락턴 호텔',     stars:3, pricePHP:2020, priceUSD:38, location:'말라바나스, 앙헬레스 / 클락 도심', desc:'클락 도심에 위치한 3성급 호텔. 수영장과 편의시설 완비. 골프장 접근성 우수.\n\n1992년부터 독일 관리 체제로 운영. 파노라마 레스토랑, 수영장, 스파 완비.', amenities:'수영장,조식,주차,WiFi,스파,레스토랑', photos:[], active:true },
+  { id:'mango',    type:'hotel', name:'망고 스위트',     stars:4, pricePHP:1280, priceUSD:24, location:'시티센터, 앙헬레스 / 클락 도심 1.9km', desc:'4성급 스위트 호텔. 넓은 객실과 현대적 시설. 가족 여행에 최적.\n\n클락 프리포트 존에서 차로 5분. 무료 주차 및 WiFi 제공.', amenities:'수영장,조식,주차,WiFi,에어컨,엘리베이터', photos:[], active:true },
+  { id:'emmaus',   type:'hotel', name:'엠마우스 콘도텔', stars:3, pricePHP:1220, priceUSD:23, location:'말라바나스, 앙헬레스 / 클락 도심 0.1km', desc:'도심 바로 위치한 콘도텔. 조용한 환경. 장기 체류에 적합.\n\nSM City Clark 도보 5분. 평점 8.2. 한국 교민 인기 숙소.', amenities:'주차,WiFi,에어컨,세탁,레스토랑,24시간프런트', photos:[], active:true },
+  { id:'oasis',    type:'hotel', name:'오아시스 호텔',   stars:3, pricePHP:2770, priceUSD:52, location:'말라바나스, 앙헬레스 / 클락 도심', desc:'넓은 수영장과 열대 정원이 있는 조용한 컴파운드 호텔.\n\n조식 뷔페 포함. 공항 5분 거리. 골프장 픽업 가능.', amenities:'수영장,조식,주차,WiFi,스파,풀바,레스토랑', photos:[], active:true }
 ];
+// 2026-07-27: pricePHP는 기존 USD 값을 환율(~53.2)로 역산한 임시값입니다.
+// 실제 아고다 필리핀(현지) 요금으로 한 번씩 다시 확인해서 저장해 주세요.
 
 // 2026-07-19: iClark 전용숙소 폐업 — 이미 브라우저에 저장되어 있던 기존 캐시에서도 완전히 제거
 (function(){
@@ -2297,11 +2299,70 @@ const DEFAULT_ACCOMS = [
 })();
 
 function getAccoms() {
-  const saved = localStorage.getItem('iclark_accoms');
-  return saved ? JSON.parse(saved) : DEFAULT_ACCOMS;
+  return _accomsCache || (function(){
+    const saved = localStorage.getItem('iclark_accoms');
+    return saved ? JSON.parse(saved) : DEFAULT_ACCOMS;
+  })();
 }
-function saveAccoms(data) {
+function saveAccomsCache(data) {
+  _accomsCache = data;
   localStorage.setItem('iclark_accoms', JSON.stringify(data));
+}
+
+/* ── 숙소 Firebase 연동 (2026-07-27: localStorage 전용이던 것을 Firestore로 전환.
+   이전에는 admin에서 저장해도 이 브라우저에만 남고 실제 사이트(index.html·quote.html)에는
+   전혀 반영이 안 되고 있었음 — 아래처럼 그린피·패키지카드와 동일한 방식으로 고침) ── */
+let _accomsCache = null;
+let _accomDB = null;
+
+async function initAccomDB() {
+  if (_accomDB) return _accomDB;
+  const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+  const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+  const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+  const app = getApps().find(a=>a.name==='admin-auth') || initializeApp(cfg,'admin-auth');
+  _accomDB = getFirestore(app);
+  return _accomDB;
+}
+
+function getAppliedRate() {
+  try {
+    const s = localStorage.getItem('iclark_exchange');
+    if (s) { const d = JSON.parse(s); if (d.appliedUsdPhp) return d; }
+  } catch(e) {}
+  return null;
+}
+
+function updateAccomUsdPreview() {
+  const php = parseFloat(document.getElementById('m-price-php').value) || 0;
+  const rate = getAppliedRate();
+  const el = document.getElementById('m-price-usd-preview');
+  if (!rate) { el.value = '환율 설정 필요 (환율·마진 탭에서 저장)'; return; }
+  const usd = Math.ceil(php / rate.appliedUsdPhp);
+  el.value = '$' + usd + '  (1$ = ' + rate.appliedUsdPhp.toFixed(2) + ' PHP 기준)';
+}
+
+async function loadAccoms() {
+  const container = document.getElementById('accom-list');
+  if (container) container.innerHTML = '<div style="text-align:center;padding:20px;color:#9ca3af;">불러오는 중... ⏳</div>';
+  try {
+    const db = await initAccomDB();
+    const { collection, getDocs, setDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDocs(collection(db, 'accommodations'));
+    let accoms = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (accoms.length === 0) {
+      for (const a of DEFAULT_ACCOMS) {
+        await setDoc(doc(db, 'accommodations', a.id), a);
+      }
+      accoms = DEFAULT_ACCOMS;
+    }
+    saveAccomsCache(accoms);
+  } catch(e) {
+    console.error('숙소 목록 Firebase 불러오기 실패 — 캐시/기본값 사용:', e);
+    const saved = localStorage.getItem('iclark_accoms');
+    _accomsCache = saved ? JSON.parse(saved) : DEFAULT_ACCOMS;
+  }
+  renderAccomList();
 }
 
 /* ── 숙소 렌더링 (패키지 썸네일 카드) ── */
@@ -2337,10 +2398,10 @@ function renderAccomList() {
       ? `<img src="${thumbSrc}" alt="${a.name}" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'thumb-emoji\\'>${emoji}</span>'">`
       : `<span class="thumb-emoji">${emoji}</span>`;
 
-    /* 가격 표시 */
+    /* 가격 표시 — 골프장 요금표와 동일하게 PHP 원가 + 환산 달러 병기 */
     const priceStr = a.type==='local'
       ? `<span style="font-size:11px;font-weight:600;color:#6b7280;">ALL-IN </span>$${a.priceUSD}<span style="font-size:11px;">/일</span>`
-      : `₩${Number(a.priceKRW).toLocaleString()}<span style="font-size:11px;">/박</span>`;
+      : `₱${Number(a.pricePHP||0).toLocaleString()}<span style="font-size:11px;">/박</span> <span style="font-size:11px;color:#6b7280;">(≈$${a.priceUSD||0})</span>`;
 
     return `
     <div class="accom-item">
@@ -2379,8 +2440,7 @@ function openAccomModal(id) {
       document.getElementById('m-name').value = a.name;
       document.getElementById('m-type').value = a.type;
       document.getElementById('m-stars').value = a.stars;
-      document.getElementById('m-price-krw').value = a.priceKRW;
-      document.getElementById('m-price-usd').value = a.priceUSD;
+      document.getElementById('m-price-php').value = a.pricePHP || '';
       document.getElementById('m-location').value = a.location;
       document.getElementById('m-desc').value = a.desc;
       document.getElementById('m-amenities').value = a.amenities;
@@ -2388,13 +2448,14 @@ function openAccomModal(id) {
       const photos = a.photos && a.photos.length ? a.photos.join('\n') : '';
       document.getElementById('m-photos').value = photos;
       previewPhotoUrls(photos);
+      updateAccomUsdPreview();
     }
   } else {
     document.getElementById('m-name').value = '';
     document.getElementById('m-type').value = 'hotel';
     document.getElementById('m-stars').value = '3';
-    document.getElementById('m-price-krw').value = '';
-    document.getElementById('m-price-usd').value = '';
+    document.getElementById('m-price-php').value = '';
+    document.getElementById('m-price-usd-preview').value = '';
     document.getElementById('m-location').value = '';
     document.getElementById('m-desc').value = '';
     document.getElementById('m-amenities').value = '';
@@ -2411,42 +2472,55 @@ function closeAccomModal() {
   document.getElementById('accom-modal').classList.remove('on');
 }
 
-function saveAccom() {
-  const accoms = getAccoms();
+async function saveAccom() {
+  const accoms = getAccoms().slice();
   const photoUrls = (document.getElementById('m-photos').value || '')
     .split('\n').map(s=>s.trim()).filter(Boolean);
+  const id = editingAccomId || 'accom_' + Date.now();
+  const pricePHP = parseInt(document.getElementById('m-price-php').value) || 0;
+  const rate = getAppliedRate();
+  const priceUSD = rate ? Math.ceil(pricePHP / rate.appliedUsdPhp) : 0;
   const data = {
-    id:        editingAccomId || 'accom_' + Date.now(),
+    id:        id,
     type:      document.getElementById('m-type').value,
     name:      document.getElementById('m-name').value,
     stars:     parseInt(document.getElementById('m-stars').value),
-    priceKRW:  parseInt(document.getElementById('m-price-krw').value) || 0,
-    priceUSD:  parseInt(document.getElementById('m-price-usd').value) || 0,
+    pricePHP:  pricePHP,
+    priceUSD:  priceUSD,
     location:  document.getElementById('m-location').value,
     desc:      document.getElementById('m-desc').value,
     amenities: document.getElementById('m-amenities').value,
     photos:    photoUrls,
     active:    document.getElementById('m-active').checked
   };
-  if (editingAccomId) {
-    const idx = accoms.findIndex(x => x.id === editingAccomId);
-    if (idx >= 0) accoms[idx] = data;
-  } else {
-    accoms.push(data);
-  }
-  saveAccoms(accoms);
-  closeAccomModal();
+  const idx = accoms.findIndex(x => x.id === id);
+  if (idx >= 0) accoms[idx] = data; else accoms.push(data);
+  saveAccomsCache(accoms);
   renderAccomList();
-  alert('✅ 저장됐어요!');
+  closeAccomModal();
+  try {
+    const db = await initAccomDB();
+    const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await setDoc(doc(db, 'accommodations', id), data);
+    alert('✅ 저장됐어요! (모든 기기·사이트에 반영됩니다)');
+  } catch(e) {
+    alert('⚠️ 이 브라우저에는 저장됐지만 Firebase 동기화에 실패했어요: ' + e.message);
+  }
 }
 
-function toggleAccom(id) {
-  const accoms = getAccoms();
+async function toggleAccom(id) {
+  const accoms = getAccoms().slice();
   const idx = accoms.findIndex(x => x.id === id);
-  if (idx >= 0) {
-    accoms[idx].active = !accoms[idx].active;
-    saveAccoms(accoms);
-    renderAccomList();
+  if (idx < 0) return;
+  accoms[idx] = { ...accoms[idx], active: !accoms[idx].active };
+  saveAccomsCache(accoms);
+  renderAccomList();
+  try {
+    const db = await initAccomDB();
+    const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await updateDoc(doc(db, 'accommodations', id), { active: accoms[idx].active });
+  } catch(e) {
+    console.error('활성 상태 Firebase 동기화 실패:', e);
   }
 }
 

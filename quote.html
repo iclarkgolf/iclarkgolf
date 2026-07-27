@@ -646,7 +646,10 @@ async function loadGolfPricingFromFirebase() {
    반영되지 않았음. 아래 함수가 admin과 동일한 Firestore 컬렉션
    (accommodations)을 직접 읽어와 목록·가격을 실제 값으로 교체한다.
    1박 요금은 "객실 1개" 기준(인원수 무관)이며, "아고다에서 직접 선택"
-   옵션만 예외적으로 1인 기준 커스텀 입력을 유지한다. */
+   옵션만 예외적으로 1인 기준 커스텀 입력을 유지한다.
+   2026-07-27: 다른 항목(골프장)과 마찬가지로 원가는 PHP(페소)로 저장하고,
+   settings/exchange의 현재 환율로 매번 실시간 환산해서 달러로 표시하도록
+   통일 — admin에서 환율을 갱신하면 quote.html에도 자동 반영됨. */
 async function loadAccommodations() {
   try {
     const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
@@ -659,13 +662,17 @@ async function loadAccommodations() {
     snap.forEach(docSnap => {
       const d = docSnap.data();
       if (d.active === false) return;
+      const isLocal = d.type === 'local';
+      const price = isLocal
+        ? (Number(d.priceUSD) || 0)
+        : (d.pricePHP != null ? phpToUsd(Number(d.pricePHP) || 0) : (Number(d.priceUSD) || 0));
       list.push({
         id: docSnap.id,
-        icon: d.type === 'local' ? '🏠' : '🏨',
+        icon: isLocal ? '🏠' : '🏨',
         name: d.name || '',
         note: [d.location, d.stars ? '⭐'.repeat(d.stars) : ''].filter(Boolean).join(' · '),
-        price: Number(d.priceUSD) || 0,
-        local: d.type === 'local',
+        price,
+        local: isLocal,
       });
     });
     if (list.length) {
