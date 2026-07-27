@@ -640,8 +640,45 @@ async function loadGolfPricingFromFirebase() {
   }
 }
 
+/* ── 숙소 목록·가격 실시간 연동 (admin "🏨 숙소 관리" 탭과 동기화) ──
+   기존 문제: HOTELS가 DEFAULT_HOTELS로 고정되어 있어서, admin 숙소 관리
+   탭에서 호텔을 추가·삭제하거나 1박 요금을 바꿔도 quote.html에는 전혀
+   반영되지 않았음. 아래 함수가 admin과 동일한 Firestore 컬렉션
+   (accommodations)을 직접 읽어와 목록·가격을 실제 값으로 교체한다.
+   1박 요금은 "객실 1개" 기준(인원수 무관)이며, "아고다에서 직접 선택"
+   옵션만 예외적으로 1인 기준 커스텀 입력을 유지한다. */
+async function loadAccommodations() {
+  try {
+    const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const { getFirestore, collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const cfg = { apiKey:'AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU', authDomain:'iclarkgolf.firebaseapp.com', projectId:'iclarkgolf' };
+    const app = getApps().length ? getApps()[0] : initializeApp(cfg);
+    const db = getFirestore(app);
+    const snap = await getDocs(collection(db, 'accommodations'));
+    const list = [];
+    snap.forEach(docSnap => {
+      const d = docSnap.data();
+      if (d.active === false) return;
+      list.push({
+        id: docSnap.id,
+        icon: d.type === 'local' ? '🏠' : '🏨',
+        name: d.name || '',
+        note: [d.location, d.stars ? '⭐'.repeat(d.stars) : ''].filter(Boolean).join(' · '),
+        price: Number(d.priceUSD) || 0,
+        local: d.type === 'local',
+      });
+    });
+    if (list.length) {
+      list.push({ id:'h4', icon:'🔍', name:'아고다에서 직접 선택', note:'날짜 확인 후 요금 직접 입력', price:0, custom:true });
+      HOTELS = list;
+    }
+  } catch(e) {
+    console.error('숙소 목록 실시간 동기화 실패 — 기존(고정) 값 사용:', e);
+  }
+}
+
 /* ── 상태 ── */
-let selPurpose=null, selHotel=null, selGolf={}, selCheck={}, pax={g:2,n:0};
+let selPurpose=null, selHotel=null, selGolf={}, selCheck={}, pax={g:2,n:0}, hotelNights=1;
 
 /* ── 아코디언 ── */
 function toggleSec(name) {
@@ -726,20 +763,38 @@ function renderHotels() {
         <div class="hotel-info">
           <div class="hotel-name">${h.name}${h.tag?'<span class="hotel-tag">'+h.tag+'</span>':''}</div>
           <div class="hotel-note">${h.note}</div>
-          ${!h.custom?'<div class="hotel-price">'+(h.local?'$'+h.price+'/일 (올인클루시브)':'참고 $'+h.price+'~ / 1박 1인')+'</div>':''}
+          ${!h.custom?'<div class="hotel-price">'+(h.local?'$'+h.price+'/일 (올인클루시브)':'참고 $'+h.price+'~ / 1박 (객실 1개 기준)')+'</div>':''}
           ${!h.local&&!h.custom?'<a href="https://www.agoda.com/ko-kr/search?city=18875'+(a?'&checkIn='+a:'')+(d?'&checkOut='+d:'')+'&rooms=1&adults='+pax.g+'&locale=ko-kr&currency=KRW" target="_blank" onclick="event.stopPropagation()" style="font-size:12px;color:#534AB7;font-weight:700;">아고다에서 요금 확인 →</a>':''}
         </div>
         <div class="hotel-check">${selHotel===h.id?'✓':''}</div>
       </div>
+      ${selHotel===h.id?`<div class="rounds-ctrl" onclick="event.stopPropagation()">
+        <span class="rounds-label">숙박 박수</span>
+        <button class="sq-btn" onclick="changeHotelNights(-1)">−</button>
+        <span class="sq-num">${hotelNights}</span>
+        <button class="sq-btn" onclick="changeHotelNights(1)">+</button>
+        <span style="font-size:11px;color:var(--muted)">박</span>
+      </div>`:''}
     </div>`).join('');
   document.getElementById('custom-price-row').style.display =
     selHotel&&HOTELS.find(x=>x.id===selHotel)?.custom ? 'block' : 'none';
 }
 
 function selectHotel(id) {
+  const turningOn = selHotel !== id;
   selHotel = selHotel===id ? null : id;
+  if (turningOn && selHotel) {
+    const dn = getNights();
+    if (dn > 0) hotelNights = dn;
+  }
   const h = HOTELS.find(x=>x.id===selHotel);
   document.getElementById('hotel-summary').textContent = h ? h.name : '호텔 또는 iClark 전용숙소';
+  renderHotels();
+  renderCart();
+}
+
+function changeHotelNights(delta) {
+  hotelNights = Math.max(1, (hotelNights||1) + delta);
   renderHotels();
   renderCart();
 }
@@ -855,12 +910,14 @@ function renderCart() {
 
   if(selHotel){
     const h=HOTELS.find(x=>x.id===selHotel);
+    const hn=Math.max(1,hotelNights||1);
     let amt=0;
-    if(h.custom){amt=(parseFloat(document.getElementById('custom-hotel-price').value)||0)*nights*totalPax;}
-    else if(h.local){amt=h.price*nights*pax.g;}
-    else{amt=h.price*nights*totalPax;}
+    if(h.custom){amt=(parseFloat(document.getElementById('custom-hotel-price').value)||0)*hn*totalPax;}
+    else if(h.local){amt=h.price*hn*pax.g;}
+    else{amt=h.price*hn;}
+    const subLabel = h.custom?(hn+'박 × '+totalPax+'명') : h.local?(hn+'박 × 골퍼 '+pax.g+'명') : (hn+'박 (객실 1개 기준)');
     html+=`<div class="c-label">숙박</div>
-    <div class="c-row"><span class="c-name">${h.icon} ${h.name}<br><span style="font-size:10px">${nights}박${h.local?' × 골퍼 '+pax.g+'명':' × '+totalPax+'명'}</span></span><span class="c-amt">$${amt}</span></div>`;
+    <div class="c-row"><span class="c-name">${h.icon} ${h.name}<br><span style="font-size:10px">${subLabel}</span></span><span class="c-amt">$${amt}</span></div>`;
     total+=amt;
   }
 
@@ -937,6 +994,7 @@ function renderAll() {
 (async function initQuotePage() {
   await loadQuoteConfig();
   await loadGolfPricingFromFirebase();
+  await loadAccommodations();
 
   const p = new URLSearchParams(location.search);
   const hotelParam = p.get('hotel');
