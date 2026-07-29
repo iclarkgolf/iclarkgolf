@@ -1218,6 +1218,8 @@ window.adminLogout = function() {
           <button onclick="ceFormatSch('insertOrderedList')" title="번호 목록" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;">1. 목록</button>
           <div style="width:1px;background:#e5e7eb;margin:0 2px;"></div>
           <button onclick="ceFormatSch('hr')" title="구분선" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;">— 구분선</button>
+          <div style="width:1px;background:#e5e7eb;margin:0 2px;"></div>
+          <button onclick="ceCleanupEditor('ce-schedule-editor')" title="붙여넣기로 섞인 폰트·크기를 통일시킵니다" style="padding:6px 10px;background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">🧹 서식 정리</button>
           <select onchange="ceSchFontSize(this.value);this.value=''" style="padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;background:#f4f4f5;">
             <option value="">글자 크기</option>
             <option value="1">아주 작게</option>
@@ -1309,6 +1311,7 @@ window.adminLogout = function() {
           <button onclick="ceInsertImg()" title="사진 삽입" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;">🖼 사진</button>
           <button onclick="ceInsertLink()" title="링크 삽입" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;">🔗 링크</button>
           <button onclick="ceOpenHtmlModal()" title="HTML 코드 붙여넣기" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;">🧩 HTML 소스</button>
+          <button onclick="ceCleanupEditor('ce-editor')" title="붙여넣기로 섞인 폰트·크기를 통일시킵니다" style="padding:6px 10px;background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">🧹 서식 정리</button>
           <!-- 폰트 크기 -->
           <select onchange="ceFontSize(this.value);this.value=''" style="padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;background:#f4f4f5;">
             <option value="">글자 크기</option>
@@ -2232,6 +2235,73 @@ async function saveCard() {
     msg.textContent = '⚠️ 저장 실패: ' + e.message;
   }
 }
+
+// ── 붙여넣기 서식 통일 ──────────────────────────────
+// 다른 곳(채팅, 워드, 블로그 등)에서 글을 복사해 붙여넣으면 원래 있던 폰트·크기·색상이
+// 그대로 딸려 들어와서 글씨체가 제각각이 되는 문제를 막는다.
+// 제목(H2/H3)·굵게·기울임·밑줄·취소선·목록·줄바꿈·링크·이미지 같은 "구조"는 그대로 살리고,
+// 폰트 종류·글자 크기·글자 색깔 같은 "겉모양"만 제거해서 에디터 기본 스타일로 통일시킨다.
+const CE_PASTE_ALLOWED_TAGS = new Set(['H2','H3','B','STRONG','I','EM','U','S','STRIKE','UL','OL','LI','BR','P','DIV','A','IMG','HR']);
+function ceSanitizePastedHTML(html) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  function walk(node) {
+    [...node.childNodes].forEach(child => {
+      if (child.nodeType !== 1) return; // 텍스트 노드는 그대로 둠
+      const tag = child.tagName;
+      if (tag === 'FONT' || tag === 'SPAN' || tag === 'STYLE' || tag === 'SCRIPT' || tag === 'META' || tag === 'LINK') {
+        // 겉모양 태그는 벗겨내고 그 안의 내용(텍스트·자식 태그)만 그 자리에 남긴다
+        while (child.firstChild) child.parentNode.insertBefore(child.firstChild, child);
+        const next = child.nextSibling;
+        child.parentNode.removeChild(child);
+        if (next) walk(next.parentNode); // 이동된 자식들도 이어서 정리
+        return;
+      }
+      if (!CE_PASTE_ALLOWED_TAGS.has(tag)) {
+        // 목록에 없는 태그(TABLE, H1, H4~H6 등)도 구조만 풀고 내용은 살린다
+        while (child.firstChild) child.parentNode.insertBefore(child.firstChild, child);
+        child.parentNode.removeChild(child);
+        return;
+      }
+      // 남기는 태그라도 style/class/font 관련 속성은 전부 제거 — href/src만 예외로 유지
+      [...child.attributes].forEach(attr => {
+        const keep = (tag === 'A' && ['href','target','rel'].includes(attr.name)) ||
+                     (tag === 'IMG' && ['src','alt'].includes(attr.name));
+        if (!keep) child.removeAttribute(attr.name);
+      });
+      if (tag === 'A') { child.setAttribute('target','_blank'); child.setAttribute('rel','noopener'); }
+      walk(child);
+    });
+  }
+  walk(doc.body);
+  return doc.body.innerHTML;
+}
+function ceAttachSanitizedPaste(editorId) {
+  const editor = document.getElementById(editorId);
+  if (!editor) return;
+  editor.addEventListener('paste', function(e) {
+    e.preventDefault();
+    const cd = e.clipboardData || window.clipboardData;
+    const html = cd.getData('text/html');
+    const text = cd.getData('text/plain');
+    let clean;
+    if (html) {
+      clean = ceSanitizePastedHTML(html);
+    } else {
+      clean = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+    }
+    document.execCommand('insertHTML', false, clean);
+  });
+}
+function ceCleanupEditor(editorId) {
+  const editor = document.getElementById(editorId);
+  if (!editor) return;
+  if (!confirm('지금 이 글에 섞여있는 폰트·크기·색상을 모두 지우고 통일된 스타일로 정리할까요?\n(제목·굵게·목록 같은 구조는 그대로 유지됩니다)')) return;
+  editor.innerHTML = ceSanitizePastedHTML(editor.innerHTML);
+}
+document.addEventListener('DOMContentLoaded', () => {
+  ceAttachSanitizedPaste('ce-editor');
+  ceAttachSanitizedPaste('ce-schedule-editor');
+});
 
 // 에디터 툴바 함수
 function ceFormat(type) {
