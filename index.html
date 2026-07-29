@@ -1142,18 +1142,18 @@ function renderCards(cards) {
       <!-- 썸네일: 사진만 -->
       <div style="background:#000;position:relative;height:200px;overflow:hidden;">
         ${c.heroImg ? `<img src="${c.heroImg}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center ${c.heroImgPosY !== undefined ? c.heroImgPosY : 50}%;display:block;" loading="lazy">` : '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40px;">⛳</div>'}
-        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.15) 0%,rgba(0,0,0,0.05) 30%,rgba(0,0,0,0.55) 100%);"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.45) 0%,rgba(0,0,0,0.20) 35%,rgba(0,0,0,0.70) 100%);"></div>
         <!-- 오버레이 텍스트: flex 세로쌓기로 겹침 방지, 각 줄은 말줄임 처리 -->
         <div style="position:absolute;inset:0;padding:14px;display:flex;flex-direction:column;overflow:hidden;">
-          <div style="font-size:11px;color:#fff;letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 4px rgba(0,0,0,0.6);flex-shrink:0;">${c.tag||''}</div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:#fff;line-height:1.05;letter-spacing:.02em;text-shadow:0 2px 8px rgba(0,0,0,0.6);margin-top:4px;flex-shrink:0;
+          <div style="font-size:11px;color:#fff;letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,0.9),0 2px 6px rgba(0,0,0,0.7);flex-shrink:0;">${c.tag||''}</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:#fff;line-height:1.05;letter-spacing:.02em;text-shadow:0 1px 3px rgba(0,0,0,0.9),0 3px 10px rgba(0,0,0,0.7);margin-top:4px;flex-shrink:0;
             display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;">${c.titleEn||''}</div>
           <div style="display:flex;align-items:center;gap:5px;margin-top:6px;flex-shrink:0;overflow:hidden;">
-            <span style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 4px rgba(0,0,0,0.6);max-width:60%;">${c.sub1||''}</span>
+            <span style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,0.9),0 2px 6px rgba(0,0,0,0.7);max-width:60%;">${c.sub1||''}</span>
             ${c.sub1&&c.sub2 ? '<span style="width:4px;height:4px;border-radius:50%;background:#fff;display:inline-block;flex-shrink:0;"></span>' : ''}
-            <span style="font-size:13px;font-weight:300;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 4px rgba(0,0,0,0.6);">${c.sub2||''}</span>
+            <span style="font-size:13px;font-weight:300;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,0.9),0 2px 6px rgba(0,0,0,0.7);">${c.sub2||''}</span>
           </div>
-          <div style="font-size:12px;color:#fff;line-height:1.6;text-shadow:0 1px 3px rgba(0,0,0,0.6);margin-top:6px;flex:1;
+          <div style="font-size:12px;color:#fff;line-height:1.6;text-shadow:0 1px 2px rgba(0,0,0,0.9),0 2px 5px rgba(0,0,0,0.7);margin-top:6px;flex:1;
             display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${(c.copy||'').replace(/\n/g,' ')}</div>
         </div>
       </div>
