@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>수업 예약 | 말문</title>
+<style>
+  :root{
+    --bg: #FFF9F0;
+    --card: #FFFFFF;
+    --card-border: #E8E4D8;
+    --text: #2C2C2A;
+    --text-secondary: #5F5E5A;
+    --text-muted: #8A8880;
+    --accent: #EF9F27;
+    --accent-text: #412402;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh; display:flex; flex-direction:column;
+  }
+  a{ color:inherit; text-decoration:none; }
+  .wrap{ max-width:480px; margin:0 auto; width:100%; padding:0 20px; flex:1; display:flex; flex-direction:column; }
+
+  .topbar{ display:flex; align-items:center; justify-content:space-between; padding:24px 0 16px; gap:10px; }
+  .topbar button{ background:none; border:none; color:var(--text-secondary); cursor:pointer; padding:0; display:flex; }
+  .topbar .title{ font-size:14px; font-weight:600; }
+  #langToggle{
+    background:none; border:1px solid var(--card-border); color:var(--text-secondary);
+    border-radius:16px; padding:6px 12px; font-size:12px; font-weight:600;
+    cursor:pointer; display:flex; align-items:center; gap:4px;
+  }
+  #langToggle .cur{ color:var(--text); }
+
+  .tutor-summary{ display:flex; align-items:center; gap:12px; padding:0 0 20px; }
+  .tutor-summary .avatar{ width:40px; height:40px; border-radius:50%; background:#3b5f8f; flex-shrink:0; }
+  .tutor-summary p{ margin:0; }
+  .tutor-summary .main{ font-size:14px; color:var(--text); }
+  .tutor-summary .sub{ font-size:12px; color:var(--text-muted); margin-top:2px; }
+
+  .label{ font-size:12px; color:var(--text-secondary); margin:0 0 10px; }
+  .days{ display:flex; gap:8px; flex-wrap:wrap; padding:0 0 18px; }
+  .day{
+    border:1px solid var(--card-border); color:var(--text-secondary);
+    font-size:13px; padding:9px 12px; border-radius:10px; cursor:pointer; background:#fff; min-width:44px; text-align:center;
+  }
+  .day.selected{ background:var(--accent); color:var(--accent-text); border:none; font-weight:600; }
+  .day.disabled{ color:var(--text-muted); background:#f2efe6; cursor:not-allowed; border-color:var(--card-border); }
+
+  .slots{ display:flex; gap:8px; flex-wrap:wrap; padding:0 0 24px; }
+  .slot{
+    border:1px solid var(--card-border); color:var(--text-secondary);
+    font-size:13px; padding:9px 14px; border-radius:10px; cursor:pointer; background:#fff;
+  }
+  .slot.selected{ background:var(--accent); color:var(--accent-text); border:none; font-weight:600; }
+  .slot.booked{ color:var(--text-muted); background:#f2efe6; cursor:not-allowed; text-decoration:line-through; }
+  .empty-note{ font-size:12px; color:var(--text-muted); padding:0 0 18px; }
+
+  .login-gate{ background:var(--card); border:1px solid var(--card-border); border-radius:14px; padding:16px; margin-bottom:24px; }
+  .login-gate p{ font-size:13px; color:var(--text); margin:0 0 12px; }
+  .login-option{
+    border:1px solid var(--card-border); border-radius:10px; padding:12px;
+    text-align:center; font-size:13px; color:var(--text); margin-bottom:8px; cursor:pointer; background:#fff; width:100%;
+  }
+
+  .summary{ margin-top:auto; padding:14px 0 32px; border-top:0.5px solid var(--card-border); }
+  .summary-row{ display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px; }
+  .summary-row.discount{ color:var(--accent); margin-bottom:14px; }
+  .summary-row .label2{ color:var(--text-secondary); }
+  .pay-btn{
+    display:block; width:100%; text-align:center; padding:15px; border-radius:12px;
+    font-size:15px; font-weight:600; cursor:pointer; border:none;
+    background:var(--accent); color:var(--accent-text);
+  }
+  .pay-btn:disabled{ background:#e8e4d8; color:#a8a49a; cursor:not-allowed; }
+  .loading{ text-align:center; color:var(--text-muted); font-size:13px; padding:60px 0; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="topbar">
+    <button onclick="location.href='tutor-profile.html?id=' + currentTutorId" aria-label="뒤로가기">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    </button>
+    <span class="title" data-i18n="booking.title">수업 예약</span>
+    <button id="langToggle" aria-label="언어 전환">
+      <span class="cur" id="langCur">한국어</span> / <span id="langOther">EN</span>
+    </button>
+  </div>
+
+  <div id="bookingBody">
+    <p class="loading">불러오는 중...</p>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyD10IdHCDkCybMrkO5fewo0ksYFBmqwWro",
+  authDomain: "malmun-bca03.firebaseapp.com",
+  projectId: "malmun-bca03",
+  storageBucket: "malmun-bca03.firebasestorage.app",
+  messagingSenderId: "831462084669",
+  appId: "1:831462084669:web:003a844918b165d5b65a54"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+const urlParams = new URLSearchParams(window.location.search);
+const currentTutorId = urlParams.get('tutor') || urlParams.get('id');
+
+const DAYS = [
+  { id: 'mon', ko: '월', en: 'Mon' },
+  { id: 'tue', ko: '화', en: 'Tue' },
+  { id: 'wed', ko: '수', en: 'Wed' },
+  { id: 'thu', ko: '목', en: 'Thu' },
+  { id: 'fri', ko: '금', en: 'Fri' },
+  { id: 'sat', ko: '토', en: 'Sat' }
+];
+const TIMES = ['10:00', '14:00', '17:00', '19:00', '21:00'];
+
+let tutorData = null;
+let selectedDay = null;
+let selectedTime = null;
+let isFirstLesson = false;
+let currentFinalPrice = 0;
+let currentLang = localStorage.getItem('malmun_lang') || 'ko';
+
+// ── 크레딧 시스템 (pricing.html·mypage.html과 동일한 값 유지) ──
+const SESSION_PRICE = 30000; // 통일된 회당 정가 — 튜터별 개별 가격(tutorData.price)은 더 이상 사용하지 않음
+let creditBalance = 0;
+let availableLots = []; // { ref, remainingSessions } — 오래된 순으로 정렬, 예약 확정 시 FIFO로 차감
+
+function fmtKRW(n){ return '₩' + Number(n || 0).toLocaleString('en-US'); }
+
+const TRANSLATIONS = {
+  ko: {
+    "booking.title": "수업 예약",
+    "booking.chooseDay": "요일 선택",
+    "booking.chooseTime": "시간 선택",
+    "booking.loginNeeded": "예약을 완료하려면 로그인이 필요해요",
+    "booking.google": "Google로 계속하기",
+    "booking.email": "이메일로 계속하기",
+    "booking.fee": "수업료",
+    "booking.discount": "첫 수업 무료 오리엔테이션",
+    "booking.noSlots": "이 튜터는 아직 등록된 예약 가능 시간이 없어요. 잠시 후 다시 확인해주세요.",
+    "booking.notFound": "튜터 정보를 찾을 수 없어요",
+    "booking.creditUse": "크레딧 1회 사용",
+    "booking.noCreditMsg": "보유 크레딧이 없어요. 먼저 충전해주세요.",
+    "booking.goCharge": "크레딧 충전하러 가기"
+  },
+  en: {
+    "booking.title": "Book a lesson",
+    "booking.chooseDay": "Choose a day",
+    "booking.chooseTime": "Choose a time",
+    "booking.loginNeeded": "Log in to complete your booking",
+    "booking.google": "Continue with Google",
+    "booking.email": "Continue with email",
+    "booking.fee": "Lesson fee",
+    "booking.discount": "First lesson free (orientation)",
+    "booking.noSlots": "This tutor has no bookable times yet. Please check back soon.",
+    "booking.notFound": "Could not find this tutor",
+    "booking.creditUse": "Uses 1 credit",
+    "booking.noCreditMsg": "You have no credits left. Please charge up first.",
+    "booking.goCharge": "Get credits"
+  }
+};
+
+function tr(key){
+  const dict = TRANSLATIONS[currentLang] || TRANSLATIONS.ko;
+  return dict[key] !== undefined ? dict[key] : key;
+}
+
+function buildBookingUI(){
+  const bodyEl = document.getElementById('bookingBody');
+  bodyEl.innerHTML = `
+    <div class="tutor-summary">
+      <div class="avatar" id="tutorAvatar"></div>
+      <div>
+        <p class="main" id="tutorSummaryName"></p>
+        <p class="sub" id="tutorSummaryType"></p>
+      </div>
+    </div>
+
+    <p class="label" data-i18n="booking.chooseDay">요일 선택</p>
+    <div class="days" id="days"></div>
+
+    <p class="label" data-i18n="booking.chooseTime">시간 선택</p>
+    <div class="slots" id="slots"></div>
+    <p class="empty-note" id="emptyNote" style="display:none;"></p>
+
+    <div class="login-gate" id="loginGate">
+      <p data-i18n="booking.loginNeeded">예약을 완료하려면 로그인이 필요해요</p>
+      <button class="login-option" id="googleLoginBtn" style="display:flex; align-items:center; justify-content:center; gap:8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        <span data-i18n="booking.google">Google로 계속하기</span>
+      </button>
+      <button class="login-option" id="emailLoginBtn">
+        <span data-i18n="booking.email">이메일로 계속하기</span>
+      </button>
+    </div>
+
+    <div class="summary">
+      <div class="summary-row"><span class="label2" data-i18n="booking.fee">수업료</span><span id="feeText">-</span></div>
+      <div class="summary-row discount" id="discountRow"><span id="discountLabel">첫 수업 무료</span><span id="discountText">-</span></div>
+      <button class="pay-btn" id="payBtn" disabled data-i18n="booking.pay">예약 확정</button>
+    </div>
+  `;
+
+  document.getElementById('googleLoginBtn').addEventListener('click', () => {
+    location.href = 'login.html?next=booking&tutor=' + currentTutorId;
+  });
+  document.getElementById('emailLoginBtn').addEventListener('click', () => {
+    location.href = 'login.html?next=booking&method=email&tutor=' + currentTutorId;
+  });
+  document.getElementById('payBtn').addEventListener('click', handleConfirm);
+
+  auth.onAuthStateChanged(async (user) => {
+    document.getElementById('loginGate').style.display = user ? 'none' : 'block';
+    if(user){
+      try{
+        const snap = await db.collection('users').doc(user.uid).collection('history')
+          .where('type', '==', 'booking').limit(1).get();
+        isFirstLesson = snap.empty;
+      }catch(err){
+        console.error('첫 수업 여부 확인 실패:', err);
+        isFirstLesson = false;
+      }
+      await loadCreditInfo(user.uid);
+    }else{
+      isFirstLesson = false;
+      creditBalance = 0;
+      availableLots = [];
+    }
+    if(tutorData) renderTutorSummary();
+  });
+}
+
+async function loadCreditInfo(uid){
+  try{
+    const snap = await db.collection('users').doc(uid).collection('creditLots').get();
+    const now = new Date();
+    const lots = [];
+    snap.forEach(doc => {
+      const d = doc.data();
+      const expiresAt = d.expiresAt && d.expiresAt.toDate ? d.expiresAt.toDate() : null;
+      const purchasedAt = d.purchasedAt && d.purchasedAt.toDate ? d.purchasedAt.toDate() : new Date(0);
+      const remaining = d.remainingSessions || 0;
+      if(remaining > 0 && (!expiresAt || expiresAt > now)){
+        lots.push({ ref: doc.ref, remaining, purchasedAt });
+      }
+    });
+    lots.sort((a, b) => a.purchasedAt - b.purchasedAt); // 오래된 크레딧부터 먼저 사용 (FIFO)
+    availableLots = lots;
+    creditBalance = lots.reduce((sum, l) => sum + l.remaining, 0);
+  }catch(err){
+    console.error('크레딧 정보 로드 실패:', err);
+    creditBalance = 0;
+    availableLots = [];
+  }
+}
+
+function dayHasOpenSlot(dayId){
+  const avail = (tutorData.availability && tutorData.availability[dayId]) || [];
+  const booked = (tutorData.bookedSlots && tutorData.bookedSlots[dayId]) || [];
+  return avail.some(t => !booked.includes(t));
+}
+
+function renderDays(){
+  const container = document.getElementById('days');
+  container.innerHTML = '';
+  DAYS.forEach(d => {
+    const hasOpen = dayHasOpenSlot(d.id);
+    const btn = document.createElement('button');
+    btn.className = 'day' + (selectedDay === d.id ? ' selected' : '') + (hasOpen ? '' : ' disabled');
+    btn.textContent = currentLang === 'ko' ? d.ko : d.en;
+    if(hasOpen){
+      btn.addEventListener('click', () => { selectedDay = d.id; selectedTime = null; renderDays(); renderSlots(); updatePayState(); });
+    }
+    container.appendChild(btn);
+  });
+}
+
+function renderSlots(){
+  const container = document.getElementById('slots');
+  const emptyNote = document.getElementById('emptyNote');
+  container.innerHTML = '';
+
+  if(!selectedDay){
+    emptyNote.style.display = 'none';
+    return;
+  }
+  const avail = (tutorData.availability && tutorData.availability[selectedDay]) || [];
+  const booked = (tutorData.bookedSlots && tutorData.bookedSlots[selectedDay]) || [];
+  const openTimes = TIMES.filter(t => avail.includes(t));
+
+  if(openTimes.length === 0){
+    emptyNote.textContent = tr('booking.noSlots');
+    emptyNote.style.display = 'block';
+    return;
+  }
+  emptyNote.style.display = 'none';
+
+  openTimes.forEach(time => {
+    const isBooked = booked.includes(time);
+    const btn = document.createElement('button');
+    btn.className = 'slot' + (selectedTime === time ? ' selected' : '') + (isBooked ? ' booked' : '');
+    btn.textContent = time;
+    if(!isBooked){
+      btn.addEventListener('click', () => { selectedTime = time; renderSlots(); updatePayState(); });
+    }
+    container.appendChild(btn);
+  });
+}
+
+function updatePayState(){
+  const payBtn = document.getElementById('payBtn');
+  if(payBtn) payBtn.disabled = !(selectedDay && selectedTime);
+}
+
+function renderTutorSummary(){
+  if(!tutorData) return;
+  const koS = tutorData.ko || {};
+  const enS = tutorData.en || {};
+  const d = {
+    name: (currentLang === 'en' && enS.name) ? enS.name : koS.name,
+    role: (currentLang === 'en' && enS.role) ? enS.role : koS.role
+  };
+  const avatarEl = document.getElementById('tutorAvatar');
+  if(tutorData.avatarImage){
+    avatarEl.style.background = `url('${tutorData.avatarImage}') center/cover`;
+  }else{
+    avatarEl.style.background = tutorData.avatarColor || '#3b5f8f';
+  }
+  const withText = currentLang === 'ko' ? `${d.name} 튜터와 1회 수업` : `1 lesson with tutor ${d.name}`;
+  document.getElementById('tutorSummaryName').textContent = withText;
+  document.getElementById('tutorSummaryType').textContent = d.role || '';
+
+  const price = SESSION_PRICE; // 튜터별 개별 가격 대신 통일된 정가 사용
+  document.getElementById('feeText').textContent = fmtKRW(price);
+
+  const discountRow = document.getElementById('discountRow');
+  const payBtn = document.getElementById('payBtn');
+
+  if(isFirstLesson){
+    currentFinalPrice = 0;
+    discountRow.style.display = 'flex';
+    document.getElementById('discountLabel').textContent = currentLang === 'ko'
+      ? '첫 수업 무료 오리엔테이션'
+      : 'First lesson free (orientation)';
+    document.getElementById('discountText').textContent = '-' + fmtKRW(price);
+    payBtn.textContent = currentLang === 'ko' ? '무료로 예약 확정' : 'Confirm free booking';
+  }else{
+    currentFinalPrice = price;
+    discountRow.style.display = 'none';
+    if(creditBalance > 0){
+      payBtn.textContent = currentLang === 'ko' ? '크레딧 1회 사용하고 예약 확정' : 'Use 1 credit and confirm booking';
+    }else{
+      payBtn.textContent = tr('booking.goCharge');
+    }
+  }
+}
+
+function applyLang(lang){
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const dict = TRANSLATIONS[lang] || TRANSLATIONS.ko;
+    if(dict[key] !== undefined){
+      el.innerHTML = dict[key];
+    }
+  });
+  const langCur = document.getElementById('langCur');
+  if(langCur){
+    langCur.textContent = (lang === 'ko') ? '한국어' : 'English';
+    document.getElementById('langOther').textContent = (lang === 'ko') ? 'EN' : '한글';
+  }
+  localStorage.setItem('malmun_lang', lang);
+  if(tutorData){
+    renderDays();
+    renderSlots();
+    renderTutorSummary();
+  }
+}
+
+document.getElementById('langToggle').addEventListener('click', () => {
+  applyLang(currentLang === 'ko' ? 'en' : 'ko');
+});
+
+async function handleConfirm(){
+  if(!selectedDay || !selectedTime) return;
+  const user = auth.currentUser;
+  if(!user){
+    location.href = 'login.html?next=booking&tutor=' + currentTutorId;
+    return;
+  }
+  if(!isFirstLesson && creditBalance < 1){
+    alert(tr('booking.noCreditMsg'));
+    location.href = 'pricing.html';
+    return;
+  }
+  const dayObj = DAYS.find(d => d.id === selectedDay);
+  const dayLabel = currentLang === 'ko' ? dayObj.ko : dayObj.en;
+  const koC = tutorData.ko || {};
+  const enC = tutorData.en || {};
+  const tutorName = (currentLang === 'en' && enC.name) ? enC.name : koC.name;
+
+  // 이 예약 하나에만 쓰이는 고유 화상룸 ID (튜터+요일+시간+타임스탬프 조합으로 절대 겹치지 않게 생성)
+  const roomId = `${currentTutorId}-${selectedDay}${selectedTime.replace(':','')}-${Date.now().toString(36)}`;
+
+  try{
+    // 무료 오리엔테이션이 아니면, 가장 오래된 크레딧부터 1회 차감 (FIFO)
+    if(!isFirstLesson){
+      const lot = availableLots.find(l => l.remaining > 0);
+      if(!lot){
+        alert(tr('booking.noCreditMsg'));
+        location.href = 'pricing.html';
+        return;
+      }
+      await lot.ref.update({ remainingSessions: firebase.firestore.FieldValue.increment(-1) });
+      lot.remaining -= 1;
+      creditBalance -= 1;
+    }
+
+    await db.collection('users').doc(user.uid).collection('history').add({
+      type: 'booking',
+      text: isFirstLesson
+        ? (currentLang === 'ko' ? `${tutorName} 튜터와 무료 오리엔테이션 예약 완료` : `Booked a free orientation with ${tutorName}`)
+        : (currentLang === 'ko' ? `${tutorName} 튜터 예약 완료 (크레딧 1회 사용)` : `Booked a lesson with ${tutorName} (1 credit used)`),
+      sub: `${dayLabel} ${selectedTime}`,
+      tutorId: currentTutorId,
+      tutorName: tutorName,
+      day: selectedDay,
+      time: selectedTime,
+      price: currentFinalPrice,
+      isFreeOrientation: isFirstLesson,
+      roomId: roomId,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    // 튜터가 예약 목록을 확인할 수 있도록 최상위 bookings 컬렉션에도 동일하게 기록
+    try{
+      await db.collection('bookings').add({
+        tutorId: currentTutorId,
+        tutorName: tutorName,
+        studentUid: user.uid,
+        studentName: user.displayName || (user.email ? user.email.split('@')[0] : '학생'),
+        studentEmail: user.email || '',
+        day: selectedDay,
+        dayLabel: dayLabel,
+        time: selectedTime,
+        price: currentFinalPrice,
+        isFreeOrientation: isFirstLesson,
+        roomId: roomId,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }catch(bookingListErr){
+      console.error('튜터용 예약 목록 저장 실패 (학생 예약 자체는 완료됨):', bookingListErr);
+    }
+
+    // 해당 요일·시간을 다른 학생이 다시 예약하지 못하도록 잠금 처리
+    try{
+      await db.collection('tutors').doc(currentTutorId).update({
+        [`bookedSlots.${selectedDay}`]: firebase.firestore.FieldValue.arrayUnion(selectedTime)
+      });
+    }catch(lockErr){
+      console.error('예약 슬롯 잠금 실패 (예약 자체는 완료됨):', lockErr);
+    }
+
+    alert(currentLang === 'ko' ? '예약이 확정되었습니다!' : 'Your booking is confirmed!');
+    location.href = 'mypage.html';
+  }catch(err){
+    console.error('예약 저장 실패:', err);
+    alert((currentLang === 'ko' ? '예약 중 오류가 발생했습니다: ' : 'Something went wrong: ') + err.message);
+  }
+}
+
+async function loadTutor(){
+  if(!currentTutorId){
+    document.getElementById('bookingBody').innerHTML = `<p class="loading">${tr('booking.notFound')}</p>`;
+    return;
+  }
+  try{
+    const doc = await db.collection('tutors').doc(currentTutorId).get();
+    tutorData = doc.exists ? doc.data() : null;
+  }catch(err){
+    console.error('튜터 정보 로드 실패:', err);
+    tutorData = null;
+  }
+
+  if(!tutorData){
+    document.getElementById('bookingBody').innerHTML = `<p class="loading">${tr('booking.notFound')}</p>`;
+    return;
+  }
+
+  buildBookingUI();
+  applyLang(currentLang);
+  renderDays();
+  renderSlots();
+  renderTutorSummary();
+  updatePayState();
+}
+
+loadTutor();
+</script>
+
+</body>
+</html>
