@@ -379,6 +379,9 @@ footer a{color:rgba(255,255,255,.8);}
     </div>
   </div>
 
+  <!-- 8번 이후: PJ님이 admin에서 자유롭게 추가한 섹션이 여기 자동으로 채워짐 -->
+  <div id="custom-sections-wrap"></div>
+
 </div>
 
 <!-- 사이드바 견적 -->
@@ -546,6 +549,9 @@ const DEFAULT_EXTRAS = [
 ];
 let EXTRAS = DEFAULT_EXTRAS;
 
+/* PJ님이 admin에서 자유롭게 추가하는 "8번째 이후" 커스텀 섹션들 */
+let CUSTOM_SECTIONS = [];
+
 /* ── Firestore에서 맞춤견적 항목/가격 불러오기 (관리자 설정) ── */
 async function loadQuoteConfig() {
   try {
@@ -561,6 +567,7 @@ async function loadQuoteConfig() {
       if (Array.isArray(d.transfers) && d.transfers.length) TRANSFERS = d.transfers;
       if (Array.isArray(d.lessons)   && d.lessons.length)   LESSONS   = d.lessons;
       if (Array.isArray(d.extras)    && d.extras.length)    EXTRAS    = d.extras;
+      if (Array.isArray(d.customSections)) CUSTOM_SECTIONS = d.customSections.filter(s=>s && Array.isArray(s.items));
     }
   } catch(e) {
     console.error('맞춤견적 설정 불러오기 실패 — 기본값 사용:', e);
@@ -883,8 +890,26 @@ function renderCheckList(listId, items) {
   }).join('');
 }
 
+/* PJ님이 admin에서 추가한 8번 이후 섹션들을 화면에 그려넣는다 (내용 있는 섹션만) */
+function renderCustomSections() {
+  const wrap = document.getElementById('custom-sections-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = CUSTOM_SECTIONS.filter(s=>s.items && s.items.length).map((s,i)=>`
+    <div class="sec-card">
+      <div class="sec-head" onclick="toggleSec('custom${i}')">
+        <div class="step-num">${8+i}</div>
+        <span class="sec-title">${s.title||'추가 항목'}</span>
+        <span class="sec-sub">${s.sub||''}</span>
+        <span class="sec-arrow" id="arr-custom${i}">▾</span>
+      </div>
+      <div class="sec-body" id="body-custom${i}">
+        <div class="check-list" id="custom${i}-list"></div>
+      </div>
+    </div>`).join('');
+}
+
 function toggleCheck(id) {
-  const item=[...TRANSFERS,...LESSONS,...EXTRAS].find(x=>x.id===id);
+  const item=[...TRANSFERS,...LESSONS,...EXTRAS,...CUSTOM_SECTIONS.flatMap(s=>s.items||[])].find(x=>x.id===id);
   if(!item) return;
   if(selCheck[id]&&selCheck[id].qty>0) delete selCheck[id];
   else selCheck[id]={item,qty:1};
@@ -939,7 +964,8 @@ function renderCart() {
     });
   }
 
-  const cats=[{label:'이동',items:TRANSFERS},{label:'레슨',items:LESSONS},{label:'식사·기타',items:EXTRAS}];
+  const cats=[{label:'이동',items:TRANSFERS},{label:'레슨',items:LESSONS},{label:'식사·기타',items:EXTRAS},
+    ...CUSTOM_SECTIONS.filter(s=>s.items&&s.items.length).map(s=>({label:s.title||'추가 항목',items:s.items}))];
   cats.forEach(cat=>{
     const rows=checkEntries.filter(e=>cat.items.find(i=>i.id===e.item.id));
     if(!rows.length) return;
@@ -994,12 +1020,14 @@ function renderAll() {
   renderCheckList('transfer-list',TRANSFERS);
   renderCheckList('lesson-list',LESSONS);
   renderCheckList('extra-list',EXTRAS);
+  CUSTOM_SECTIONS.forEach((s,i)=>{ if(s.items&&s.items.length) renderCheckList('custom'+i+'-list',s.items); });
   renderCart();
 }
 
 /* ── URL 파라미터로 숙소 자동 선택 + 전체 초기화 ── */
 (async function initQuotePage() {
   await loadQuoteConfig();
+  renderCustomSections();
   await loadGolfPricingFromFirebase();
   await loadAccommodations();
 

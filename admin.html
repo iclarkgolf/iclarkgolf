@@ -999,6 +999,15 @@ window.adminLogout = function() {
     </div>
     <button onclick="saveQuoteItems()" style="width:100%;padding:13px;background:#1D9E75;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:14px;">💾 전체 저장 (사이트에 반영)</button>
   </div>
+
+  <!-- 8번 이후 커스텀 섹션 (자유 추가) -->
+  <div id="qi-custom-sections-wrap"></div>
+
+  <div class="mgmt-card">
+    <button onclick="qiAddSection()" style="width:100%;padding:13px;background:#534AB7;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;">➕ 새 섹션 통째로 추가 (맞춤견적 8번 이후)</button>
+    <div style="font-size:11px;color:#6b7280;margin-top:8px;">이동·레슨·기타 세 칸에 안 맞는 완전히 새로운 항목 묶음이 필요할 때 사용하세요. 섹션 제목·항목을 자유롭게 직접 입력할 수 있습니다.</div>
+    <button onclick="saveQuoteItems()" style="width:100%;padding:13px;background:#1D9E75;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:14px;">💾 전체 저장 (사이트에 반영)</button>
+  </div>
 </div>
 
 <!-- ========== 캐디 관리 ========== -->
@@ -1689,6 +1698,7 @@ const QI_DEFAULTS = {
     {id:'e2',icon:'🍽️',name:'석식',note:'현지 식당 석식 · 1인 기준',price:20,unit:'일×인',perPerson:true},
     {id:'e3',icon:'🗣️',name:'한국어 통역 가이드',note:'통역 동행 · 8시간 기준',price:80,unit:'일'},
   ],
+  customSections: [],
 };
 
 let qiState = null; // 현재 편집 중인 상태 (로드 후 채워짐)
@@ -1706,6 +1716,7 @@ async function loadQuoteItems() {
         transfers: Array.isArray(d.transfers) && d.transfers.length ? d.transfers : JSON.parse(JSON.stringify(QI_DEFAULTS.transfers)),
         lessons:   Array.isArray(d.lessons)   && d.lessons.length   ? d.lessons   : JSON.parse(JSON.stringify(QI_DEFAULTS.lessons)),
         extras:    Array.isArray(d.extras)    && d.extras.length    ? d.extras    : JSON.parse(JSON.stringify(QI_DEFAULTS.extras)),
+        customSections: Array.isArray(d.customSections) ? d.customSections : [],
       };
     } else {
       qiState = JSON.parse(JSON.stringify(QI_DEFAULTS));
@@ -1721,6 +1732,87 @@ function qiRenderAll() {
   qiRenderSimple('transfers');
   qiRenderSimple('lessons');
   qiRenderExtras();
+  qiRenderCustomSections();
+}
+
+/* ── 8번 이후 커스텀 섹션 관리 (섹션 통째로 자유 추가) ── */
+function qiAddSection() {
+  if (!qiState) return;
+  if (!qiState.customSections) qiState.customSections = [];
+  qiState.customSections.push({ id:'cs'+Date.now().toString(36), title:'새 섹션', sub:'', items:[] });
+  qiRenderCustomSections();
+}
+
+function qiRemoveSection(sIdx) {
+  if (!qiState || !qiState.customSections) return;
+  if (!confirm('이 섹션 전체를 삭제할까요? (저장 버튼을 눌러야 실제 반영됩니다)')) return;
+  qiState.customSections.splice(sIdx, 1);
+  qiRenderCustomSections();
+}
+
+function qiSectionField(sIdx, field, value) {
+  if (!qiState || !qiState.customSections) return;
+  qiState.customSections[sIdx][field] = value;
+}
+
+function qiAddSectionItem(sIdx) {
+  if (!qiState || !qiState.customSections) return;
+  const newId = 'csx' + Date.now().toString(36);
+  qiState.customSections[sIdx].items.push({ id:newId, icon:'⭐', name:'', note:'', price:0, unit:'회', perPerson:false });
+  qiRenderCustomSections();
+}
+
+function qiRemoveSectionItem(sIdx, itemIdx) {
+  if (!qiState || !qiState.customSections) return;
+  if (!confirm('이 항목을 삭제할까요? (저장 버튼을 눌러야 실제 반영됩니다)')) return;
+  qiState.customSections[sIdx].items.splice(itemIdx, 1);
+  qiRenderCustomSections();
+}
+
+function qiSectionItemField(sIdx, itemIdx, field, value) {
+  if (!qiState || !qiState.customSections) return;
+  qiState.customSections[sIdx].items[itemIdx][field] = value;
+}
+
+function qiSectionTextInput(sIdx, field, val, placeholder, width) {
+  const safe = (val===undefined||val===null) ? '' : val;
+  return `<input type="text" value="${String(safe).replace(/"/g,'&quot;')}" placeholder="${placeholder}" style="width:${width};border:1.5px solid #E1F5EE;border-radius:6px;padding:8px 10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;" oninput="qiSectionField(${sIdx},'${field}',this.value)">`;
+}
+
+function qiRenderCustomSections() {
+  const wrap = document.getElementById('qi-custom-sections-wrap');
+  if (!wrap || !qiState) return;
+  const sections = qiState.customSections || [];
+  wrap.innerHTML = sections.map((s, sIdx) => `
+    <div class="mgmt-card">
+      <div class="mgmt-title">
+        📦 ${8+sIdx}번 섹션
+        <button class="btn-del" onclick="qiRemoveSection(${sIdx})">🗑 섹션 삭제</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+        ${qiSectionTextInput(sIdx,'title',s.title,'섹션 제목 (예: 골프용품 대여)','220px')}
+        ${qiSectionTextInput(sIdx,'sub',s.sub,'부제 (예: 클럽 · 카트백 대여)','260px')}
+      </div>
+      <div class="mgmt-title" style="font-size:12px;">항목 <button class="btn-add" onclick="qiAddSectionItem(${sIdx})">+ 항목 추가</button></div>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>아이콘</th><th>이름</th><th>설명</th><th>$</th><th>단위</th><th>인당</th><th></th></tr></thead>
+          <tbody>
+            ${s.items.map((x,i)=>`
+              <tr>
+                <td><input type="text" value="${(x.icon||'').replace(/"/g,'&quot;')}" style="width:40px;border:1.5px solid #E1F5EE;border-radius:6px;padding:6px 8px;font-size:12px;" oninput="qiSectionItemField(${sIdx},${i},'icon',this.value)"></td>
+                <td><input type="text" value="${(x.name||'').replace(/"/g,'&quot;')}" style="width:150px;border:1.5px solid #E1F5EE;border-radius:6px;padding:6px 8px;font-size:12px;" oninput="qiSectionItemField(${sIdx},${i},'name',this.value)"></td>
+                <td><input type="text" value="${(x.note||'').replace(/"/g,'&quot;')}" style="width:220px;border:1.5px solid #E1F5EE;border-radius:6px;padding:6px 8px;font-size:12px;" oninput="qiSectionItemField(${sIdx},${i},'note',this.value)"></td>
+                <td><input type="number" value="${x.price||0}" style="width:70px;border:1.5px solid #E1F5EE;border-radius:6px;padding:6px 8px;font-size:12px;" oninput="qiSectionItemField(${sIdx},${i},'price',parseFloat(this.value)||0)"></td>
+                <td><input type="text" value="${(x.unit||'').replace(/"/g,'&quot;')}" style="width:60px;border:1.5px solid #E1F5EE;border-radius:6px;padding:6px 8px;font-size:12px;" oninput="qiSectionItemField(${sIdx},${i},'unit',this.value)"></td>
+                <td style="text-align:center;"><input type="checkbox" ${x.perPerson?'checked':''} style="width:18px;height:18px;" onchange="qiSectionItemField(${sIdx},${i},'perPerson',this.checked)"></td>
+                <td><button class="btn-del" onclick="qiRemoveSectionItem(${sIdx},${i})">삭제</button></td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+      ${s.items.length===0 ? '<div style="font-size:11px;color:#9ca3af;padding:8px 0;">아직 항목이 없습니다. "+ 항목 추가"를 눌러 채워주세요.</div>' : ''}
+    </div>`).join('');
 }
 
 function qiAddRow(cat) {
@@ -1795,6 +1887,7 @@ async function saveQuoteItems() {
       transfers: qiState.transfers,
       lessons: qiState.lessons,
       extras: qiState.extras,
+      customSections: qiState.customSections || [],
       updatedAt: new Date().toLocaleString('ko-KR'),
     }, { merge: true });
     if (msg) msg.textContent = '✅ 저장 완료 — 사이트에 반영되었습니다';
