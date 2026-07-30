@@ -152,6 +152,18 @@ a{text-decoration:none;color:inherit;}
 .unit-btn.on{background:#fff;color:#26215C;}
 .unit-btn.off{background:transparent;color:rgba(255,255,255,.7);}
 
+
+/* 골프장 썸네일·설명·지도·갤러리 (관리자에서 등록 시에만 표시) */
+.cc-thumb-wrap{width:100%;aspect-ratio:16/9;overflow:hidden;background:var(--gray-100);display:none;}
+.cc-thumb-wrap.show{display:block;}
+.cc-thumb-img{width:100%;height:100%;object-fit:cover;display:block;}
+.cc-desc-box{background:var(--gray-100);border-radius:var(--radius-sm);padding:12px 14px;font-size:12.5px;line-height:1.8;color:var(--gray-600);margin-top:10px;display:none;white-space:pre-line;}
+.cc-map-btn{display:none;align-items:center;justify-content:center;gap:6px;width:100%;background:var(--gray-100);color:var(--gray-900);border:1.5px solid var(--green-border);border-radius:var(--radius-full);padding:11px 16px;font-size:12.5px;font-weight:700;text-decoration:none;margin-top:10px;box-sizing:border-box;}
+.cc-gallery{display:none;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;}
+.cc-gallery.show{display:grid;}
+.cc-gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;}
+@media(max-width:400px){.cc-gallery{grid-template-columns:repeat(2,1fr);}}
+
 @media(min-width:640px){
   .fee-row{grid-template-columns:repeat(4,1fr);}
   .course-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
@@ -239,6 +251,7 @@ a{text-decoration:none;color:inherit;}
 
     <!-- 프라데라 -->
     <div class="course-card">
+      <div class="cc-thumb-wrap"><img class="cc-thumb-img" src="" alt=""></div>
       <div class="cc-head" onclick="toggleCard(this)">
         <div class="cc-icon" style="background:#E1F5EE">⛳</div>
         <div class="cc-info">
@@ -265,12 +278,16 @@ a{text-decoration:none;color:inherit;}
           <div class="extra-tag">보험 <b>150</b></div>
         </div>
         <div class="remark-box">📌 7일 옵션 데이트 · iClark 전용 코스</div>
-        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+        <div class="cc-desc-box"></div>
+        <a class="cc-map-btn" href="#" target="_blank">📍 구글맵에서 찾아가기</a>
+        <div class="cc-gallery"></div>
+<a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
       </div>
     </div>
 
     <!-- 미모사 -->
     <div class="course-card">
+      <div class="cc-thumb-wrap"><img class="cc-thumb-img" src="" alt=""></div>
       <div class="cc-head" onclick="toggleCard(this)">
         <div class="cc-icon" style="background:#f0fdf4">⛳</div>
         <div class="cc-info">
@@ -296,12 +313,16 @@ a{text-decoration:none;color:inherit;}
           <div class="extra-tag">컨섬 <b>400</b></div>
         </div>
         <div class="remark-box closed">⚠️ 금요일 주말 요금 적용 · 15일 옵션 데이트</div>
-        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+        <div class="cc-desc-box"></div>
+        <a class="cc-map-btn" href="#" target="_blank">📍 구글맵에서 찾아가기</a>
+        <div class="cc-gallery"></div>
+<a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
       </div>
     </div>
 
     <!-- 코리아CC -->
     <div class="course-card">
+      <div class="cc-thumb-wrap"><img class="cc-thumb-img" src="" alt=""></div>
       <div class="cc-head" onclick="toggleCard(this)">
         <div class="cc-icon" style="background:#fff7ed">🇰🇷</div>
         <div class="cc-info">
@@ -327,12 +348,16 @@ a{text-decoration:none;color:inherit;}
           <div class="extra-tag">보험 <b>150</b></div>
         </div>
         <div class="remark-box">📌 3일 옵션 데이트 · 한국어 서비스</div>
-        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+        <div class="cc-desc-box"></div>
+        <a class="cc-map-btn" href="#" target="_blank">📍 구글맵에서 찾아가기</a>
+        <div class="cc-gallery"></div>
+<a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
       </div>
     </div>
 
     <!-- 루이시타 -->
     <div class="course-card">
+      <div class="cc-thumb-wrap"><img class="cc-thumb-img" src="" alt=""></div>
       <div class="cc-head" onclick="toggleCard(this)">
         <div class="cc-icon" style="background:#E1F5EE">⛳</div>
         <div class="cc-info">
@@ -359,12 +384,16 @@ a{text-decoration:none;color:inherit;}
           <div class="extra-tag">보험 <b>100</b></div>
         </div>
         <div class="remark-box closed">⚠️ 월요일 휴장 · 7일 옵션 데이트</div>
-        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+        <div class="cc-desc-box"></div>
+        <a class="cc-map-btn" href="#" target="_blank">📍 구글맵에서 찾아가기</a>
+        <div class="cc-gallery"></div>
+<a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
       </div>
     </div>
 
     <!-- 디하이츠 -->
     <div class="course-card">
+      <div class="cc-thumb-wrap"><img class="cc-thumb-img" src="" alt=""></div>
       <div class="cc-head" onclick="toggleCard(this)">
         <div class="cc-icon" style="background:#faf5ff">⛳</div>
         <div class="cc-info">
@@ -390,12 +419,16 @@ a{text-decoration:none;color:inherit;}
           <div class="extra-tag">보험 <b>150</b></div>
         </div>
         <div class="remark-box">📌 7일 옵션 데이트</div>
-        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+        <div class="cc-desc-box"></div>
+        <a class="cc-map-btn" href="#" target="_blank">📍 구글맵에서 찾아가기</a>
+        <div class="cc-gallery"></div>
+<a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
       </div>
     </div>
 
     <!-- 뉴아시아 -->
     <div class="course-card">
+      <div class="cc-thumb-wrap"><img class="cc-thumb-img" src="" alt=""></div>
       <div class="cc-head" onclick="toggleCard(this)">
         <div class="cc-icon" style="background:#f0fdf4">⛳</div>
         <div class="cc-info">
@@ -422,12 +455,16 @@ a{text-decoration:none;color:inherit;}
           <div class="extra-tag">보험 <b>150</b></div>
         </div>
         <div class="remark-box">📌 7일 옵션 데이트</div>
-        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+        <div class="cc-desc-box"></div>
+        <a class="cc-map-btn" href="#" target="_blank">📍 구글맵에서 찾아가기</a>
+        <div class="cc-gallery"></div>
+<a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
       </div>
     </div>
 
     <!-- 베벌리 -->
     <div class="course-card">
+      <div class="cc-thumb-wrap"><img class="cc-thumb-img" src="" alt=""></div>
       <div class="cc-head" onclick="toggleCard(this)">
         <div class="cc-icon" style="background:#eff6ff">⛳</div>
         <div class="cc-info">
@@ -454,12 +491,16 @@ a{text-decoration:none;color:inherit;}
           <div class="extra-tag">보험 <b>200</b></div>
         </div>
         <div class="remark-box">📌 7일 옵션 데이트</div>
-        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+        <div class="cc-desc-box"></div>
+        <a class="cc-map-btn" href="#" target="_blank">📍 구글맵에서 찾아가기</a>
+        <div class="cc-gallery"></div>
+<a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
       </div>
     </div>
 
     <!-- 로얄센트럴 -->
     <div class="course-card">
+      <div class="cc-thumb-wrap"><img class="cc-thumb-img" src="" alt=""></div>
       <div class="cc-head" onclick="toggleCard(this)">
         <div class="cc-icon" style="background:#E1F5EE">⛳</div>
         <div class="cc-info">
@@ -486,12 +527,16 @@ a{text-decoration:none;color:inherit;}
           <div class="extra-tag">보험 <b>150</b></div>
         </div>
         <div class="remark-box">📌 12일 옵션 데이트</div>
-        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+        <div class="cc-desc-box"></div>
+        <a class="cc-map-btn" href="#" target="_blank">📍 구글맵에서 찾아가기</a>
+        <div class="cc-gallery"></div>
+<a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
       </div>
     </div>
 
     <!-- 레이크우드 -->
     <div class="course-card">
+      <div class="cc-thumb-wrap"><img class="cc-thumb-img" src="" alt=""></div>
       <div class="cc-head" onclick="toggleCard(this)">
         <div class="cc-icon" style="background:#f0fdf4">⛳</div>
         <div class="cc-info">
@@ -518,7 +563,10 @@ a{text-decoration:none;color:inherit;}
           <div class="extra-tag">보험 <b>150</b></div>
         </div>
         <div class="remark-box">📌 7일 옵션 데이트</div>
-        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+        <div class="cc-desc-box"></div>
+        <a class="cc-map-btn" href="#" target="_blank">📍 구글맵에서 찾아가기</a>
+        <div class="cc-gallery"></div>
+<a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
       </div>
     </div>
 
@@ -531,6 +579,7 @@ a{text-decoration:none;color:inherit;}
   <div class="course-grid">
 
     <div class="course-card">
+      <div class="cc-thumb-wrap"><img class="cc-thumb-img" src="" alt=""></div>
       <div class="cc-head" onclick="toggleCard(this)">
         <div class="cc-icon" style="background:#EEEDFE">🌅</div>
         <div class="cc-info">
@@ -551,11 +600,15 @@ a{text-decoration:none;color:inherit;}
           <div class="fee-cell sell"><div class="fee-label">주말 판매가</div><div class="fee-val sell-color">4,000</div><div class="fee-unit">PHP</div></div>
         </div>
         <div class="remark-box">📌 F&B 200 포함 · 7일 옵션</div>
-        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+        <div class="cc-desc-box"></div>
+        <a class="cc-map-btn" href="#" target="_blank">📍 구글맵에서 찾아가기</a>
+        <div class="cc-gallery"></div>
+<a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
       </div>
     </div>
 
     <div class="course-card">
+      <div class="cc-thumb-wrap"><img class="cc-thumb-img" src="" alt=""></div>
       <div class="cc-head" onclick="toggleCard(this)">
         <div class="cc-icon" style="background:#EEEDFE">🌤️</div>
         <div class="cc-info">
@@ -576,11 +629,15 @@ a{text-decoration:none;color:inherit;}
           <div class="fee-cell sell"><div class="fee-label">주말 판매가</div><div class="fee-val sell-color">3,600</div><div class="fee-unit">PHP</div></div>
         </div>
         <div class="remark-box">📌 F&B 200 포함 · 7일 옵션</div>
-        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+        <div class="cc-desc-box"></div>
+        <a class="cc-map-btn" href="#" target="_blank">📍 구글맵에서 찾아가기</a>
+        <div class="cc-gallery"></div>
+<a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
       </div>
     </div>
 
     <div class="course-card">
+      <div class="cc-thumb-wrap"><img class="cc-thumb-img" src="" alt=""></div>
       <div class="cc-head" onclick="toggleCard(this)">
         <div class="cc-icon" style="background:#EEEDFE">🌅</div>
         <div class="cc-info">
@@ -605,11 +662,15 @@ a{text-decoration:none;color:inherit;}
           <div class="extra-tag">캐디 <b>700</b></div>
         </div>
         <div class="remark-box">📌 7일 옵션</div>
-        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+        <div class="cc-desc-box"></div>
+        <a class="cc-map-btn" href="#" target="_blank">📍 구글맵에서 찾아가기</a>
+        <div class="cc-gallery"></div>
+<a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
       </div>
     </div>
 
     <div class="course-card">
+      <div class="cc-thumb-wrap"><img class="cc-thumb-img" src="" alt=""></div>
       <div class="cc-head" onclick="toggleCard(this)">
         <div class="cc-icon" style="background:#EEEDFE">🌤️</div>
         <div class="cc-info">
@@ -634,7 +695,10 @@ a{text-decoration:none;color:inherit;}
           <div class="extra-tag">캐디 <b>700</b></div>
         </div>
         <div class="remark-box">📌 7일 옵션</div>
-        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+        <div class="cc-desc-box"></div>
+        <a class="cc-map-btn" href="#" target="_blank">📍 구글맵에서 찾아가기</a>
+        <div class="cc-gallery"></div>
+<a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
       </div>
     </div>
 
@@ -647,6 +711,7 @@ a{text-decoration:none;color:inherit;}
   <div class="course-grid">
 
     <div class="course-card premium">
+      <div class="cc-thumb-wrap"><img class="cc-thumb-img" src="" alt=""></div>
       <div class="cc-head" onclick="toggleCard(this)">
         <div class="cc-icon" style="background:#EEEDFE">👑</div>
         <div class="cc-info">
@@ -667,11 +732,15 @@ a{text-decoration:none;color:inherit;}
           <div class="fee-cell premium-bg"><div class="fee-label">판매가(주말)</div><div class="fee-val premium-color">8,600</div><div class="fee-unit">PHP</div></div>
         </div>
         <div class="remark-box premium">📌 12일 옵션 데이트 · 최고급 코스</div>
-        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+        <div class="cc-desc-box"></div>
+        <a class="cc-map-btn" href="#" target="_blank">📍 구글맵에서 찾아가기</a>
+        <div class="cc-gallery"></div>
+<a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
       </div>
     </div>
 
     <div class="course-card premium">
+      <div class="cc-thumb-wrap"><img class="cc-thumb-img" src="" alt=""></div>
       <div class="cc-head" onclick="toggleCard(this)">
         <div class="cc-icon" style="background:#EEEDFE">🌙</div>
         <div class="cc-info">
@@ -692,11 +761,15 @@ a{text-decoration:none;color:inherit;}
           <div class="fee-cell premium-bg"><div class="fee-label">판매가(주말)</div><div class="fee-val premium-color">8,300</div><div class="fee-unit">PHP</div></div>
         </div>
         <div class="remark-box premium">📌 12일 옵션 · 심야 나이트골프</div>
-        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+        <div class="cc-desc-box"></div>
+        <a class="cc-map-btn" href="#" target="_blank">📍 구글맵에서 찾아가기</a>
+        <div class="cc-gallery"></div>
+<a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
       </div>
     </div>
 
     <div class="course-card premium">
+      <div class="cc-thumb-wrap"><img class="cc-thumb-img" src="" alt=""></div>
       <div class="cc-head" onclick="toggleCard(this)">
         <div class="cc-icon" style="background:#EEEDFE">👑</div>
         <div class="cc-info">
@@ -721,7 +794,10 @@ a{text-decoration:none;color:inherit;}
           <div class="extra-tag">캐디 <b>1,000</b></div>
         </div>
         <div class="remark-box premium">📌 12일 옵션</div>
-        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+        <div class="cc-desc-box"></div>
+        <a class="cc-map-btn" href="#" target="_blank">📍 구글맵에서 찾아가기</a>
+        <div class="cc-gallery"></div>
+<a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
       </div>
     </div>
 
@@ -734,6 +810,7 @@ a{text-decoration:none;color:inherit;}
   <div class="course-grid">
 
     <div class="course-card special">
+      <div class="cc-thumb-wrap"><img class="cc-thumb-img" src="" alt=""></div>
       <div class="cc-head" onclick="toggleCard(this)">
         <div class="cc-icon" style="background:#fff7ed">🌊</div>
         <div class="cc-info">
@@ -754,11 +831,15 @@ a{text-decoration:none;color:inherit;}
           <div class="fee-cell sell"><div class="fee-label">주말 판매가</div><div class="fee-val sell-color">10,000</div><div class="fee-unit">PHP</div></div>
         </div>
         <div class="remark-box closed">⚠️ 수요일 휴장 (3pax/4pax) · 2인 추가 3,000씩</div>
-        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+        <div class="cc-desc-box"></div>
+        <a class="cc-map-btn" href="#" target="_blank">📍 구글맵에서 찾아가기</a>
+        <div class="cc-gallery"></div>
+<a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
       </div>
     </div>
 
     <div class="course-card special">
+      <div class="cc-thumb-wrap"><img class="cc-thumb-img" src="" alt=""></div>
       <div class="cc-head" onclick="toggleCard(this)">
         <div class="cc-icon" style="background:#fff7ed">🌊</div>
         <div class="cc-info">
@@ -779,7 +860,10 @@ a{text-decoration:none;color:inherit;}
           <div class="fee-cell sell"><div class="fee-label">주말 판매가</div><div class="fee-val sell-color">7,500</div><div class="fee-unit">PHP</div></div>
         </div>
         <div class="remark-box closed">⚠️ 수요일 휴장</div>
-        <a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
+        <div class="cc-desc-box"></div>
+        <a class="cc-map-btn" href="#" target="_blank">📍 구글맵에서 찾아가기</a>
+        <div class="cc-gallery"></div>
+<a href="quote.html" class="quote-btn">🛒 이 골프장으로 견적 구성하기</a>
       </div>
     </div>
 
@@ -936,6 +1020,41 @@ async function loadGreenfeeFromFirebase() {
           if (tag.textContent.includes('카트') && g.cart) tag.innerHTML = '카트 <b>' + g.cart.toLocaleString() + '</b>';
           if (tag.textContent.includes('캐디') && g.caddy) tag.innerHTML = '캐디 <b>' + g.caddy.toLocaleString() + '</b>';
         });
+        // 썸네일 사진
+        const thumbWrap = card.querySelector('.cc-thumb-wrap');
+        if (thumbWrap) {
+          if (g.img) {
+            thumbWrap.classList.add('show');
+            const img = thumbWrap.querySelector('.cc-thumb-img');
+            img.src = g.img;
+            img.style.objectPosition = 'center ' + (g.imgPosY !== undefined ? g.imgPosY : 50) + '%';
+          } else {
+            thumbWrap.classList.remove('show');
+          }
+        }
+        // 골프장 설명
+        const descBox = card.querySelector('.cc-desc-box');
+        if (descBox) {
+          if (g.desc) { descBox.style.display = 'block'; descBox.textContent = g.desc; }
+          else { descBox.style.display = 'none'; }
+        }
+        // 찾아가는 길 (구글맵)
+        const mapBtn = card.querySelector('.cc-map-btn');
+        if (mapBtn) {
+          if (g.mapUrl) { mapBtn.style.display = 'flex'; mapBtn.href = g.mapUrl; }
+          else { mapBtn.style.display = 'none'; }
+        }
+        // 골프장 사진 갤러리
+        const gallery = card.querySelector('.cc-gallery');
+        if (gallery) {
+          if (g.photos && g.photos.length) {
+            gallery.classList.add('show');
+            gallery.innerHTML = g.photos.map(u => '<img src="' + u + '" loading="lazy" onerror="this.style.display=\'none\'">').join('');
+          } else {
+            gallery.classList.remove('show');
+            gallery.innerHTML = '';
+          }
+        }
       });
     });
     // USD 단위면 재변환
