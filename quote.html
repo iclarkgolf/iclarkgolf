@@ -800,6 +800,7 @@ function selectHotel(id) {
   if (turningOn && selHotel) {
     const dn = getNights();
     if (dn > 0) hotelNights = dn;
+    if(window.gtag){ gtag('event', 'quote_hotel_select'); }
   }
   const h = HOTELS.find(x=>x.id===selHotel);
   document.getElementById('hotel-summary').textContent = h ? h.name : '호텔 또는 iClark 전용숙소';
@@ -852,7 +853,9 @@ function renderGolf() {
 }
 
 function selectGolf(id) {
+  const turningOn = !(selGolf[id]>0);
   selGolf[id] = selGolf[id]>0 ? 0 : 1;
+  if(turningOn && window.gtag){ gtag('event', 'quote_golf_select'); }
   renderGolf();
   renderCart();
 }
@@ -994,6 +997,7 @@ function renderCart() {
 function openCartModal() {
   const modal = document.getElementById('cart-modal');
   if(modal){ modal.style.display='flex'; document.body.style.overflow='hidden'; }
+  if(window.gtag){ gtag('event', 'quote_cart_view'); }
 }
 function closeCartModal() {
   const modal = document.getElementById('cart-modal');
@@ -1010,6 +1014,7 @@ function goKakao() {
   const checkEntries=Object.values(selCheck).filter(s=>s.qty>0);
   const hasAny=selHotel||GOLF.some(g=>selGolf[g.id]>0)||checkEntries.length>0;
   if(!hasAny){alert('항목을 하나 이상 선택해 주세요');return;}
+  if(window.gtag){ gtag('event', 'quote_kakao_click'); }
   window.open('https://pf.kakao.com/_nbHKX/chat','_blank');
 }
 
@@ -1098,6 +1103,7 @@ function openInquiryModal() {
   const checkEntries = Object.values(selCheck).filter(s=>s.qty>0);
   const hasAny = selHotel || GOLF.some(g=>selGolf[g.id]>0) || checkEntries.length>0;
   if (!hasAny) { alert('항목을 하나 이상 선택해 주세요'); return; }
+  if(window.gtag){ gtag('event', 'quote_inquiry_open'); }
   const modal = document.getElementById('inquiry-modal');
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
@@ -1172,6 +1178,7 @@ async function submitInquiry() {
     }
 
     // 성공 메시지
+    if(window.gtag){ gtag('event', 'quote_inquiry_submit'); }
     msgEl.style.display = 'block';
     msgEl.style.background = '#f0fdf4';
     msgEl.style.color = '#16a34a';
