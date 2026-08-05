@@ -208,7 +208,10 @@ nav{background:linear-gradient(135deg,#26215C,#534AB7);padding:14px 24px;display
 .kakao-btn{width:100%;padding:14px;background:#FEE500;color:#1b1b1b;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;transition:all .15s;}
 .kakao-btn:hover{background:#f0d800;}
 .qr-box{text-align:center;padding:14px;background:#fffde7;border-radius:10px;border:1px solid #f4e040;}
-.cta-hook{text-align:center;font-size:13px;font-weight:800;color:#26215C;background:#F0EEFB;border-radius:8px;padding:8px;margin-bottom:10px;}
+.cta-hook{width:100%;text-align:center;font-size:13px;font-weight:800;color:#26215C;background:#F0EEFB;border:1.5px dashed #C9C3F0;border-radius:10px;padding:12px;margin-bottom:10px;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .15s;}
+.cta-hook:hover{background:#E8E4FA;}
+.cta-hook-sub{display:block;font-size:10px;font-weight:600;color:#6b7280;margin-top:3px;}
+.cta-badge{font-size:10px;font-weight:700;background:rgba(0,0,0,.12);border-radius:6px;padding:2px 6px;margin-left:4px;}
 .cta-secondary{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;font-size:12px;}
 .cta-secondary a{color:var(--muted);text-decoration:underline;}
 .cta-secondary .dot{color:var(--muted);}
@@ -395,14 +398,14 @@ footer a{color:rgba(255,255,255,.8);}
     <div id="cart-body">
       <div class="cart-empty">항목을 선택하면<br>여기에 견적이 표시됩니다</div>
     </div>
-    <div class="cta-hook">⏱ 30초면 문의 끝나요</div>
+    <button class="cta-hook" onclick="openInquiryModal()">
+      📝 양식으로 조용히 문의하기<span class="cta-hook-sub">부담없이, 답장은 이메일로</span>
+    </button>
     <button class="kakao-btn" onclick="goKakao()" style="font-size:16px;padding:18px;">
-      💬 카카오 채널로 문의하기
+      💬 카카오 채널로 바로 문의하기 <span class="cta-badge">⏱ 30초</span>
     </button>
     <div class="cta-secondary">
-      <a href="javascript:void(0)" onclick="openInquiryModal()">📩 양식으로 견적 신청</a>
-      <span class="dot">·</span>
-      <a href="payment.html">💳 입금 안내</a>
+      <a href="payment.html">💳 입금 안내 보기</a>
     </div>
     <div class="cta-note">견적은 참고용이며 최종 금액은<br>협의 후 확정됩니다</div>
   </div>
@@ -424,10 +427,9 @@ footer a{color:rgba(255,255,255,.8);}
     <div id="cart-modal-body">
       <div style="text-align:center;padding:20px;font-size:13px;color:#a1a1aa;">항목을 선택하면 여기에 견적이 표시됩니다</div>
     </div>
-    <div style="text-align:center;font-size:12px;font-weight:800;color:#26215C;background:#F0EEFB;border-radius:8px;padding:8px;margin-top:16px;">⏱ 30초면 문의 끝나요</div>
-    <button onclick="goKakao();closeCartModal();" style="width:100%;margin-top:8px;padding:15px;background:#FEE500;color:#1b1b1b;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;">💬 카카오 채널로 문의하기</button>
-    <button onclick="openInquiryModal();closeCartModal();" style="width:100%;margin-top:10px;padding:11px;background:none;color:#534AB7;border:none;text-decoration:underline;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">📩 양식으로 견적 신청</button>
-    <button onclick="closeCartModal()" style="width:100%;margin-top:6px;padding:12px;background:#f4f4f5;color:#52525b;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">닫기</button>
+    <button onclick="openInquiryModal();closeCartModal();" class="cta-hook" style="margin-top:16px;">📝 양식으로 조용히 문의하기<span class="cta-hook-sub">부담없이, 답장은 이메일로</span></button>
+    <button onclick="goKakao();closeCartModal();" style="width:100%;margin-top:8px;padding:15px;background:#FEE500;color:#1b1b1b;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;">💬 카카오 채널로 바로 문의하기 <span class="cta-badge">⏱ 30초</span></button>
+    <button onclick="closeCartModal()" style="width:100%;margin-top:10px;padding:12px;background:#f4f4f5;color:#52525b;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">닫기</button>
   </div>
 </div>
 
