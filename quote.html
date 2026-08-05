@@ -208,6 +208,10 @@ nav{background:linear-gradient(135deg,#26215C,#534AB7);padding:14px 24px;display
 .kakao-btn{width:100%;padding:14px;background:#FEE500;color:#1b1b1b;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;transition:all .15s;}
 .kakao-btn:hover{background:#f0d800;}
 .qr-box{text-align:center;padding:14px;background:#fffde7;border-radius:10px;border:1px solid #f4e040;}
+.cta-hook{text-align:center;font-size:13px;font-weight:800;color:#26215C;background:#F0EEFB;border-radius:8px;padding:8px;margin-bottom:10px;}
+.cta-secondary{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;font-size:12px;}
+.cta-secondary a{color:var(--muted);text-decoration:underline;}
+.cta-secondary .dot{color:var(--muted);}
 .qr-box div{font-size:11px;font-weight:700;color:#5c4a00;margin-bottom:8px;}
 .cta-note{font-size:11px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.6;}
 
@@ -391,19 +395,14 @@ footer a{color:rgba(255,255,255,.8);}
     <div id="cart-body">
       <div class="cart-empty">항목을 선택하면<br>여기에 견적이 표시됩니다</div>
     </div>
-    <button class="kakao-btn" onclick="openInquiryModal()" style="background:#534AB7;color:#fff;">
-      📩 견적 신청하기
-    </button>
-    <button class="kakao-btn" onclick="goKakao()" style="margin-top:8px;">
+    <div class="cta-hook">⏱ 30초면 문의 끝나요</div>
+    <button class="kakao-btn" onclick="goKakao()" style="font-size:16px;padding:18px;">
       💬 카카오 채널로 문의하기
     </button>
-    <a href="payment.html" class="kakao-btn" style="margin-top:8px;background:#1b4332;color:#fff;text-decoration:none;">
-      💳 입금 안내 보기
-    </a>
-    <div class="qr-box">
-      <div>카카오 채널 QR코드</div>
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://pf.kakao.com/_nbHKX/chat&color=26215C&bgcolor=FEE500&margin=6" alt="QR" style="width:100px;height:100px;border-radius:8px;display:block;margin:0 auto;">
-      <div style="font-size:10px;color:#856a00;margin-top:6px;">스캔하면 바로 채널 연결</div>
+    <div class="cta-secondary">
+      <a href="javascript:void(0)" onclick="openInquiryModal()">📩 양식으로 견적 신청</a>
+      <span class="dot">·</span>
+      <a href="payment.html">💳 입금 안내</a>
     </div>
     <div class="cta-note">견적은 참고용이며 최종 금액은<br>협의 후 확정됩니다</div>
   </div>
@@ -413,8 +412,8 @@ footer a{color:rgba(255,255,255,.8);}
 <!-- 모바일 하단 고정 -->
 <div class="fixed-bar" id="fixed-bar">
   <div class="fixed-total">예상 총액<br><span id="fixed-total-amt">$0</span></div>
-  <button onclick="openCartModal()" style="flex:1;padding:13px;background:var(--purple);color:#fff;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;">📋 견적 보기</button>
-  <button onclick="openInquiryModal()" style="flex:1;padding:13px;background:#534AB7;color:#fff;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;">📩 견적 신청</button>
+  <button onclick="openCartModal()" style="flex-shrink:0;padding:13px 14px;background:#fff;color:var(--purple);border:1.5px solid var(--purple-border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;">📋 견적</button>
+  <button onclick="goKakao()" style="flex:1.4;padding:13px;background:#FEE500;color:#1b1b1b;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;">💬 카카오 30초 문의</button>
 </div>
 
 <!-- 모바일 견적 상세 모달 -->
@@ -425,9 +424,10 @@ footer a{color:rgba(255,255,255,.8);}
     <div id="cart-modal-body">
       <div style="text-align:center;padding:20px;font-size:13px;color:#a1a1aa;">항목을 선택하면 여기에 견적이 표시됩니다</div>
     </div>
-    <button onclick="openInquiryModal();closeCartModal();" style="width:100%;margin-top:16px;padding:14px;background:#534AB7;color:#fff;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;">📩 견적 신청하기</button>
-    <button onclick="goKakao();closeCartModal();" style="width:100%;margin-top:8px;padding:14px;background:#FEE500;color:#1b1b1b;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;">💬 카카오 채널로 문의하기</button>
-    <button onclick="closeCartModal()" style="width:100%;margin-top:10px;padding:12px;background:#f4f4f5;color:#52525b;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">닫기</button>
+    <div style="text-align:center;font-size:12px;font-weight:800;color:#26215C;background:#F0EEFB;border-radius:8px;padding:8px;margin-top:16px;">⏱ 30초면 문의 끝나요</div>
+    <button onclick="goKakao();closeCartModal();" style="width:100%;margin-top:8px;padding:15px;background:#FEE500;color:#1b1b1b;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;">💬 카카오 채널로 문의하기</button>
+    <button onclick="openInquiryModal();closeCartModal();" style="width:100%;margin-top:10px;padding:11px;background:none;color:#534AB7;border:none;text-decoration:underline;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">📩 양식으로 견적 신청</button>
+    <button onclick="closeCartModal()" style="width:100%;margin-top:6px;padding:12px;background:#f4f4f5;color:#52525b;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">닫기</button>
   </div>
 </div>
 
