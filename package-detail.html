@@ -393,6 +393,26 @@ window.render = function render(D) {
   document.getElementById('statMinDays').textContent = D.statMinDays|| '';
   document.getElementById('statPax').textContent     = D.statPax    || '';
 
+  // 30초 위젯 — 고정 패키지는 "기간" 질문을 없애고 확정 문구로 대체
+  const miDurationChips = document.querySelector('.mi-chips[data-group="duration"]');
+  const miDurationQ     = miDurationChips ? miDurationChips.previousElementSibling : null;
+  const oldFixedNote    = document.getElementById('miFixedDurationNote');
+  if (oldFixedNote) oldFixedNote.remove();
+  if (D.packageType === 'fixed' && miDurationChips) {
+    window.MI_FIXED_DURATION = D.statMinDays || '기간 확정';
+    if (miDurationQ) miDurationQ.style.display = 'none';
+    miDurationChips.style.display = 'none';
+    const note = document.createElement('div');
+    note.id = 'miFixedDurationNote';
+    note.style.cssText = 'background:#f0f7f4;border:1.5px solid #c8edd9;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:14px;font-weight:700;color:#085041;';
+    note.textContent = `📌 이 패키지는 ${window.MI_FIXED_DURATION} 확정 프로그램입니다`;
+    miDurationChips.after(note);
+  } else {
+    window.MI_FIXED_DURATION = null;
+    if (miDurationQ) miDurationQ.style.display = '';
+    if (miDurationChips) miDurationChips.style.display = '';
+  }
+
   // 일정
   const sList = document.getElementById('scheduleList');
   if (D.trainingSchedule && D.trainingSchedule.trim()) {
@@ -489,6 +509,8 @@ const db  = getFirestore(app);
 (function(){
   const sel = { duration:null, party:null, timing:null };
   let savedRef = null; // 자동 저장된 문서 참조 (중복 저장 방지)
+  // 고정 패키지는 기간 칩이 없으므로 render()가 세팅한 window.MI_FIXED_DURATION을 대신 사용
+  const curDuration = () => sel.duration || window.MI_FIXED_DURATION || null;
 
   document.querySelectorAll('.mi-chips').forEach(group => {
     group.addEventListener('click', async (e) => {
@@ -498,11 +520,11 @@ const db  = getFirestore(app);
       chip.classList.add('on');
       sel[group.dataset.group] = chip.dataset.v;
 
-      // 3개 모두 선택되면 버튼 활성화 + 자동 저장 (이탈해도 기록이 남음)
-      if (sel.duration && sel.party && sel.timing) {
+      // 3개 모두 선택되면(고정 패키지는 기간 자동 확정) 버튼 활성화 + 자동 저장 (이탈해도 기록이 남음)
+      if (curDuration() && sel.party && sel.timing) {
         document.getElementById('miBtn').classList.add('ready');
         try {
-          const data = { 기간:sel.duration, 인원:sel.party, 시기:sel.timing,
+          const data = { 기간:curDuration(), 인원:sel.party, 시기:sel.timing,
                          상태:'선택완료', 페이지:cardId, created:serverTimestamp() };
           if (savedRef) { await updateDoc(savedRef, data); }
           else { savedRef = await addDoc(collection(db,'web_inquiries'), data); }
@@ -514,13 +536,13 @@ const db  = getFirestore(app);
   document.getElementById('miBtn').addEventListener('click', async () => {
     const name = document.getElementById('miName').value.trim();
     const phone = document.getElementById('miPhone').value.trim();
-    const summary = `[클락 골프 문의]` + (name ? `\n성함: ${name}` : '') + `\n기간: ${sel.duration} / 인원: ${sel.party} / 시기: ${sel.timing}` + (phone ? `\n연락처: ${phone}` : '');
+    const summary = `[클락 골프 문의]` + (name ? `\n성함: ${name}` : '') + `\n기간: ${curDuration()} / 인원: ${sel.party} / 시기: ${sel.timing}` + (phone ? `\n연락처: ${phone}` : '');
 
     // Firestore 상태 갱신 (실패해도 카카오 이동은 진행)
     try {
       const upd = { 상태:'카카오이동', 연락처:phone||'', 이름:name||'' };
       if (savedRef) { await updateDoc(savedRef, upd); }
-      else { savedRef = await addDoc(collection(db,'web_inquiries'), { 기간:sel.duration, 인원:sel.party, 시기:sel.timing, 페이지:cardId, created:serverTimestamp(), ...upd }); }
+      else { savedRef = await addDoc(collection(db,'web_inquiries'), { 기간:curDuration(), 인원:sel.party, 시기:sel.timing, 페이지:cardId, created:serverTimestamp(), ...upd }); }
     } catch(err) { console.error('문의 저장 실패:', err); }
 
     // 요약 복사 후 카카오 채널 열기
