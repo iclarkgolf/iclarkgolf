@@ -523,6 +523,7 @@ const db  = getFirestore(app);
       // 3개 모두 선택되면(고정 패키지는 기간 자동 확정) 버튼 활성화 + 자동 저장 (이탈해도 기록이 남음)
       if (curDuration() && sel.party && sel.timing) {
         document.getElementById('miBtn').classList.add('ready');
+        try { if (window.gtag) gtag('event', 'pkg_widget_ready', { 페이지: cardId }); } catch(e) {}
         try {
           const data = { 기간:curDuration(), 인원:sel.party, 시기:sel.timing,
                          상태:'선택완료', 페이지:cardId, created:serverTimestamp() };
@@ -537,6 +538,8 @@ const db  = getFirestore(app);
     const name = document.getElementById('miName').value.trim();
     const phone = document.getElementById('miPhone').value.trim();
     const summary = `[클락 골프 문의]` + (name ? `\n성함: ${name}` : '') + `\n기간: ${curDuration()} / 인원: ${sel.party} / 시기: ${sel.timing}` + (phone ? `\n연락처: ${phone}` : '');
+
+    try { if (window.gtag) gtag('event', 'pkg_kakao_click', { 페이지: cardId, 연락처_입력: !!phone }); } catch(e) {}
 
     // Firestore 상태 갱신 (실패해도 카카오 이동은 진행)
     try {

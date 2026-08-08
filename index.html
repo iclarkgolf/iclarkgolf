@@ -4,6 +4,10 @@
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-8S6Z4PD9VZ"></script>
 <script>
+  // /index.html 로 들어와도 GA4에는 항상 / 로 잡히도록 정리 (통계상 홈이 둘로 갈라지는 문제 방지)
+  if (location.pathname === '/index.html') {
+    history.replaceState(null, '', '/' + location.search + location.hash);
+  }
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
