@@ -1103,6 +1103,14 @@ window.adminLogout = function() {
               <input id="ce-pax" type="text" placeholder="예: 1인 · 4인 이상" style="width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box;">
             </div>
           </div>
+          <div style="margin-top:2px;">
+            <label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:6px;">📦 패키지 유형 — 상세페이지 문의 위젯 방식을 결정합니다</label>
+            <div style="display:flex;gap:8px;">
+              <button type="button" id="ce-type-fixed" onclick="setCePackageType('fixed')" style="flex:1;padding:10px 8px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:12.5px;font-weight:700;background:#fff;color:#6b7280;cursor:pointer;line-height:1.5;">① 고정 패키지<br><span style="font-weight:400;font-size:10px;">일정·기간이 정해진 상품</span></button>
+              <button type="button" id="ce-type-free" onclick="setCePackageType('free')" style="flex:1;padding:10px 8px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:12.5px;font-weight:700;background:#fff;color:#6b7280;cursor:pointer;line-height:1.5;">② 자유 패키지<br><span style="font-weight:400;font-size:10px;">기간·구성을 직접 정하는 상품</span></button>
+            </div>
+            <input type="hidden" id="ce-package-type" value="free">
+          </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
             <div>
               <label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">배경 색상 (시작)</label>
@@ -2084,6 +2092,15 @@ async function moveCard(id, direction) {
   } catch(e) { console.error('순서 변경 실패:', e); alert('순서 변경에 실패했습니다. 다시 시도해주세요.'); }
 }
 
+function setCePackageType(type) {
+  document.getElementById('ce-package-type').value = type;
+  const fixedBtn = document.getElementById('ce-type-fixed');
+  const freeBtn  = document.getElementById('ce-type-free');
+  [fixedBtn, freeBtn].forEach(b => { b.style.background = '#fff'; b.style.color = '#6b7280'; b.style.borderColor = '#e5e7eb'; });
+  const active = (type === 'fixed') ? fixedBtn : freeBtn;
+  active.style.background = '#054535'; active.style.color = '#fff'; active.style.borderColor = '#054535';
+}
+
 function openCardEditor(cardId) {
   document.getElementById('card-editor-modal').style.display = 'flex';
   document.body.style.overflow = 'hidden';
@@ -2108,6 +2125,7 @@ function openCardEditor(cardId) {
     document.getElementById('ce-color2-hex').value = '#1D9E75';
     document.getElementById('ce-hero-pos-y').value = 50;
     document.getElementById('ce-hero-pos-y-val').textContent = '50%';
+    setCePackageType('free');
     ceRenderImgs('ce-accom-imgs', []);
     ceRenderImgs('ce-training-imgs', []);
     document.getElementById('ce-schedule-editor').innerHTML = '';
@@ -2136,6 +2154,7 @@ function openCardEditor(cardId) {
         document.getElementById('ce-btn').value = c.btn || '';
         document.getElementById('ce-min-days').value = c.statMinDays || '';
         document.getElementById('ce-pax').value = c.statPax || '';
+        setCePackageType(c.packageType || 'free');
         document.getElementById('ce-color1').value = c.color1 || '#054535';
         document.getElementById('ce-color1-hex').value = c.color1 || '#054535';
         document.getElementById('ce-color2').value = c.color2 || '#1D9E75';
@@ -2242,6 +2261,7 @@ async function saveCard() {
     btn: document.getElementById('ce-btn').value.trim(),
     statMinDays: document.getElementById('ce-min-days').value.trim(),
     statPax: document.getElementById('ce-pax').value.trim(),
+    packageType: document.getElementById('ce-package-type').value || 'free',
     color1: '0',
     color2: '0',
     freeContent: document.getElementById('ce-editor').innerHTML,
