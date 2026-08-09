@@ -1442,12 +1442,15 @@ window.adminLogout = function() {
 
   <!-- 웹 30초 문의 위젯 (자동 수집 — 카카오 이동 여부와 무관하게 관심 보인 방문자 전부 기록) -->
   <div class="mgmt-card">
-    <div class="mgmt-title">⛳ 웹 "30초 간편 문의" 위젯 <span style="font-size:12px;font-weight:400;color:#9ca3af;">패키지 페이지에서 자동 수집 — 카카오톡 이동 안 해도 기록됨</span></div>
+    <div class="mgmt-title">
+      ⛳ 웹 "30초 간편 문의" 위젯 <span style="font-size:12px;font-weight:400;color:#9ca3af;">패키지 페이지에서 자동 수집 — 카카오톡 이동 안 해도 기록됨</span>
+      <button onclick="deleteAllWebInquiries()" style="float:right;background:#fee2e2;color:#b91c1c;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;">🗑️ 전체 삭제 (테스트 데이터 정리)</button>
+    </div>
     <div class="tbl-wrap">
       <table class="tbl">
-        <thead><tr><th>날짜</th><th>이름</th><th>기간</th><th>인원</th><th>시기</th><th>페이지</th><th>연락처</th><th>상태</th></tr></thead>
+        <thead><tr><th>날짜</th><th>이름</th><th>기간</th><th>인원</th><th>시기</th><th>페이지</th><th>연락처</th><th>상태</th><th>삭제</th></tr></thead>
         <tbody id="web-inquiry-body">
-          <tr><td colspan="8" style="text-align:center;color:#9ca3af;padding:20px;">불러오는 중... ⏳</td></tr>
+          <tr><td colspan="9" style="text-align:center;color:#9ca3af;padding:20px;">불러오는 중... ⏳</td></tr>
         </tbody>
       </table>
     </div>
@@ -3567,12 +3570,14 @@ async function changeInquiryStatus(docId, newStatus) {
 
 /* ── 웹 30초 문의 위젯 (web_inquiries) ── */
 let _webInquiryUnsubscribe = null;
+let _webInquiryDB = null; // 삭제 함수에서 재사용
 async function loadWebInquiries() {
   const body = document.getElementById('web-inquiry-body');
   if (!body) return;
-  body.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:#9ca3af;">불러오는 중... ⏳</td></tr>';
+  body.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:#9ca3af;">불러오는 중... ⏳</td></tr>';
   try {
     const db = await initCardDB(); // 패키지 카드와 같은 Firebase 프로젝트(iclarkgolf) 재사용
+    _webInquiryDB = db;
     const { collection, query, orderBy, onSnapshot } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
 
     if (_webInquiryUnsubscribe) { _webInquiryUnsubscribe(); _webInquiryUnsubscribe = null; }
@@ -3580,6 +3585,7 @@ async function loadWebInquiries() {
     const q = query(collection(db, 'web_inquiries'), orderBy('created', 'desc'));
     _webInquiryUnsubscribe = onSnapshot(q, (snap) => {
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      window._webInquiryDocs = docs; // 전체 삭제용
       body.innerHTML = docs.length ? docs.map(d => {
         const dateStr = d.created?.toDate ? d.created.toDate().toLocaleString('ko-KR') : '-';
         const status = d.상태 || '선택중';
@@ -3593,12 +3599,35 @@ async function loadWebInquiries() {
           <td>${d.페이지||'-'}</td>
           <td>${d.연락처||'-'}</td>
           <td><span style="${statusStyle}padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;">${status}</span></td>
+          <td><button onclick="deleteWebInquiry('${d.id}')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:16px;">🗑️</button></td>
         </tr>`;
-      }).join('') : '<tr><td colspan="8" style="text-align:center;color:#9ca3af;padding:20px;">아직 수집된 웹 문의가 없습니다</td></tr>';
+      }).join('') : '<tr><td colspan="9" style="text-align:center;color:#9ca3af;padding:20px;">아직 수집된 웹 문의가 없습니다</td></tr>';
     });
   } catch(e) {
     console.error('웹 문의 로드 실패:', e);
-    body.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#dc2626;padding:20px;">⚠️ 로드 실패 — Firebase 확인 필요</td></tr>';
+    body.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#dc2626;padding:20px;">⚠️ 로드 실패 — Firebase 확인 필요</td></tr>';
+  }
+}
+
+async function deleteWebInquiry(docId) {
+  if (!confirm('이 문의 기록을 삭제할까요? 되돌릴 수 없습니다.')) return;
+  try {
+    const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await deleteDoc(doc(_webInquiryDB, 'web_inquiries', docId));
+  } catch(e) {
+    alert('삭제 실패: ' + e.message);
+  }
+}
+
+async function deleteAllWebInquiries() {
+  const docs = window._webInquiryDocs || [];
+  if (!docs.length) { alert('삭제할 데이터가 없습니다.'); return; }
+  if (!confirm(`총 ${docs.length}건을 전부 삭제할까요? 실제 손님 문의까지 포함해서 전부 지워지며 되돌릴 수 없습니다.`)) return;
+  try {
+    const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await Promise.all(docs.map(d => deleteDoc(doc(_webInquiryDB, 'web_inquiries', d.id))));
+  } catch(e) {
+    alert('전체 삭제 중 오류: ' + e.message);
   }
 }
 
