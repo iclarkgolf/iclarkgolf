@@ -289,7 +289,7 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
     <input type="tel" id="miPhone" inputmode="numeric" placeholder="010-0000-0000">
   </div>
 
-  <button class="mi-btn" id="miBtn" data-i18n="mi.btn">💬 이 내용으로 카카오톡 문의하기</button>
+  <button class="mi-btn" id="miBtn" data-i18n="mi.btn" disabled>💬 이 내용으로 카카오톡 문의하기</button>
   <div class="mi-toast" id="miToast" data-i18n="mi.toast">✅ 문의 내용이 복사되었습니다!<br>카카오톡 채팅창에 붙여넣기(길게 눌러 붙여넣기)만 해주세요.</div>
 </div>
 
@@ -317,8 +317,8 @@ const TRANS = {
     'mi.q1':'기간이 어떻게 되세요?','mi.d1':'3일','mi.d2':'4일','mi.d3':'5일','mi.d4':'7일','mi.d5':'14일',
     'mi.q2':'몇 분이세요?','mi.p1':'혼자','mi.p2':'2명','mi.p3':'3명 이상',
     'mi.q3':'언제쯤 생각하세요?','mi.t1':'7월','mi.t2':'8월','mi.t3':'가을','mi.t4':'겨울','mi.t5':'미정',
-    'mi.name':'이름을 적으면 이 이름으로 <b style="color:#085041;">내 견적서</b>를 볼 수 있어요',
-    'mi.phone':'연락처를 적고 <b style="color:#085041;">상세 견적서</b>를 받아 보세요',
+    'mi.name':'이름을 적으면 이 이름으로 <b style="color:#085041;">내 견적서</b>를 볼 수 있어요 <span style="color:#e74c3c;">*</span>',
+    'mi.phone':'연락처를 적고 <b style="color:#085041;">상세 견적서</b>를 받아 보세요 <span style="color:#e74c3c;">*</span>',
     'mi.btn':'💬 이 내용으로 카카오톡 문의하기',
     'seo.h2':'iCLARKGOLF 골프 패키지 안내',
     'seo.intro1':'iCLARKGOLF의 모든 골프 패키지는 필리핀 클락에서 <b>25년째</b> 골프를 가르치고 안내해온 <b>전문가가 직접 설계하고 운영</b>합니다. <b>PRADERA C.C</b>와 <b>BEVERLY C.C</b> 두 골프장을 중심으로, 라운드와 연습장 훈련, 숙소, 캐디, 경비까지 하나로 묶어 안내합니다.',
@@ -333,8 +333,8 @@ const TRANS = {
     'mi.q1':'How long will you stay?','mi.d1':'3 days','mi.d2':'4 days','mi.d3':'5 days','mi.d4':'7 days','mi.d5':'14 days',
     'mi.q2':'How many people?','mi.p1':'Solo','mi.p2':'2 people','mi.p3':'3 or more',
     'mi.q3':'When are you thinking?','mi.t1':'July','mi.t2':'August','mi.t3':'Fall','mi.t4':'Winter','mi.t5':'Not sure',
-    'mi.name':'Enter your name to view <b style="color:#085041;">your quote</b> later',
-    'mi.phone':'Leave your contact to get a <b style="color:#085041;">detailed quote</b>',
+    'mi.name':'Enter your name to view <b style="color:#085041;">your quote</b> later <span style="color:#e74c3c;">*</span>',
+    'mi.phone':'Leave your contact to get a <b style="color:#085041;">detailed quote</b> <span style="color:#e74c3c;">*</span>',
     'mi.btn':'💬 Send via KakaoTalk',
     'seo.h2':'iCLARKGOLF Golf Packages',
     'seo.intro1':'Every iCLARKGOLF package is designed and run directly by <b>a golf professional</b> who has lived and taught in Clark, Philippines for <b>25 years</b>. Centered on <b>PRADERA C.C</b> and <b>BEVERLY C.C</b>, each package bundles rounds, practice-range training, lodging, caddies, and cost into one plan.',
@@ -512,6 +512,33 @@ const db  = getFirestore(app);
   // 고정 패키지는 기간 칩이 없으므로 render()가 세팅한 window.MI_FIXED_DURATION을 대신 사용
   const curDuration = () => sel.duration || window.MI_FIXED_DURATION || null;
 
+  const nameInput  = document.getElementById('miName');
+  const phoneInput = document.getElementById('miPhone');
+  const miBtn      = document.getElementById('miBtn');
+
+  // 전화번호 자동 하이픈(010-1234-5678) — 입력 중 실시간 포맷
+  phoneInput.addEventListener('input', () => {
+    let d = phoneInput.value.replace(/[^0-9]/g,'').slice(0,11);
+    if (d.length > 7) d = d.slice(0,3) + '-' + d.slice(3,7) + '-' + d.slice(7);
+    else if (d.length > 3) d = d.slice(0,3) + '-' + d.slice(3);
+    phoneInput.value = d;
+    checkReady();
+  });
+  nameInput.addEventListener('input', checkReady);
+
+  function isValidPhone(v){ return v.replace(/[^0-9]/g,'').length >= 9; }
+  function isValidName(v){ return v.trim().length >= 2; }
+
+  function checkReady(){
+    const chipsDone = !!(curDuration() && sel.party && sel.timing);
+    const ready = chipsDone && isValidName(nameInput.value) && isValidPhone(phoneInput.value);
+    miBtn.classList.toggle('ready', ready);
+    miBtn.disabled = !ready;
+    nameInput.style.borderColor  = (nameInput.value && !isValidName(nameInput.value))  ? '#e74c3c' : '';
+    phoneInput.style.borderColor = (phoneInput.value && !isValidPhone(phoneInput.value)) ? '#e74c3c' : '';
+    return ready;
+  }
+
   document.querySelectorAll('.mi-chips').forEach(group => {
     group.addEventListener('click', async (e) => {
       const chip = e.target.closest('.mi-chip');
@@ -520,9 +547,8 @@ const db  = getFirestore(app);
       chip.classList.add('on');
       sel[group.dataset.group] = chip.dataset.v;
 
-      // 3개 모두 선택되면(고정 패키지는 기간 자동 확정) 버튼 활성화 + 자동 저장 (이탈해도 기록이 남음)
+      // 칩 3개(또는 고정 패키지는 2개) 모두 선택되면 잠정 저장 (이름/연락처 없어도 관심 신호는 남김)
       if (curDuration() && sel.party && sel.timing) {
-        document.getElementById('miBtn').classList.add('ready');
         try { if (window.gtag) gtag('event', 'pkg_widget_ready', { 페이지: cardId }); } catch(e) {}
         try {
           const data = { 기간:curDuration(), 인원:sel.party, 시기:sel.timing,
@@ -531,10 +557,12 @@ const db  = getFirestore(app);
           else { savedRef = await addDoc(collection(db,'web_inquiries'), data); }
         } catch(err) { console.error('문의 저장 실패:', err); }
       }
+      checkReady();
     });
   });
 
   document.getElementById('miBtn').addEventListener('click', async () => {
+    if (!checkReady()) return; // 이름·연락처 미충족 시 진행 안 함(방어 코드 — 버튼은 이미 disabled)
     const name = document.getElementById('miName').value.trim();
     const phone = document.getElementById('miPhone').value.trim();
     const summary = `[클락 골프 문의]` + (name ? `\n성함: ${name}` : '') + `\n기간: ${curDuration()} / 인원: ${sel.party} / 시기: ${sel.timing}` + (phone ? `\n연락처: ${phone}` : '');
