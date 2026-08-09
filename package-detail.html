@@ -289,8 +289,8 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
     <input type="tel" id="miPhone" inputmode="numeric" placeholder="010-0000-0000">
   </div>
 
-  <button class="mi-btn" id="miBtn" data-i18n="mi.btn" disabled>💬 이 내용으로 카카오톡 문의하기</button>
-  <div class="mi-toast" id="miToast" data-i18n="mi.toast">✅ 문의 내용이 복사되었습니다!<br>카카오톡 채팅창에 붙여넣기(길게 눌러 붙여넣기)만 해주세요.</div>
+  <button class="mi-btn" id="miBtn" data-i18n="mi.btn" disabled>💬 이 내용으로 카카오채널 문의하기</button>
+  <div class="mi-toast" id="miToast" data-i18n="mi.toast">✅ 문의 내용이 복사되었습니다!<br>카카오채널 채팅창에 붙여넣기(길게 눌러 붙여넣기)만 해주세요.</div>
 </div>
 
 <!-- 하단 CTA -->
@@ -319,7 +319,7 @@ const TRANS = {
     'mi.q3':'언제쯤 생각하세요?','mi.t1':'7월','mi.t2':'8월','mi.t3':'가을','mi.t4':'겨울','mi.t5':'미정',
     'mi.name':'이름을 적으면 이 이름으로 <b style="color:#085041;">내 견적서</b>를 볼 수 있어요 <span style="color:#e74c3c;">*</span>',
     'mi.phone':'연락처를 적고 <b style="color:#085041;">상세 견적서</b>를 받아 보세요 <span style="color:#e74c3c;">*</span>',
-    'mi.btn':'💬 이 내용으로 카카오톡 문의하기',
+    'mi.btn':'💬 이 내용으로 카카오채널 문의하기',
     'seo.h2':'iCLARKGOLF 골프 패키지 안내',
     'seo.intro1':'iCLARKGOLF의 모든 골프 패키지는 필리핀 클락에서 <b>25년째</b> 골프를 가르치고 안내해온 <b>전문가가 직접 설계하고 운영</b>합니다. <b>PRADERA C.C</b>와 <b>BEVERLY C.C</b> 두 골프장을 중심으로, 라운드와 연습장 훈련, 숙소, 캐디, 경비까지 하나로 묶어 안내합니다.',
     'seo.intro2':'아래에서 이 패키지의 <b>기간별 가격</b>, <b>포함·불포함 항목</b>, 숙소 정보와 샘플 일정을 확인하실 수 있고, 궁금한 점은 <b>30초 간편 문의</b>로 바로 여쭤보실 수 있습니다. 처음 혼자 떠나는 골프 여행도, 여러 명이 함께하는 전지훈련도 이 페이지 하나로 준비할 수 있도록 만들었습니다.',
@@ -335,7 +335,7 @@ const TRANS = {
     'mi.q3':'When are you thinking?','mi.t1':'July','mi.t2':'August','mi.t3':'Fall','mi.t4':'Winter','mi.t5':'Not sure',
     'mi.name':'Enter your name to view <b style="color:#085041;">your quote</b> later <span style="color:#e74c3c;">*</span>',
     'mi.phone':'Leave your contact to get a <b style="color:#085041;">detailed quote</b> <span style="color:#e74c3c;">*</span>',
-    'mi.btn':'💬 Send via KakaoTalk',
+    'mi.btn':'💬 Message via Kakao Channel',
     'seo.h2':'iCLARKGOLF Golf Packages',
     'seo.intro1':'Every iCLARKGOLF package is designed and run directly by <b>a golf professional</b> who has lived and taught in Clark, Philippines for <b>25 years</b>. Centered on <b>PRADERA C.C</b> and <b>BEVERLY C.C</b>, each package bundles rounds, practice-range training, lodging, caddies, and cost into one plan.',
     'seo.intro2':'Below you can check <b>pricing by duration</b>, <b>what is included and excluded</b>, lodging details, and a sample schedule — and send a quick <b>30-second inquiry</b> if you have questions. Whether this is a first solo golf trip or a group training camp, this page has everything needed to plan it.',
@@ -547,14 +547,14 @@ const db  = getFirestore(app);
       chip.classList.add('on');
       sel[group.dataset.group] = chip.dataset.v;
 
-      // 칩 3개(또는 고정 패키지는 2개) 모두 선택되면 잠정 저장 (이름/연락처 없어도 관심 신호는 남김)
-      if (curDuration() && sel.party && sel.timing) {
+      // 칩 3개(또는 고정 패키지는 2개) 모두 처음 선택된 순간 1회만 잠정 저장 (관심 신호) — 이후 재선택은 굳이 갱신 시도 안 함(수정 권한 이슈로 조용히 실패하는 것 방지, 최종 제출 시 항상 최신 선택값으로 새로 저장됨)
+      if (!savedRef && curDuration() && sel.party && sel.timing) {
         try { if (window.gtag) gtag('event', 'pkg_widget_ready', { 페이지: cardId }); } catch(e) {}
         try {
-          const data = { 기간:curDuration(), 인원:sel.party, 시기:sel.timing,
-                         상태:'선택완료', 페이지:cardId, created:serverTimestamp() };
-          if (savedRef) { await updateDoc(savedRef, data); }
-          else { savedRef = await addDoc(collection(db,'web_inquiries'), data); }
+          savedRef = await addDoc(collection(db,'web_inquiries'), {
+            기간:curDuration(), 인원:sel.party, 시기:sel.timing,
+            상태:'선택완료', 페이지:cardId, created:serverTimestamp()
+          });
         } catch(err) { console.error('문의 저장 실패:', err); }
       }
       checkReady();
@@ -569,12 +569,14 @@ const db  = getFirestore(app);
 
     try { if (window.gtag) gtag('event', 'pkg_kakao_click', { 페이지: cardId, 연락처_입력: !!phone }); } catch(e) {}
 
-    // Firestore 상태 갱신 (실패해도 카카오 이동은 진행하되, 실패 사실은 콘솔+간단 로그로 남김)
+    // Firestore 최종 저장 — 기존 기록을 "수정(update)"하지 않고 이름·연락처가 포함된 "새 기록"을 만듦
+    // (수정 권한이 막혀있어도 생성은 되는 걸 확인했기 때문에, 최종 제출은 항상 새 문서로 남겨 확실히 저장되게 함)
     let saveFailed = false;
     try {
-      const upd = { 상태:'카카오이동', 연락처:phone||'', 이름:name||'' };
-      if (savedRef) { await updateDoc(savedRef, upd); }
-      else { savedRef = await addDoc(collection(db,'web_inquiries'), { 기간:curDuration(), 인원:sel.party, 시기:sel.timing, 페이지:cardId, created:serverTimestamp(), ...upd }); }
+      await addDoc(collection(db,'web_inquiries'), {
+        기간:curDuration(), 인원:sel.party, 시기:sel.timing, 페이지:cardId,
+        상태:'카카오이동', 연락처:phone||'', 이름:name||'', created:serverTimestamp()
+      });
     } catch(err) {
       saveFailed = true;
       console.error('문의 저장 실패:', err);
