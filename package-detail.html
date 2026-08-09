@@ -569,12 +569,17 @@ const db  = getFirestore(app);
 
     try { if (window.gtag) gtag('event', 'pkg_kakao_click', { 페이지: cardId, 연락처_입력: !!phone }); } catch(e) {}
 
-    // Firestore 상태 갱신 (실패해도 카카오 이동은 진행)
+    // Firestore 상태 갱신 (실패해도 카카오 이동은 진행하되, 실패 사실은 콘솔+간단 로그로 남김)
+    let saveFailed = false;
     try {
       const upd = { 상태:'카카오이동', 연락처:phone||'', 이름:name||'' };
       if (savedRef) { await updateDoc(savedRef, upd); }
       else { savedRef = await addDoc(collection(db,'web_inquiries'), { 기간:curDuration(), 인원:sel.party, 시기:sel.timing, 페이지:cardId, created:serverTimestamp(), ...upd }); }
-    } catch(err) { console.error('문의 저장 실패:', err); }
+    } catch(err) {
+      saveFailed = true;
+      console.error('문의 저장 실패:', err);
+      try { if (window.gtag) gtag('event', 'pkg_save_failed', { 페이지: cardId, 오류: String(err && err.code || err) }); } catch(e2) {}
+    }
 
     // 요약 복사 후 카카오 채널 열기
     try { await navigator.clipboard.writeText(summary); } catch(e) {}
