@@ -508,7 +508,7 @@ const db  = getFirestore(app);
 /* ── 3탭 미니 문의 위젯 ── */
 (function(){
   const sel = { duration:null, party:null, timing:null };
-  let savedRef = null; // 자동 저장된 문서 참조 (중복 저장 방지)
+  // (참고) savedRef 변수는 더 이상 사용하지 않음 — 2026-08-09부터 최종 제출 시 1회만 저장
   // 고정 패키지는 기간 칩이 없으므로 render()가 세팅한 window.MI_FIXED_DURATION을 대신 사용
   const curDuration = () => sel.duration || window.MI_FIXED_DURATION || null;
 
@@ -540,29 +540,24 @@ const db  = getFirestore(app);
   }
 
   document.querySelectorAll('.mi-chips').forEach(group => {
-    group.addEventListener('click', async (e) => {
+    group.addEventListener('click', (e) => {
       const chip = e.target.closest('.mi-chip');
       if (!chip) return;
       group.querySelectorAll('.mi-chip').forEach(c => c.classList.remove('on'));
       chip.classList.add('on');
       sel[group.dataset.group] = chip.dataset.v;
 
-      // 칩 3개(또는 고정 패키지는 2개) 모두 처음 선택된 순간 1회만 잠정 저장 (관심 신호) — 이후 재선택은 굳이 갱신 시도 안 함(수정 권한 이슈로 조용히 실패하는 것 방지, 최종 제출 시 항상 최신 선택값으로 새로 저장됨)
-      if (!savedRef && curDuration() && sel.party && sel.timing) {
-        try { if (window.gtag) gtag('event', 'pkg_widget_ready', { 페이지: cardId }); } catch(e) {}
-        try {
-          savedRef = await addDoc(collection(db,'web_inquiries'), {
-            기간:curDuration(), 인원:sel.party, 시기:sel.timing,
-            상태:'선택완료', 페이지:cardId, created:serverTimestamp()
-          });
-        } catch(err) { console.error('문의 저장 실패:', err); }
-      }
+      // 칩 선택 단계에서는 저장하지 않음 — Firestore 규칙상 "수정(update)"이 막혀있어
+      // 여기서 잠정 저장하면 최종 제출 시 중복 기록이 남는 문제가 있었음(2026-08-09 발견·수정).
+      // 이제 이름·연락처까지 다 채우고 최종 제출할 때 딱 한 번만 저장함(아래 miBtn 클릭 핸들러).
+      try { if (window.gtag && curDuration() && sel.party && sel.timing) gtag('event', 'pkg_widget_ready', { 페이지: cardId }); } catch(e) {}
       checkReady();
     });
   });
 
   document.getElementById('miBtn').addEventListener('click', async () => {
     if (!checkReady()) return; // 이름·연락처 미충족 시 진행 안 함(방어 코드 — 버튼은 이미 disabled)
+    miBtn.disabled = true; // 연타로 인한 중복 저장 방지
     const name = document.getElementById('miName').value.trim();
     const phone = document.getElementById('miPhone').value.trim();
     const summary = `[클락 골프 문의]` + (name ? `\n성함: ${name}` : '') + `\n기간: ${curDuration()} / 인원: ${sel.party} / 시기: ${sel.timing}` + (phone ? `\n연락처: ${phone}` : '');
