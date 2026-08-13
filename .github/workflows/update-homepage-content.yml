@@ -1,0 +1,41 @@
+name: Auto-update homepage packages & lodging
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update-homepage-content:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: install firebase-admin
+        run: npm install firebase-admin@12
+
+      - name: build homepage content
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node .github/scripts/build-homepage-content.js
+
+      - name: commit changes
+        run: |
+          git config user.name "iclarkgolf-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "no changes"
+          else
+            git commit -m "auto update homepage content"
+            git push
+          fi
