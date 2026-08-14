@@ -514,6 +514,25 @@ const db  = getFirestore(app);
   // 고정 패키지는 기간 칩이 없으므로 render()가 세팅한 window.MI_FIXED_DURATION을 대신 사용
   const curDuration = () => sel.duration || window.MI_FIXED_DURATION || null;
 
+  // 2026-08-14: 이름·연락처 없이도 "흔적"이 admin에 남도록 복원(마케팅 파악 목적, PJ 요청)
+  // 칩 3개(고정 패키지는 2개) 선택이 완료되는 첫 순간, 딱 1번만 "선택완료" 문서를 새로 생성.
+  // 기존 문서를 "수정(update)"하지 않고 항상 "생성(create)"만 하므로, 이후 이름·연락처까지 채워
+  // 최종 제출하면 별도의 "카카오이동" 문서가 하나 더 생길 수 있음(같은 방문자가 2줄로 보일 수 있음) —
+  // 의도된 동작: 한 줄은 "여기까지 관심 보임" 흔적, 한 줄은 "연락처 남긴 확정 리드"로 구분해서 보게 됨.
+  let chipTraceSaved = false;
+  async function saveChipTrace(){
+    if (chipTraceSaved) return;
+    chipTraceSaved = true;
+    try {
+      await addDoc(collection(db,'web_inquiries'), {
+        기간:curDuration(), 인원:sel.party, 시기:sel.timing, 페이지:cardId,
+        상태:'선택완료', 연락처:'', 이름:'', created:serverTimestamp()
+      });
+    } catch(err) {
+      console.error('선택완료 흔적 저장 실패:', err);
+    }
+  }
+
   const nameInput  = document.getElementById('miName');
   const phoneInput = document.getElementById('miPhone');
   const miBtn      = document.getElementById('miBtn');
@@ -549,10 +568,10 @@ const db  = getFirestore(app);
       chip.classList.add('on');
       sel[group.dataset.group] = chip.dataset.v;
 
-      // 칩 선택 단계에서는 저장하지 않음 — Firestore 규칙상 "수정(update)"이 막혀있어
-      // 여기서 잠정 저장하면 최종 제출 시 중복 기록이 남는 문제가 있었음(2026-08-09 발견·수정).
-      // 이제 이름·연락처까지 다 채우고 최종 제출할 때 딱 한 번만 저장함(아래 miBtn 클릭 핸들러).
-      try { if (window.gtag && curDuration() && sel.party && sel.timing) gtag('event', 'pkg_widget_ready', { 페이지: cardId }); } catch(e) {}
+      // 2026-08-14: 칩 3개(고정 패키지는 2개)가 다 채워지는 순간 "선택완료" 흔적을 1회만 저장(위 saveChipTrace 참고)
+      const chipsDone = !!(curDuration() && sel.party && sel.timing);
+      if (chipsDone) saveChipTrace();
+      try { if (window.gtag && chipsDone) gtag('event', 'pkg_widget_ready', { 페이지: cardId }); } catch(e) {}
       checkReady();
     });
   });
