@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8S6Z4PD9VZ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-8S6Z4PD9VZ');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iClark Golf — 패키지 상세</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans KR',sans-serif;background:#f4f4f0;color:#18181b;padding-bottom:100px;}
+
+/* 네비 */
+nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);border-bottom:1px solid #e5e7eb;}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#18181b;text-decoration:none;}
+.nav-logo .i{color:#e03131;}
+.nav-logo .clark{color:#1b4332;}
+.nav-back{font-size:13px;color:#6b7280;text-decoration:none;}
+.nav-back:hover{color:#1b4332;}
+
+/* 히어로 */
+.hero{min-height:260px;display:flex;align-items:flex-end;padding:70px 20px 24px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#054535,#1D9E75);}
+.hero-img{position:absolute;inset:0;background-size:cover;background-position:center 45%;opacity:0.9;}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.1) 100%);}
+.hero-glow{position:absolute;right:-20px;top:-20px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.07);}
+.hero-line{position:absolute;left:0;top:0;bottom:0;width:4px;background:rgba(255,255,255,0.35);}
+.hero-content{position:relative;z-index:2;}
+.hero-tag{font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:.08em;margin-bottom:8px;}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:46px;color:#fff;line-height:.9;letter-spacing:.02em;text-shadow:0 2px 16px rgba(0,0,0,0.3);}
+.hero-subs{display:flex;align-items:center;gap:8px;margin-top:8px;}
+.hero-sub1{font-size:18px;font-weight:700;color:#fff;}
+.hero-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.6);}
+.hero-sub2{font-size:18px;font-weight:300;color:rgba(255,255,255,0.85);}
+.hero-copy{font-size:13px;color:rgba(255,255,255,0.75);line-height:1.9;margin-top:12px;border-left:2px solid rgba(255,255,255,0.4);padding-left:12px;}
+
+/* 핵심 숫자 바 */
+.stats-bar{background:#fff;display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid #e5e7eb;}
+.stat-item{padding:14px 10px;text-align:center;border-right:1px solid #e5e7eb;}
+.stat-item:last-child{border-right:none;}
+.stat-label{font-size:10px;color:#9ca3af;margin-bottom:4px;}
+.stat-value{font-size:18px;font-weight:900;color:#1b4332;}
+.stat-unit{font-size:10px;color:#9ca3af;margin-top:2px;}
+
+/* 섹션 공통 */
+.section{background:#fff;margin:10px 12px;border-radius:14px;overflow:hidden;border:1px solid #e5e7eb;}
+.section-header{background:#1b4332;color:#fff;padding:11px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.section-body{padding:16px;}
+
+/* 일정 */
+.day-row{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;}
+.day-row:last-child{margin-bottom:0;}
+.day-num{width:34px;height:34px;border-radius:50%;background:#1b4332;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px;}
+.day-title{font-size:14px;font-weight:700;color:#18181b;margin-bottom:3px;}
+.day-desc{font-size:14px;color:#374151;line-height:1.9;}
+
+/* 포함/불포함 */
+.inc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.inc-col-title{font-size:12px;font-weight:700;margin-bottom:8px;}
+.inc-col-title.yes{color:#1b4332;}
+.inc-col-title.no{color:#dc2626;}
+.inc-list{font-size:12px;color:#374151;line-height:2.1;}
+.inc-list span{display:flex;align-items:center;gap:5px;}
+
+/* 사진 그리드 */
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.photo-card{border-radius:10px;overflow:hidden;background:#e5e7eb;aspect-ratio:4/3;}
+.photo-card img{width:100%;height:100%;object-fit:cover;display:block;}
+@media(max-width:600px){.photo-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:380px){.photo-grid{grid-template-columns:1fr;}}
+
+/* 프로 */
+
+
+/* 가격표 */
+.price-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:9px;margin-bottom:7px;background:#f9f9f6;}
+.price-row.featured{background:#e8f4ef;border:2px solid #1b4332;}
+.price-row:last-child{margin-bottom:0;}
+.price-period{font-size:13px;color:#374151;display:flex;align-items:center;gap:8px;}
+.price-badge{font-size:10px;font-weight:700;background:#1b4332;color:#fff;padding:2px 8px;border-radius:10px;}
+.price-amount{font-size:14px;font-weight:700;color:#1b4332;}
+
+/* 자유 글 */
+.free-content{font-size:14px;line-height:1.9;color:#374151;}
+.free-content h2{font-size:20px;font-weight:700;color:#18181b;margin:20px 0 10px;}
+.free-content h3{font-size:16px;font-weight:700;color:#18181b;margin:16px 0 8px;}
+.free-content img{max-width:100%;border-radius:10px;margin:10px 0;}
+.free-content hr{border:none;border-top:1.5px solid #e5e7eb;margin:16px 0;}
+.free-content p{margin-bottom:8px;}
+
+/* 하단 CTA */
+.bottom-cta{position:fixed;bottom:0;left:0;right:0;background:#fff;padding:12px 16px;border-top:1px solid #e5e7eb;display:flex;gap:10px;z-index:100;}
+.btn-kakao{flex:1;padding:13px;background:#FEE500;color:#1b1b1b;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;}
+.btn-quote{flex:1;padding:13px;background:linear-gradient(135deg,#1b4332,#534AB7);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;}
+/* ── 3탭 미니 문의 위젯 ── */
+.mini-inquiry{background:#fff;border-radius:16px;padding:24px 20px;margin:20px 16px;box-shadow:0 2px 16px rgba(0,0,0,0.08);border-top:4px solid #1D9E75;max-width:720px;}
+@media(min-width:768px){.mini-inquiry{margin:24px auto;}}
+.mi-title{font-size:17px;font-weight:800;color:#1b4332;margin-bottom:4px;}
+.mi-sub{font-size:13px;color:#888;margin-bottom:18px;}
+.mi-q{font-size:14px;font-weight:700;color:#333;margin:16px 0 8px;}
+.mi-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.mi-chip{padding:10px 16px;border:1.5px solid #d8d2c8;border-radius:24px;background:#faf8f4;font-size:14px;font-weight:600;color:#555;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;}
+.mi-chip.on{background:linear-gradient(135deg,#1D9E75,#534AB7);color:#fff;border-color:transparent;}
+.mi-phone{margin-top:18px;}
+.mi-phone label{font-size:13px;color:#888;display:block;margin-bottom:6px;}
+.mi-phone input{width:100%;padding:12px 14px;border:1.5px solid #d8d2c8;border-radius:10px;font-size:15px;font-family:'Noto Sans KR',sans-serif;}
+.mi-btn{width:100%;margin-top:16px;padding:15px;background:#FEE500;color:#1b1b1b;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Noto Sans KR',sans-serif;opacity:.45;pointer-events:none;transition:opacity .2s;}
+.mi-btn.ready{opacity:1;pointer-events:auto;}
+.mi-toast{display:none;margin-top:12px;background:#eaf3ee;border-left:4px solid #1D9E75;border-radius:8px;padding:12px 14px;font-size:13px;color:#1b4332;line-height:1.6;}
+
+/* 로딩 */
+#loading{text-align:center;padding:80px 20px;color:#9ca3af;font-size:14px;}
+
+/* 한/영 버튼 */
+.lang-btn{font-size:11px;padding:3px 8px;border:1px solid #d1d5db;border-radius:6px;background:#fff;cursor:pointer;font-weight:700;font-family:'Noto Sans KR',sans-serif;}
+.lang-btn.on{background:#1b4332;color:#fff;border-color:#1b4332;}
+</style>
+</head>
+<body>
+
+<!-- 네비 -->
+<nav>
+  <a href="index.html" class="nav-logo"><span class="i">i</span><span class="clark">CLARK</span>GOLF</a>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div style="display:flex;gap:4px;">
+      <button class="lang-btn on" onclick="setLang('kr')">KOR</button>
+      <button class="lang-btn" onclick="setLang('en')">ENG</button>
+    </div>
+    <a href="index.html" class="nav-back" data-i18n="nav.back">← 홈으로</a>
+  </div>
+</nav>
+
+<!-- 로딩 -->
+<div id="loading">⏳ 불러오는 중...</div>
+
+<!-- ① 히어로 -->
+<div class="hero" id="heroSection" style="display:none;">
+  <div class="hero-bg" id="heroBg"></div>
+  <div style="position:absolute;inset:0;">
+    <div class="hero-img" id="heroImg"></div>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-line"></div>
+  <div class="hero-content">
+    <div class="hero-tag" id="heroTag"></div>
+    <div class="hero-title" id="heroTitle"></div>
+    <div class="hero-subs">
+      <span class="hero-sub1" id="heroSub1"></span>
+      <span class="hero-dot" id="heroDot" style="display:none;"></span>
+      <span class="hero-sub2" id="heroSub2"></span>
+    </div>
+    <div class="hero-copy" id="heroCopy"></div>
+  </div>
+</div>
+
+<!-- ② 핵심 숫자 바 -->
+<div class="stats-bar" id="statsBar" style="display:none;">
+  <div class="stat-item">
+    <div class="stat-label" data-i18n="stat.price">시작 가격</div>
+    <div class="stat-value" id="statPrice"></div>
+    <div class="stat-unit">/ 1일</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-label" data-i18n="stat.mindays">최소 기간</div>
+    <div class="stat-value" id="statMinDays"></div>
+    <div class="stat-unit">이상</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-label" data-i18n="stat.pax">인원</div>
+    <div class="stat-value" id="statPax"></div>
+    <div class="stat-unit">전용</div>
+  </div>
+</div>
+
+<!-- ③ 샘플 일정 -->
+<div class="section" id="scheduleSection" style="display:none;">
+  <div class="section-header" data-i18n="sec.schedule">📅 샘플 일정</div>
+  <div class="section-body">
+    <div id="scheduleList"></div>
+  </div>
+</div>
+
+<!-- ④ 포함/불포함 -->
+<div class="section" id="inclSection" style="display:none;">
+  <div class="section-header" data-i18n="sec.incl">✅ 포함 · 불포함</div>
+  <div class="section-body">
+    <div class="inc-grid">
+      <div>
+        <div class="inc-col-title yes" data-i18n="incl.yes">✅ 포함</div>
+        <div class="inc-list" id="inclYes"></div>
+      </div>
+      <div>
+        <div class="inc-col-title no" data-i18n="incl.no">❌ 불포함</div>
+        <div class="inc-list" id="inclNo"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑤ 숙소 안내 -->
+<div class="section" id="accomSection" style="display:none;">
+  <div class="section-header" data-i18n="sec.accom">🏠 숙소 안내</div>
+  <div class="section-body">
+    <div class="photo-grid" id="accomGrid"></div>
+    <div style="font-size:15px;font-weight:700;color:#18181b;margin-bottom:4px;" id="accomName"></div>
+    <div style="font-size:12px;color:#6b7280;line-height:1.7;" id="accomDesc"></div>
+  </div>
+</div>
+
+<!-- ⑥ 로컬 전용 숙소 -->
+<div class="section" id="localSection" style="display:none;">
+  <div class="section-header" data-i18n="sec.local">🏡 로컬 전용 숙소</div>
+  <div class="section-body">
+    <div class="photo-grid" id="localGrid"></div>
+    <div style="font-size:15px;font-weight:700;color:#18181b;margin-bottom:4px;" id="localName"></div>
+    <div style="font-size:12px;color:#6b7280;line-height:1.7;" id="localDesc"></div>
+  </div>
+</div>
+
+<!-- ⑦ 전지훈련 -->
+<div class="section" id="trainingSection" style="display:none;">
+  <div class="section-header" data-i18n="sec.training">⛳ 전지훈련</div>
+  <div class="section-body">
+    <div class="photo-grid" id="trainingGrid"></div>
+    <div style="font-size:15px;font-weight:700;color:#18181b;margin-bottom:4px;" id="trainingName"></div>
+    <div style="font-size:12px;color:#6b7280;line-height:1.7;" id="trainingDesc"></div>
+  </div>
+</div>
+
+<!-- ⑧ 기간별 가격 (섹션 헤더 제거, 내용만 유지) -->
+<div class="section" id="priceSection" style="display:none;">
+  <div class="section-body">
+    <div id="priceList"></div>
+  </div>
+</div>
+
+<!-- ⑨ 상세 안내 -->
+<div class="section" id="freeSection" style="display:none;">
+  <div class="section-header" data-i18n="sec.detail">📝 상세 안내</div>
+  <div class="section-body">
+    <div class="free-content" id="freeContent"></div>
+  </div>
+</div>
+
+<!-- 3탭 미니 문의 -->
+<div class="mini-inquiry" id="miniInquiry">
+  <div class="mi-title" data-i18n="mi.title">⛳ 30초 간편 문의</div>
+  <div class="mi-sub" data-i18n="mi.sub">버튼 3번이면 끝 — 타이핑 없이 문의하세요</div>
+
+  <div class="mi-q" data-i18n="mi.q1">기간이 어떻게 되세요?</div>
+  <div class="mi-chips" data-group="duration">
+    <button class="mi-chip" data-v="4일" data-i18n="mi.d1">4일</button>
+    <button class="mi-chip" data-v="1주일" data-i18n="mi.d2">1주일</button>
+    <button class="mi-chip" data-v="2주 이상" data-i18n="mi.d3">2주 이상</button>
+    <button class="mi-chip" data-v="미정" data-i18n="mi.d4">미정</button>
+  </div>
+
+  <div class="mi-q" data-i18n="mi.q2">몇 분이세요?</div>
+  <div class="mi-chips" data-group="party">
+    <button class="mi-chip" data-v="혼자" data-i18n="mi.p1">혼자</button>
+    <button class="mi-chip" data-v="2명" data-i18n="mi.p2">2명</button>
+    <button class="mi-chip" data-v="3명 이상" data-i18n="mi.p3">3명 이상</button>
+  </div>
+
+  <div class="mi-q" data-i18n="mi.q3">언제쯤 생각하세요?</div>
+  <div class="mi-chips" data-group="timing">
+    <button class="mi-chip" data-v="7월" data-i18n="mi.t1">7월</button>
+    <button class="mi-chip" data-v="8월" data-i18n="mi.t2">8월</button>
+    <button class="mi-chip" data-v="가을" data-i18n="mi.t3">가을</button>
+    <button class="mi-chip" data-v="겨울" data-i18n="mi.t4">겨울</button>
+    <button class="mi-chip" data-v="미정" data-i18n="mi.t5">미정</button>
+  </div>
+
+  <div class="mi-phone">
+    <label data-i18n="mi.phone">연락처 (선택사항 — 남겨주시면 먼저 연락드립니다)</label>
+    <input type="tel" id="miPhone" inputmode="numeric" placeholder="010-0000-0000">
+  </div>
+
+  <button class="mi-btn" id="miBtn" data-i18n="mi.btn">💬 이 내용으로 카카오톡 문의하기</button>
+  <div class="mi-toast" id="miToast" data-i18n="mi.toast">✅ 문의 내용이 복사되었습니다!<br>카카오톡 채팅창에 붙여넣기(길게 눌러 붙여넣기)만 해주세요.</div>
+</div>
+
+<!-- 하단 CTA -->
+<div class="bottom-cta" id="bottomCta" style="display:none;">
+  <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="btn-kakao" data-i18n="btn.kakao">💬 카카오 문의</a>
+  <a href="quote.html" class="btn-quote" data-i18n="btn.quote">📋 맞춤 견적</a>
+</div>
+
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getFirestore, doc, getDoc, collection, addDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+const params = new URLSearchParams(location.search);
+const cardId = params.get('id') || 'card1';
+
+/* ── 한/영 번역 ── */
+const TRANS = {
+  kr: {
+    'nav.back':'← 홈으로','stat.price':'시작 가격','stat.mindays':'최소 기간','stat.pax':'인원',
+    'sec.schedule':'📅 샘플 일정','sec.incl':'✅ 포함 · 불포함','incl.yes':'✅ 포함','incl.no':'❌ 불포함',
+    'sec.accom':'🏠 숙소 안내','sec.local':'🏡 로컬 전용 숙소','sec.training':'⛳ 전지훈련',
+    'sec.price':'💰 기간별 가격','sec.detail':'📝 상세 안내','btn.kakao':'💬 카카오 문의','btn.quote':'📋 맞춤 견적',
+    'mi.title':'⛳ 30초 간편 문의','mi.sub':'버튼 3번이면 끝 — 타이핑 없이 문의하세요',
+    'mi.q1':'기간이 어떻게 되세요?','mi.d1':'4일','mi.d2':'1주일','mi.d3':'2주 이상','mi.d4':'미정',
+    'mi.q2':'몇 분이세요?','mi.p1':'혼자','mi.p2':'2명','mi.p3':'3명 이상',
+    'mi.q3':'언제쯤 생각하세요?','mi.t1':'7월','mi.t2':'8월','mi.t3':'가을','mi.t4':'겨울','mi.t5':'미정',
+    'mi.phone':'연락처 (선택사항 — 남겨주시면 먼저 연락드립니다)',
+    'mi.btn':'💬 이 내용으로 카카오톡 문의하기',
+  },
+  en: {
+    'nav.back':'← Home','stat.price':'Starting Price','stat.mindays':'Min. Stay','stat.pax':'Guests',
+    'sec.schedule':'📅 Sample Schedule','sec.incl':'✅ Included · Excluded','incl.yes':'✅ Included','incl.no':'❌ Not Included',
+    'sec.accom':'🏠 Accommodation','sec.training':'⛳ Training Photos',
+    'sec.price':'💰 Pricing','sec.detail':'📝 Details','btn.kakao':'💬 KakaoTalk','btn.quote':'📋 Get a Quote',
+    'mi.title':'⛳ 30-Second Inquiry','mi.sub':'Just 3 taps — no typing needed',
+    'mi.q1':'How long will you stay?','mi.d1':'4 days','mi.d2':'1 week','mi.d3':'2+ weeks','mi.d4':'Not sure',
+    'mi.q2':'How many people?','mi.p1':'Solo','mi.p2':'2 people','mi.p3':'3 or more',
+    'mi.q3':'When are you thinking?','mi.t1':'July','mi.t2':'August','mi.t3':'Fall','mi.t4':'Winter','mi.t5':'Not sure',
+    'mi.phone':'Phone (optional — we will contact you first)',
+    'mi.btn':'💬 Send via KakaoTalk',
+  }
+};
+let currentLang = localStorage.getItem('clarkgo_lang') || 'kr';
+
+function applyTranslations() {
+  const t = TRANS[currentLang] || TRANS.kr;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.getAttribute('data-i18n');
+    if (t[k]) el.textContent = t[k];
+  });
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    const isOn = btn.textContent.trim().toLowerCase().startsWith(currentLang);
+    btn.classList.toggle('on', isOn);
+  });
+}
+window.setLang = function(lang) {
+  currentLang = lang;
+  localStorage.setItem('clarkgo_lang', lang);
+  applyTranslations();
+};
+
+/* ── 렌더링 ── */
+window.render = function render(D) {
+  // 히어로
+  document.getElementById('heroBg').style.background = `linear-gradient(135deg,${D.color1||'#054535'},${D.color2||'#1D9E75'})`;
+  if (D.heroImg) {
+    const hi = document.getElementById('heroImg');
+    hi.style.backgroundImage = `url(${D.heroImg})`;
+    hi.style.backgroundPosition = `center ${D.heroPos || 45}%`;
+    hi.style.opacity = D.heroOpacity || 0.9;
+  }
+  document.getElementById('heroTag').textContent   = D.tag    || '';
+  document.getElementById('heroTitle').textContent = D.titleEn|| '';
+  document.getElementById('heroSub1').textContent  = D.sub1   || '';
+  document.getElementById('heroSub2').textContent  = D.sub2   || '';
+  document.getElementById('heroDot').style.display = (D.sub1 && D.sub2) ? 'block' : 'none';
+  document.getElementById('heroCopy').innerHTML    = (D.copy||'').replace(/\n/g,'<br>');
+  document.title = `${D.sub1||''} ${D.sub2||''} — iClark Golf`;
+  // 동적 description 추가
+  let metaDesc = document.querySelector('meta[name="description"]');
+  if (!metaDesc) {
+    metaDesc = document.createElement('meta');
+    metaDesc.name = 'description';
+    document.head.appendChild(metaDesc);
+  }
+  metaDesc.content = `${D.sub1||''} ${D.sub2||''} — 필리핀 클락 골프 ${D.copy||'패키지'}. ${D.price||''}${D.priceUnit||''} 부터 시작. iCLARKGOLF에서 예약하세요.`;
+
+  // 스탯
+  document.getElementById('statPrice').textContent   = D.price      || '';
+  document.getElementById('statMinDays').textContent = D.statMinDays|| '';
+  document.getElementById('statPax').textContent     = D.statPax    || '';
+
+  // 일정
+  const sList = document.getElementById('scheduleList');
+  if (D.trainingSchedule && D.trainingSchedule.trim()) {
+    sList.innerHTML = D.trainingSchedule;
+  } else if (D.schedule && D.schedule.length > 0) {
+    sList.innerHTML = (D.schedule||[]).map(s => `
+      <div class="day-row">
+        <div class="day-num">${s.num||''}</div>
+        <div style="flex:1;">
+          <div class="day-title">${s.title||''}</div>
+          <div class="day-desc">${(s.desc||'').replace(/\n/g,'<br>')}</div>
+        </div>
+      </div>`).join('');
+  } else {
+    document.getElementById('scheduleSection').style.display = 'none';
+  }
+
+  // 포함/불포함
+  document.getElementById('inclYes').innerHTML = (D.inclYes||[]).map(t=>`<span>✅ ${t}</span>`).join('');
+  document.getElementById('inclNo').innerHTML  = (D.inclNo||[]).map(t=>`<span>❌ ${t}</span>`).join('')
+    + `<div style="margin-top:10px;padding:10px 12px;background:#fff8e8;border-left:3px solid #f4a261;border-radius:0 8px 8px 0;font-size:12px;color:#92400e;line-height:1.7;">📋 골프장에서 본인 부담 비용은 <strong>견적서에 첨부</strong>해 드립니다.</div>`;
+
+  // 숙소 사진
+  renderPhotoGrid('accomGrid', D.accomImgs || []);
+  document.getElementById('accomName').textContent = D.accomName || '';
+  document.getElementById('accomDesc').innerHTML   = (D.accomDesc||'').replace(/\n/g,'<br>');
+
+  // 로컬 전용 숙소 사진
+  renderPhotoGrid('localGrid', D.localImgs || []);
+  document.getElementById('localName').textContent = D.localName || '';
+  document.getElementById('localDesc').innerHTML   = (D.localDesc||'').replace(/\n/g,'<br>');
+
+  // 전지훈련 사진
+  renderPhotoGrid('trainingGrid', D.trainingImgs || []);
+  document.getElementById('trainingName').textContent = D.trainingName || '';
+  document.getElementById('trainingDesc').innerHTML   = (D.trainingDesc||'').replace(/\n/g,'<br>');
+
+  // 가격표
+  const pList = document.getElementById('priceList');
+  pList.innerHTML = (D.prices||[]).map(p => `
+    <div class="price-row${p.featured?' featured':''}">
+      <div class="price-period">
+        <span>${p.period||''}</span>
+        ${p.badge ? `<span class="price-badge">${p.badge}</span>` : ''}
+      </div>
+      <span class="price-amount">${p.amount||'문의'}</span>
+    </div>`).join('');
+
+  // 자유 글
+  const fc = document.getElementById('freeContent');
+  if (D.freeContent && D.freeContent.trim()) {
+    fc.innerHTML = D.freeContent;
+    document.getElementById('freeSection').style.display = 'block';
+  } else {
+    document.getElementById('freeSection').style.display = 'none';
+  }
+
+  // 전체 섹션 표시
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('heroSection').style.display = 'flex';
+  document.getElementById('statsBar').style.display = 'grid';
+  document.getElementById('bottomCta').style.display = 'flex';
+  ['scheduleSection','inclSection','accomSection','localSection','trainingSection','priceSection'].forEach(id => {
+    document.getElementById(id).style.display = 'block';
+  });
+  // 사진 없는 섹션은 숨기기
+  if (!D.accomImgs || D.accomImgs.length === 0) document.getElementById('accomSection').style.display = D.accomName ? 'block' : 'none';
+  if (!D.localImgs || D.localImgs.length === 0) document.getElementById('localSection').style.display = D.localName ? 'block' : 'none';
+  if (!D.trainingImgs || D.trainingImgs.length === 0) document.getElementById('trainingSection').style.display = (D.trainingName || D.trainingDesc || D.trainingSchedule) ? 'block' : 'none';
+
+  applyTranslations();
+}
+
+function renderPhotoGrid(containerId, urls) {
+  const grid = document.getElementById(containerId);
+  if (!urls || urls.length === 0) { grid.innerHTML = ''; return; }
+  grid.innerHTML = urls.map((url, i) =>
+    `<div class="photo-card"><img src="${url}" alt="사진 ${i+1}" loading="lazy" onerror="this.parentElement.style.display='none'"></div>`
+  ).join('');
+}
+
+/* ── Firebase 로드 및 데이터 패치 ── */
+const cfg = {
+  apiKey: "AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU",
+  authDomain: "iclarkgolf.firebaseapp.com",
+  projectId: "iclarkgolf"
+};
+const app = getApps().length ? getApps()[0] : initializeApp(cfg);
+const db  = getFirestore(app);
+
+/* ── 3탭 미니 문의 위젯 ── */
+(function(){
+  const sel = { duration:null, party:null, timing:null };
+  let savedRef = null; // 자동 저장된 문서 참조 (중복 저장 방지)
+
+  document.querySelectorAll('.mi-chips').forEach(group => {
+    group.addEventListener('click', async (e) => {
+      const chip = e.target.closest('.mi-chip');
+      if (!chip) return;
+      group.querySelectorAll('.mi-chip').forEach(c => c.classList.remove('on'));
+      chip.classList.add('on');
+      sel[group.dataset.group] = chip.dataset.v;
+
+      // 3개 모두 선택되면 버튼 활성화 + 자동 저장 (이탈해도 기록이 남음)
+      if (sel.duration && sel.party && sel.timing) {
+        document.getElementById('miBtn').classList.add('ready');
+        try {
+          const data = { 기간:sel.duration, 인원:sel.party, 시기:sel.timing,
+                         상태:'선택완료', 페이지:cardId, created:serverTimestamp() };
+          if (savedRef) { await updateDoc(savedRef, data); }
+          else { savedRef = await addDoc(collection(db,'web_inquiries'), data); }
+        } catch(err) { console.error('문의 저장 실패:', err); }
+      }
+    });
+  });
+
+  document.getElementById('miBtn').addEventListener('click', async () => {
+    const phone = document.getElementById('miPhone').value.trim();
+    const summary = `[클락 골프 문의]\n기간: ${sel.duration} / 인원: ${sel.party} / 시기: ${sel.timing}` + (phone ? `\n연락처: ${phone}` : '');
+
+    // Firestore 상태 갱신 (실패해도 카카오 이동은 진행)
+    try {
+      const upd = { 상태:'카카오이동', 연락처:phone||'' };
+      if (savedRef) { await updateDoc(savedRef, upd); }
+      else { savedRef = await addDoc(collection(db,'web_inquiries'), { 기간:sel.duration, 인원:sel.party, 시기:sel.timing, 페이지:cardId, created:serverTimestamp(), ...upd }); }
+    } catch(err) { console.error('문의 저장 실패:', err); }
+
+    // 요약 복사 후 카카오 채널 열기
+    try { await navigator.clipboard.writeText(summary); } catch(e) {}
+    document.getElementById('miToast').style.display = 'block';
+    setTimeout(() => { window.open('https://pf.kakao.com/_nbHKX/chat', '_blank'); }, 900);
+  });
+})();
+
+try {
+  const snap = await getDoc(doc(db, 'package_cards', cardId));
+  if (snap.exists()) {
+    render(snap.data());
+  } else {
+    document.getElementById('loading').textContent = '⚠️ 패키지 정보를 찾을 수 없습니다.';
+  }
+} catch(e) {
+  console.error('데이터 로드 실패:', e);
+  document.getElementById('loading').textContent = '⚠️ 불러오기 실패 — 새로고침 해주세요.';
+}
+</script>
+
+</body>
+</html>
