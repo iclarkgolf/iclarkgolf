@@ -41,7 +41,7 @@ async function fetchAgoda(siteId, apiKey, cityId) {
         currency: 'PHP',
         language: 'ko-kr',
         maxResult: MAX_RESULTS,
-        sortBy: 'PriceAsc',
+        sortBy: 'AllGuestsReviewScore', // 후기·평점이 좋은 순서로 정렬
         minimumStarRating: 3,
         occupancy: { numberOfAdult: 2, numberOfChildren: 0 },
       },
