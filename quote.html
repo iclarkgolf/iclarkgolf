@@ -104,6 +104,7 @@ nav{background:linear-gradient(135deg,#26215C,#534AB7);padding:14px 24px;display
 .purpose-hint.show{display:block;}
 
 /* HOTEL */
+.hotel-intro{font-size:12.5px;color:#085041;background:var(--mint-light);border-left:3px solid var(--mint);border-radius:8px;padding:9px 12px;margin-bottom:12px;line-height:1.6;}
 .hotel-list{display:flex;flex-direction:column;gap:10px;margin-top:4px;}
 .hotel-item{border:2px solid var(--mint-border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all .2s;}
 .hotel-item:hover{border-color:var(--purple);}
@@ -122,6 +123,10 @@ nav{background:linear-gradient(135deg,#26215C,#534AB7);padding:14px 24px;display
 .custom-price label{font-size:12px;color:var(--muted);margin-bottom:4px;display:block;}
 .custom-price input{width:100%;border:1.5px solid var(--mint-border);border-radius:8px;padding:9px 12px;font-family:'Nunito',sans-serif;font-size:16px;color:var(--text);outline:none;}
 .custom-price input:focus{border-color:var(--purple);}
+.custom-guide{font-size:12.5px;color:var(--text);background:var(--purple-pale);border-radius:8px;padding:10px 12px;margin-bottom:10px;line-height:1.9;}
+.custom-guide b{color:var(--purple);}
+.custom-agoda-btn{display:block;text-align:center;background:var(--purple);color:#fff;font-weight:800;font-size:14px;padding:11px;border-radius:10px;margin-bottom:14px;text-decoration:none;}
+.custom-agoda-btn:hover{opacity:.9;}
 
 /* GOLF */
 .golf-list{display:flex;flex-direction:column;gap:10px;margin-top:4px;}
@@ -329,8 +334,15 @@ footer a{color:rgba(255,255,255,.8);}
       <span class="sec-arrow open" id="arr-hotel">▾</span>
     </div>
     <div class="sec-body open" id="body-hotel">
+      <div class="hotel-intro">⭐ 평점 높은 인기 호텔 20곳을 보여드려요. 마음에 드는 호텔이 없으면 목록 맨 아래 <b>"다른 호텔 찾기"</b>를 눌러주세요.</div>
       <div class="hotel-list" id="hotel-list"></div>
       <div class="custom-price" id="custom-price-row">
+        <div class="custom-guide">
+          <b>① </b>아래 버튼으로 아고다를 열어 원하는 호텔을 찾아보세요<br>
+          <b>② </b>그 호텔의 1박 요금을 확인하세요<br>
+          <b>③ </b>확인한 요금을 아래 칸에 입력하세요
+        </div>
+        <a id="custom-agoda-link" href="#" target="_blank" class="custom-agoda-btn">🔎 아고다에서 호텔 찾아보기 →</a>
         <label>아고다에서 확인한 요금 입력 (1박 1인 $)</label>
         <input type="number" id="custom-hotel-price" placeholder="예: 65" min="0" oninput="renderCart()">
       </div>
@@ -713,7 +725,7 @@ async function loadAccommodations() {
     console.error('아고다 숙소 목록 로드 실패:', e);
   }
 
-  const customEntry = { id:'h4', icon:'🔍', name:'아고다에서 직접 선택', note:'날짜 확인 후 요금 직접 입력', price:0, custom:true };
+  const customEntry = { id:'h4', icon:'🔍', name:'다른 호텔 찾기', note:'목록에 없는 호텔을 원하시면 아고다에서 찾아 요금을 알려주세요', price:0, custom:true };
 
   if (localEntries.length || agodaEntries.length) {
     HOTELS = [...localEntries, ...agodaEntries, customEntry];
@@ -825,6 +837,8 @@ function renderHotels() {
     </div>`).join('');
   document.getElementById('custom-price-row').style.display =
     selHotel&&HOTELS.find(x=>x.id===selHotel)?.custom ? 'block' : 'none';
+  document.getElementById('custom-agoda-link').href =
+    'https://www.agoda.com/ko-kr/search?city=18875'+(a?'&checkIn='+a:'')+(d?'&checkOut='+d:'')+'&rooms=1&adults='+pax.g+'&locale=ko-kr&currency=KRW';
 }
 
 function selectHotel(id) {
