@@ -1,28 +1,6 @@
 {
-  "updatedAt": "2026-08-15T07:18:31.710Z",
+  "updatedAt": "2026-08-15T07:30:38.726Z",
   "hotels": [
-    {
-      "hotelId": 15947864,
-      "name": "엔젤레스 시티 게스트하우스",
-      "price": 539,
-      "crossedOutPrice": 0,
-      "currency": "PHP",
-      "image": "http://q-xx.bstatic.com/xdata/images/hotel/840x460/786174035.jpg?k=1a4fae7616b7474c03d46150f4ec5c2151c7b2db90eebf5f2af27ac63d293774&o=",
-      "starRating": 1,
-      "reviewScore": 7.2,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=15947864&currency=PHP&checkin=2026-08-29&checkout=2026-08-30&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
-    },
-    {
-      "hotelId": 28009887,
-      "name": "다니엘라스 플레이스",
-      "price": 679.61,
-      "crossedOutPrice": 0,
-      "currency": "PHP",
-      "image": "http://pix8.agoda.net/hotelImages/28009887/-1/7ccdc2345a24fcf3b84e94d3b2c5ea72.jpg?ce=0&s=800x600",
-      "starRating": 2,
-      "reviewScore": 7.8,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=28009887&currency=PHP&checkin=2026-08-29&checkout=2026-08-30&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
-    },
     {
       "hotelId": 15852977,
       "name": "말라바냐스의 아파트먼트 (20m², 침실 1개, 프라이빗 욕실 1개)",
@@ -33,61 +11,6 @@
       "starRating": 2,
       "reviewScore": 7.7,
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=15852977&currency=PHP&checkin=2026-08-29&checkout=2026-08-30&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
-    },
-    {
-      "hotelId": 46063334,
-      "name": "말라바냐스의 프라이빗 하우스 (13m², 침실 1개, 프라이빗 욕실 1개)",
-      "price": 712.29,
-      "crossedOutPrice": 0,
-      "currency": "PHP",
-      "image": "http://pix8.agoda.net/hotelImages/46063334/0/c894953001a07195f765208f8873aa92.jpg?ce=0&s=800x600",
-      "starRating": 1.5,
-      "reviewScore": 6.9,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=46063334&currency=PHP&checkin=2026-08-29&checkout=2026-08-30&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
-    },
-    {
-      "hotelId": 28929650,
-      "name": "레드도어즈 @ 마리파 호텔 앙헬레스 팜팡가",
-      "price": 720.15,
-      "crossedOutPrice": 1192.01,
-      "currency": "PHP",
-      "image": "http://pix8.agoda.net/hotelImages/28929650/467112877/2753adea7a427d1b6b512a3278a835e8.jpg?ca=25&ce=0&s=800x600",
-      "starRating": 2,
-      "reviewScore": 7.3,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=28929650&currency=PHP&checkin=2026-08-29&checkout=2026-08-30&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
-    },
-    {
-      "hotelId": 75863746,
-      "name": "말라바냐스의 프라이빗 하우스 (m², 침실 1개, 프라이빗 욕실 1개)",
-      "price": 791.43,
-      "crossedOutPrice": 1000,
-      "currency": "PHP",
-      "image": "http://pix8.agoda.net/hotelImages/75863746/0/42c3032e3e72767377efec5d6cc90678.jpg?ce=2&s=800x600",
-      "starRating": 1.5,
-      "reviewScore": 5.6,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=75863746&currency=PHP&checkin=2026-08-29&checkout=2026-08-30&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
-    },
-    {
-      "hotelId": 75863858,
-      "name": "말라바냐스의 프라이빗 하우스 (m², 침실 1개, 프라이빗 욕실 1개)",
-      "price": 791.43,
-      "crossedOutPrice": 0,
-      "currency": "PHP",
-      "image": "http://pix8.agoda.net/hotelImages/75863858/0/9ec6223f769c2aace9190481393a2e9f.jpg?ce=2&s=800x600",
-      "starRating": 1,
-      "reviewScore": 7.2,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=75863858&currency=PHP&checkin=2026-08-29&checkout=2026-08-30&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
-    },
-    {
-      "hotelId": 83807238,
-      "name": "말라바냐스의 아파트먼트 (m², 침실 1개, 프라이빗 욕실 1개)",
-      "price": 791.43,
-      "crossedOutPrice": 998,
-      "currency": "PHP",
-      "image": "http://pix8.agoda.net/hotelImages/83807238/0/13302f58639f8c10216d063bf614b4d4.jpg?ce=3&s=800x600",
-      "starRating": 1.5,
-      "reviewScore": 2,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=83807238&currency=PHP&checkin=2026-08-29&checkout=2026-08-30&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
       "hotelId": 75454502,
@@ -112,17 +35,6 @@
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=81446012&currency=PHP&checkin=2026-08-29&checkout=2026-08-30&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
-      "hotelId": 9403968,
-      "name": "레드도어즈 @ 클락뷰 21st 스트리트 앤젤레스 시티",
-      "price": 827.86,
-      "crossedOutPrice": 1379.07,
-      "currency": "PHP",
-      "image": "http://pix8.agoda.net/hotelImages/9403968/-1/c0165a0ef0a5d375abb5c4117f811f06.jpg?ca=13&ce=1&s=800x600",
-      "starRating": 1,
-      "reviewScore": 5.5,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=9403968&currency=PHP&checkin=2026-08-29&checkout=2026-08-30&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
-    },
-    {
       "hotelId": 31380596,
       "name": "클락 자유 무역항 지역의 프라이빗 하우스 (52m², 침실 1개, 프라이빗 욕실 1개)",
       "price": 841.14,
@@ -132,6 +44,94 @@
       "starRating": 3,
       "reviewScore": 9.3,
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=31380596&currency=PHP&checkin=2026-08-29&checkout=2026-08-30&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+    },
+    {
+      "hotelId": 84902908,
+      "name": "마리파 호텔 애넥스 앙헬레스 구 호라이즌 호텔",
+      "price": 892.04,
+      "crossedOutPrice": 0,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/84902908/0/c6a5945deb86ee3c98cafba4f7ebd9be.jpeg?ce=3&s=800x600",
+      "starRating": 3,
+      "reviewScore": 7.9,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=84902908&currency=PHP&checkin=2026-08-29&checkout=2026-08-30&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+    },
+    {
+      "hotelId": 8807370,
+      "name": "Clark-Pad Inn, Angeles City",
+      "price": 892.84,
+      "crossedOutPrice": 0,
+      "currency": "PHP",
+      "image": "http://q-xx.bstatic.com/xdata/images/hotel/840x460/209036221.jpg?k=350c4784047491b2e0d908e2eebe9977d17893f2114903fe16302ddfea61c838&o=",
+      "starRating": 3.5,
+      "reviewScore": 8.2,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=8807370&currency=PHP&checkin=2026-08-29&checkout=2026-08-30&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+    },
+    {
+      "hotelId": 2194019,
+      "name": "RV 트랜전트",
+      "price": 900,
+      "crossedOutPrice": 0,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/219/2194019/2194019_17051711080053040777.jpg?ca=6&ce=1&s=800x600",
+      "starRating": 4,
+      "reviewScore": 7.2,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=2194019&currency=PHP&checkin=2026-08-29&checkout=2026-08-30&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+    },
+    {
+      "hotelId": 1177735,
+      "name": "야누스 럭셔리 스위트",
+      "price": 900,
+      "crossedOutPrice": 0,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/1177735/0/0f47581e0aee0c2a3c6023cdea0899de.jpeg?ce=0&s=800x600",
+      "starRating": 3,
+      "reviewScore": 7,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=1177735&currency=PHP&checkin=2026-08-29&checkout=2026-08-30&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+    },
+    {
+      "hotelId": 81399360,
+      "name": "컬렉션 O JM 로지 클락 에어포트 근처",
+      "price": 923.58,
+      "crossedOutPrice": 2348.69,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/81399360/0/0e18b75befed9c577d9478abb07da4a6.jpg?ce=3&s=800x600",
+      "starRating": 3,
+      "reviewScore": 7.7,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=81399360&currency=PHP&checkin=2026-08-29&checkout=2026-08-30&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+    },
+    {
+      "hotelId": 70920456,
+      "name": "예스 게스트하우스",
+      "price": 939.62,
+      "crossedOutPrice": 1259.62,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/70920456/0/8f1f9a3fe1e139bd2ffdbf8264bd1131.jpg?ce=2&s=800x600",
+      "starRating": 3.5,
+      "reviewScore": 9.1,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=70920456&currency=PHP&checkin=2026-08-29&checkout=2026-08-30&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+    },
+    {
+      "hotelId": 33433210,
+      "name": "다우의 아파트먼트 (50m², 침실 2개, 프라이빗 욕실 1개)",
+      "price": 946.91,
+      "crossedOutPrice": 0,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/33433210/0/64a82a666c2ba2c3d9538b1dbfbb93cf.jpg?ce=0&s=800x600",
+      "starRating": 2.5,
+      "reviewScore": 8.6,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=33433210&currency=PHP&checkin=2026-08-29&checkout=2026-08-30&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+    },
+    {
+      "hotelId": 5481805,
+      "name": "말라바냐스의 프라이빗 하우스 (50m², 침실 2개, 프라이빗 욕실 2개)",
+      "price": 946.91,
+      "crossedOutPrice": 0,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/5481805/0/49be9a84836965b6eea2df332595aa9f.jpg?ca=19&ce=1&s=800x600",
+      "starRating": 3.5,
+      "reviewScore": 8.6,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=5481805&currency=PHP&checkin=2026-08-29&checkout=2026-08-30&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     }
   ]
 }
