@@ -1,5 +1,5 @@
 /**
- * 아고다(Agoda) 호텔 가격/사진을 주기적으로 받아와서
+ * 아고다(Agoda) 클락/앙헬레스 지역 호텔 가격/사진을 주기적으로 받아와서
  * agoda-hotels.json 파일로 저장한다 (build-homepage-content.js와 같은 방식).
  *
  * 이 스크립트는 GitHub Actions 서버 안에서만 실행되고, API 키는
@@ -12,11 +12,12 @@ const path = require('path');
 
 const OUTPUT_PATH = path.join(__dirname, '..', '..', 'agoda-hotels.json');
 
-// ⬇️ Hotel Data File에서 클락/앙헬레스 지역 호텔 ID를 확인하면 여기에 채워 넣는다.
-//    (숫자 하나만 넣으면 됨. 지금은 비어있어서 실행해도 결과가 없다.)
-const HOTEL_IDS = [
-  // 예시: 407854, 463019,
-];
+// 클락/앙헬레스(Angeles / Clark, Philippines) 지역 번호
+// — Agoda Partner Center > Tools > Hotel Maps에서 확인함
+const CITY_ID = 18875;
+
+// 한 번에 몇 개 호텔을 가져올지
+const MAX_RESULTS = 12;
 
 const AGODA_ENDPOINT = 'http://affiliateapi7643.agoda.com/affiliateservice/lt_v1';
 
@@ -29,16 +30,18 @@ function nextWeekDates() {
   return { checkIn: fmt(inDate), checkOut: fmt(outDate) };
 }
 
-async function fetchAgoda(siteId, apiKey, hotelIds) {
+async function fetchAgoda(siteId, apiKey, cityId) {
   const { checkIn, checkOut } = nextWeekDates();
   const body = {
     criteria: {
       checkInDate: checkIn,
       checkOutDate: checkOut,
-      hotelId: hotelIds,
+      cityId,
       additional: {
         currency: 'PHP',
         language: 'ko-kr',
+        maxResult: MAX_RESULTS,
+        sortBy: 'PriceAsc',
         occupancy: { numberOfAdult: 2, numberOfChildren: 0 },
       },
     },
@@ -78,12 +81,7 @@ async function main() {
   if (!siteId || !apiKey) {
     throw new Error('AGODA_SITE_ID / AGODA_API_KEY 환경변수(GitHub Secret)가 없습니다.');
   }
-  if (HOTEL_IDS.length === 0) {
-    console.log('HOTEL_IDS가 비어있어서 건너뜁니다. fetch-agoda-data.js 안에 호텔 ID를 채워주세요.');
-    fs.writeFileSync(OUTPUT_PATH, JSON.stringify({ updatedAt: new Date().toISOString(), hotels: [] }, null, 2));
-    return;
-  }
-  const hotels = await fetchAgoda(siteId, apiKey, HOTEL_IDS);
+  const hotels = await fetchAgoda(siteId, apiKey, CITY_ID);
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify({ updatedAt: new Date().toISOString(), hotels }, null, 2));
   console.log(`agoda-hotels.json 저장 완료 (${hotels.length}개 호텔)`);
 }
