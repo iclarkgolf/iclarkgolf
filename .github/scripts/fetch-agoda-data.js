@@ -42,6 +42,7 @@ async function fetchAgoda(siteId, apiKey, cityId) {
         language: 'ko-kr',
         maxResult: MAX_RESULTS,
         sortBy: 'PriceAsc',
+        minimumStarRating: 3,
         occupancy: { numberOfAdult: 2, numberOfChildren: 0 },
       },
     },
