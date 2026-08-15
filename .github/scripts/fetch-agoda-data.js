@@ -17,7 +17,7 @@ const OUTPUT_PATH = path.join(__dirname, '..', '..', 'agoda-hotels.json');
 const CITY_ID = 18875;
 
 // 한 번에 몇 개 호텔을 가져올지
-const MAX_RESULTS = 12;
+const MAX_RESULTS = 20;
 
 const AGODA_ENDPOINT = 'http://affiliateapi7643.agoda.com/affiliateservice/lt_v1';
 
