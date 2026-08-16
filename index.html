@@ -400,8 +400,14 @@ img { max-width: 100%; }
   padding: 2px 8px; border-radius: var(--radius-full);
 }
 
-/* ── 공통 섹션 ── */
-.section { padding: 20px 16px 0; }
+/* ── 공통 섹션 (구역별로 흰 배경을 줘서 민트색 바탕과 분리 — 스크롤할 때 "페이지가 구분되는" 느낌) ── */
+.section {
+  background: #fff;
+  padding: 26px 16px 30px;
+  margin-top: 22px;
+  box-sizing: border-box;
+  scroll-margin-top: 70px;
+}
 .intro-block {
   max-width: 720px; margin: 0 auto; padding: 24px 20px 4px;
   font-size: 14px; line-height: 1.8; color: var(--gray-600);
@@ -816,7 +822,10 @@ footer {
   .quick-wrap { padding: 20px 40px; }
   .quick-inner { max-width: 1100px; margin: 0 auto; }
 
-  .section { padding: 32px 40px 0; max-width: 1180px; margin-left: auto; margin-right: auto; }
+  .section {
+    padding: 40px 40px 44px; margin: 36px auto 0; max-width: 1100px;
+    border: 1.5px solid var(--pink-border); border-radius: var(--radius);
+  }
 
   /* 프로모 배너(견적·호텔) 데스크탑에서는 가로형으로 압축 — 텍스트만 있는데 세로로 너무 두꺼워 보이던 문제 해결 */
   .banner-main {
@@ -831,8 +840,11 @@ footer {
   .banner-deco { font-size: 90px; }
 
   .banner-sub-row { margin: 14px auto 0; max-width: 1100px; padding: 0 40px; }
-  .banner-sub { min-height: 130px; padding: 22px 22px; }
-  .banner-sub h3 { font-size: 18px; }
+  .banner-sub { min-height: 168px; padding: 20px 24px; }
+  .banner-sub h3 { font-size: 19px; margin-bottom: 4px; }
+  .banner-sub p { font-size: 13px; }
+  .banner-sub-arrow { width: 34px; height: 34px; }
+  .banner-sub-arrow svg { width: 15px; height: 15px; }
 
   /* 패키지 가로스크롤 → 데스크탑에서 그리드로 전환 */
   .pkg-hscroll-wrap { overflow: visible; padding: 4px 0 12px; margin: 0; }
@@ -1084,6 +1096,12 @@ footer {
   </div>
 </div>
 
+<!-- 소개 (SEO 서론 문단) -->
+<div class="intro-block">
+  <p data-i18n="intro.p1">iCLARKGOLF는 필리핀 클락(팜팡가·앙헬레스)에서 <b>25년째</b> 현지에 머물며 골프를 가르치고 안내해온 <b>전문가가 직접 운영하는</b>, 나 홀로·삼삼오오 골퍼를 위한 클락 정보 플랫폼입니다.</p>
+  <p data-i18n="intro.p2">클락에 지인이 있어도 매번 물어보기 애매한 것들 — <b>실제 그린피 시세</b>, <b>믿을 수 있는 캐디</b>, <b>숙소별 진짜 가격</b>, 요즘 날씨까지 — 25년 현지 경험으로 정리해 알려드립니다. <b>PRADERA C.C</b>와 <b>BEVERLY C.C</b>를 중심으로, 골프장·연습장·숙소·경비 네 가지를 꼼꼼히 살펴 안내해 드립니다.</p>
+</div>
+
 <!-- 메인 배너 -->
 <a href="quote.html" class="banner-main">
   <div class="banner-text">
@@ -1132,12 +1150,6 @@ footer {
       <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </div>
   </a>
-</div>
-
-<!-- 소개 (SEO 서론 문단) -->
-<div class="intro-block">
-  <p data-i18n="intro.p1">iCLARKGOLF는 필리핀 클락(팜팡가·앙헬레스)에서 <b>25년째</b> 현지에 머물며 골프를 가르치고 안내해온 <b>전문가가 직접 운영하는</b>, 나 홀로·삼삼오오 골퍼를 위한 클락 정보 플랫폼입니다.</p>
-  <p data-i18n="intro.p2">클락에 지인이 있어도 매번 물어보기 애매한 것들 — <b>실제 그린피 시세</b>, <b>믿을 수 있는 캐디</b>, <b>숙소별 진짜 가격</b>, 요즘 날씨까지 — 25년 현지 경험으로 정리해 알려드립니다. <b>PRADERA C.C</b>와 <b>BEVERLY C.C</b>를 중심으로, 골프장·연습장·숙소·경비 네 가지를 꼼꼼히 살펴 안내해 드립니다.</p>
 </div>
 
 <!-- 프로필 섹션 -->
