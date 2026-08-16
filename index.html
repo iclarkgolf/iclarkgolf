@@ -468,6 +468,7 @@ img { max-width: 100%; }
   min-height: 44px;
 }
 .banner-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+.banner-hotel { background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); margin-top: 10px; }
 
 /* 서브 배너 2열 */
 .banner-sub-row {
@@ -1074,6 +1075,18 @@ footer {
     <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
   </div>
   <div class="banner-deco">🏌️</div>
+</a>
+
+<!-- 호텔(아고다) 배너 -->
+<a href="#lodging" class="banner-main banner-hotel">
+  <div class="banner-badge" data-i18n="banner.hotel.badge">🏨 아고다 실시간 연동</div>
+  <h2><span data-i18n="banner.hotel.title1">클락 특가 숙소,</span><br><span data-i18n="banner.hotel.title2">지금 바로 확인</span></h2>
+  <p><span data-i18n="banner.hotel.desc1">평점 높은 호텔 20곳</span><br><span data-i18n="banner.hotel.desc2">실시간 가격 · 실제 사진</span></p>
+  <div class="banner-btn">
+    <span data-i18n="banner.hotel.btn">숙소 보기</span>
+    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  </div>
+  <div class="banner-deco">🏨</div>
 </a>
 
 <!-- 서브 배너 -->
@@ -1787,28 +1800,6 @@ try {
   </div>
 </div>
 
-<!-- Coming Soon -->
-<div class="coming-grid">
-  <div class="coming-card">
-    <div class="coming-card-icon">🛍️</div>
-    <div class="coming-card-title" data-i18n="coming.shop.title">한국 상품 쇼핑</div>
-    <div class="coming-card-sub" data-i18n="coming.shop.desc1">클락 로컬용<br data-i18n="coming.shop.desc2">한국 인기 상품</div>
-    <div class="coming-soon">Coming Soon</div>
-  </div>
-  <div class="coming-card">
-    <div class="coming-card-icon">🍽️</div>
-    <div class="coming-card-title" data-i18n="coming.food.title">맛집 가이드</div>
-    <div class="coming-card-sub" data-i18n="coming.food.desc1">클락 추천<br data-i18n="coming.food.desc2">식당 정보</div>
-    <div class="coming-soon">Coming Soon</div>
-  </div>
-  <div class="coming-card">
-    <div class="coming-card-icon">🏨</div>
-    <div class="coming-card-title" data-i18n="coming.hotel.title">호텔 예약</div>
-    <div class="coming-card-sub" data-i18n="coming.hotel.desc1">실시간 요금<br data-i18n="coming.hotel.desc2">아고다 연동</div>
-    <div class="coming-soon">Coming Soon</div>
-  </div>
-</div>
-
 <!-- 사이트맵 -->
 <div style="margin:20px 16px 0;background:#fff;border-radius:16px;border:1.5px solid #e4e4e7;padding:20px;max-width:1100px;margin-left:auto;margin-right:auto;">
   <div style="font-size:15px;font-weight:800;color:#18181b;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
@@ -2039,6 +2030,12 @@ const TRANSLATIONS = {
     'banner.main.desc1': '날짜 · 골프장 · 호텔 · 레슨',
     'banner.main.desc2': '원하는 것만 골라 견적 확인',
     'banner.main.btn': '견적 만들기',
+    'banner.hotel.badge': '🏨 아고다 실시간 연동',
+    'banner.hotel.title1': '클락 특가 숙소,',
+    'banner.hotel.title2': '지금 바로 확인',
+    'banner.hotel.desc1': '평점 높은 호텔 20곳',
+    'banner.hotel.desc2': '실시간 가격 · 실제 사진',
+    'banner.hotel.btn': '숙소 보기',
     'banner.caddy.title1': '캐디',
     'banner.caddy.title2': '바로 매칭',
     'banner.caddy.desc1': '클락 검증 캐디',
@@ -2077,15 +2074,6 @@ const TRANSLATIONS = {
     'blog.more': '블로그 전체보기',
     'gallery.title': '📸 클락 골프 갤러리',
     'gallery.btn': '📸 사진 올리기 · 커뮤니티 참여하기',
-    'coming.shop.title': '한국 상품 쇼핑',
-    'coming.shop.desc1': '클락 로컬용',
-    'coming.shop.desc2': '한국 인기 상품',
-    'coming.food.title': '맛집 가이드',
-    'coming.food.desc1': '클락 추천',
-    'coming.food.desc2': '식당 정보',
-    'coming.hotel.title': '호텔 예약',
-    'coming.hotel.desc1': '실시간 요금',
-    'coming.hotel.desc2': '아고다 연동',
     'profile.btn': '문의하기',
     'sitemap.title': '🗂️ 사이트맵',
     'sitemap.cat1': '⛳ 골프 여행',
@@ -2151,6 +2139,12 @@ const TRANSLATIONS = {
     'banner.main.desc1': 'Date · Course · Hotel · Lessons',
     'banner.main.desc2': 'Pick what you want & get a quote',
     'banner.main.btn': 'Build a Quote',
+    'banner.hotel.badge': '🏨 Live Agoda Rates',
+    'banner.hotel.title1': 'Clark Hotel Deals,',
+    'banner.hotel.title2': 'Check Now',
+    'banner.hotel.desc1': 'Top-rated 20 hotels',
+    'banner.hotel.desc2': 'Live prices · Real photos',
+    'banner.hotel.btn': 'See Hotels',
     'banner.caddy.title1': 'Caddy',
     'banner.caddy.title2': 'Match Now',
     'banner.caddy.desc1': 'Verified Clark caddies',
@@ -2189,15 +2183,6 @@ const TRANSLATIONS = {
     'blog.more': 'View All Blog Posts',
     'gallery.title': '📸 Clark Golf Gallery',
     'gallery.btn': '📸 Upload Photos · Join Community',
-    'coming.shop.title': 'Korean Shopping',
-    'coming.shop.desc1': 'Korean products',
-    'coming.shop.desc2': 'for Clark locals',
-    'coming.food.title': 'Food Guide',
-    'coming.food.desc1': 'Top restaurants',
-    'coming.food.desc2': 'in Clark',
-    'coming.hotel.title': 'Hotel Booking',
-    'coming.hotel.desc1': 'Live rates',
-    'coming.hotel.desc2': 'Agoda integration',
     'profile.btn': 'Contact Us',
     'sitemap.title': '🗂️ Sitemap',
     'sitemap.cat1': '⛳ Golf Travel',
