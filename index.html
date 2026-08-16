@@ -403,10 +403,25 @@ img { max-width: 100%; }
 /* ── 공통 섹션 (구역별로 흰 배경을 줘서 민트색 바탕과 분리 — 스크롤할 때 "페이지가 구분되는" 느낌) ── */
 .section {
   background: #fff;
-  padding: 26px 16px 30px;
-  margin-top: 22px;
+  padding: 28px 16px 32px;
+  margin-top: 30px;
   box-sizing: border-box;
   scroll-margin-top: 70px;
+}
+/* 사이트맵 — 좁을 땐 1열, 넓어지면 옆으로 펼쳐지는 그리드 */
+.sitemap-card {
+  margin: 30px 16px 0;
+  background: #fff;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--gray-200);
+  padding: 24px 16px 20px;
+  box-sizing: border-box;
+}
+.sitemap-grid {
+  display: grid; grid-template-columns: 1fr; gap: 20px;
+}
+@media (min-width: 640px) {
+  .sitemap-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
 }
 .intro-block {
   max-width: 720px; margin: 0 auto; padding: 24px 20px 4px;
@@ -555,7 +570,7 @@ img { max-width: 100%; }
 
 /* ── CTA 밴드 ── */
 .cta-band {
-  margin: 20px 16px 0;
+  margin: 30px 16px 0;
   background: linear-gradient(135deg, #1D9E75, #534AB7);
   border-radius: var(--radius); padding: 22px 20px;
   text-align: center;
@@ -608,7 +623,7 @@ img { max-width: 100%; }
 
 /* ── 카카오 밴드 ── */
 .kakao-band {
-  margin: 20px 16px 0;
+  margin: 30px 16px 0;
   background: var(--white);
   border: 1.5px solid #fbbf24;
   border-radius: var(--radius);
@@ -780,9 +795,16 @@ footer {
   .quick-inner { max-width: 1100px; margin: 0 auto; }
 
   .section {
-    padding: 40px 40px 44px; margin: 36px auto 0; max-width: 1100px;
+    padding: 44px 44px 48px; margin: 44px auto 0; max-width: 1100px;
     border: 1.5px solid var(--pink-border); border-radius: var(--radius);
+    box-shadow: 0 2px 16px rgba(0,0,0,0.04);
   }
+
+  .sitemap-card {
+    margin: 44px auto 0; max-width: 1100px; padding: 32px 40px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+  }
+  .sitemap-grid { grid-template-columns: repeat(4, 1fr); gap: 28px; }
 
   /* 프로모 카드 4개 — 데스크탑에서도 동일 크기 2x2 유지 */
   .banner-sub-row { margin: 24px auto 0; max-width: 1100px; padding: 0 40px; }
@@ -811,12 +833,12 @@ footer {
   .blog-hscroll-inner { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: auto; padding: 0; }
   .blog-card { width: auto; }
 
-  .cta-band { margin: 32px auto 0; max-width: 1100px; padding: 32px 40px; display: flex; align-items: center; justify-content: space-between; text-align: left; }
+  .cta-band { margin: 44px auto 0; max-width: 1100px; padding: 32px 40px; display: flex; align-items: center; justify-content: space-between; text-align: left; }
   .cta-band h3 { font-size: 24px; margin-bottom: 6px; }
   .cta-band p { margin-bottom: 0; }
   .cta-btns { flex-shrink: 0; }
 
-  .kakao-band { margin: 24px auto 0; max-width: 1100px; padding: 0 40px; }
+  .kakao-band { margin: 44px auto 0; max-width: 1100px; padding: 0 40px; }
   .kakao-band > div, .kakao-band > a { margin: 0; }
 
   .coming-grid { margin: 24px auto 0; max-width: 1100px; padding: 0 40px; }
@@ -1772,11 +1794,11 @@ try {
 </div>
 
 <!-- 사이트맵 -->
-<div style="margin:20px 16px 0;background:#fff;border-radius:16px;border:1.5px solid #e4e4e7;padding:20px;max-width:1100px;margin-left:auto;margin-right:auto;">
+<div class="sitemap-card">
   <div style="font-size:15px;font-weight:800;color:#18181b;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
     <span data-i18n="sitemap.title">🗂️ 사이트맵</span>
   </div>
-  <div style="display:grid;grid-template-columns:1fr;gap:16px;">
+  <div class="sitemap-grid">
 
     <div>
       <div style="font-size:11px;font-weight:700;color:#1D9E75;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;" data-i18n="sitemap.cat1">⛳ 골프 여행</div>
