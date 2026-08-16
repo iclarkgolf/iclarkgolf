@@ -818,9 +818,17 @@ footer {
 
   .section { padding: 32px 40px 0; max-width: 1180px; margin-left: auto; margin-right: auto; }
 
-  .banner-main { margin: 32px auto 0; max-width: 1100px; padding: 22px 40px; min-height: 100px; }
-  .banner-main h2 { font-size: 28px; }
-  .banner-deco { font-size: 120px; }
+  /* 프로모 배너(견적·호텔) 데스크탑에서는 가로형으로 압축 — 텍스트만 있는데 세로로 너무 두꺼워 보이던 문제 해결 */
+  .banner-main {
+    margin: 20px auto 0; max-width: 1100px; padding: 22px 40px; min-height: 0;
+    display: flex; align-items: center; justify-content: space-between; gap: 28px;
+  }
+  .banner-hotel { margin-top: 14px; }
+  .banner-text { flex: 1; min-width: 0; }
+  .banner-main h2 { font-size: 22px; margin-bottom: 2px; }
+  .banner-main p { font-size: 13px; margin-bottom: 0; }
+  .banner-main .banner-btn { flex-shrink: 0; }
+  .banner-deco { font-size: 90px; }
 
   .banner-sub-row { margin: 14px auto 0; max-width: 1100px; padding: 0 40px; }
   .banner-sub { min-height: 130px; padding: 22px 22px; }
@@ -1078,9 +1086,11 @@ footer {
 
 <!-- 메인 배너 -->
 <a href="quote.html" class="banner-main">
-  <div class="banner-badge" data-i18n="banner.main.badge">✨ 지금 인기</div>
-  <h2><span data-i18n="banner.main.title1">나만의 골프 여행</span><br><span data-i18n="banner.main.title2">직접 설계하기</span></h2>
-  <p><span data-i18n="banner.main.desc1">날짜 · 골프장 · 호텔 · 레슨</span><br><span data-i18n="banner.main.desc2">원하는 것만 골라 견적 확인</span></p>
+  <div class="banner-text">
+    <div class="banner-badge" data-i18n="banner.main.badge">✨ 지금 인기</div>
+    <h2><span data-i18n="banner.main.title1">나만의 골프 여행</span><br><span data-i18n="banner.main.title2">직접 설계하기</span></h2>
+    <p><span data-i18n="banner.main.desc1">날짜 · 골프장 · 호텔 · 레슨</span><br><span data-i18n="banner.main.desc2">원하는 것만 골라 견적 확인</span></p>
+  </div>
   <div class="banner-btn">
     <span data-i18n="banner.main.btn">견적 만들기</span>
     <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -1090,9 +1100,11 @@ footer {
 
 <!-- 호텔(아고다) 배너 -->
 <a href="#lodging" class="banner-main banner-hotel">
-  <div class="banner-badge" data-i18n="banner.hotel.badge">🏨 아고다 실시간 연동</div>
-  <h2><span data-i18n="banner.hotel.title1">클락 특가 숙소,</span><br><span data-i18n="banner.hotel.title2">지금 바로 확인</span></h2>
-  <p><span data-i18n="banner.hotel.desc1">평점 높은 호텔 20곳</span><br><span data-i18n="banner.hotel.desc2">실시간 가격 · 실제 사진</span></p>
+  <div class="banner-text">
+    <div class="banner-badge" data-i18n="banner.hotel.badge">🏨 아고다 실시간 연동</div>
+    <h2><span data-i18n="banner.hotel.title1">클락 특가 숙소,</span><br><span data-i18n="banner.hotel.title2">지금 바로 확인</span></h2>
+    <p><span data-i18n="banner.hotel.desc1">평점 높은 호텔 20곳</span><br><span data-i18n="banner.hotel.desc2">실시간 가격 · 실제 사진</span></p>
+  </div>
   <div class="banner-btn">
     <span data-i18n="banner.hotel.btn">숙소 보기</span>
     <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
