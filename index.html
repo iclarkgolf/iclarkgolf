@@ -431,55 +431,10 @@ img { max-width: 100%; }
 .sec-desc { font-size: 13px; line-height: 1.75; color: var(--gray-600); margin: -4px 0 14px; max-width: 640px; }
 @media (min-width: 640px) { .sec-desc { font-size: 14px; } }
 
-/* ── 메인 배너 ── */
-.banner-main {
-  margin: 16px 16px 0;
-  background: linear-gradient(135deg, #1D9E75 0%, #534AB7 100%);
-  border-radius: var(--radius);
-  padding: 16px 18px 14px;
-  position: relative; overflow: hidden;
-  display: block; text-decoration: none;
-  min-height: 0;
-  box-shadow: var(--shadow-lg);
-}
-.banner-main:active { opacity: .92; transform: scale(0.99); }
-.banner-deco {
-  position: absolute; right: -10px; bottom: -10px;
-  font-size: 80px; opacity: .18; line-height: 1;
-}
-.banner-badge {
-  display: inline-block;
-  background: rgba(255,255,255,.25);
-  border-radius: var(--radius-full);
-  padding: 3px 12px;
-  font-size: 11px; font-weight: 700; color: var(--white);
-  margin-bottom: 8px;
-}
-.banner-main h2 {
-  font-size: 18px; font-weight: 800; color: var(--white);
-  line-height: 1.3; margin-bottom: 4px;
-}
-.banner-main p {
-  font-size: 11px; color: rgba(255,255,255,.85);
-  margin-bottom: 10px; font-weight: 600;
-}
-.banner-btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(255,255,255,.25);
-  border: 1.5px solid rgba(255,255,255,.5);
-  border-radius: var(--radius-full);
-  padding: 9px 20px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 13px; font-weight: 700; color: var(--white);
-  min-height: 44px;
-}
-.banner-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; }
-.banner-hotel { background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); margin-top: 10px; }
-
-/* 서브 배너 2열 */
+/* ── 프로모 카드 2x2 (견적·숙소·캐디·블로그 — 모두 동일 크기) ── */
 .banner-sub-row {
   display: grid; grid-template-columns: 1fr 1fr;
-  gap: 10px; margin: 8px 16px 0;
+  gap: 10px; margin: 16px 16px 0;
   box-sizing: border-box;
 }
 .banner-sub {
@@ -489,8 +444,11 @@ img { max-width: 100%; }
   min-height: 80px;
   display: flex; flex-direction: column; justify-content: space-between;
   transition: opacity .2s;
+  box-shadow: var(--shadow-lg);
 }
 .banner-sub:active { opacity: .88; }
+.banner-sub-quote { background: linear-gradient(135deg, #1D9E75, #534AB7); }
+.banner-sub-hotel { background: linear-gradient(135deg, #f59e0b, #ea580c); }
 .banner-sub-caddy { background: linear-gradient(135deg, #6366f1, #4f46e5); }
 .banner-sub-blog { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
 .banner-sub h3 {
@@ -802,7 +760,6 @@ footer {
   .golf-grid { grid-template-columns: repeat(4, 1fr); }
   .coming-grid { grid-template-columns: repeat(3, 1fr); }
   .hero h1 { font-size: 36px; }
-  .banner-main { min-height: 90px; }
 }
 
 @media (min-width: 1024px) {
@@ -827,20 +784,9 @@ footer {
     border: 1.5px solid var(--pink-border); border-radius: var(--radius);
   }
 
-  /* 프로모 배너(견적·호텔) 데스크탑에서는 가로형으로 압축 — 텍스트만 있는데 세로로 너무 두꺼워 보이던 문제 해결 */
-  .banner-main {
-    margin: 20px auto 0; max-width: 1100px; padding: 22px 40px; min-height: 0;
-    display: flex; align-items: center; justify-content: space-between; gap: 28px;
-  }
-  .banner-hotel { margin-top: 14px; }
-  .banner-text { flex: 1; min-width: 0; }
-  .banner-main h2 { font-size: 22px; margin-bottom: 2px; }
-  .banner-main p { font-size: 13px; margin-bottom: 0; }
-  .banner-main .banner-btn { flex-shrink: 0; }
-  .banner-deco { font-size: 90px; }
-
-  .banner-sub-row { margin: 14px auto 0; max-width: 1100px; padding: 0 40px; }
-  .banner-sub { min-height: 168px; padding: 20px 24px; }
+  /* 프로모 카드 4개 — 데스크탑에서도 동일 크기 2x2 유지 */
+  .banner-sub-row { margin: 24px auto 0; max-width: 1100px; padding: 0 40px; }
+  .banner-sub { min-height: 148px; padding: 22px 24px; }
   .banner-sub h3 { font-size: 19px; margin-bottom: 4px; }
   .banner-sub p { font-size: 13px; }
   .banner-sub-arrow { width: 34px; height: 34px; }
@@ -1102,36 +1048,26 @@ footer {
   <p data-i18n="intro.p2">클락에 지인이 있어도 매번 물어보기 애매한 것들 — <b>실제 그린피 시세</b>, <b>믿을 수 있는 캐디</b>, <b>숙소별 진짜 가격</b>, 요즘 날씨까지 — 25년 현지 경험으로 정리해 알려드립니다. <b>PRADERA C.C</b>와 <b>BEVERLY C.C</b>를 중심으로, 골프장·연습장·숙소·경비 네 가지를 꼼꼼히 살펴 안내해 드립니다.</p>
 </div>
 
-<!-- 메인 배너 -->
-<a href="quote.html" class="banner-main">
-  <div class="banner-text">
-    <div class="banner-badge" data-i18n="banner.main.badge">✨ 지금 인기</div>
-    <h2><span data-i18n="banner.main.title1">나만의 골프 여행</span><br><span data-i18n="banner.main.title2">직접 설계하기</span></h2>
-    <p><span data-i18n="banner.main.desc1">날짜 · 골프장 · 호텔 · 레슨</span><br><span data-i18n="banner.main.desc2">원하는 것만 골라 견적 확인</span></p>
-  </div>
-  <div class="banner-btn">
-    <span data-i18n="banner.main.btn">견적 만들기</span>
-    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-  </div>
-  <div class="banner-deco">🏌️</div>
-</a>
-
-<!-- 호텔(아고다) 배너 -->
-<a href="#lodging" class="banner-main banner-hotel">
-  <div class="banner-text">
-    <div class="banner-badge" data-i18n="banner.hotel.badge">🏨 아고다 실시간 연동</div>
-    <h2><span data-i18n="banner.hotel.title1">클락 특가 숙소,</span><br><span data-i18n="banner.hotel.title2">지금 바로 확인</span></h2>
-    <p><span data-i18n="banner.hotel.desc1">평점 높은 호텔 20곳</span><br><span data-i18n="banner.hotel.desc2">실시간 가격 · 실제 사진</span></p>
-  </div>
-  <div class="banner-btn">
-    <span data-i18n="banner.hotel.btn">숙소 보기</span>
-    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-  </div>
-  <div class="banner-deco">🏨</div>
-</a>
-
-<!-- 서브 배너 -->
+<!-- 프로모 카드 4개 (견적·숙소·캐디·블로그 — 동일 크기 2x2) -->
 <div class="banner-sub-row">
+  <a href="quote.html" class="banner-sub banner-sub-quote">
+    <div>
+      <h3><span data-i18n="banner.main.title1">나만의 골프 여행</span><br><span data-i18n="banner.main.title2">직접 설계하기</span></h3>
+      <p><span data-i18n="banner.main.desc1">날짜 · 골프장 · 호텔 · 레슨</span><br><span data-i18n="banner.main.desc2">원하는 것만 골라 견적 확인</span></p>
+    </div>
+    <div class="banner-sub-arrow">
+      <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </div>
+  </a>
+  <a href="#lodging" class="banner-sub banner-sub-hotel">
+    <div>
+      <h3><span data-i18n="banner.hotel.title1">클락 특가 숙소,</span><br><span data-i18n="banner.hotel.title2">지금 바로 확인</span></h3>
+      <p><span data-i18n="banner.hotel.desc1">평점 높은 호텔 20곳</span><br><span data-i18n="banner.hotel.desc2">실시간 가격 · 실제 사진</span></p>
+    </div>
+    <div class="banner-sub-arrow">
+      <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </div>
+  </a>
   <a href="caddy.html" class="banner-sub banner-sub-caddy">
     <div>
       <h3><span data-i18n="banner.caddy.title1">캐디</span><br><span data-i18n="banner.caddy.title2">바로 매칭</span></h3>
