@@ -965,10 +965,6 @@ footer {
 <!-- 네비 -->
 <nav class="nav">
   <a href="https://iclarkgolf.com" class="logo"><span style="color:#ff4444!important;font-family:'Nunito',sans-serif;font-weight:800;font-size:22px;letter-spacing:0;vertical-align:middle;-webkit-text-fill-color:#ff4444!important;background:none;">i</span>CLARKGOLF</a>
-  <div class="nav-search">
-    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input data-i18n-ph="nav.search" placeholder="골프장, 호텔, 캐디...">
-  </div>
   <div class="nav-right-mobile">
     <button class="hamburger" id="hamburger" onclick="toggleDrawer()" aria-label="메뉴">
       <span></span><span></span><span></span>
@@ -1011,22 +1007,14 @@ footer {
 <!-- 히어로 -->
 <div class="hero">
   <div class="hero-badge" data-i18n="hero.badge">📍 필리핀 팜팡가 · 앙헬레스 · 클락</div>
-  <h1><span data-i18n="hero.title1">클락 골프의 모든 것,</span><br><em data-i18n="hero.title2">한 곳에서</em></h1>
-  <p class="hero-sub" data-i18n="hero.sub">골프 · 호텔 · 캐디 · 레슨 · 맞춤 견적</p>
+  <h1><span data-i18n="hero.title1">여행사 패키지 말고,</span><br><em data-i18n="hero.title2">클락 현지 정보 그대로</em></h1>
+  <p class="hero-sub" data-i18n="hero.sub">나 홀로, 삼삼오오 — 이미 클락을 아는 사람들의 골프 정보통</p>
   <div class="hero-search-wrap">
     <form class="hero-searchbar" id="heroSearchForm" autocomplete="off">
       <input id="heroSearchInput" data-i18n-ph="hero.search" placeholder="어떤 여행을 계획하고 계세요?" autocomplete="off">
       <button type="submit" data-i18n="hero.search.btn">검색</button>
     </form>
     <div id="heroSearchResults" class="hero-search-results"></div>
-  </div>
-  <div class="hero-tags">
-    <a href="package-detail.html?id=card1" class="hero-tag" data-i18n="hero.tag1">골프 패키지</a>
-    <a href="#lodging" class="hero-tag" data-i18n="hero.tag6">🏨 호텔 예약</a>
-    <a href="greenfee.html" class="hero-tag" data-i18n="hero.tag2">골프장 정보</a>
-    <a href="caddy.html" class="hero-tag" data-i18n="hero.tag3">캐디 매칭</a>
-    <a href="quote.html" class="hero-tag" data-i18n="hero.tag4">맞춤 견적</a>
-    <a href="quote.html" class="hero-tag" data-i18n="hero.tag5">나 홀로 골프</a>
   </div>
 </div>
 
@@ -1112,9 +1100,116 @@ footer {
 
 <!-- 소개 (SEO 서론 문단) -->
 <div class="intro-block">
-  <p data-i18n="intro.p1">iCLARKGOLF는 필리핀 클락(팜팡가·앙헬레스)에서 <b>25년째</b> 현지에 머물며 골프를 가르치고 안내해온 <b>전문가가 직접 운영하는</b> 나홀로 골프여행 플랫폼입니다.</p>
-  <p data-i18n="intro.p2"><b>그린피 걱정 없는 골프 패키지</b>부터 <b>검증된 캐디 매칭</b>, 편안한 숙소, <b>나에게 맞춘 견적</b>까지 — 혼자 떠나는 첫 골프여행도 여기서는 어렵지 않습니다. <b>PRADERA C.C</b>와 <b>BEVERLY C.C</b>를 중심으로, 골프장·연습장·숙소·경비 네 가지를 꼼꼼히 살펴 안내해 드립니다.</p>
+  <p data-i18n="intro.p1">iCLARKGOLF는 필리핀 클락(팜팡가·앙헬레스)에서 <b>25년째</b> 현지에 머물며 골프를 가르치고 안내해온 <b>전문가가 직접 운영하는</b>, 나 홀로·삼삼오오 골퍼를 위한 클락 정보 플랫폼입니다.</p>
+  <p data-i18n="intro.p2">클락에 지인이 있어도 매번 물어보기 애매한 것들 — <b>실제 그린피 시세</b>, <b>믿을 수 있는 캐디</b>, <b>숙소별 진짜 가격</b>, 요즘 날씨까지 — 25년 현지 경험으로 정리해 알려드립니다. <b>PRADERA C.C</b>와 <b>BEVERLY C.C</b>를 중심으로, 골프장·연습장·숙소·경비 네 가지를 꼼꼼히 살펴 안내해 드립니다.</p>
 </div>
+
+<!-- 프로필 섹션 -->
+<div id="profile-section" style="margin:28px 16px 0;background:#fff;border-radius:16px;border:1.5px solid #c8edd9;padding:20px;max-width:1100px;margin-left:auto;margin-right:auto;box-sizing:border-box;">
+  <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;">
+    <div id="pf-photo-wrap" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#1D9E75,#534AB7);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;overflow:hidden;">🏌️</div>
+    <div style="flex:1;min-width:0;">
+      <div id="pf-title-el" style="font-size:11px;font-weight:700;color:#1D9E75;margin-bottom:3px;letter-spacing:.05em;" data-i18n="profile.tag">PGAP MEMBER · CLUB PRO</div>
+      <div id="pf-name-el" style="font-size:17px;font-weight:800;color:#18181b;margin-bottom:6px;">장수남 · Paulo Jang</div>
+      <div style="font-size:12px;color:#6b7280;line-height:1.9;">
+        <div data-i18n="profile.location">📍 Clark, Pampanga, Philippines</div>
+        <div data-i18n="profile.cert">🏆 PGAP Member #0507 · GAB Senior Touring Pro</div>
+        <div data-i18n="profile.career">⛳ Beverly C.C (2017–2023) · Pradera Verde (2023–2025)</div>
+        <div data-i18n="profile.lang">💬 한국어 · English</div>
+      </div>
+      <div id="pf-bio-el" style="font-size:13px;color:#374151;margin-top:8px;line-height:1.7;">
+        1989년 호주 골드코스트부터 시작된 주니어 전지훈련, 하나투어가 따라하기 시작하던 날 미련 없이 접었고 — 그 첫 세대 아이들 중 몇몇은 지금 누구나 아는 선수가 됐습니다. 그 후 필리핀에서 25년, 골프장 속에서 살았습니다.
+        <span id="pf-bio-more" style="display:none;"> 큰돈을 바라지 않습니다. 현상유지면 충분합니다. 경비는 거의 원가로 내놓습니다. 로컬 마을 숙소에서 머물며 필리핀 현지를 온몸으로 경험하고, 수준 높은 골프장에서 제대로 된 훈련을 하는 것 — 그게 35년 넘게 지켜온 방식입니다. 화려하지 않아도 됩니다. 진짜면 됩니다.</span>
+        <button onclick="(function(){var m=document.getElementById('pf-bio-more');var b=document.getElementById('pf-bio-btn');if(m.style.display==='none'){m.style.display='inline';b.textContent='접기 ▲';}else{m.style.display='none';b.textContent='더 보기 ▼';}})()" id="pf-bio-btn" style="background:none;border:none;color:#1D9E75;font-size:12px;font-weight:800;cursor:pointer;padding:0;margin-left:4px;font-family:'Nunito',sans-serif;">더 보기 ▼</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 자격증 사진 (가로 스크롤) -->
+  <div id="pf-licenses" style="display:none;gap:10px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;scrollbar-width:none;"></div>
+
+  <!-- 문의하기 버튼 -->
+  <a id="pf-kakao-btn" href="https://pf.kakao.com/_nbHKX/chat" target="_blank"
+     style="display:flex;align-items:center;justify-content:center;width:100%;background:linear-gradient(135deg,#1D9E75,#534AB7);color:#fff;border:none;border-radius:100px;padding:14px 20px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;text-decoration:none;min-height:50px;box-sizing:border-box;">
+    <span data-i18n="profile.btn">💬 문의하기</span>
+  </a>
+
+  <!-- SNS 링크 -->
+  <div id="pf-sns" style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;"></div>
+</div>
+
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+(async function() {
+  const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+  let pf = {};
+  try {
+    const app = getApps().find(a=>a.name==='profile') || initializeApp(cfg,'profile');
+    const db = getFirestore(app);
+    const snap = await getDoc(doc(db, 'settings', 'profile'));
+    if (snap.exists()) pf = snap.data();
+    else pf = JSON.parse(localStorage.getItem('iclark_profile') || '{}'); // 아직 Firestore에 저장된 적 없으면 예전 방식 폴백
+  } catch(e) {
+    console.error('프로필 불러오기 실패:', e);
+    pf = JSON.parse(localStorage.getItem('iclark_profile') || '{}');
+  }
+  const isEn = (localStorage.getItem('clarkgo_lang') || 'kr') === 'en';
+
+  // 이름
+  if (pf.nameKo || pf.nameEn) {
+    const n = isEn
+      ? [pf.nameEn, pf.nameKo].filter(Boolean).join(' · ')
+      : [pf.nameKo, pf.nameEn].filter(Boolean).join(' · ');
+    document.getElementById('pf-name-el').textContent = n;
+  }
+  // 직책
+  if (pf.title) document.getElementById('pf-title-el').textContent = pf.title;
+  // 소개글
+  if (pf.bio) document.getElementById('pf-bio-el').textContent = pf.bio;
+  // 프로필 사진
+  if (pf.photo) {
+    const wrap = document.getElementById('pf-photo-wrap');
+    wrap.innerHTML = `<img src="${pf.photo}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">`;
+  }
+  // 자격증 사진 (가로 스크롤)
+  const lics = [pf.lic1, pf.lic2, pf.lic3, pf.lic4].filter(Boolean);
+  if (lics.length) {
+    const box = document.getElementById('pf-licenses');
+    box.style.display = 'flex';
+    box.innerHTML = lics.map(u =>
+      `<img src="${u}" style="height:130px;width:auto;border-radius:10px;object-fit:cover;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.12);" loading="lazy" onerror="this.style.display='none'">`
+    ).join('');
+  }
+  // 카카오 버튼
+  if (pf.kakao) document.getElementById('pf-kakao-btn').href = pf.kakao;
+
+  // SNS 버튼 (URL 있는 것만 표시)
+  const TRANS = {
+    kr: { kakao:'💛 카카오 채널', naver:'🟢 네이버 카페', insta:'📷 Instagram', youtube:'▶️ YouTube', openchat:'💬 오픈채팅' },
+    en: { kakao:'💛 KakaoTalk',   naver:'🟢 Naver Cafe',  insta:'📷 Instagram', youtube:'▶️ YouTube', openchat:'💬 Open Chat' }
+  };
+  const lang = isEn ? 'en' : 'kr';
+  const T = TRANS[lang];
+  const snsList = [
+    { key:'kakao',    url: pf.kakao    || 'https://pf.kakao.com/_nbHKX/chat', bg:'#FEE500', color:'#3A1D1D' },
+    { key:'naver',    url: pf.naver    || 'https://cafe.naver.com/polojang',  bg:'#03C75A', color:'#fff' },
+    { key:'insta',    url: pf.insta,    bg:'#E1306C', color:'#fff' },
+    { key:'youtube',  url: pf.youtube,  bg:'#FF0000', color:'#fff' },
+    { key:'openchat', url: pf.openchat, bg:'#FEE500', color:'#3A1D1D' },
+  ];
+  const sns = document.getElementById('pf-sns');
+  snsList.forEach(b => {
+    if (!b.url) return;
+    const a = document.createElement('a');
+    a.href = b.url; a.target = '_blank';
+    a.textContent = T[b.key];
+    a.style.cssText = `flex:1;min-width:calc(50% - 4px);display:flex;align-items:center;justify-content:center;padding:10px 8px;background:${b.bg};color:${b.color};border-radius:10px;text-decoration:none;font-size:12px;font-weight:800;box-sizing:border-box;`;
+    sns.appendChild(a);
+  });
+})();
+</script>
 
 <!-- 골프 패키지 -->
 <div class="section" id="packages">
@@ -1714,112 +1809,6 @@ try {
   </div>
 </div>
 
-<!-- 프로필 섹션 -->
-<div id="profile-section" style="margin:28px 16px 0;background:#fff;border-radius:16px;border:1.5px solid #c8edd9;padding:20px;max-width:1100px;margin-left:auto;margin-right:auto;box-sizing:border-box;">
-  <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;">
-    <div id="pf-photo-wrap" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#1D9E75,#534AB7);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;overflow:hidden;">🏌️</div>
-    <div style="flex:1;min-width:0;">
-      <div id="pf-title-el" style="font-size:11px;font-weight:700;color:#1D9E75;margin-bottom:3px;letter-spacing:.05em;" data-i18n="profile.tag">PGAP MEMBER · CLUB PRO</div>
-      <div id="pf-name-el" style="font-size:17px;font-weight:800;color:#18181b;margin-bottom:6px;">장수남 · Paulo Jang</div>
-      <div style="font-size:12px;color:#6b7280;line-height:1.9;">
-        <div data-i18n="profile.location">📍 Clark, Pampanga, Philippines</div>
-        <div data-i18n="profile.cert">🏆 PGAP Member #0507 · GAB Senior Touring Pro</div>
-        <div data-i18n="profile.career">⛳ Beverly C.C (2017–2023) · Pradera Verde (2023–2025)</div>
-        <div data-i18n="profile.lang">💬 한국어 · English</div>
-      </div>
-      <div id="pf-bio-el" style="font-size:13px;color:#374151;margin-top:8px;line-height:1.7;">
-        1989년 호주 골드코스트부터 시작된 주니어 전지훈련, 하나투어가 따라하기 시작하던 날 미련 없이 접었고 — 그 첫 세대 아이들 중 몇몇은 지금 누구나 아는 선수가 됐습니다. 그 후 필리핀에서 25년, 골프장 속에서 살았습니다.
-        <span id="pf-bio-more" style="display:none;"> 큰돈을 바라지 않습니다. 현상유지면 충분합니다. 경비는 거의 원가로 내놓습니다. 로컬 마을 숙소에서 머물며 필리핀 현지를 온몸으로 경험하고, 수준 높은 골프장에서 제대로 된 훈련을 하는 것 — 그게 35년 넘게 지켜온 방식입니다. 화려하지 않아도 됩니다. 진짜면 됩니다.</span>
-        <button onclick="(function(){var m=document.getElementById('pf-bio-more');var b=document.getElementById('pf-bio-btn');if(m.style.display==='none'){m.style.display='inline';b.textContent='접기 ▲';}else{m.style.display='none';b.textContent='더 보기 ▼';}})()" id="pf-bio-btn" style="background:none;border:none;color:#1D9E75;font-size:12px;font-weight:800;cursor:pointer;padding:0;margin-left:4px;font-family:'Nunito',sans-serif;">더 보기 ▼</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 자격증 사진 (가로 스크롤) -->
-  <div id="pf-licenses" style="display:none;gap:10px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;scrollbar-width:none;"></div>
-
-  <!-- 문의하기 버튼 -->
-  <a id="pf-kakao-btn" href="https://pf.kakao.com/_nbHKX/chat" target="_blank"
-     style="display:flex;align-items:center;justify-content:center;width:100%;background:linear-gradient(135deg,#1D9E75,#534AB7);color:#fff;border:none;border-radius:100px;padding:14px 20px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;text-decoration:none;min-height:50px;box-sizing:border-box;">
-    <span data-i18n="profile.btn">💬 문의하기</span>
-  </a>
-
-  <!-- SNS 링크 -->
-  <div id="pf-sns" style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;"></div>
-</div>
-
-<script type="module">
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-(async function() {
-  const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
-  let pf = {};
-  try {
-    const app = getApps().find(a=>a.name==='profile') || initializeApp(cfg,'profile');
-    const db = getFirestore(app);
-    const snap = await getDoc(doc(db, 'settings', 'profile'));
-    if (snap.exists()) pf = snap.data();
-    else pf = JSON.parse(localStorage.getItem('iclark_profile') || '{}'); // 아직 Firestore에 저장된 적 없으면 예전 방식 폴백
-  } catch(e) {
-    console.error('프로필 불러오기 실패:', e);
-    pf = JSON.parse(localStorage.getItem('iclark_profile') || '{}');
-  }
-  const isEn = (localStorage.getItem('clarkgo_lang') || 'kr') === 'en';
-
-  // 이름
-  if (pf.nameKo || pf.nameEn) {
-    const n = isEn
-      ? [pf.nameEn, pf.nameKo].filter(Boolean).join(' · ')
-      : [pf.nameKo, pf.nameEn].filter(Boolean).join(' · ');
-    document.getElementById('pf-name-el').textContent = n;
-  }
-  // 직책
-  if (pf.title) document.getElementById('pf-title-el').textContent = pf.title;
-  // 소개글
-  if (pf.bio) document.getElementById('pf-bio-el').textContent = pf.bio;
-  // 프로필 사진
-  if (pf.photo) {
-    const wrap = document.getElementById('pf-photo-wrap');
-    wrap.innerHTML = `<img src="${pf.photo}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">`;
-  }
-  // 자격증 사진 (가로 스크롤)
-  const lics = [pf.lic1, pf.lic2, pf.lic3, pf.lic4].filter(Boolean);
-  if (lics.length) {
-    const box = document.getElementById('pf-licenses');
-    box.style.display = 'flex';
-    box.innerHTML = lics.map(u =>
-      `<img src="${u}" style="height:130px;width:auto;border-radius:10px;object-fit:cover;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.12);" loading="lazy" onerror="this.style.display='none'">`
-    ).join('');
-  }
-  // 카카오 버튼
-  if (pf.kakao) document.getElementById('pf-kakao-btn').href = pf.kakao;
-
-  // SNS 버튼 (URL 있는 것만 표시)
-  const TRANS = {
-    kr: { kakao:'💛 카카오 채널', naver:'🟢 네이버 카페', insta:'📷 Instagram', youtube:'▶️ YouTube', openchat:'💬 오픈채팅' },
-    en: { kakao:'💛 KakaoTalk',   naver:'🟢 Naver Cafe',  insta:'📷 Instagram', youtube:'▶️ YouTube', openchat:'💬 Open Chat' }
-  };
-  const lang = isEn ? 'en' : 'kr';
-  const T = TRANS[lang];
-  const snsList = [
-    { key:'kakao',    url: pf.kakao    || 'https://pf.kakao.com/_nbHKX/chat', bg:'#FEE500', color:'#3A1D1D' },
-    { key:'naver',    url: pf.naver    || 'https://cafe.naver.com/polojang',  bg:'#03C75A', color:'#fff' },
-    { key:'insta',    url: pf.insta,    bg:'#E1306C', color:'#fff' },
-    { key:'youtube',  url: pf.youtube,  bg:'#FF0000', color:'#fff' },
-    { key:'openchat', url: pf.openchat, bg:'#FEE500', color:'#3A1D1D' },
-  ];
-  const sns = document.getElementById('pf-sns');
-  snsList.forEach(b => {
-    if (!b.url) return;
-    const a = document.createElement('a');
-    a.href = b.url; a.target = '_blank';
-    a.textContent = T[b.key];
-    a.style.cssText = `flex:1;min-width:calc(50% - 4px);display:flex;align-items:center;justify-content:center;padding:10px 8px;background:${b.bg};color:${b.color};border-radius:10px;text-decoration:none;font-size:12px;font-weight:800;box-sizing:border-box;`;
-    sns.appendChild(a);
-  });
-})();
-</script>
 <!-- 사이트맵 -->
 <div style="margin:20px 16px 0;background:#fff;border-radius:16px;border:1.5px solid #e4e4e7;padding:20px;max-width:1100px;margin-left:auto;margin-right:auto;">
   <div style="font-size:15px;font-weight:800;color:#18181b;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
@@ -2017,21 +2006,14 @@ document.querySelectorAll('.lang-btn').forEach(btn => {
 // iCLARKGOLF i18n — 한국어 / English
 const TRANSLATIONS = {
   kr: {
-    'nav.search': '골프장, 호텔, 캐디...',
     'hero.badge': '📍 필리핀 팜팡가 · 앙헬레스 · 클락',
-    'hero.title1': '클락 골프의 모든 것,',
-    'hero.title2': '한 곳에서',
-    'hero.sub': '골프 · 호텔 · 캐디 · 레슨 · 맞춤 견적',
-    'intro.p1': 'iCLARKGOLF는 필리핀 클락(팜팡가·앙헬레스)에서 <b>25년째</b> 현지에 머물며 골프를 가르치고 안내해온 <b>전문가가 직접 운영하는</b> 나홀로 골프여행 플랫폼입니다.',
-    'intro.p2': '<b>그린피 걱정 없는 골프 패키지</b>부터 <b>검증된 캐디 매칭</b>, 편안한 숙소, <b>나에게 맞춘 견적</b>까지 — 혼자 떠나는 첫 골프여행도 여기서는 어렵지 않습니다. <b>PRADERA C.C</b>와 <b>BEVERLY C.C</b>를 중심으로, 골프장·연습장·숙소·경비 네 가지를 꼼꼼히 살펴 안내해 드립니다.',
+    'hero.title1': '여행사 패키지 말고,',
+    'hero.title2': '클락 현지 정보 그대로',
+    'hero.sub': '나 홀로, 삼삼오오 — 이미 클락을 아는 사람들의 골프 정보통',
+    'intro.p1': 'iCLARKGOLF는 필리핀 클락(팜팡가·앙헬레스)에서 <b>25년째</b> 현지에 머물며 골프를 가르치고 안내해온 <b>전문가가 직접 운영하는</b>, 나 홀로·삼삼오오 골퍼를 위한 클락 정보 플랫폼입니다.',
+    'intro.p2': '클락에 지인이 있어도 매번 물어보기 애매한 것들 — <b>실제 그린피 시세</b>, <b>믿을 수 있는 캐디</b>, <b>숙소별 진짜 가격</b>, 요즘 날씨까지 — 25년 현지 경험으로 정리해 알려드립니다. <b>PRADERA C.C</b>와 <b>BEVERLY C.C</b>를 중심으로, 골프장·연습장·숙소·경비 네 가지를 꼼꼼히 살펴 안내해 드립니다.',
     'hero.search': '어떤 여행을 계획하고 계세요?',
     'hero.search.btn': '검색',
-    'hero.tag1': '골프 패키지',
-    'hero.tag2': '골프장 정보',
-    'hero.tag3': '캐디 매칭',
-    'hero.tag4': '맞춤 견적',
-    'hero.tag5': '나 홀로 골프',
-    'hero.tag6': '🏨 호텔 예약',
     'quick.packages': '골프 패키지',
     'quick.packages.sub': '기획 상품',
     'quick.quote': '맞춤 견적',
@@ -2136,21 +2118,14 @@ const TRANSLATIONS = {
     'fixed.quote': '견적',
   },
   en: {
-    'nav.search': 'Golf course, hotel, caddy...',
     'hero.badge': '📍 Pampanga · Angeles · Clark, Philippines',
-    'hero.title1': 'Everything for Clark Golf,',
-    'hero.title2': 'All in One Place',
-    'hero.sub': 'Golf · Hotel · Caddy · Lessons · Custom Quote',
-    'intro.p1': 'iCLARKGOLF is a solo-golf-travel platform run directly by <b>a golf professional</b> who has lived and taught in Clark, Pampanga (Angeles City), Philippines for <b>25 years</b>.',
-    'intro.p2': 'From <b>golf packages with no green fee surprises</b>, to <b>vetted caddy matching</b>, comfortable lodging, and <b>quotes built around you</b> — even a first solo golf trip is easy here. Centered on <b>PRADERA C.C</b> and <b>BEVERLY C.C</b>, we look closely at four things for you: the course, the practice range, lodging, and cost.',
+    'hero.title1': 'Not a travel agency package —',
+    'hero.title2': 'Real Clark local know-how',
+    'hero.sub': 'Solo or a few friends — insider info for people who already know Clark',
+    'intro.p1': 'iCLARKGOLF is a Clark info platform run directly by <b>a golf professional</b> who has lived and taught in Clark, Pampanga (Angeles City), Philippines for <b>25 years</b> — built for solo golfers and small groups of friends.',
+    'intro.p2': 'Even if you already have a local contact in Clark, some things are still hard to ask — <b>real green fee prices</b>, <b>caddies you can trust</b>, <b>actual lodging rates</b>, and current weather. 25 years of local experience, organized for you. Centered on <b>PRADERA C.C</b> and <b>BEVERLY C.C</b>, we look closely at four things for you: the course, the practice range, lodging, and cost.',
     'hero.search': 'What kind of trip are you planning?',
     'hero.search.btn': 'Search',
-    'hero.tag1': 'Golf Packages',
-    'hero.tag2': 'Golf Courses',
-    'hero.tag3': 'Caddy Matching',
-    'hero.tag4': 'Custom Quote',
-    'hero.tag5': 'Solo Golf',
-    'hero.tag6': '🏨 Book Hotel',
     'quick.packages': 'Golf Packages',
     'quick.packages.sub': 'Deals',
     'quick.quote': 'Custom Quote',
