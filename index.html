@@ -851,7 +851,7 @@ footer {
   #pf-meta { font-size: 16px !important; line-height: 2 !important; }
   #pf-bio-el { font-size: 17px !important; line-height: 1.9 !important; margin-top: 14px !important; }
   #pf-bio-btn { font-size: 14px !important; }
-  #pf-licenses img { height: 170px !important; width: 170px !important; }
+  #pf-licenses { grid-template-columns: repeat(4, 1fr) !important; gap: 14px !important; }
   #pf-kakao-btn { font-size: 18px !important; padding: 18px 20px !important; min-height: 56px !important; }
 
   footer { padding: 32px 40px; }
@@ -1132,7 +1132,7 @@ footer {
   </div>
 
   <!-- 자격증 사진 (가로 스크롤) -->
-  <div id="pf-licenses" style="display:none;gap:10px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;scrollbar-width:none;"></div>
+  <div id="pf-licenses" style="display:none;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;"></div>
 
   <!-- 문의하기 버튼 -->
   <a id="pf-kakao-btn" href="https://pf.kakao.com/_nbHKX/chat" target="_blank"
@@ -1183,9 +1183,9 @@ import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10
   const lics = [pf.lic1, pf.lic2, pf.lic3, pf.lic4].filter(Boolean);
   if (lics.length) {
     const box = document.getElementById('pf-licenses');
-    box.style.display = 'flex';
+    box.style.display = 'grid';
     box.innerHTML = lics.map(u =>
-      `<img src="${u}" style="height:130px;width:130px;border-radius:10px;object-fit:cover;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.12);" loading="lazy" onerror="this.style.display='none'">`
+      `<img src="${u}" style="width:100%;aspect-ratio:1/1;border-radius:10px;object-fit:cover;box-shadow:0 2px 8px rgba(0,0,0,.12);" loading="lazy" onerror="this.style.display='none'">`
     ).join('');
   }
   // 카카오 버튼
