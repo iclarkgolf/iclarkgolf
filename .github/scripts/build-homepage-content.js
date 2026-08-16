@@ -38,7 +38,7 @@ function renderPackageCard(c) {
   return `    <a href="package-detail.html?id=${escapeHtml(c.id)}" class="pkg-item" style="border-radius:16px;overflow:hidden;text-decoration:none;display:block;box-shadow:0 4px 20px rgba(0,0,0,0.15);">
        <div style="background:#1b4332;position:relative;height:200px;overflow:hidden;">
          ${bg}
-         <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.16) 0%,rgba(0,0,0,0.02) 35%,rgba(0,0,0,0.38) 100%);"></div>
+         <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.06) 0%,rgba(0,0,0,0.00) 35%,rgba(0,0,0,0.22) 100%);"></div>
          <div style="position:absolute;inset:0;padding:14px;display:flex;flex-direction:column;overflow:hidden;">
            <div style="font-size:11px;color:#fff;letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,0.9),0 2px 6px rgba(0,0,0,0.7);flex-shrink:0;">${escapeHtml(c.tag)}</div>
            <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:#fff;line-height:1.05;letter-spacing:.02em;text-shadow:0 1px 3px rgba(0,0,0,0.9),0 3px 10px rgba(0,0,0,0.7);margin-top:4px;flex-shrink:0;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;">${escapeHtml(c.titleEn)}</div>
