@@ -1,225 +1,225 @@
 {
-  "updatedAt": "2026-08-21T18:20:02.830Z",
+  "updatedAt": "2026-08-22T00:33:13.890Z",
   "hotels": [
     {
       "hotelId": 90091,
       "name": "ABC 호텔",
-      "price": 5230.4,
-      "crossedOutPrice": 8632.39,
+      "price": 5233.07,
+      "crossedOutPrice": 8639.85,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/90091/-1/4b040c324daebc393395a3b9bcd8d37d.jpg?ce=0&s=800x600",
       "starRating": 5,
       "reviewScore": 9,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=90091&currency=PHP&checkin=2026-09-04&checkout=2026-09-05&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=90091&currency=PHP&checkin=2026-09-05&checkout=2026-09-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
       "hotelId": 497733,
       "name": "프라임 아시아 호텔",
-      "price": 2114.2,
-      "crossedOutPrice": 3881.87,
+      "price": 2182.7,
+      "crossedOutPrice": 4023.88,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/497733/-1/f5a7e36175451686909973219d792eab.jpg?ce=0&s=800x600",
       "starRating": 4,
       "reviewScore": 8.3,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=497733&currency=PHP&checkin=2026-09-04&checkout=2026-09-05&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=497733&currency=PHP&checkin=2026-09-05&checkout=2026-09-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
       "hotelId": 798533,
       "name": "센트럴 파크 타워 리조트",
-      "price": 3978.52,
+      "price": 3945.64,
       "crossedOutPrice": 0,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/798/798533/798533_15041817070026953927.jpg?ca=3&ce=1&s=800x600",
       "starRating": 4,
       "reviewScore": 8.4,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=798533&currency=PHP&checkin=2026-09-04&checkout=2026-09-05&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=798533&currency=PHP&checkin=2026-09-05&checkout=2026-09-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
       "hotelId": 1094672,
       "name": "파크 인 바이 래디슨 클락",
-      "price": 5800,
+      "price": 6000,
       "crossedOutPrice": 0,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/9457223/0/60feaef9c34ab2ca8d1a38763d6076f6.jpeg?ce=2&s=800x600",
       "starRating": 4,
       "reviewScore": 8.9,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=1094672&currency=PHP&checkin=2026-09-04&checkout=2026-09-05&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=1094672&currency=PHP&checkin=2026-09-05&checkout=2026-09-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
       "hotelId": 295132,
       "name": "레드 플래닛 클라크 앙헬레스 시티",
-      "price": 1616.39,
+      "price": 1602.77,
       "crossedOutPrice": 3800,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/295132/-1/e92f062b2fc4ca9ea4abfdd779fa7b28.jpg?ce=0&s=800x600",
       "starRating": 3,
       "reviewScore": 8,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=295132&currency=PHP&checkin=2026-09-04&checkout=2026-09-05&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=295132&currency=PHP&checkin=2026-09-05&checkout=2026-09-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
       "hotelId": 11118960,
       "name": "캐피톨 힐 호텔 앤 스위트",
-      "price": 2906.63,
+      "price": 2882.61,
       "crossedOutPrice": 0,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/11118960/-1/e09bf5ce4c941cf124302717e12ea9af.jpg?ce=0&s=800x600",
       "starRating": 5,
       "reviewScore": 8.8,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=11118960&currency=PHP&checkin=2026-09-04&checkout=2026-09-05&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=11118960&currency=PHP&checkin=2026-09-05&checkout=2026-09-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
       "hotelId": 1248737,
       "name": "퀘스트 플러스 컨퍼런스 센터 클라크",
-      "price": 5034.21,
+      "price": 5032.43,
       "crossedOutPrice": 0,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/1248737/-1/0b9d773223c438b858db2df8420c501f.jpg?ca=7&ce=1&s=800x600",
       "starRating": 4,
       "reviewScore": 8.7,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=1248737&currency=PHP&checkin=2026-09-04&checkout=2026-09-05&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=1248737&currency=PHP&checkin=2026-09-05&checkout=2026-09-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
       "hotelId": 444517,
       "name": "유로텔 엔젤레스",
-      "price": 1190.79,
+      "price": 1180.47,
       "crossedOutPrice": 3125,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/444/444517/444517_14040310210018951234.jpg?ca=2&ce=1&s=800x600",
       "starRating": 3,
       "reviewScore": 7.9,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=444517&currency=PHP&checkin=2026-09-04&checkout=2026-09-05&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=444517&currency=PHP&checkin=2026-09-05&checkout=2026-09-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
       "hotelId": 2424735,
       "name": "클락턴 호텔",
-      "price": 2149.29,
-      "crossedOutPrice": 2895,
+      "price": 2181.3,
+      "crossedOutPrice": 2750,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/2424735/-1/5f2959c048e493b047de29ebeeb73a06.jpg?ca=19&ce=1&s=800x600",
       "starRating": 4,
       "reviewScore": 8.3,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=2424735&currency=PHP&checkin=2026-09-04&checkout=2026-09-05&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=2424735&currency=PHP&checkin=2026-09-05&checkout=2026-09-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
       "hotelId": 294784,
       "name": "데베라 호텔",
-      "price": 1407.06,
+      "price": 1406.56,
       "crossedOutPrice": 2800,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/294784/-1/466373037f6ef0bed369d101877b5dd1.jpg?ce=0&s=800x600",
       "starRating": 3,
       "reviewScore": 8.2,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=294784&currency=PHP&checkin=2026-09-04&checkout=2026-09-05&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=294784&currency=PHP&checkin=2026-09-05&checkout=2026-09-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
       "hotelId": 675470,
       "name": "윈즈 부티크 호텔",
-      "price": 3929.81,
-      "crossedOutPrice": 5381.94,
+      "price": 4528.2,
+      "crossedOutPrice": 5790,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/675470/0/8539fcae9e0e09775efa563e8e1bd2d2.jpg?ce=3&s=800x600",
       "starRating": 4,
       "reviewScore": 8.7,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=675470&currency=PHP&checkin=2026-09-04&checkout=2026-09-05&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=675470&currency=PHP&checkin=2026-09-05&checkout=2026-09-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
       "hotelId": 2190917,
       "name": "리샨 빌리지 레지던스",
-      "price": 1579.48,
+      "price": 1574.81,
       "crossedOutPrice": 0,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/219/2190917/2190917_17042621240052653679.jpg?ca=6&ce=1&s=800x600",
       "starRating": 4,
       "reviewScore": 8.4,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=2190917&currency=PHP&checkin=2026-09-04&checkout=2026-09-05&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=2190917&currency=PHP&checkin=2026-09-05&checkout=2026-09-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
       "hotelId": 625067,
       "name": "스코어 버즈 호텔",
-      "price": 2059.85,
+      "price": 2042.32,
       "crossedOutPrice": 2800,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/625067/0/f15448e5cc5b8e8a25c61c3a4a79d762.jpeg?ce=0&s=800x600",
       "starRating": 3,
       "reviewScore": 8.3,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=625067&currency=PHP&checkin=2026-09-04&checkout=2026-09-05&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=625067&currency=PHP&checkin=2026-09-05&checkout=2026-09-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
       "hotelId": 252349,
       "name": "오아시스 호텔",
-      "price": 3226.73,
+      "price": 3199.99,
       "crossedOutPrice": 4575,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/252349/0/324dcebbafbe0229d293c34b40e37904.jpeg?ce=0&s=800x600",
       "starRating": 3,
       "reviewScore": 8.6,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=252349&currency=PHP&checkin=2026-09-04&checkout=2026-09-05&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=252349&currency=PHP&checkin=2026-09-05&checkout=2026-09-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
       "hotelId": 8807892,
       "name": "안데오 스위트",
-      "price": 1323.26,
-      "crossedOutPrice": 1935.76,
+      "price": 1312.34,
+      "crossedOutPrice": 1924.84,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/8807892/-1/b0499086e95c35dd7f2247723cd9952c.jpg?ca=9&ce=1&s=800x600",
       "starRating": 3,
       "reviewScore": 8.8,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=8807892&currency=PHP&checkin=2026-09-04&checkout=2026-09-05&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=8807892&currency=PHP&checkin=2026-09-05&checkout=2026-09-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
       "hotelId": 706460,
       "name": "퀸즈 호텔",
-      "price": 3079.99,
+      "price": 3078.9,
       "crossedOutPrice": 3990,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/706/706460/706460_17011911490050406359.jpg?ca=6&ce=1&s=800x600",
       "starRating": 4,
       "reviewScore": 8.4,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=706460&currency=PHP&checkin=2026-09-04&checkout=2026-09-05&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=706460&currency=PHP&checkin=2026-09-05&checkout=2026-09-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
       "hotelId": 274383,
       "name": "950 콘도텔",
-      "price": 1605.01,
+      "price": 1591.35,
       "crossedOutPrice": 2295,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/274/274383/274383_16050411140042037169.jpg?ca=6&ce=1&s=800x600",
       "starRating": 5,
       "reviewScore": 8,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=274383&currency=PHP&checkin=2026-09-04&checkout=2026-09-05&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=274383&currency=PHP&checkin=2026-09-05&checkout=2026-09-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
       "hotelId": 272536,
       "name": "와일드 오키드 리조트",
-      "price": 3083.87,
+      "price": 3082.78,
       "crossedOutPrice": 4000,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/272536/-1/1112b6ccefcd132cb9020b0330a1733b.jpg?ce=0&s=800x600",
       "starRating": 3,
       "reviewScore": 8.3,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=272536&currency=PHP&checkin=2026-09-04&checkout=2026-09-05&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=272536&currency=PHP&checkin=2026-09-05&checkout=2026-09-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
       "hotelId": 412834,
       "name": "더 펜트하우스 호텔",
-      "price": 2566.81,
+      "price": 2565.92,
       "crossedOutPrice": 5000,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/412/412834/412834_15070813270031861376.jpg?ca=4&ce=1&s=800x600",
       "starRating": 3,
       "reviewScore": 7.9,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=412834&currency=PHP&checkin=2026-09-04&checkout=2026-09-05&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=412834&currency=PHP&checkin=2026-09-05&checkout=2026-09-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
       "hotelId": 284370,
       "name": "필즈 플라자 호텔",
-      "price": 8210.19,
-      "crossedOutPrice": 10667.16,
+      "price": 8646.89,
+      "crossedOutPrice": 10676.38,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/284370/0/63ad82b9ce2e0dbdc77a6ea71cda6763.jpg?ce=0&s=800x600",
       "starRating": 5,
       "reviewScore": 9,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=284370&currency=PHP&checkin=2026-09-04&checkout=2026-09-05&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=284370&currency=PHP&checkin=2026-09-05&checkout=2026-09-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     }
   ]
 }
