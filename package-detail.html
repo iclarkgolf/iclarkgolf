@@ -62,6 +62,19 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 .day-title{font-size:14px;font-weight:700;color:#18181b;margin-bottom:3px;}
 .day-desc{font-size:14px;color:#374151;line-height:1.9;}
 
+/* 일정표 (여행사 스타일 표) — admin.html "일정표 만들기" 도구가 생성해 trainingSchedule에 삽입하는 표 */
+.itin-table{width:100%;border-collapse:collapse;margin:8px 0;font-size:13.5px;}
+.itin-table th{background:#1b4332;color:#fff;padding:10px 12px;font-weight:700;border:1px solid #1b4332;}
+.itin-table td{padding:10px 12px;border:1px solid #d8ece2;vertical-align:top;line-height:1.7;}
+.itin-day{background:#f0f7f4;font-weight:800;color:#1b4332;text-align:center;white-space:nowrap;}
+.itin-day .itin-date{display:block;font-size:11px;font-weight:500;color:#6b8f7f;margin-top:2px;}
+.itin-place{background:#faf8f4;font-weight:700;color:#2d6a4f;text-align:center;white-space:nowrap;}
+.itin-time{font-weight:700;color:#085041;white-space:nowrap;width:60px;}
+.itin-detail{color:#2c2c2c;}
+.itin-optional{color:#1b4332;text-decoration:underline;}
+.itin-img{max-width:220px;border-radius:8px;margin-top:8px;display:block;}
+@media(max-width:640px){.itin-table{font-size:11.5px;} .itin-table th,.itin-table td{padding:7px 8px;} .itin-img{max-width:140px;}}
+
 /* 포함/불포함 */
 .inc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 @media(max-width:350px){.inc-grid{grid-template-columns:1fr;}}

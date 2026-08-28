@@ -711,6 +711,18 @@ body { background:#f4faf7; padding-bottom:40px; }
 .modal { background:#fff; border-radius:20px; padding:24px; width:90%; max-width:500px; max-height:85vh; overflow-y:auto; }
 .modal-title { font-size:16px; font-weight:800; color:#26215C; margin-bottom:16px; }
 .modal-close { float:right; background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280; }
+
+/* 일정표 만들기 — 미리보기(패키지 상세 페이지와 동일한 스타일, itin-table.css 참고) */
+#ce-itin-preview .itin-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+#ce-itin-preview .itin-table th{background:#1b4332;color:#fff;padding:8px 10px;font-weight:700;border:1px solid #1b4332;}
+#ce-itin-preview .itin-table td{padding:8px 10px;border:1px solid #d8ece2;vertical-align:top;line-height:1.7;}
+#ce-itin-preview .itin-day{background:#f0f7f4;font-weight:800;color:#1b4332;text-align:center;white-space:nowrap;}
+#ce-itin-preview .itin-day .itin-date{display:block;font-size:10px;font-weight:500;color:#6b8f7f;margin-top:2px;}
+#ce-itin-preview .itin-place{background:#faf8f4;font-weight:700;color:#2d6a4f;text-align:center;white-space:nowrap;}
+#ce-itin-preview .itin-time{font-weight:700;color:#085041;white-space:nowrap;width:56px;}
+#ce-itin-preview .itin-detail{color:#2c2c2c;}
+#ce-itin-preview .itin-optional{color:#1b4332;text-decoration:underline;}
+#ce-itin-preview .itin-img{max-width:180px;border-radius:8px;margin-top:6px;display:block;}
 </style>
 </head>
 <body>
@@ -1251,6 +1263,27 @@ window.adminLogout = function() {
         <div id="ce-schedule-editor" contenteditable="true"
           style="min-height:200px;border:1.5px solid #c8edd9;border-radius:8px;padding:16px;font-size:14px;line-height:1.9;font-family:'Noto Sans KR',sans-serif;outline:none;background:#fff;"
           placeholder="예) 1일차 오전: 08:00 연습장 레슨 / 10:00 티오프"></div>
+      </div>
+
+      <!-- 일정표 만들기 (여행사 스타일 표) -->
+      <div style="background:#f0f7f4;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #c8edd9;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <div style="font-size:13px;font-weight:800;color:#085041;">🗓️ 일정표 만들기 (여행사 스타일 표)</div>
+          <button type="button" onclick="ceItinToggle()" id="ce-itin-toggle-btn" style="padding:5px 10px;background:#fff;border:1px solid #c8edd9;border-radius:6px;font-size:11px;font-weight:700;color:#1b4332;cursor:pointer;">열기</button>
+        </div>
+        <div style="font-size:11px;color:#6b7280;margin-bottom:10px;">일차별로 장소·시간·세부일정을 입력하면 표를 만들어 위 일정 에디터 맨 아래에 삽입합니다. 하루 중 장소가 바뀌면 "장소 구간"을 추가하세요. 사진 URL도 줄마다 넣을 수 있습니다. (표를 삽입한 뒤에는 위 "🧹 서식 정리" 버튼을 눌러도 표는 그대로 유지됩니다.)</div>
+
+        <div id="ce-itin-builder" data-days="[]" style="display:none;">
+          <div id="ce-itin-days"></div>
+          <button type="button" onclick="ceItinAddDay()" style="margin-top:4px;padding:8px 14px;background:#fff;border:1.5px dashed #1D9E75;color:#1D9E75;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;">+ 일차 추가</button>
+
+          <div style="margin-top:16px;">
+            <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:6px;">미리보기</div>
+            <div id="ce-itin-preview" style="background:#fff;border:1.5px solid #c8edd9;border-radius:8px;padding:12px;overflow-x:auto;"></div>
+          </div>
+
+          <button type="button" onclick="ceItinInsert()" style="margin-top:12px;width:100%;padding:12px;background:#1D9E75;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;">📋 위 일정 에디터에 표 삽입</button>
+        </div>
       </div>
 
       <!-- 포함 / 불포함 -->
@@ -2325,7 +2358,8 @@ async function saveCard() {
 // 그대로 딸려 들어와서 글씨체가 제각각이 되는 문제를 막는다.
 // 제목(H2/H3)·굵게·기울임·밑줄·취소선·목록·줄바꿈·링크·이미지 같은 "구조"는 그대로 살리고,
 // 폰트 종류·글자 크기·글자 색깔 같은 "겉모양"만 제거해서 에디터 기본 스타일로 통일시킨다.
-const CE_PASTE_ALLOWED_TAGS = new Set(['H2','H3','B','STRONG','I','EM','U','S','STRIKE','UL','OL','LI','BR','P','DIV','A','IMG','HR']);
+const CE_PASTE_ALLOWED_TAGS = new Set(['H2','H3','B','STRONG','I','EM','U','S','STRIKE','UL','OL','LI','BR','P','DIV','A','IMG','HR','TABLE','THEAD','TBODY','TR','TH','TD']);
+const CE_TABLE_TAGS = new Set(['TABLE','THEAD','TBODY','TR','TH','TD']);
 function ceSanitizePastedHTML(html) {
   const doc = new DOMParser().parseFromString(html, 'text/html');
   function walk(node) {
@@ -2346,10 +2380,12 @@ function ceSanitizePastedHTML(html) {
         child.parentNode.removeChild(child);
         return;
       }
-      // 남기는 태그라도 style/class/font 관련 속성은 전부 제거 — href/src만 예외로 유지
+      // 남기는 태그라도 style/class/font 관련 속성은 전부 제거 — href/src, 그리고 일정표(TABLE) 구조에 필요한
+      // class(itin-* 스타일 유지용)·rowspan/colspan(날짜·장소 칸 병합용)만 예외로 유지
       [...child.attributes].forEach(attr => {
         const keep = (tag === 'A' && ['href','target','rel'].includes(attr.name)) ||
-                     (tag === 'IMG' && ['src','alt'].includes(attr.name));
+                     (tag === 'IMG' && ['src','alt','class'].includes(attr.name)) ||
+                     (CE_TABLE_TAGS.has(tag) && ['class','rowspan','colspan'].includes(attr.name));
         if (!keep) child.removeAttribute(attr.name);
       });
       if (tag === 'A') { child.setAttribute('target','_blank'); child.setAttribute('rel','noopener'); }
@@ -2429,6 +2465,178 @@ function ceSchColor(color) {
   if (!color) return;
   document.getElementById('ce-schedule-editor').focus();
   document.execCommand('foreColor', false, color);
+}
+
+/* ── 일정표 만들기 (여행사 스타일 표) ──
+   이 도구는 별도로 Firestore에 저장되지 않습니다 — 표를 만들어서 위 "ce-schedule-editor"
+   본문 맨 아래에 HTML로 삽입해주는 생성기입니다. 삽입된 표를 다시 이 도구로 불러와
+   구조적으로 재수정할 수는 없고(에디터 안에서 텍스트로 직접 고치는 건 가능), 대신
+   package-detail.html의 #scheduleList 안에서도 같은 .itin-table 클래스로 렌더링되어
+   미리보기와 실제 페이지 모습이 동일합니다. */
+function ceItinToggle() {
+  const box = document.getElementById('ce-itin-builder');
+  const btn = document.getElementById('ce-itin-toggle-btn');
+  const opening = box.style.display === 'none';
+  box.style.display = opening ? 'block' : 'none';
+  btn.textContent = opening ? '접기' : '열기';
+  if (opening && ceItinGetDays().length === 0) ceItinAddDay();
+}
+function ceItinGetDays() {
+  try { return JSON.parse(document.getElementById('ce-itin-builder').dataset.days || '[]'); } catch { return []; }
+}
+function ceItinSetDays(days) {
+  document.getElementById('ce-itin-builder').dataset.days = JSON.stringify(days);
+}
+function ceItinEmptyRow() { return { time:'', text:'', emphasis:false, img:'' }; }
+function ceItinEmptySeg() { return { place:'', rows:[ceItinEmptyRow()] }; }
+function ceItinAddDay() {
+  const days = ceItinGetDays();
+  days.push({ label: `제${days.length+1}일`, date:'', segments:[ceItinEmptySeg()] });
+  ceItinSetDays(days);
+  ceItinRenderBuilder();
+  ceItinRenderPreview();
+}
+function ceItinDelDay(di) {
+  if (!confirm('이 일차를 삭제할까요?')) return;
+  const days = ceItinGetDays();
+  days.splice(di,1);
+  ceItinSetDays(days);
+  ceItinRenderBuilder();
+  ceItinRenderPreview();
+}
+function ceItinAddSeg(di) {
+  const days = ceItinGetDays();
+  days[di].segments.push(ceItinEmptySeg());
+  ceItinSetDays(days);
+  ceItinRenderBuilder();
+  ceItinRenderPreview();
+}
+function ceItinDelSeg(di,si) {
+  const days = ceItinGetDays();
+  if (days[di].segments.length <= 1) { showToast('일차에는 장소 구간이 최소 1개 있어야 합니다','error'); return; }
+  days[di].segments.splice(si,1);
+  ceItinSetDays(days);
+  ceItinRenderBuilder();
+  ceItinRenderPreview();
+}
+function ceItinAddRow(di,si) {
+  const days = ceItinGetDays();
+  days[di].segments[si].rows.push(ceItinEmptyRow());
+  ceItinSetDays(days);
+  ceItinRenderBuilder();
+  ceItinRenderPreview();
+}
+function ceItinDelRow(di,si,ri) {
+  const days = ceItinGetDays();
+  if (days[di].segments[si].rows.length <= 1) { showToast('구간에는 시간 항목이 최소 1개 있어야 합니다','error'); return; }
+  days[di].segments[si].rows.splice(ri,1);
+  ceItinSetDays(days);
+  ceItinRenderBuilder();
+  ceItinRenderPreview();
+}
+function ceItinSetDay(di, field, value) {
+  const days = ceItinGetDays();
+  days[di][field] = value;
+  ceItinSetDays(days);
+  ceItinRenderPreview();
+}
+function ceItinSetSeg(di, si, field, value) {
+  const days = ceItinGetDays();
+  days[di].segments[si][field] = value;
+  ceItinSetDays(days);
+  ceItinRenderPreview();
+}
+function ceItinSetRow(di, si, ri, field, value) {
+  const days = ceItinGetDays();
+  days[di].segments[si].rows[ri][field] = value;
+  ceItinSetDays(days);
+  ceItinRenderPreview();
+}
+function ceItinEsc(s) {
+  return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function ceItinRenderBuilder() {
+  const days = ceItinGetDays();
+  const box = document.getElementById('ce-itin-days');
+  box.innerHTML = days.map((day, di) => `
+    <div style="background:#fff;border:1.5px solid #d8ece2;border-radius:10px;padding:12px;margin-bottom:10px;">
+      <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;">
+        <input value="${ceItinEsc(day.label)}" oninput="ceItinSetDay(${di},'label',this.value)" placeholder="일차 (예: 제1일)" style="width:90px;padding:7px 9px;border:1.5px solid #c8edd9;border-radius:6px;font-size:12px;font-weight:700;font-family:'Noto Sans KR',sans-serif;">
+        <input value="${ceItinEsc(day.date)}" oninput="ceItinSetDay(${di},'date',this.value)" placeholder="날짜 (예: 10/22)" style="width:90px;padding:7px 9px;border:1.5px solid #c8edd9;border-radius:6px;font-size:12px;font-family:'Noto Sans KR',sans-serif;">
+        <button type="button" onclick="ceItinDelDay(${di})" style="margin-left:auto;background:none;border:none;color:#dc2626;font-size:12px;font-weight:700;cursor:pointer;">일차 삭제</button>
+      </div>
+      ${day.segments.map((seg, si) => `
+        <div style="border-left:3px solid #e8f4ec;padding-left:10px;margin-bottom:8px;">
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+            <input value="${ceItinEsc(seg.place)}" oninput="ceItinSetSeg(${di},${si},'place',this.value)" placeholder="장소" style="width:130px;padding:6px 8px;border:1.5px solid #c8edd9;border-radius:6px;font-size:12px;font-weight:700;color:#2d6a4f;font-family:'Noto Sans KR',sans-serif;">
+            <button type="button" onclick="ceItinDelSeg(${di},${si})" style="background:none;border:none;color:#dc2626;font-size:11px;cursor:pointer;">구간 삭제</button>
+          </div>
+          ${seg.rows.map((row, ri) => `
+            <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;">
+              <input value="${ceItinEsc(row.time)}" oninput="ceItinSetRow(${di},${si},${ri},'time',this.value)" placeholder="시간" style="width:60px;padding:6px 8px;border:1.5px solid #c8edd9;border-radius:6px;font-size:12px;font-family:'Noto Sans KR',sans-serif;">
+              <input value="${ceItinEsc(row.text)}" oninput="ceItinSetRow(${di},${si},${ri},'text',this.value)" placeholder="세부일정" style="flex:1;padding:6px 8px;border:1.5px solid #c8edd9;border-radius:6px;font-size:12px;font-family:'Noto Sans KR',sans-serif;">
+              <label style="display:flex;align-items:center;gap:3px;font-size:10px;color:#6b7280;white-space:nowrap;">
+                <input type="checkbox" ${row.emphasis?'checked':''} onchange="ceItinSetRow(${di},${si},${ri},'emphasis',this.checked)"> 강조
+              </label>
+              <button type="button" onclick="ceItinDelRow(${di},${si},${ri})" style="background:none;border:none;color:#dc2626;font-size:14px;cursor:pointer;">✕</button>
+            </div>
+            <input value="${ceItinEsc(row.img)}" oninput="ceItinSetRow(${di},${si},${ri},'img',this.value)" placeholder="사진 URL (선택, http로 시작)" style="width:100%;padding:5px 8px;border:1px dashed #d8ece2;border-radius:6px;font-size:11px;margin-bottom:6px;color:#6b7280;font-family:'Nunito',sans-serif;">
+          `).join('')}
+          <button type="button" onclick="ceItinAddRow(${di},${si})" style="padding:5px 10px;background:#f0f7f4;border:1px dashed #1D9E75;color:#1D9E75;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">+ 시간 추가</button>
+        </div>
+      `).join('')}
+      <button type="button" onclick="ceItinAddSeg(${di})" style="padding:5px 10px;background:none;border:1px dashed #9ca3af;color:#6b7280;border-radius:6px;font-size:11px;cursor:pointer;">+ 장소 구간 추가 (하루 중 장소가 바뀔 때)</button>
+    </div>
+  `).join('');
+}
+function ceItinBuildTableHTML() {
+  const days = ceItinGetDays();
+  // 빈 세그먼트·빈 행은 표에서 제외 (rowspan 계산은 이 정리된 결과 기준으로 함)
+  const cleanDays = days.map(day => ({
+    label: day.label, date: day.date,
+    segments: day.segments
+      .map(seg => ({ place: seg.place, rows: seg.rows.filter(r => (r.time && r.time.trim()) || (r.text && r.text.trim())) }))
+      .filter(seg => seg.rows.length > 0)
+  })).filter(day => day.segments.length > 0);
+  if (cleanDays.length === 0) return '';
+  let rowsHtml = '';
+  cleanDays.forEach(day => {
+    const dayRowCount = day.segments.reduce((sum,s) => sum + s.rows.length, 0);
+    let firstRowOfDay = true;
+    day.segments.forEach(seg => {
+      let firstRowOfSeg = true;
+      seg.rows.forEach(row => {
+        rowsHtml += '<tr>';
+        if (firstRowOfDay) {
+          rowsHtml += `<td class="itin-day" rowspan="${dayRowCount}">${ceItinEsc(day.label)}${day.date?`<span class="itin-date">${ceItinEsc(day.date)}</span>`:''}</td>`;
+          firstRowOfDay = false;
+        }
+        if (firstRowOfSeg) {
+          rowsHtml += `<td class="itin-place" rowspan="${seg.rows.length}">${ceItinEsc(seg.place)}</td>`;
+          firstRowOfSeg = false;
+        }
+        const detailInner = row.emphasis ? `<strong class="itin-optional">${ceItinEsc(row.text)}</strong>` : ceItinEsc(row.text);
+        const imgUrl = (row.img||'').trim();
+        const imgHtml = imgUrl.startsWith('http') ? `<img class="itin-img" src="${ceItinEsc(imgUrl)}" alt="일정 사진">` : '';
+        rowsHtml += `<td class="itin-time">${ceItinEsc(row.time)}</td><td class="itin-detail">${detailInner}${imgHtml}</td>`;
+        rowsHtml += '</tr>';
+      });
+    });
+  });
+  return `<table class="itin-table"><thead><tr><th>날짜</th><th>장소</th><th>시간</th><th>세부일정</th></tr></thead><tbody>${rowsHtml}</tbody></table>`;
+}
+function ceItinRenderPreview() {
+  const html = ceItinBuildTableHTML();
+  document.getElementById('ce-itin-preview').innerHTML = html || '<div style="font-size:12px;color:#9ca3af;">내용을 입력하면 여기 표 미리보기가 표시됩니다.</div>';
+}
+function ceItinInsert() {
+  const html = ceItinBuildTableHTML();
+  if (!html) { showToast('표에 넣을 내용이 없습니다','error'); return; }
+  const editor = document.getElementById('ce-schedule-editor');
+  editor.focus();
+  editor.insertAdjacentHTML('beforeend', '<br>' + html + '<br>');
+  showToast('✅ 일정 에디터에 표를 삽입했습니다. 아래로 스크롤해서 확인 후 저장하세요.');
+  editor.scrollIntoView({behavior:'smooth', block:'center'});
 }
 
 function ceFontSize(size) {
