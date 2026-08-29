@@ -712,17 +712,20 @@ body { background:#f4faf7; padding-bottom:40px; }
 .modal-title { font-size:16px; font-weight:800; color:#26215C; margin-bottom:16px; }
 .modal-close { float:right; background:none; border:none; font-size:20px; cursor:pointer; color:#6b7280; }
 
-/* 일정표 만들기 — 미리보기(패키지 상세 페이지와 동일한 스타일, itin-table.css 참고) */
-#ce-itin-preview .itin-table{width:100%;border-collapse:collapse;font-size:12.5px;}
-#ce-itin-preview .itin-table th{background:#1b4332;color:#fff;padding:8px 10px;font-weight:700;border:1px solid #1b4332;}
-#ce-itin-preview .itin-table td{padding:8px 10px;border:1px solid #d8ece2;vertical-align:top;line-height:1.7;}
-#ce-itin-preview .itin-day{background:#f0f7f4;font-weight:800;color:#1b4332;text-align:center;white-space:nowrap;}
-#ce-itin-preview .itin-day .itin-date{display:block;font-size:10px;font-weight:500;color:#6b8f7f;margin-top:2px;}
-#ce-itin-preview .itin-place{background:#faf8f4;font-weight:700;color:#2d6a4f;text-align:center;white-space:nowrap;}
-#ce-itin-preview .itin-time{font-weight:700;color:#085041;white-space:nowrap;width:56px;}
-#ce-itin-preview .itin-detail{color:#2c2c2c;}
-#ce-itin-preview .itin-optional{color:#1b4332;text-decoration:underline;}
-#ce-itin-preview .itin-img{max-width:180px;border-radius:8px;margin-top:6px;display:block;}
+/* 일정표 만들기 — 미리보기(패키지 상세 페이지와 동일한 스타일, itin-table.css 참고)
+   #ce-schedule-editor에도 똑같이 적용 — 표를 만들어 삽입한 뒤 본문 에디터 안에서 볼 때도
+   실제 웹사이트(package-detail.html/my-quote.html)와 똑같은 색상·스타일로 보이도록 함
+   (이전엔 미리보기 박스에만 스타일이 있어서, 삽입 후 에디터 안에서는 색 없는 기본 표로 보여 혼란을 줬음) */
+#ce-itin-preview .itin-table, #ce-schedule-editor .itin-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+#ce-itin-preview .itin-table th, #ce-schedule-editor .itin-table th{background:#1b4332;color:#fff;padding:8px 10px;font-weight:700;border:1px solid #1b4332;}
+#ce-itin-preview .itin-table td, #ce-schedule-editor .itin-table td{padding:8px 10px;border:1px solid #d8ece2;vertical-align:top;line-height:1.7;}
+#ce-itin-preview .itin-day, #ce-schedule-editor .itin-day{background:#f0f7f4;font-weight:800;color:#1b4332;text-align:center;white-space:nowrap;}
+#ce-itin-preview .itin-day .itin-date, #ce-schedule-editor .itin-day .itin-date{display:block;font-size:10px;font-weight:500;color:#6b8f7f;margin-top:2px;}
+#ce-itin-preview .itin-place, #ce-schedule-editor .itin-place{background:#faf8f4;font-weight:700;color:#2d6a4f;text-align:center;white-space:nowrap;}
+#ce-itin-preview .itin-time, #ce-schedule-editor .itin-time{font-weight:700;color:#085041;white-space:nowrap;width:56px;}
+#ce-itin-preview .itin-detail, #ce-schedule-editor .itin-detail{color:#2c2c2c;}
+#ce-itin-preview .itin-optional, #ce-schedule-editor .itin-optional{color:#1b4332;text-decoration:underline;}
+#ce-itin-preview .itin-img, #ce-schedule-editor .itin-img{max-width:180px;border-radius:8px;margin-top:6px;display:block;}
 </style>
 </head>
 <body>
@@ -1218,11 +1221,14 @@ window.adminLogout = function() {
 
       <!-- 전지훈련 하루 일정표 -->
       <div style="background:#f0f7f4;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #c8edd9;">
-        <div style="font-size:13px;font-weight:800;color:#085041;margin-bottom:4px;">📅 전지훈련 하루 일정표</div>
-        <div style="font-size:11px;color:#6b7280;margin-bottom:10px;">블로그처럼 자유롭게 작성하세요 — 글, 강조, 목록, 구분선 모두 가능</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <div style="font-size:13px;font-weight:800;color:#085041;">📅 전지훈련 하루 일정표</div>
+          <button type="button" onclick="ceSchToggleEdit()" id="ce-sch-edit-btn" style="padding:5px 10px;background:#fff;border:1px solid #c8edd9;border-radius:6px;font-size:11px;font-weight:700;color:#1b4332;cursor:pointer;">✏️ 직접 수정</button>
+        </div>
+        <div style="font-size:11px;color:#6b7280;margin-bottom:10px;">평소엔 아래 "🗓️ 일정표 만들기" 도구로만 채우시면 됩니다 — 여기는 그 결과가 그대로 보이는 미리보기예요. 표를 만들지 않고 글로만 간단히 쓰고 싶거나, 완성된 표의 문구를 직접 손보고 싶을 때만 위 "✏️ 직접 수정" 버튼을 눌러주세요.</div>
 
-        <!-- 툴바 -->
-        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;padding:10px;background:#fff;border:1px solid #c8edd9;border-radius:8px;">
+        <!-- 툴바 (평소엔 숨김 — "✏️ 직접 수정" 누르면 나타남) -->
+        <div id="ce-sch-toolbar-wrap" style="display:none;gap:5px;flex-wrap:wrap;margin-bottom:8px;padding:10px;background:#fff;border:1px solid #c8edd9;border-radius:8px;">
           <button onclick="ceFormatSch('h2')" title="큰 제목" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">H2</button>
           <button onclick="ceFormatSch('h3')" title="중간 제목" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">H3</button>
           <div style="width:1px;background:#e5e7eb;margin:0 2px;"></div>
@@ -1259,10 +1265,10 @@ window.adminLogout = function() {
           </select>
         </div>
 
-        <!-- 에디터 영역 -->
-        <div id="ce-schedule-editor" contenteditable="true"
+        <!-- 에디터 영역 — 평소엔 읽기 전용 미리보기, "✏️ 직접 수정" 클릭 시에만 편집 가능 -->
+        <div id="ce-schedule-editor" contenteditable="false"
           style="min-height:200px;border:1.5px solid #c8edd9;border-radius:8px;padding:16px;font-size:14px;line-height:1.9;font-family:'Noto Sans KR',sans-serif;outline:none;background:#fff;"
-          placeholder="예) 1일차 오전: 08:00 연습장 레슨 / 10:00 티오프"></div>
+          placeholder="아직 비어있어요 — 아래 '일정표 만들기' 도구를 사용하거나, 위 '✏️ 직접 수정'을 눌러 글로 입력하세요"></div>
       </div>
 
       <!-- 일정표 만들기 (여행사 스타일 표) -->
@@ -2142,6 +2148,7 @@ function openCardEditor(cardId) {
   document.body.style.overflow = 'hidden';
   document.getElementById('ce-card-id').value = cardId;
   document.getElementById('ce-msg').style.display = 'none';
+  if (typeof ceSchSetEditMode === 'function') ceSchSetEditMode(false); // 카드를 열 때마다 항상 미리보기 모드로 시작
 
   // contenteditable 에디터 렌더링 보장
   setTimeout(() => {
@@ -2504,6 +2511,26 @@ function ceSchColor(color) {
    구조적으로 재수정할 수는 없고(에디터 안에서 텍스트로 직접 고치는 건 가능), 대신
    package-detail.html의 #scheduleList 안에서도 같은 .itin-table 클래스로 렌더링되어
    미리보기와 실제 페이지 모습이 동일합니다. */
+// ── 전지훈련 하루 일정표: 평소엔 읽기 전용 미리보기로 보여주고, "직접 수정" 버튼을 눌렀을 때만
+//    툴바를 펼치고 실제로 편집 가능하게 전환한다(일정표 만들기 도구의 표 삽입은 이 상태와 무관하게 항상 동작) ──
+function ceSchSetEditMode(editing) {
+  const editor = document.getElementById('ce-schedule-editor');
+  const toolbar = document.getElementById('ce-sch-toolbar-wrap');
+  const btn = document.getElementById('ce-sch-edit-btn');
+  if (!editor || !toolbar || !btn) return;
+  editor.setAttribute('contenteditable', editing ? 'true' : 'false');
+  toolbar.style.display = editing ? 'flex' : 'none';
+  editor.style.borderColor = editing ? '#1D9E75' : '#c8edd9';
+  editor.style.boxShadow = editing ? '0 0 0 2px rgba(29,158,117,0.15)' : 'none';
+  btn.textContent = editing ? '✅ 수정 완료' : '✏️ 직접 수정';
+  if (editing) editor.focus();
+}
+function ceSchToggleEdit() {
+  const editor = document.getElementById('ce-schedule-editor');
+  const editing = editor && editor.getAttribute('contenteditable') === 'true';
+  ceSchSetEditMode(!editing);
+}
+
 function ceItinToggle() {
   const box = document.getElementById('ce-itin-builder');
   const btn = document.getElementById('ce-itin-toggle-btn');
