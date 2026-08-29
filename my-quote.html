@@ -77,6 +77,18 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
 .notice ul{list-style:none;}
 .notice ul li{font-size:12px;color:#555;padding:3px 0;padding-left:12px;position:relative;}
 .notice ul li::before{content:"·";position:absolute;left:0;color:var(--gold);}
+/* 일정표 (아이티너리) — package-detail.html의 .itin-table과 동일한 스타일, 관리자가 패키지에 만들어둔 일정표를 그대로 표시 */
+.itin-section{padding:0 48px 28px;}
+.itin-table{width:100%;border-collapse:collapse;font-size:13px;}
+.itin-table th{background:var(--green);color:#fff;padding:9px 11px;font-weight:700;border:1px solid var(--green);}
+.itin-table td{padding:9px 11px;border:1px solid #d8ece2;vertical-align:top;line-height:1.7;}
+.itin-day{background:#f0f7f4;font-weight:800;color:var(--green);text-align:center;white-space:nowrap;}
+.itin-day .itin-date{display:block;font-size:10.5px;font-weight:500;color:#6b8f7f;margin-top:2px;}
+.itin-place{background:#faf8f4;font-weight:700;color:var(--green-mid);text-align:center;white-space:nowrap;}
+.itin-time{font-weight:700;color:#085041;white-space:nowrap;width:56px;}
+.itin-detail{color:#2c2c2c;}
+.itin-optional{color:var(--green);text-decoration:underline;}
+.itin-img{max-width:200px;border-radius:8px;margin-top:8px;display:block;}
 .footer{background:var(--dark);padding:18px 48px;display:flex;justify-content:space-between;align-items:center;}
 .footer-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:#fff;}
 .footer-logo span{color:var(--gold);}
@@ -112,6 +124,11 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
   /* 로그인 박스 여백 */
   .login-wrap{margin:40px 16px;}
   .login-body{padding:24px 20px;}
+  /* 일정표 */
+  .itin-section{padding:0 16px 20px;}
+  .itin-table{font-size:11px;}
+  .itin-table th,.itin-table td{padding:6px 7px;}
+  .itin-img{max-width:120px;}
 }
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6049416941276065"
@@ -144,7 +161,7 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
 <div class="btn-row" id="btnRow" style="display:none;">
   <button class="print-btn" onclick="window.print()">🖨️ PDF 저장</button>
   <button class="kakao-btn" onclick="shareLink()">🔗 링크 공유</button>
-  <button class="kakao-btn" onclick="contactKakao()" style="background:#06C755;color:#fff;">💬 카톡 문의</button>
+  <button class="kakao-btn" onclick="sendKakao()" style="background:#06C755;color:#fff;">💬 카톡으로 보내기</button>
 </div>
 
 <!-- 견적서 -->
@@ -172,6 +189,10 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
     <div class="sch-item"><div class="sch-label">출발</div><div class="sch-value" id="out-checkout"></div></div>
     <div class="sch-item"><div class="sch-label">골프장</div><div class="sch-value" id="out-course"></div></div>
     <div class="sch-item"><div class="sch-label">숙소</div><div class="sch-value" id="out-accom"></div></div>
+  </div>
+  <div class="itin-section" id="itinSection" style="display:none;">
+    <div class="section-title">📅 <span id="itin-title">여행 일정</span></div>
+    <div id="out-itinerary"></div>
   </div>
   <div class="cost-section">
     <div class="section-title">⛳ 골프 비용</div>
@@ -313,6 +334,13 @@ function renderQuote(data) {
     document.getElementById('out-remarks').textContent = data.remarks;
     document.getElementById('out-remarks-section').style.display = 'block';
   }
+
+  // 일정표(아이티너리) — admin에서 패키지를 연결해 저장한 경우에만 표시
+  if (data.itineraryHtml && data.itineraryHtml.trim()) {
+    document.getElementById('out-itinerary').innerHTML = data.itineraryHtml;
+    document.getElementById('itin-title').textContent = data.itineraryTitle ? data.itineraryTitle + ' 여행 일정' : '여행 일정';
+    document.getElementById('itinSection').style.display = 'block';
+  }
 }
 
 window.verifyAndShow = async function() {
@@ -365,6 +393,31 @@ window.shareLink = function() {
 
 window.contactKakao = function() {
   window.open('http://pf.kakao.com/_nbHKX/chat', '_blank');
+};
+
+// 견적서+일정표 링크를 카톡으로 보내는 원버튼 흐름: 안내 문구를 클립보드에 복사하고,
+// 카카오채널 채팅창을 새 탭으로 자동으로 열어준다(진짜 원탭 프리필은 Kakao Biz 인증이 필요해 범위 밖 — 붙여넣기 한 번만 하면 됨)
+window.sendKakao = function() {
+  var d = quoteData;
+  var link = d && d.quoteNo
+    ? 'https://iclarkgolf.com/my-quote.html?id=' + d.quoteNo.replace(/[^a-zA-Z0-9-]/g,'_')
+    : window.location.href.split('?')[0];
+  var name = (d && d.clientName) ? d.clientName + '님, ' : '';
+  var itinLine = (d && d.itineraryHtml && d.itineraryHtml.trim()) ? '\n(견적 내용 + 여행 일정표가 함께 들어있습니다)' : '';
+  var msg = '[iCLARKGOLF 견적서]\n' + name + '요청하신 견적서를 보내드립니다.\n' + link + itinLine;
+
+  var openChat = function(){ window.open('http://pf.kakao.com/_nbHKX/chat', '_blank'); };
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(msg).then(function() {
+      alert('📋 견적서 안내 문구가 복사됐습니다.\n곧 열리는 카카오채널 채팅창에 붙여넣기 해서 보내주세요.');
+      openChat();
+    }).catch(function() {
+      openChat();
+    });
+  } else {
+    openChat();
+  }
 };
 
 // URL에서 id 파라미터 추출
