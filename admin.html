@@ -2149,6 +2149,9 @@ function openCardEditor(cardId) {
   document.getElementById('ce-card-id').value = cardId;
   document.getElementById('ce-msg').style.display = 'none';
   if (typeof ceSchSetEditMode === 'function') ceSchSetEditMode(false); // 카드를 열 때마다 항상 미리보기 모드로 시작
+  // 폼에 기존 값을 채워넣는 동안 발생하는 input/change 이벤트는 "수정"이 아니므로,
+  // 데이터를 다 채운 직후 더티 표시를 초기화한다 (Firebase 로드는 비동기라 여유있게 지연).
+  setTimeout(() => { _ceDirty = false; }, 400);
 
   // contenteditable 에디터 렌더링 보장
   setTimeout(() => {
@@ -2233,8 +2236,12 @@ function openCardEditor(cardId) {
 }
 
 function closeCardEditor() {
+  if (_ceDirty && !confirm('저장하지 않은 내용이 있습니다. 정말 닫으시겠어요?\n(계속 편집하려면 "취소"를 눌러주세요)')) {
+    return;
+  }
   document.getElementById('card-editor-modal').style.display = 'none';
   document.body.style.overflow = '';
+  _ceDirty = false;
 }
 
 function updateCeHeroPreview() {
@@ -2351,6 +2358,7 @@ async function saveCard() {
     msg.style.background = '#f0fdf4';
     msg.style.color = '#16a34a';
     msg.textContent = '✅ 저장됐어요!';
+    _ceDirty = false; // 저장이 실제로 끝났으므로 이제 벗어나도 안전함
     setTimeout(() => { closeCardEditor(); loadCards(); }, 1500);
   } catch(e) {
     msg.style.display = 'block';
@@ -2435,6 +2443,28 @@ document.addEventListener('DOMContentLoaded', () => {
 // 텍스트 선택이 풀려버림 → 그 상태로 execCommand를 실행하면 선택된 게 없어 아무 효과가 없어 보임.
 // 그래서 에디터 안에서 마우스를 떼거나 키보드로 선택할 때마다 그 범위를 저장해뒀다가,
 // 툴바를 클릭한 순간 그 선택을 복원한 뒤에 명령을 실행한다.
+// ── 저장하지 않고 화면을 벗어나 내용이 사라지는 사고 방지 ──
+// "표 삽입"처럼 버튼 클릭으로 내용이 바뀌는 경우는 일반 입력 이벤트가 안 잡히므로,
+// 그런 함수들 안에서 직접 _ceDirty = true를 표시해준다. 카드 편집창이 열려있는 동안
+// 저장하지 않은 변경사항이 있는 채로 새로고침/닫기를 시도하면 브라우저가 확인창을 띄운다.
+var _ceDirty = false;
+function _ceMarkDirty() { _ceDirty = true; }
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('card-editor-modal');
+  if (modal) {
+    modal.addEventListener('input', _ceMarkDirty, true);
+    modal.addEventListener('change', _ceMarkDirty, true);
+  }
+});
+window.addEventListener('beforeunload', function(e) {
+  const modal = document.getElementById('card-editor-modal');
+  if (modal && modal.style.display !== 'none' && _ceDirty) {
+    e.preventDefault();
+    e.returnValue = '저장하지 않은 내용이 있습니다.';
+    return e.returnValue;
+  }
+});
+
 var _ceMainRange = null, _ceSchRange = null;
 function _ceTrackSelection(editorId, setFn) {
   var editor = document.getElementById(editorId);
@@ -2693,7 +2723,8 @@ function ceItinInsert() {
   const editor = document.getElementById('ce-schedule-editor');
   editor.focus();
   editor.insertAdjacentHTML('beforeend', '<br>' + html + '<br>');
-  showToast('✅ 일정 에디터에 표를 삽입했습니다. 아래로 스크롤해서 확인 후 저장하세요.');
+  _ceDirty = true; // 표 삽입은 입력 이벤트가 안 잡히므로 직접 표시 — 저장 전 이탈 방지용
+  showToast('✅ 표를 삽입했습니다. 아직 저장되지 않았어요 — 맨 아래 "저장하기"까지 눌러야 완료됩니다!');
   editor.scrollIntoView({behavior:'smooth', block:'center'});
 }
 
