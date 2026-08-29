@@ -2423,10 +2423,42 @@ document.addEventListener('DOMContentLoaded', () => {
   ceAttachSanitizedPaste('ce-schedule-editor');
 });
 
+// ── 툴바 버튼(H2/H3/글자크기 등)을 눌러도 서식이 "안 먹는" 문제 방지 ──
+// 버튼이나 드롭다운을 클릭하면 브라우저가 에디터에서 포커스를 먼저 빼앗아가면서 방금 드래그해둔
+// 텍스트 선택이 풀려버림 → 그 상태로 execCommand를 실행하면 선택된 게 없어 아무 효과가 없어 보임.
+// 그래서 에디터 안에서 마우스를 떼거나 키보드로 선택할 때마다 그 범위를 저장해뒀다가,
+// 툴바를 클릭한 순간 그 선택을 복원한 뒤에 명령을 실행한다.
+var _ceMainRange = null, _ceSchRange = null;
+function _ceTrackSelection(editorId, setFn) {
+  var editor = document.getElementById(editorId);
+  if (!editor) return;
+  var save = function() {
+    var sel = window.getSelection();
+    if (sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
+      setFn(sel.getRangeAt(0).cloneRange());
+    }
+  };
+  editor.addEventListener('mouseup', save);
+  editor.addEventListener('keyup', save);
+}
+function _ceRestoreMain() {
+  var editor = document.getElementById('ce-editor');
+  editor.focus();
+  if (_ceMainRange) { var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(_ceMainRange); }
+}
+function _ceRestoreSch() {
+  var editor = document.getElementById('ce-schedule-editor');
+  editor.focus();
+  if (_ceSchRange) { var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(_ceSchRange); }
+}
+document.addEventListener('DOMContentLoaded', function() {
+  _ceTrackSelection('ce-editor', function(r) { _ceMainRange = r; });
+  _ceTrackSelection('ce-schedule-editor', function(r) { _ceSchRange = r; });
+});
+
 // 에디터 툴바 함수
 function ceFormat(type) {
-  const editor = document.getElementById('ce-editor');
-  editor.focus();
+  _ceRestoreMain();
   if (type === 'h2') document.execCommand('formatBlock', false, 'h2');
   else if (type === 'h3') document.execCommand('formatBlock', false, 'h3');
   else if (type === 'bold') document.execCommand('bold');
@@ -2442,8 +2474,7 @@ function ceFormat(type) {
 
 // 일정표 에디터 툴바 함수
 function ceFormatSch(type) {
-  const editor = document.getElementById('ce-schedule-editor');
-  editor.focus();
+  _ceRestoreSch();
   if (type === 'h2') document.execCommand('formatBlock', false, 'h2');
   else if (type === 'h3') document.execCommand('formatBlock', false, 'h3');
   else if (type === 'bold') document.execCommand('bold');
@@ -2458,12 +2489,12 @@ function ceFormatSch(type) {
 }
 function ceSchFontSize(size) {
   if (!size) return;
-  document.getElementById('ce-schedule-editor').focus();
+  _ceRestoreSch();
   document.execCommand('fontSize', false, size);
 }
 function ceSchColor(color) {
   if (!color) return;
-  document.getElementById('ce-schedule-editor').focus();
+  _ceRestoreSch();
   document.execCommand('foreColor', false, color);
 }
 
@@ -2641,26 +2672,26 @@ function ceItinInsert() {
 
 function ceFontSize(size) {
   if (!size) return;
-  document.getElementById('ce-editor').focus();
+  _ceRestoreMain();
   document.execCommand('fontSize', false, size);
 }
 
 function ceColor(color) {
   if (!color) return;
-  document.getElementById('ce-editor').focus();
+  _ceRestoreMain();
   document.execCommand('foreColor', false, color);
 }
 
 function ceBgColor(color) {
   if (!color) return;
-  document.getElementById('ce-editor').focus();
+  _ceRestoreMain();
   document.execCommand('hiliteColor', false, color);
 }
 
 function ceInsertImg() {
   const url = prompt('사진 URL을 입력하세요 (ImgBB Direct link):');
   if (!url) return;
-  document.getElementById('ce-editor').focus();
+  _ceRestoreMain();
   document.execCommand('insertHTML', false, `<img src="${url}" style="max-width:100%;border-radius:10px;margin:10px 0;display:block;" loading="lazy">`);
 }
 
@@ -2668,7 +2699,7 @@ function ceInsertLink() {
   const url = prompt('링크 URL을 입력하세요:');
   if (!url) return;
   const text = prompt('링크에 표시할 텍스트:') || url;
-  document.getElementById('ce-editor').focus();
+  _ceRestoreMain();
   document.execCommand('insertHTML', false, `<a href="${url}" target="_blank" style="color:#1D9E75;text-decoration:underline;">${text}</a>`);
 }
 
@@ -3936,7 +3967,8 @@ async function loadVisitorStats() {
       <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">도착일</label><input type="text" id="qfCheckin" placeholder="2026-07-10 (예상일)" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
       <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">출발일</label><input type="text" id="qfCheckout" placeholder="2026-07-17 (예상일)" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
       <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">골프장</label><input type="text" id="qfCourse" value="프라데라 베르데" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
-      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">숙소</label><input type="text" id="qfAccom" value="HOTEL & 숙소" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div></div>
+      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">숙소</label><input type="text" id="qfAccom" value="HOTEL & 숙소" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
+      <div style="grid-column:1/-1;"><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">🗺️ 일정표(아이티너리) 첨부 — 패키지 상세페이지 일정표를 견적서에 그대로 넣어드려요</label><select id="qfPackage" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"><option value="">선택 안 함</option></select></div></div>
 
     </div>
     <div style="font-weight:800;color:#1b4332;margin:12px 0 8px;border-left:3px solid #f4a261;padding-left:10px;font-size:13px;">⛳ 골프 비용</div><div id="qfGolf"></div>
@@ -4047,6 +4079,38 @@ function qfInit(){
     });
   });
   qfUpdateTotal();
+  qfLoadPackages();
+}
+
+// ── 견적서용 패키지(일정표/아이티너리) 목록 로드 ──
+var _qfPackageMap={};
+function qfLoadPackages(){
+  var sel=document.getElementById('qfPackage');
+  if(!sel) return;
+  Promise.all([
+    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'),
+    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js')
+  ]).then(function(ms){
+    var iA=ms[0].initializeApp,gA=ms[0].getApps;
+    var gF=ms[1].getFirestore,cl=ms[1].collection,gD=ms[1].getDocs;
+    var cfg={apiKey:'AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU',authDomain:'iclarkgolf.firebaseapp.com',projectId:'iclarkgolf'};
+    var app=gA().length?gA()[0]:iA(cfg);
+    return gD(cl(gF(app),'package_cards'));
+  }).then(function(snap){
+    var pending=sel.getAttribute('data-pending')||'';
+    snap.forEach(function(d){
+      var c=d.data();
+      var title=(c.titleEn||'')+(c.sub1?' · '+c.sub1:'')+(c.sub2?' · '+c.sub2:'');
+      _qfPackageMap[d.id]={title:title||d.id, trainingSchedule:c.trainingSchedule||''};
+    });
+    var opts='<option value="">선택 안 함</option>';
+    Object.keys(_qfPackageMap).forEach(function(id){
+      var hasItin=_qfPackageMap[id].trainingSchedule.trim()?'':' (일정표 없음)';
+      opts+='<option value="'+id+'">'+_qfPackageMap[id].title+hasItin+'</option>';
+    });
+    sel.innerHTML=opts;
+    if(pending && _qfPackageMap[pending]) sel.value=pending;
+  }).catch(function(e){ console.warn('패키지 목록 로드 실패:', e.message); });
 }
 
 function qfLoad(){
@@ -4079,6 +4143,12 @@ function qfLoad(){
     document.getElementById('qfCourse').value=d.golfCourse||'';
     document.getElementById('qfAccom').value=d.accommodation||'';
     document.getElementById('qfRemarks').value=d.remarks||'';
+    // 일정표(아이티너리) 선택 복원 — 패키지 목록이 아직 로드 중일 수 있어 data-pending에 기록해두면 qfLoadPackages가 이어받음
+    var pkgSel=document.getElementById('qfPackage');
+    if(pkgSel){
+      pkgSel.setAttribute('data-pending', d.itineraryPackageId||'');
+      if(d.itineraryPackageId && _qfPackageMap[d.itineraryPackageId]) pkgSel.value=d.itineraryPackageId;
+    }
     // 항목 금액/수량 채우기
     if(d.items){
       Object.keys(d.items).forEach(function(k){
@@ -4110,6 +4180,8 @@ function qfSave(){
       };
     });
   });
+  var pkgId=get('qfPackage');
+  var pkg=pkgId ? (_qfPackageMap[pkgId]||null) : null;
   var data={
     clientName:get('qfName')||'고객',quoteNo:get('qfNo')||'QT-001',
     docType:get('qfDoctype'),persons:get('qfPersons')||'1',
@@ -4117,6 +4189,9 @@ function qfSave(){
     checkOut:get('qfCheckout')||'-',golfCourse:get('qfCourse'),
     accommodation:get('qfAccom'),clientPin:'',
     remarks:get('qfRemarks'),items:items,rate:_qfGetR(),
+    itineraryPackageId:pkgId||'',
+    itineraryTitle:pkg?pkg.title:'',
+    itineraryHtml:pkg?pkg.trainingSchedule:'',
     createdAt:new Date().toISOString(),status:'active'
   };
   Promise.all([
