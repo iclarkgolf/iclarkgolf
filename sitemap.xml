@@ -47,6 +47,56 @@
     <priority>0.4</priority>
   </url>
 
+  <!-- 패키지 상세페이지 (packages-manifest.json에서 자동 생성 — build-package-pages.js가 6시간마다 갱신) -->
+  <url>
+    <loc>https://iclarkgolf.com/package-pradera-all-in.html</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://iclarkgolf.com/package-pradera.html</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://iclarkgolf.com/package-pradera-fool-villa.html</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://iclarkgolf.com/package-pradera-camp.html</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://iclarkgolf.com/package-beverly-enjoy.html</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://iclarkgolf.com/package-beverly-all-in.html</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://iclarkgolf.com/package-pradera-beverly.html</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://iclarkgolf.com/package-all-in.html</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
   <!-- 정보 페이지 -->
   <url>
     <loc>https://iclarkgolf.com/about.html</loc>
