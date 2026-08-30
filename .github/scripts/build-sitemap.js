@@ -73,6 +73,31 @@ const blogPostBlocks = postsAscending
   )
   .join('\n');
 
+// ---------- 2-b. packages-manifest.json에서 패키지 상세페이지 목록 읽기 ----------
+// (build-package-pages.js가 6시간마다 자동 생성 — 아직 한번도 안 돌았으면 빈 배열)
+const manifestPath = path.join(ROOT, 'packages-manifest.json');
+let PACKAGES = [];
+if (fs.existsSync(manifestPath)) {
+  try {
+    PACKAGES = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  } catch (e) {
+    console.warn('packages-manifest.json을 읽지 못했습니다 — 패키지 페이지는 사이트맵에서 생략합니다.');
+  }
+}
+const packageBlocks = PACKAGES
+  .map((p) =>
+    urlBlock({
+      loc: `/package-${p.slug}.html`,
+      lastmod: p.lastmod || today(),
+      changefreq: 'weekly',
+      priority: '0.9',
+    })
+  )
+  .join('\n');
+function today() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
@@ -86,6 +111,9 @@ ${urlBlock(STATIC_PAGES[3])}
 ${urlBlock(STATIC_PAGES[4])}
 ${urlBlock(STATIC_PAGES[5])}
 ${urlBlock(STATIC_PAGES[6])}
+
+  <!-- 패키지 상세페이지 (packages-manifest.json에서 자동 생성 — build-package-pages.js가 6시간마다 갱신) -->
+${packageBlocks}
 
   <!-- 정보 페이지 -->
 ${urlBlock(STATIC_PAGES[7])}
