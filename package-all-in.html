@@ -43,18 +43,18 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 /* 히어로 */
 .hero{min-height:260px;display:flex;align-items:flex-end;padding:70px 20px 24px;position:relative;overflow:hidden;}
 .hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#054535,#1D9E75);}
-.hero-img{position:absolute;inset:0;background-size:cover;background-position:center 45%;opacity:0.9;}
-.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.1) 100%);}
+.hero-img{position:absolute;inset:0;background-size:cover;background-position:center 45%;}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.42) 0%,rgba(0,0,0,0.04) 100%);}
 .hero-glow{position:absolute;right:-20px;top:-20px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.07);}
 .hero-line{position:absolute;left:0;top:0;bottom:0;width:4px;background:rgba(255,255,255,0.35);}
 .hero-content{position:relative;z-index:2;}
-.hero-tag{font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:.08em;margin-bottom:8px;}
-.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,8vw,46px);color:#fff;line-height:1.0;letter-spacing:.02em;text-shadow:0 2px 16px rgba(0,0,0,0.3);word-break:keep-all;}
+.hero-tag{font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:.08em;margin-bottom:8px;text-shadow:0 1px 6px rgba(0,0,0,0.5);}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,8vw,46px);color:#fff;line-height:1.0;letter-spacing:.02em;text-shadow:0 2px 16px rgba(0,0,0,0.45);word-break:keep-all;}
 .hero-subs{display:flex;align-items:center;gap:8px;margin-top:8px;}
-.hero-sub1{font-size:18px;font-weight:700;color:#fff;}
+.hero-sub1{font-size:18px;font-weight:700;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,0.5);}
 .hero-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.6);}
-.hero-sub2{font-size:18px;font-weight:300;color:rgba(255,255,255,0.85);}
-.hero-copy{font-size:13px;color:rgba(255,255,255,0.75);line-height:1.9;margin-top:12px;border-left:2px solid rgba(255,255,255,0.4);padding-left:12px;}
+.hero-sub2{font-size:18px;font-weight:300;color:rgba(255,255,255,0.85);text-shadow:0 1px 6px rgba(0,0,0,0.5);}
+.hero-copy{font-size:13px;color:rgba(255,255,255,0.75);line-height:1.9;margin-top:12px;border-left:2px solid rgba(255,255,255,0.4);padding-left:12px;text-shadow:0 1px 4px rgba(0,0,0,0.45);}
 
 /* 핵심 숫자 바 */
 .stats-bar{background:#fff;display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid #e5e7eb;}
@@ -179,7 +179,7 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 <!-- SEO 고정 소개문 (Firestore 로딩과 무관하게 항상 노출) -->
 <h2 data-i18n="seo.h2" style="max-width:720px;margin:24px auto 8px;padding:0 20px;font-size:19px;font-weight:800;color:#1a1a2e;">iCLARKGOLF 골프 패키지 안내</h2>
 <p data-i18n="seo.intro1" style="max-width:720px;margin:0 auto 10px;padding:0 20px;font-size:14px;line-height:1.8;color:#52525b;">iCLARKGOLF의 모든 골프 패키지는 필리핀 클락에서 <b>25년째</b> 골프를 가르치고 안내해온 <b>전문가가 직접 설계하고 운영</b>합니다. <b>PRADERA C.C</b>와 <b>BEVERLY C.C</b> 두 골프장을 중심으로, 라운드와 연습장 훈련, 숙소, 캐디, 경비까지 하나로 묶어 안내합니다.</p>
-<p data-i18n="seo.intro2" style="max-width:720px;margin:0 auto 20px;padding:0 20px;font-size:14px;line-height:1.8;color:#52525b;">아래에서 이 패키지의 <b>기간별 가격</b>, <b>포함·불포함 항목</b>, 숙소 정보와 샘플 일정을 확인하실 수 있고, 궁금한 점은 <b>30초 간편 문의</b>로 바로 여쭤보실 수 있습니다. 처음 혼자 떠나는 골프 여행도, 여러 명이 함께하는 전지훈련도 이 페이지 하나로 준비할 수 있도록 만들었습니다.</p>
+<p data-i18n="seo.intro2" style="max-width:720px;margin:0 auto 20px;padding:0 20px;font-size:14px;line-height:1.8;color:#52525b;">아래에서 이 패키지의 <b>기간별 가격</b>, <b>포함·불포함 항목</b>, 숙소 정보와 주요 일정을 확인하실 수 있고, 궁금한 점은 <b>30초 간편 문의</b>로 바로 여쭤보실 수 있습니다. 처음 혼자 떠나는 골프 여행도, 여러 명이 함께하는 전지훈련도 이 페이지 하나로 준비할 수 있도록 만들었습니다.</p>
 
 <!-- ① 히어로 -->
 <div class="hero" id="heroSection" style="display:flex;">
@@ -221,9 +221,9 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
   </div>
 </div>
 
-<!-- ③ 샘플 일정 -->
+<!-- ③ 주요 일정 -->
 <div class="section" id="scheduleSection" style="display:block;">
-  <div class="section-header" data-i18n="sec.schedule">📅 샘플 일정</div>
+  <div class="section-header" data-i18n="sec.schedule">📅 주요 일정</div>
   <div class="section-body">
     <div id="scheduleList"><div><div class="flex-1 flex flex-col px-4 max-w-3xl mx-auto w-full pt-1"><div role="feed" aria-label="채팅 메시지" aria-describedby="_r_c5_" aria-busy="false" data-find-provider-scope=""><div data-sizer-excess="0" data-rocksteady-sizer="" style="position: relative; width: 100%;"><div data-rs-index="95" data-index="95" data-last-message="true" style="display: flow-root;"><div role="article" tabindex="0" aria-setsize="96" aria-posinset="96" aria-label="96개 메시지 중 96번째"><div data-test-render-count="1"><div class="group group/message-row" style="height: auto; opacity: 1; transform: none;"><div class="contents"><div data-is-streaming="false" class="group relative relative pb-[var(--msg-assistant-pb,0.75rem)]" style="opacity: 1; transform: none;"><div class="font-claude-response relative leading-[1.65rem] [&amp;_pre&gt;div]:bg-bg-000/50 [&amp;_pre&gt;div]:border-0.5 [&amp;_pre&gt;div]:border-border-400 [&amp;_.ignore-pre-bg&gt;div]:bg-transparent [&amp;_.standard-markdown_:is(p,blockquote,h1,h2,h3,h4,h5,h6)]:pl-2 [&amp;_.standard-markdown_:is(p,blockquote,ul,ol,h1,h2,h3,h4,h5,h6)]:pr-8 [&amp;_.progressive-markdown_:is(p,blockquote,h1,h2,h3,h4,h5,h6)]:pl-2 [&amp;_.progressive-markdown_:is(p,blockquote,ul,ol,h1,h2,h3,h4,h5,h6)]:pr-8"><div class="grid grid-rows-[auto_auto] min-w-0"><div class="row-start-2 col-start-1 relative grid grid-rows-[auto_auto] isolate min-w-0"><div class="row-start-1 col-start-1 relative z-[2] min-w-0"><div class="standard-markdown grid-cols-1 grid [&amp;_&gt;_*]:min-w-0 gap-3 [&amp;_&gt;_*:last-child]:mb-0 print:block print:[&amp;_&gt;_*_+_*]:mt-3 standard-markdown"><h3 dir="ltr" class="text-text-100 mt-3 -mb-1 text-[1.125rem] font-bold">도착 첫날, 사실은 이미 시작입니다</h3>
 <p class="font-claude-response-body break-words whitespace-normal" dir="ltr">한국에서 클락으로 오는 항공편은 대부분 야간 출발이라, 클락 공항엔 자정을 넘겨 도착하게 됩니다. 일정이 자정 이후에 시작된다고 생각하실 수 있지만, 실제로는 <strong>이날부터 첫째 날로 계산</strong>됩니다. 입국부터 숙소 도착까지, 처음 오시는 분들이 꼭 알아두시면 좋을 순서를 정리했습니다.</p>
@@ -374,14 +374,16 @@ import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.
 import { getFirestore, doc, getDoc, collection, addDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 const params = new URLSearchParams(location.search);
-const cardId = params.get('id') || 'card1';
+// window.__FIXED_PACKAGE_ID__는 검색엔진용 정적 패키지 페이지(package-<슬러그>.html)에서
+// 주소창에 ?id=가 없어도 어떤 패키지인지 알 수 있도록 빌드 스크립트가 미리 심어두는 값이다.
+const cardId = params.get('id') || window.__FIXED_PACKAGE_ID__ || 'card1';
 let PKG = null; // 현재 패키지 데이터 — 30초 위젯의 "예상 견적" 계산에 사용 (render()에서 채워짐)
 
 /* ── 한/영 번역 ── */
 const TRANS = {
   kr: {
     'nav.back':'← 홈으로','stat.price':'시작 가격','stat.mindays':'최소 기간','stat.pax':'인원',
-    'sec.schedule':'📅 샘플 일정','sec.incl':'✅ 포함 · 불포함','incl.yes':'✅ 포함','incl.no':'❌ 불포함',
+    'sec.schedule':'📅 주요 일정','sec.incl':'✅ 포함 · 불포함','incl.yes':'✅ 포함','incl.no':'❌ 불포함',
     'sec.accom':'🏠 숙소 안내','sec.training':'⛳ 전지훈련',
     'sec.price':'💰 기간별 가격','sec.detail':'📝 상세 안내','btn.kakao':'💬 카카오 문의','btn.quote':'📋 맞춤 견적',
     'mi.title':'⛳ 30초 간편 문의','mi.sub':'버튼만 선택하면, 카카오톡으로 바로 답변 도와드려요',
@@ -396,11 +398,11 @@ const TRANS = {
     'mi.est.note':'정확한 금액은 카카오 상담에서 확정해 드려요. 아래 버튼은 편하게, 선택사항으로 눌러주세요.',
     'seo.h2':'iCLARKGOLF 골프 패키지 안내',
     'seo.intro1':'iCLARKGOLF의 모든 골프 패키지는 필리핀 클락에서 <b>25년째</b> 골프를 가르치고 안내해온 <b>전문가가 직접 설계하고 운영</b>합니다. <b>PRADERA C.C</b>와 <b>BEVERLY C.C</b> 두 골프장을 중심으로, 라운드와 연습장 훈련, 숙소, 캐디, 경비까지 하나로 묶어 안내합니다.',
-    'seo.intro2':'아래에서 이 패키지의 <b>기간별 가격</b>, <b>포함·불포함 항목</b>, 숙소 정보와 샘플 일정을 확인하실 수 있고, 궁금한 점은 <b>30초 간편 문의</b>로 바로 여쭤보실 수 있습니다. 처음 혼자 떠나는 골프 여행도, 여러 명이 함께하는 전지훈련도 이 페이지 하나로 준비할 수 있도록 만들었습니다.',
+    'seo.intro2':'아래에서 이 패키지의 <b>기간별 가격</b>, <b>포함·불포함 항목</b>, 숙소 정보와 주요 일정을 확인하실 수 있고, 궁금한 점은 <b>30초 간편 문의</b>로 바로 여쭤보실 수 있습니다. 처음 혼자 떠나는 골프 여행도, 여러 명이 함께하는 전지훈련도 이 페이지 하나로 준비할 수 있도록 만들었습니다.',
   },
   en: {
     'nav.back':'← Home','stat.price':'Starting Price','stat.mindays':'Min. Stay','stat.pax':'Guests',
-    'sec.schedule':'📅 Sample Schedule','sec.incl':'✅ Included · Excluded','incl.yes':'✅ Included','incl.no':'❌ Not Included',
+    'sec.schedule':'📅 Key Schedule','sec.incl':'✅ Included · Excluded','incl.yes':'✅ Included','incl.no':'❌ Not Included',
     'sec.accom':'🏠 Accommodation','sec.training':'⛳ Training Photos',
     'sec.price':'💰 Pricing','sec.detail':'📝 Details','btn.kakao':'💬 KakaoTalk','btn.quote':'📋 Get a Quote',
     'mi.title':'⛳ 30-Second Inquiry','mi.sub':'Just pick your options, then we’ll help you right on KakaoTalk',
@@ -415,7 +417,7 @@ const TRANS = {
     'mi.est.note':'We’ll confirm the exact price over KakaoTalk. The button below is optional — feel free to just ask.',
     'seo.h2':'iCLARKGOLF Golf Packages',
     'seo.intro1':'Every iCLARKGOLF package is designed and run directly by <b>a golf professional</b> who has lived and taught in Clark, Philippines for <b>25 years</b>. Centered on <b>PRADERA C.C</b> and <b>BEVERLY C.C</b>, each package bundles rounds, practice-range training, lodging, caddies, and cost into one plan.',
-    'seo.intro2':'Below you can check <b>pricing by duration</b>, <b>what is included and excluded</b>, lodging details, and a sample schedule — and send a quick <b>30-second inquiry</b> if you have questions. Whether this is a first solo golf trip or a group training camp, this page has everything needed to plan it.',
+    'seo.intro2':'Below you can check <b>pricing by duration</b>, <b>what is included and excluded</b>, lodging details, and a key schedule — and send a quick <b>30-second inquiry</b> if you have questions. Whether this is a first solo golf trip or a group training camp, this page has everything needed to plan it.',
   }
 };
 let currentLang = localStorage.getItem('clarkgo_lang') || 'kr';
