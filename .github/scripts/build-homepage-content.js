@@ -6,6 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 const admin = require('firebase-admin');
+const { uniqueSlugs } = require('./lib/slugify');
 
 const INDEX_PATH = path.join(__dirname, '..', '..', 'index.html');
 
@@ -35,7 +36,7 @@ function renderPackageCard(c) {
     ? `<img src="${escapeHtml(c.heroImg)}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center ${c.heroImgPosY !== undefined ? c.heroImgPosY : 50}%;display:block;" loading="lazy" alt="${escapeHtml(c.titleEn || '')}">`
     : `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40px;">⛳</div>`;
 
-  return `    <a href="package-detail.html?id=${escapeHtml(c.id)}" class="pkg-item" style="border-radius:16px;overflow:hidden;text-decoration:none;display:block;box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+  return `    <a href="package-${escapeHtml(c.slug)}.html" class="pkg-item" style="border-radius:16px;overflow:hidden;text-decoration:none;display:block;box-shadow:0 4px 20px rgba(0,0,0,0.15);">
        <div style="background:#1b4332;position:relative;height:200px;overflow:hidden;">
          ${bg}
          <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.06) 0%,rgba(0,0,0,0.00) 35%,rgba(0,0,0,0.22) 100%);"></div>
@@ -65,6 +66,9 @@ async function buildPackagesHtml(db) {
   let cards = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   cards.sort((a, b) => (a.order || 0) - (b.order || 0));
   if (cards.length === 0) return '';
+  // 검색엔진용 정적 페이지(package-<슬러그>.html, build-package-pages.js가 생성)와
+  // 같은 슬러그 규칙을 써야 링크가 실제로 존재하는 파일을 가리킨다.
+  cards = uniqueSlugs(cards);
   return cards.map(renderPackageCard).join('\n');
 }
 
