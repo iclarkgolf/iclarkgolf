@@ -1784,6 +1784,87 @@ function logout() {
   else { window.location.href = 'index.html'; }
 }
 
+/* ── 사진 업로드 (Firebase Storage) — imgbb.com 없이 admin 화면에서 바로 업로드 ── */
+async function iuGetStorage() {
+  const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+  const { getStorage } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js");
+  const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+  const app = getApps().find(a=>a.name==='admin-auth') || initializeApp(cfg,'admin-auth');
+  return getStorage(app);
+}
+
+async function iuUploadImageFile(file) {
+  const { ref, uploadBytes, getDownloadURL } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js");
+  const storage = await iuGetStorage();
+  const safeName = (file.name || 'photo').replace(/[^a-zA-Z0-9_.\-]/g, '_');
+  const path = `uploads/${Date.now()}_${Math.random().toString(36).slice(2,8)}_${safeName}`;
+  const fileRef = ref(storage, path);
+  await uploadBytes(fileRef, file);
+  return await getDownloadURL(fileRef);
+}
+
+// 지정한 URL 입력칸(targetId) 바로 아래에 "내 컴퓨터에서 사진 선택" 버튼을 붙여준다.
+// opts.multiline: true면 textarea에 줄바꿈으로 이어붙임(숙소 사진처럼 여러 장 넣는 칸)
+function iuMount(targetId, opts) {
+  opts = opts || {};
+  const targetEl = document.getElementById(targetId);
+  if (!targetEl || targetEl.dataset.iuMounted) return;
+  targetEl.dataset.iuMounted = '1';
+  const btnId = targetId + '-iu-btn';
+  const fileId = targetId + '-iu-file';
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;align-items:center;gap:8px;margin-top:6px;';
+  wrap.innerHTML = `<button type="button" id="${btnId}" style="padding:7px 12px;background:#534AB7;color:#fff;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;">📤 내 컴퓨터에서 사진 선택</button><input type="file" id="${fileId}" accept="image/*" style="display:none;"><span id="${btnId}-status" style="font-size:11px;color:#9ca3af;"></span>`;
+  targetEl.insertAdjacentElement('afterend', wrap);
+  const fileInput = wrap.querySelector('#' + fileId);
+  wrap.querySelector('#' + btnId).addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', () => iuHandleUpload(fileInput, btnId, targetId, opts));
+}
+
+async function iuHandleUpload(fileInputEl, btnId, targetId, opts) {
+  opts = opts || {};
+  const file = fileInputEl.files && fileInputEl.files[0];
+  if (!file) return;
+  if (!file.type || !file.type.startsWith('image/')) {
+    alert('사진 파일만 올릴 수 있어요.');
+    fileInputEl.value = '';
+    return;
+  }
+  if (file.size > 8 * 1024 * 1024) {
+    alert('사진 파일이 너무 큽니다. 8MB 이하 사진으로 올려주세요.');
+    fileInputEl.value = '';
+    return;
+  }
+  const btn = document.getElementById(btnId);
+  const statusEl = document.getElementById(btnId + '-status');
+  const origText = btn ? btn.textContent : null;
+  if (btn) { btn.textContent = '⏳ 업로드 중...'; btn.disabled = true; }
+  const targetEl = document.getElementById(targetId);
+  try {
+    const url = await iuUploadImageFile(file);
+    if (opts.multiline) {
+      const cur = targetEl.value.trim();
+      targetEl.value = cur ? (cur + '\n' + url) : url;
+    } else {
+      targetEl.value = url;
+    }
+    targetEl.dispatchEvent(new Event('input', { bubbles: true }));
+    if (statusEl) { statusEl.textContent = '✅ 업로드 완료'; setTimeout(() => { statusEl.textContent = ''; }, 3000); }
+    if (typeof opts.onDone === 'function') opts.onDone(url);
+  } catch (err) {
+    console.error('사진 업로드 실패:', err);
+    alert('사진 업로드에 실패했습니다.\n\n' + (err && err.message ? err.message : err) + '\n\n(Firebase 콘솔에서 Storage가 켜져 있는지 확인해주세요)');
+  } finally {
+    if (btn) { btn.textContent = origText; btn.disabled = false; }
+    fileInputEl.value = '';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  ['ce-hero-img-input', 'ce-hero-img2-input', 'gfd-img', 'pf-photo', 'pf-lic1', 'pf-lic2', 'pf-lic3', 'pf-lic4'].forEach(function(id) { iuMount(id); });
+  iuMount('m-photos', { multiline: true });
+});
+
 /* ── 탭 전환 ── */
 function showTab(name, el) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
@@ -2640,6 +2721,29 @@ function ceItinSetRow(di, si, ri, field, value) {
   ceItinSetDays(days);
   ceItinRenderPreview();
 }
+function ceItinUploadImg(di, si, ri, btnEl) {
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'image/*';
+  fileInput.onchange = async () => {
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) return;
+    const orig = btnEl.textContent;
+    btnEl.textContent = '⏳'; btnEl.disabled = true;
+    try {
+      const url = await iuUploadImageFile(file);
+      const inputEl = btnEl.previousElementSibling;
+      if (inputEl) inputEl.value = url;
+      ceItinSetRow(di, si, ri, 'img', url);
+    } catch (err) {
+      console.error('사진 업로드 실패:', err);
+      alert('사진 업로드에 실패했습니다.\n\n' + (err && err.message ? err.message : err));
+    } finally {
+      btnEl.textContent = orig; btnEl.disabled = false;
+    }
+  };
+  fileInput.click();
+}
 function ceItinEsc(s) {
   return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
@@ -2668,7 +2772,10 @@ function ceItinRenderBuilder() {
               </label>
               <button type="button" onclick="ceItinDelRow(${di},${si},${ri})" style="background:none;border:none;color:#dc2626;font-size:14px;cursor:pointer;">✕</button>
             </div>
-            <input value="${ceItinEsc(row.img)}" oninput="ceItinSetRow(${di},${si},${ri},'img',this.value)" placeholder="사진 URL (선택, http로 시작)" style="width:100%;padding:5px 8px;border:1px dashed #d8ece2;border-radius:6px;font-size:11px;margin-bottom:6px;color:#6b7280;font-family:'Nunito',sans-serif;">
+            <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;">
+              <input value="${ceItinEsc(row.img)}" oninput="ceItinSetRow(${di},${si},${ri},'img',this.value)" placeholder="사진 URL (선택, http로 시작)" style="flex:1;padding:5px 8px;border:1px dashed #d8ece2;border-radius:6px;font-size:11px;color:#6b7280;font-family:'Nunito',sans-serif;">
+              <button type="button" onclick="ceItinUploadImg(${di},${si},${ri},this)" style="padding:5px 8px;background:#534AB7;color:#fff;border:none;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;">📤 올리기</button>
+            </div>
           `).join('')}
           <button type="button" onclick="ceItinAddRow(${di},${si})" style="padding:5px 10px;background:#f0f7f4;border:1px dashed #1D9E75;color:#1D9E75;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">+ 시간 추가</button>
         </div>
@@ -2747,7 +2854,27 @@ function ceBgColor(color) {
 }
 
 function ceInsertImg() {
-  const url = prompt('사진 URL을 입력하세요 (ImgBB Direct link):');
+  const useUpload = confirm('내 컴퓨터에서 사진을 선택해서 올리시겠어요?\n(취소를 누르면 사진 URL을 직접 입력할 수 있어요)');
+  if (useUpload) {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.onchange = async () => {
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) return;
+      try {
+        const url = await iuUploadImageFile(file);
+        _ceRestoreMain();
+        document.execCommand('insertHTML', false, `<img src="${url}" style="max-width:100%;border-radius:10px;margin:10px 0;display:block;" loading="lazy">`);
+      } catch (err) {
+        console.error('사진 업로드 실패:', err);
+        alert('사진 업로드에 실패했습니다.\n\n' + (err && err.message ? err.message : err));
+      }
+    };
+    fileInput.click();
+    return;
+  }
+  const url = prompt('사진 URL을 입력하세요:');
   if (!url) return;
   _ceRestoreMain();
   document.execCommand('insertHTML', false, `<img src="${url}" style="max-width:100%;border-radius:10px;margin:10px 0;display:block;" loading="lazy">`);
