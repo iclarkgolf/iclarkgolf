@@ -29,18 +29,18 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 /* 히어로 */
 .hero{min-height:260px;display:flex;align-items:flex-end;padding:70px 20px 24px;position:relative;overflow:hidden;}
 .hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#054535,#1D9E75);}
-.hero-img{position:absolute;inset:0;background-size:cover;background-position:center 45%;opacity:0.9;}
-.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.1) 100%);}
+.hero-img{position:absolute;inset:0;background-size:cover;background-position:center 45%;}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.42) 0%,rgba(0,0,0,0.04) 100%);}
 .hero-glow{position:absolute;right:-20px;top:-20px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.07);}
 .hero-line{position:absolute;left:0;top:0;bottom:0;width:4px;background:rgba(255,255,255,0.35);}
 .hero-content{position:relative;z-index:2;}
-.hero-tag{font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:.08em;margin-bottom:8px;}
-.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,8vw,46px);color:#fff;line-height:1.0;letter-spacing:.02em;text-shadow:0 2px 16px rgba(0,0,0,0.3);word-break:keep-all;}
+.hero-tag{font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:.08em;margin-bottom:8px;text-shadow:0 1px 6px rgba(0,0,0,0.5);}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,8vw,46px);color:#fff;line-height:1.0;letter-spacing:.02em;text-shadow:0 2px 16px rgba(0,0,0,0.45);word-break:keep-all;}
 .hero-subs{display:flex;align-items:center;gap:8px;margin-top:8px;}
-.hero-sub1{font-size:18px;font-weight:700;color:#fff;}
+.hero-sub1{font-size:18px;font-weight:700;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,0.5);}
 .hero-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.6);}
-.hero-sub2{font-size:18px;font-weight:300;color:rgba(255,255,255,0.85);}
-.hero-copy{font-size:13px;color:rgba(255,255,255,0.75);line-height:1.9;margin-top:12px;border-left:2px solid rgba(255,255,255,0.4);padding-left:12px;}
+.hero-sub2{font-size:18px;font-weight:300;color:rgba(255,255,255,0.85);text-shadow:0 1px 6px rgba(0,0,0,0.5);}
+.hero-copy{font-size:13px;color:rgba(255,255,255,0.75);line-height:1.9;margin-top:12px;border-left:2px solid rgba(255,255,255,0.4);padding-left:12px;text-shadow:0 1px 4px rgba(0,0,0,0.45);}
 
 /* 핵심 숫자 바 */
 .stats-bar{background:#fff;display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid #e5e7eb;}
@@ -331,7 +331,9 @@ import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.
 import { getFirestore, doc, getDoc, collection, addDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 const params = new URLSearchParams(location.search);
-const cardId = params.get('id') || 'card1';
+// window.__FIXED_PACKAGE_ID__는 검색엔진용 정적 패키지 페이지(package-<슬러그>.html)에서
+// 주소창에 ?id=가 없어도 어떤 패키지인지 알 수 있도록 빌드 스크립트가 미리 심어두는 값이다.
+const cardId = params.get('id') || window.__FIXED_PACKAGE_ID__ || 'card1';
 let PKG = null; // 현재 패키지 데이터 — 30초 위젯의 "예상 견적" 계산에 사용 (render()에서 채워짐)
 
 /* ── 한/영 번역 ── */
