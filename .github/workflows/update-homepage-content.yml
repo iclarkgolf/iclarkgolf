@@ -33,17 +33,22 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: node .github/scripts/build-package-pages.js
 
-      - name: rebuild sitemap.xml (새 패키지 페이지 포함)
+      - name: build lodging detail pages (검색엔진용 정적 페이지)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node .github/scripts/build-lodging-pages.js
+
+      - name: rebuild sitemap.xml (새 패키지/숙소 페이지 포함)
         run: node .github/scripts/build-sitemap.js
 
       - name: commit changes
         run: |
           git config user.name "iclarkgolf-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add index.html package-*.html packages-manifest.json sitemap.xml
+          git add index.html package-*.html packages-manifest.json lodging-*.html lodging-manifest.json sitemap.xml
           if git diff --cached --quiet; then
             echo "no changes"
           else
-            git commit -m "auto update homepage + package detail pages + sitemap"
+            git commit -m "auto update homepage + package/lodging detail pages + sitemap"
             git push
           fi
