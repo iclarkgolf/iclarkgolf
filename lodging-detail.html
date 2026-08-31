@@ -245,12 +245,15 @@ const DEFAULT_ACCOMS = [
     amenities:'수영장,조식,주차,WiFi,스파,풀바,레스토랑', photos:[], active:true }
 ];
 
-const accomId  = new URLSearchParams(location.search).get('id') || 'iclark';
-const allData  = (() => {
-  try { return JSON.parse(localStorage.getItem('iclark_accoms')) || DEFAULT_ACCOMS; }
-  catch(e) { return DEFAULT_ACCOMS; }
+const accomId  = new URLSearchParams(location.search).get('id') || window.__FIXED_ACCOM_ID__ || 'iclark';
+// 우선순위: ① admin이 남겨둔 localStorage 캐시(실제로 있을 때만) → ② 이 페이지 생성 시점에
+// Firestore에서 갓 가져온 최신 데이터(__FIXED_ACCOM_DATA__) → ③ 마지막 안전장치인 하드코딩 기본값
+const localData = (() => {
+  try { return JSON.parse(localStorage.getItem('iclark_accoms')); }
+  catch(e) { return null; }
 })();
-const accom = allData.find(a => a.id === accomId)
+const accom = (localData && localData.find(a => a.id === accomId))
+           || (window.__FIXED_ACCOM_DATA__ && window.__FIXED_ACCOM_DATA__.id === accomId ? window.__FIXED_ACCOM_DATA__ : null)
            || DEFAULT_ACCOMS.find(a => a.id === accomId);
 
 /* ────────────────────────────────
