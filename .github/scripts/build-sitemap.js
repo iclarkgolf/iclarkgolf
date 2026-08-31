@@ -98,6 +98,28 @@ function today() {
   return new Date().toISOString().slice(0, 10);
 }
 
+// ---------- 2-c. lodging-manifest.json에서 숙소 상세페이지 목록 읽기 ----------
+// (build-lodging-pages.js가 6시간마다 자동 생성 — 아직 한번도 안 돌았으면 빈 배열)
+const lodgingManifestPath = path.join(ROOT, 'lodging-manifest.json');
+let LODGINGS = [];
+if (fs.existsSync(lodgingManifestPath)) {
+  try {
+    LODGINGS = JSON.parse(fs.readFileSync(lodgingManifestPath, 'utf8'));
+  } catch (e) {
+    console.warn('lodging-manifest.json을 읽지 못했습니다 — 숙소 페이지는 사이트맵에서 생략합니다.');
+  }
+}
+const lodgingBlocks = LODGINGS
+  .map((l) =>
+    urlBlock({
+      loc: `/lodging-${l.slug}.html`,
+      lastmod: l.lastmod || today(),
+      changefreq: 'weekly',
+      priority: '0.6',
+    })
+  )
+  .join('\n');
+
 const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
@@ -114,6 +136,9 @@ ${urlBlock(STATIC_PAGES[6])}
 
   <!-- 패키지 상세페이지 (packages-manifest.json에서 자동 생성 — build-package-pages.js가 6시간마다 갱신) -->
 ${packageBlocks}
+
+  <!-- 숙소 상세페이지 (lodging-manifest.json에서 자동 생성 — build-lodging-pages.js가 6시간마다 갱신) -->
+${lodgingBlocks}
 
   <!-- 정보 페이지 -->
 ${urlBlock(STATIC_PAGES[7])}
