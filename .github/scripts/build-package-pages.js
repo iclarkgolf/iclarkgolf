@@ -112,7 +112,8 @@ function buildDetailHtml(card, allCardsForRelated) {
 <meta name="twitter:description" content="${escapeAttr(desc)}">
 <meta name="twitter:image" content="${escapeAttr(image)}">
 <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`;
-
+  // 동적 템플릿 전용 기본 설명·noindex 태그는 정적 페이지에서 제거(아래에서 실제 설명으로 대체)
+  html = html.replace(/\n<meta name="description"[^>]*>\n<meta name="robots" content="noindex, follow">/, '');
   html = html.replace(
     /<title>[^<]*<\/title>/,
     `<title>${escapeHtml(pageTitle)}</title>${headExtra}`
