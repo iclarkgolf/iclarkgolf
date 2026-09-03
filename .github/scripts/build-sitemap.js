@@ -33,8 +33,7 @@ const latestPostDate = toIsoDate(POSTS[0].date); // POSTS는 최신순으로 정
 // ---------- 2. sitemap.xml 생성 ----------
 const STATIC_PAGES = [
   { loc: '/', lastmod: '2026-06-21', changefreq: 'weekly', priority: '1.0' },
-  { loc: '/index.html', lastmod: '2026-06-21', changefreq: 'weekly', priority: '1.0' },
-  { loc: '/package-detail.html', lastmod: '2026-06-17', changefreq: 'weekly', priority: '0.5' },
+ 
   { loc: '/greenfee.html', lastmod: '2026-06-10', changefreq: 'monthly', priority: '0.5' },
   { loc: '/quote.html', lastmod: '2026-06-10', changefreq: 'monthly', priority: '0.5' },
   { loc: '/caddy.html', lastmod: '2026-06-10', changefreq: 'monthly', priority: '0.4' },
@@ -132,8 +131,6 @@ ${urlBlock(STATIC_PAGES[2])}
 ${urlBlock(STATIC_PAGES[3])}
 ${urlBlock(STATIC_PAGES[4])}
 ${urlBlock(STATIC_PAGES[5])}
-${urlBlock(STATIC_PAGES[6])}
-
   <!-- 패키지 상세페이지 (packages-manifest.json에서 자동 생성 — build-package-pages.js가 6시간마다 갱신) -->
 ${packageBlocks}
 
@@ -141,10 +138,8 @@ ${packageBlocks}
 ${lodgingBlocks}
 
   <!-- 정보 페이지 -->
+${urlBlock(STATIC_PAGES[6])}
 ${urlBlock(STATIC_PAGES[7])}
-${urlBlock(STATIC_PAGES[8])}
-${urlBlock(STATIC_PAGES[9])}
-
   <!-- 블로그 목록 -->
 ${blogHubBlock}
 
