@@ -1110,113 +1110,6 @@ footer {
   </a>
 </div>
 
-<!-- 프로필 섹션 -->
-<div id="profile-section" style="margin:28px 16px 0;background:#fff;border-radius:16px;border:1.5px solid #c8edd9;padding:20px;max-width:1100px;margin-left:auto;margin-right:auto;box-sizing:border-box;">
-  <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;">
-    <div id="pf-photo-wrap" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#1D9E75,#534AB7);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;overflow:hidden;">🏌️</div>
-    <div style="flex:1;min-width:0;">
-      <div id="pf-title-el" style="font-size:12px;font-weight:700;color:#1D9E75;margin-bottom:3px;letter-spacing:.05em;" data-i18n="profile.tag">PGAP MEMBER · CLUB PRO</div>
-      <div id="pf-name-el" style="font-size:14px;font-weight:600;color:#18181b;margin-bottom:5px;">장수남 · Paulo Jang</div>
-      <div id="pf-meta" style="font-size:13px;color:#4b5563;line-height:1.9;">
-        <div data-i18n="profile.location">📍 Clark, Pampanga, Philippines</div>
-        <div data-i18n="profile.cert">🏆 PGAP Member #0507 · GAB Senior Touring Pro</div>
-        <div data-i18n="profile.career">⛳ Beverly C.C (2016~) → Pradera Verde 클럽 프로 (2024~)</div>
-        <div data-i18n="profile.lang">💬 한국어 · English</div>
-      </div>
-      <div id="pf-bio-el" style="font-size:14px;color:#374151;margin-top:8px;line-height:1.8;">
-        1988년 대학을 졸업하고 해외 여행업계에 입사했습니다. 이듬해인 1989년부터 1995년까지 한국 주니어 골프 유망주들을 위한 호주 골프캠프를 운영했는데, 지금은 이름만 대면 다 아는 유능한 프로들이 이 캠프에서 함께 훈련했습니다.
-        <span id="pf-bio-more" style="display:none;"> 2000년 마닐라를 거점으로, 골프 붐을 타고 태국·베트남·말레이시아 등지를 오가며 전지훈련 캠프를 계속 운영했습니다. 2005년 클락으로 거처를 옮겼고, 이듬해인 2006년 다섯 번째 도전 끝에 필리핀골프협회(PGAP) 퀄리파잉을 통과해 필리핀에서 본격적으로 프로로 활동을 시작했습니다. 이후 마닐라 빌라모어 골프클럽(파사이시 소재 공군기지 내 골프장)에서 일하다가 2012년부터는 앙헬레스와 클락에서 활동하며 지금까지 이 지역을 지키고 있습니다. 2016년 베버리 컨트리클럽 9홀이 문을 열던 때부터 그곳에서 일을 시작했습니다. 이후 프라데라 컨트리클럽이 새로 생기면서 한동안 베버리와 프라데라를 오가며 일했고, 2024년 정식으로 프라데라 컨트리클럽 클럽 프로가 되어 지금까지 활동하고 있습니다.<br><br>마닐라에서 클락까지 가는 고속도로(NLEX)가 지금보다 훨씬 좁던 시절, 클락에서 수빅까지는 고속도로가 아예 없어 국도(맥아더 하이웨이)로 2시간 30분이 걸리던 시절부터 이 길을 다녔습니다. NLEX는 2003~2005년 확장 공사를 거쳐 지금의 넓은 다차선 도로가 됐고, 클락과 수빅을 잇는 고속도로(SCTEX)는 2005년 착공해 2008년 개통되면서 그 2시간 30분 거리가 40분대로 줄었습니다. 두 고속도로가 놓이는 과정을 두 눈으로 직접 지켜보며 클락 지역이 발전해 온 역사를 함께 겪었습니다.<br><br>다른 건 몰라도 클락의 문화와 골프에 관한 모든 것만큼은 이 홈페이지에 자신 있게 담아두고 싶습니다. 제가 살아온 하루하루를 적어두는 일이기도 하고, 나중에 이곳의 역사로 남을 수도 있는 기록이라고 생각하기 때문입니다.</span>
-        <button onclick="(function(){var m=document.getElementById('pf-bio-more');var b=document.getElementById('pf-bio-btn');if(m.style.display==='none'){m.style.display='inline';b.textContent='접기 ▲';}else{m.style.display='none';b.textContent='더 보기 ▼';}})()" id="pf-bio-btn" style="background:none;border:none;color:#1D9E75;font-size:12px;font-weight:800;cursor:pointer;padding:14px 4px;margin:-14px -4px -14px 0px;font-family:'Nunito',sans-serif;display:inline-block;">더 보기 ▼</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 자격증 사진 (가로 스크롤) -->
-  <div id="pf-licenses" style="display:none;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;"></div>
-
-  <!-- 문의하기 버튼 -->
-  <a id="pf-kakao-btn" href="https://pf.kakao.com/_nbHKX/chat" target="_blank"
-     style="display:flex;align-items:center;justify-content:center;width:100%;background:linear-gradient(135deg,#1D9E75,#534AB7);color:#fff;border:none;border-radius:100px;padding:14px 20px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;text-decoration:none;min-height:50px;box-sizing:border-box;">
-    <span data-i18n="profile.btn">💬 문의하기</span>
-  </a>
-
-  <!-- SNS 링크 -->
-  <div id="pf-sns" style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;"></div>
-</div>
-
-<script type="module">
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-(async function() {
-  const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
-  let pf = {};
-  try {
-    const app = getApps().find(a=>a.name==='profile') || initializeApp(cfg,'profile');
-    const db = getFirestore(app);
-    const snap = await getDoc(doc(db, 'settings', 'profile'));
-    if (snap.exists()) pf = snap.data();
-    else pf = JSON.parse(localStorage.getItem('iclark_profile') || '{}'); // 아직 Firestore에 저장된 적 없으면 예전 방식 폴백
-  } catch(e) {
-    console.error('프로필 불러오기 실패:', e);
-    pf = JSON.parse(localStorage.getItem('iclark_profile') || '{}');
-  }
-  const isEn = (localStorage.getItem('clarkgo_lang') || 'kr') === 'en';
-
-  // 이름
-  if (pf.nameKo || pf.nameEn) {
-    const n = isEn
-      ? [pf.nameEn, pf.nameKo].filter(Boolean).join(' · ')
-      : [pf.nameKo, pf.nameEn].filter(Boolean).join(' · ');
-    document.getElementById('pf-name-el').textContent = n;
-  }
-  // 직책
-  if (pf.title) document.getElementById('pf-title-el').textContent = pf.title;
-  // 소개글
-  if (pf.bio) document.getElementById('pf-bio-el').textContent = pf.bio;
-  // 프로필 사진
-  if (pf.photo) {
-    const wrap = document.getElementById('pf-photo-wrap');
-    wrap.innerHTML = `<img src="${pf.photo}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">`;
-  }
-  // 자격증 사진 (가로 스크롤)
-  const lics = [pf.lic1, pf.lic2, pf.lic3, pf.lic4].filter(Boolean);
-  if (lics.length) {
-    const box = document.getElementById('pf-licenses');
-    box.style.display = 'grid';
-    box.innerHTML = lics.map(u =>
-      `<img src="${u}" style="width:100%;aspect-ratio:1/1;border-radius:10px;object-fit:cover;box-shadow:0 2px 8px rgba(0,0,0,.12);" loading="lazy" onerror="this.style.display='none'">`
-    ).join('');
-  }
-  // 카카오 버튼
-  if (pf.kakao) document.getElementById('pf-kakao-btn').href = pf.kakao;
-
-  // SNS 버튼 (URL 있는 것만 표시)
-  const TRANS = {
-    kr: { kakao:'💛 카카오 채널', naver:'🟢 네이버 카페', insta:'📷 Instagram', youtube:'▶️ YouTube', openchat:'💬 오픈채팅' },
-    en: { kakao:'💛 KakaoTalk',   naver:'🟢 Naver Cafe',  insta:'📷 Instagram', youtube:'▶️ YouTube', openchat:'💬 Open Chat' }
-  };
-  const lang = isEn ? 'en' : 'kr';
-  const T = TRANS[lang];
-  const snsList = [
-    { key:'kakao',    url: pf.kakao    || 'https://pf.kakao.com/_nbHKX/chat', bg:'#FEE500', color:'#3A1D1D' },
-    { key:'naver',    url: pf.naver    || 'https://cafe.naver.com/polojang',  bg:'#03C75A', color:'#fff' },
-    { key:'insta',    url: pf.insta,    bg:'#E1306C', color:'#fff' },
-    { key:'youtube',  url: pf.youtube,  bg:'#FF0000', color:'#fff' },
-    { key:'openchat', url: pf.openchat, bg:'#FEE500', color:'#3A1D1D' },
-  ];
-  const sns = document.getElementById('pf-sns');
-  snsList.forEach(b => {
-    if (!b.url) return;
-    const a = document.createElement('a');
-    a.href = b.url; a.target = '_blank';
-    a.textContent = T[b.key];
-    a.style.cssText = `flex:1;min-width:calc(50% - 4px);display:flex;align-items:center;justify-content:center;padding:10px 8px;background:${b.bg};color:${b.color};border-radius:10px;text-decoration:none;font-size:12px;font-weight:800;box-sizing:border-box;`;
-    sns.appendChild(a);
-  });
-})();
-</script>
-
 <!-- 골프 패키지 -->
 <div class="section" id="packages">
   <div class="sec-head">
@@ -1793,6 +1686,113 @@ try {
     </a>
   </div>
 </div>
+
+<!-- 프로필 섹션 -->
+<div id="profile-section" style="margin:28px 16px 0;background:#fff;border-radius:16px;border:1.5px solid #c8edd9;padding:20px;max-width:1100px;margin-left:auto;margin-right:auto;box-sizing:border-box;">
+  <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;">
+    <div id="pf-photo-wrap" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#1D9E75,#534AB7);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;overflow:hidden;">🏌️</div>
+    <div style="flex:1;min-width:0;">
+      <div id="pf-title-el" style="font-size:12px;font-weight:700;color:#1D9E75;margin-bottom:3px;letter-spacing:.05em;" data-i18n="profile.tag">PGAP MEMBER · CLUB PRO</div>
+      <div id="pf-name-el" style="font-size:14px;font-weight:600;color:#18181b;margin-bottom:5px;">장수남 · Paulo Jang</div>
+      <div id="pf-meta" style="font-size:13px;color:#4b5563;line-height:1.9;">
+        <div data-i18n="profile.location">📍 Clark, Pampanga, Philippines</div>
+        <div data-i18n="profile.cert">🏆 PGAP Member #0507 · GAB Senior Touring Pro</div>
+        <div data-i18n="profile.career">⛳ Beverly C.C (2016~) → Pradera Verde 클럽 프로 (2024~)</div>
+        <div data-i18n="profile.lang">💬 한국어 · English</div>
+      </div>
+      <div id="pf-bio-el" style="font-size:14px;color:#374151;margin-top:8px;line-height:1.8;">
+        1988년 대학을 졸업하고 해외 여행업계에 입사했습니다. 이듬해인 1989년부터 1995년까지 한국 주니어 골프 유망주들을 위한 호주 골프캠프를 운영했는데, 지금은 이름만 대면 다 아는 유능한 프로들이 이 캠프에서 함께 훈련했습니다.
+        <span id="pf-bio-more" style="display:none;"> 2000년 마닐라를 거점으로, 골프 붐을 타고 태국·베트남·말레이시아 등지를 오가며 전지훈련 캠프를 계속 운영했습니다. 2005년 클락으로 거처를 옮겼고, 이듬해인 2006년 다섯 번째 도전 끝에 필리핀골프협회(PGAP) 퀄리파잉을 통과해 필리핀에서 본격적으로 프로로 활동을 시작했습니다. 이후 마닐라 빌라모어 골프클럽(파사이시 소재 공군기지 내 골프장)에서 일하다가 2012년부터는 앙헬레스와 클락에서 활동하며 지금까지 이 지역을 지키고 있습니다. 2016년 베버리 컨트리클럽 9홀이 문을 열던 때부터 그곳에서 일을 시작했습니다. 이후 프라데라 컨트리클럽이 새로 생기면서 한동안 베버리와 프라데라를 오가며 일했고, 2024년 정식으로 프라데라 컨트리클럽 클럽 프로가 되어 지금까지 활동하고 있습니다.<br><br>마닐라에서 클락까지 가는 고속도로(NLEX)가 지금보다 훨씬 좁던 시절, 클락에서 수빅까지는 고속도로가 아예 없어 국도(맥아더 하이웨이)로 2시간 30분이 걸리던 시절부터 이 길을 다녔습니다. NLEX는 2003~2005년 확장 공사를 거쳐 지금의 넓은 다차선 도로가 됐고, 클락과 수빅을 잇는 고속도로(SCTEX)는 2005년 착공해 2008년 개통되면서 그 2시간 30분 거리가 40분대로 줄었습니다. 두 고속도로가 놓이는 과정을 두 눈으로 직접 지켜보며 클락 지역이 발전해 온 역사를 함께 겪었습니다.<br><br>다른 건 몰라도 클락의 문화와 골프에 관한 모든 것만큼은 이 홈페이지에 자신 있게 담아두고 싶습니다. 제가 살아온 하루하루를 적어두는 일이기도 하고, 나중에 이곳의 역사로 남을 수도 있는 기록이라고 생각하기 때문입니다.</span>
+        <button onclick="(function(){var m=document.getElementById('pf-bio-more');var b=document.getElementById('pf-bio-btn');if(m.style.display==='none'){m.style.display='inline';b.textContent='접기 ▲';}else{m.style.display='none';b.textContent='더 보기 ▼';}})()" id="pf-bio-btn" style="background:none;border:none;color:#1D9E75;font-size:12px;font-weight:800;cursor:pointer;padding:14px 4px;margin:-14px -4px -14px 0px;font-family:'Nunito',sans-serif;display:inline-block;">더 보기 ▼</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 자격증 사진 (가로 스크롤) -->
+  <div id="pf-licenses" style="display:none;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;"></div>
+
+  <!-- 문의하기 버튼 -->
+  <a id="pf-kakao-btn" href="https://pf.kakao.com/_nbHKX/chat" target="_blank"
+     style="display:flex;align-items:center;justify-content:center;width:100%;background:linear-gradient(135deg,#1D9E75,#534AB7);color:#fff;border:none;border-radius:100px;padding:14px 20px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;text-decoration:none;min-height:50px;box-sizing:border-box;">
+    <span data-i18n="profile.btn">💬 문의하기</span>
+  </a>
+
+  <!-- SNS 링크 -->
+  <div id="pf-sns" style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;"></div>
+</div>
+
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+(async function() {
+  const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+  let pf = {};
+  try {
+    const app = getApps().find(a=>a.name==='profile') || initializeApp(cfg,'profile');
+    const db = getFirestore(app);
+    const snap = await getDoc(doc(db, 'settings', 'profile'));
+    if (snap.exists()) pf = snap.data();
+    else pf = JSON.parse(localStorage.getItem('iclark_profile') || '{}'); // 아직 Firestore에 저장된 적 없으면 예전 방식 폴백
+  } catch(e) {
+    console.error('프로필 불러오기 실패:', e);
+    pf = JSON.parse(localStorage.getItem('iclark_profile') || '{}');
+  }
+  const isEn = (localStorage.getItem('clarkgo_lang') || 'kr') === 'en';
+
+  // 이름
+  if (pf.nameKo || pf.nameEn) {
+    const n = isEn
+      ? [pf.nameEn, pf.nameKo].filter(Boolean).join(' · ')
+      : [pf.nameKo, pf.nameEn].filter(Boolean).join(' · ');
+    document.getElementById('pf-name-el').textContent = n;
+  }
+  // 직책
+  if (pf.title) document.getElementById('pf-title-el').textContent = pf.title;
+  // 소개글
+  if (pf.bio) document.getElementById('pf-bio-el').textContent = pf.bio;
+  // 프로필 사진
+  if (pf.photo) {
+    const wrap = document.getElementById('pf-photo-wrap');
+    wrap.innerHTML = `<img src="${pf.photo}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">`;
+  }
+  // 자격증 사진 (가로 스크롤)
+  const lics = [pf.lic1, pf.lic2, pf.lic3, pf.lic4].filter(Boolean);
+  if (lics.length) {
+    const box = document.getElementById('pf-licenses');
+    box.style.display = 'grid';
+    box.innerHTML = lics.map(u =>
+      `<img src="${u}" style="width:100%;aspect-ratio:1/1;border-radius:10px;object-fit:cover;box-shadow:0 2px 8px rgba(0,0,0,.12);" loading="lazy" onerror="this.style.display='none'">`
+    ).join('');
+  }
+  // 카카오 버튼
+  if (pf.kakao) document.getElementById('pf-kakao-btn').href = pf.kakao;
+
+  // SNS 버튼 (URL 있는 것만 표시)
+  const TRANS = {
+    kr: { kakao:'💛 카카오 채널', naver:'🟢 네이버 카페', insta:'📷 Instagram', youtube:'▶️ YouTube', openchat:'💬 오픈채팅' },
+    en: { kakao:'💛 KakaoTalk',   naver:'🟢 Naver Cafe',  insta:'📷 Instagram', youtube:'▶️ YouTube', openchat:'💬 Open Chat' }
+  };
+  const lang = isEn ? 'en' : 'kr';
+  const T = TRANS[lang];
+  const snsList = [
+    { key:'kakao',    url: pf.kakao    || 'https://pf.kakao.com/_nbHKX/chat', bg:'#FEE500', color:'#3A1D1D' },
+    { key:'naver',    url: pf.naver    || 'https://cafe.naver.com/polojang',  bg:'#03C75A', color:'#fff' },
+    { key:'insta',    url: pf.insta,    bg:'#E1306C', color:'#fff' },
+    { key:'youtube',  url: pf.youtube,  bg:'#FF0000', color:'#fff' },
+    { key:'openchat', url: pf.openchat, bg:'#FEE500', color:'#3A1D1D' },
+  ];
+  const sns = document.getElementById('pf-sns');
+  snsList.forEach(b => {
+    if (!b.url) return;
+    const a = document.createElement('a');
+    a.href = b.url; a.target = '_blank';
+    a.textContent = T[b.key];
+    a.style.cssText = `flex:1;min-width:calc(50% - 4px);display:flex;align-items:center;justify-content:center;padding:10px 8px;background:${b.bg};color:${b.color};border-radius:10px;text-decoration:none;font-size:12px;font-weight:800;box-sizing:border-box;`;
+    sns.appendChild(a);
+  });
+})();
+</script>
 
 <!-- 사이트맵 -->
 <div class="sitemap-card">
