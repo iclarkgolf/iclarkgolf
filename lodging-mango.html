@@ -208,7 +208,7 @@ body { font-family: 'Nunito', sans-serif; background: #f4faf7; color: var(--text
   
     <span class="type-badge hotel">호텔</span>
     <div class="detail-stars">★★★★☆</div>
-    <div class="detail-name">망고 스위트</div>
+    <h1 class="detail-name">망고 스위트</h1>
     <div class="detail-loc">📍 <span>시티센터, 앙헬레스 / 클락 도심 1.9km</span></div>
 
     <div class="price-box"><div class="price-main">$29<sub>/박~</sub></div>
@@ -379,7 +379,7 @@ function renderBody() {
   document.getElementById('body-wrap').innerHTML = `
     <span class="type-badge ${isLocal?'local':'hotel'}">${isLocal?'전지훈련 전용':'호텔'}</span>
     ${stars ? `<div class="detail-stars">${stars}</div>` : ''}
-    <div class="detail-name">${accom.name}</div>
+    <h1 class="detail-name">${accom.name}</h1>
     <div class="detail-loc">📍 <span>${accom.location}</span></div>
 
     <div class="price-box">${priceBlock}</div>

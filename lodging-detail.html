@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>숙소 상세 — iCLARKGOLF</title>
 <meta name="description" content="필리핀 클락 추천 숙소 상세 정보. iCLARKGOLF가 엄선한 숙소를 확인하고 견적을 바로 만들어보세요.">
+<meta name="robots" content="noindex, follow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
@@ -342,7 +343,7 @@ function renderBody() {
   document.getElementById('body-wrap').innerHTML = `
     <span class="type-badge ${isLocal?'local':'hotel'}">${isLocal?'전지훈련 전용':'호텔'}</span>
     ${stars ? `<div class="detail-stars">${stars}</div>` : ''}
-    <div class="detail-name">${accom.name}</div>
+    <h1 class="detail-name">${accom.name}</h1>
     <div class="detail-loc">📍 <span>${accom.location}</span></div>
 
     <div class="price-box">${priceBlock}</div>
