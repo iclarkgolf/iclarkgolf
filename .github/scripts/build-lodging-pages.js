@@ -93,7 +93,7 @@ function renderBodyHtml(accom) {
   return `
     <span class="type-badge ${isLocal ? 'local' : 'hotel'}">${isLocal ? '전지훈련 전용' : '호텔'}</span>
     ${stars ? `<div class="detail-stars">${stars}</div>` : ''}
-    <div class="detail-name">${escapeHtml(accom.name)}</div>
+    <h1 class="detail-name">${escapeHtml(accom.name)}</h1>
     <div class="detail-loc">📍 <span>${escapeHtml(accom.location)}</span></div>
 
     <div class="price-box">${priceBlock}</div>
@@ -156,7 +156,8 @@ function buildDetailHtml(accom, photos) {
 <meta name="twitter:description" content="${escapeAttr(desc)}">
 <meta name="twitter:image" content="${escapeAttr(image)}">
 <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`;
-
+  // 동적 템플릿 전용 noindex 태그는 정적 페이지에서 제거
+  html = html.replace(/\n<meta name="robots" content="noindex, follow">/, '');
   html = html.replace(
     /<title>[^<]*<\/title>\n<meta name="description"[^>]*>/,
     `<title>${escapeHtml(title)}</title>${headExtra}`
