@@ -4065,9 +4065,10 @@ async function loadWebInquiries() {
     // 페이지(card1 등) → 패키지 이름 매핑 (실패해도 문의 목록 표시에는 영향 없음)
     try {
       const cardSnap = await getDocs(collection(db, 'package_cards'));
-      const map = {};
-      cardSnap.docs.forEach(cd => { const c = cd.data() || {}; map[cd.id] = [c.titleEn, c.sub1, c.sub2].filter(Boolean).join(' '); });
+      const map = {}, accomMap = {};
+      cardSnap.docs.forEach(cd => { const c = cd.data() || {}; map[cd.id] = [c.titleEn, c.sub1, c.sub2].filter(Boolean).join(' '); if (c.accomName) accomMap[cd.id] = c.accomName; });
       window._webInquiryCardNames = map;
+      window._webInquiryCardAccom = accomMap; // 견적서 자동 채움용(숙소명)
     } catch(e) { console.warn('패키지 카드 이름 매핑 실패(무시):', e); }
 
     if (_webInquiryUnsubscribe) { _webInquiryUnsubscribe(); _webInquiryUnsubscribe = null; }
@@ -4089,6 +4090,7 @@ async function loadWebInquiries() {
                <a href="tel:${phone}" style="background:#d1fae5;color:#065f46;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;text-decoration:none;">📞 전화</a>
              </div>`
           : '<span style="font-size:11px;color:#d1d5db;">연락처 없음</span>';
+        const quoteBtn = `<button onclick="wiToQuote('${d.id}')" title="이 문의 내용으로 견적서 작성 탭 자동 채우기" style="margin-top:4px;background:#1b4332;color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">📋 견적서</button>`;
         return `<tr>
           <td>${dateStr}</td>
           <td>${d.이름||'-'}</td>
@@ -4097,7 +4099,7 @@ async function loadWebInquiries() {
           <td>${d.시기||'-'}</td>
           <td>${d.페이지||'-'}${cardName}</td>
           <td>${d.연락처||'-'}</td>
-          <td>${contactBtns}</td>
+          <td>${contactBtns}${quoteBtn}</td>
           <td><span style="${statusStyle}padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;">${status}</span></td>
           <td><button onclick="deleteWebInquiry('${d.id}')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:16px;">🗑️</button></td>
         </tr>`;
@@ -4245,6 +4247,67 @@ function wiSmsResetTpl() {
   if (_wiSmsCur) document.getElementById('wi-sms-text').value = wiSmsBuild(_wiSmsCur);
 }
 
+/* ── 30초 문의 → 견적서 작성 탭 자동 채움 ── */
+function wiParsePersons(raw) {
+  const s = String(raw || '');
+  if (/혼자|1인|1명/.test(s)) return 1;
+  const m = s.match(/(\d+)/);
+  return m ? Math.max(1, parseInt(m[1], 10)) : 1;
+}
+function wiParseDuration(raw) {
+  const s = String(raw || '').trim();
+  if (!s || s === '-') return '';
+  const m = s.match(/(\d+)/);
+  if (!m) return s;
+  const days = parseInt(m[1], 10);
+  const more = /\+|이상/.test(s) ? ' 이상' : '';
+  return (days > 1 ? (days - 1) + '박 ' : '') + days + '일' + more;
+}
+function wiToQuote(docId) {
+  const d = (window._webInquiryDocs || []).find(x => x.id === docId);
+  if (!d) { alert('문의 정보를 찾을 수 없습니다. 화면을 새로고침 해주세요.'); return; }
+  const cardNames = window._webInquiryCardNames || {};
+  const cardAccom = window._webInquiryCardAccom || {};
+  const pkgId = d.페이지 || '';
+  const pkgName = (pkgId && cardNames[pkgId]) || pkgId || '-';
+  const dateStr = d.created?.toDate ? d.created.toDate().toLocaleString('ko-KR') : '-';
+
+  // 1) 견적서 작성 탭으로 이동 (qfInit 실행 → 폼·패키지 목록 준비)
+  const tabBtn = document.querySelector('.tab-btn[onclick*="quotemake"]');
+  showTab('quotemake', tabBtn);
+
+  // 2) 기본 정보 채우기 — 문의에 값이 있는 칸만 덮어씀
+  const set = (id, v) => { const e = document.getElementById(id); if (e && v) e.value = v; };
+  const nameEl = document.getElementById('qfName');
+  if (nameEl) nameEl.value = (d.이름 && d.이름 !== '-') ? d.이름 : ''; // 이름 없는 문의면 이전 값이 남지 않도록 비움
+  set('qfPersons', String(wiParsePersons(d.인원)));
+  set('qfDuration', wiParseDuration(d.기간));
+  if (pkgId && cardAccom[pkgId]) set('qfAccom', cardAccom[pkgId]);
+  // 도착일 칸엔 손님이 고른 시기를 힌트로 (예: "겨울 (예상)") — 날짜 확정되면 PJ가 고쳐 씀
+  if (d.시기 && d.시기 !== '-') set('qfCheckin', d.시기 + ' (예상)');
+
+  // 3) 일정표(아이티너리) 패키지 선택 — 목록이 아직 로드 중이면 data-pending으로 넘김(qfLoadPackages가 이어받음)
+  const pkgSel = document.getElementById('qfPackage');
+  if (pkgSel && pkgId) {
+    pkgSel.setAttribute('data-pending', pkgId);
+    if (typeof _qfPackageMap !== 'undefined' && _qfPackageMap[pkgId]) pkgSel.value = pkgId;
+  }
+
+  // 4) 어디서 가져왔는지 배너 표시(저장되지 않는 안내용) — 연락처는 여기서만 보여줌
+  const banner = document.getElementById('qfFromInquiry');
+  if (banner) {
+    banner.innerHTML =
+      `<div style="font-weight:800;color:#1b4332;margin-bottom:4px;">📩 30초 문의 내용으로 자동 채웠습니다</div>` +
+      `<div style="font-size:12.5px;color:#374151;line-height:1.6;"><b>${d.이름 || '이름 없음'}</b> · ${d.연락처 || '연락처 없음'} · ${dateStr}<br>` +
+      `${pkgName} · ${d.기간 || '-'} · ${d.인원 || '-'} · ${d.시기 || '-'}</div>` +
+      `<div style="font-size:11.5px;color:#6b7280;margin-top:6px;">도착일·출발일·항목 수량은 확인 후 고쳐 쓰고, 아래 "견적서 저장" 버튼을 누르세요.</div>` +
+      `<button onclick="document.getElementById('qfFromInquiry').style.display='none'" style="position:absolute;top:8px;right:10px;background:none;border:none;font-size:16px;color:#9ca3af;cursor:pointer;">✕</button>`;
+    banner.style.display = 'block';
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (typeof showToast === 'function') showToast('📋 ' + (d.이름 || '문의') + ' 정보로 견적서 폼을 채웠습니다', 'info');
+}
+
 async function deleteWebInquiry(docId) {
   if (!confirm('이 문의 기록을 삭제할까요? 되돌릴 수 없습니다.')) return;
   try {
@@ -4342,6 +4405,7 @@ async function loadVisitorStats() {
 <div class="panel" id="panel-quotemake">
   <div class="mgmt-card">
     <div class="mgmt-title">📋 견적서 작성 &amp; 고객 링크 공유</div>
+    <div id="qfFromInquiry" style="display:none;position:relative;background:#FEF9C3;border:1.5px solid #fde68a;border-radius:10px;padding:12px 36px 12px 16px;margin-bottom:12px;"></div>
     <div id="qfRateInfo" style="background:#eaf3ee;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#1b4332;font-weight:600;"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
       <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">고객명</label><input type="text" id="qfName" placeholder="홍길동" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
