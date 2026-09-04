@@ -1487,11 +1487,40 @@ window.adminLogout = function() {
     </div>
     <div class="tbl-wrap">
       <table class="tbl">
-        <thead><tr><th>날짜</th><th>이름</th><th>기간</th><th>인원</th><th>시기</th><th>페이지</th><th>연락처</th><th>상태</th><th>삭제</th></tr></thead>
+        <thead><tr><th>날짜</th><th>이름</th><th>기간</th><th>인원</th><th>시기</th><th>페이지</th><th>연락처</th><th>연락하기</th><th>상태</th><th>삭제</th></tr></thead>
         <tbody id="web-inquiry-body">
-          <tr><td colspan="9" style="text-align:center;color:#9ca3af;padding:20px;">불러오는 중... ⏳</td></tr>
+          <tr><td colspan="10" style="text-align:center;color:#9ca3af;padding:20px;">불러오는 중... ⏳</td></tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- 30초 문의 → 손님에게 문자 보내기 모달 -->
+  <div id="wi-sms-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:16px;" onclick="if(event.target===this)closeWiSms()">
+    <div style="background:#fff;border-radius:16px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,0.25);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <div style="font-size:16px;font-weight:800;color:#18181b;">📱 손님에게 문자 보내기</div>
+        <button onclick="closeWiSms()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#9ca3af;">✕</button>
+      </div>
+      <div id="wi-sms-info" style="font-size:12px;color:#6b7280;margin-bottom:10px;line-height:1.6;"></div>
+      <textarea id="wi-sms-text" style="width:100%;min-height:190px;padding:12px;border:1.5px solid #e5e7eb;border-radius:10px;font-family:inherit;font-size:14px;line-height:1.6;resize:vertical;box-sizing:border-box;"></textarea>
+      <div style="font-size:11px;color:#9ca3af;margin:6px 0 12px;">보내기 전에 위 내용을 자유롭게 고치셔도 됩니다.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <button onclick="wiSmsSend()" style="grid-column:1/-1;background:#534AB7;color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;">📱 문자앱 열어서 보내기</button>
+        <button onclick="wiSmsCopy()" style="background:#f4f4f5;color:#18181b;border:none;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;">📋 문자 내용 복사</button>
+        <button onclick="wiSmsCall()" style="background:#d1fae5;color:#065f46;border:none;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;">📞 전화 걸기</button>
+      </div>
+      <div style="margin-top:14px;border-top:1px dashed #e5e7eb;padding-top:10px;">
+        <button onclick="wiSmsToggleTpl()" style="background:none;border:none;color:#534AB7;font-size:12px;font-weight:700;cursor:pointer;padding:0;">✏️ 기본 문안 바꾸기 ▾</button>
+        <div id="wi-sms-tpl-box" style="display:none;margin-top:8px;">
+          <div style="font-size:11px;color:#6b7280;margin-bottom:6px;line-height:1.6;">아래 문안이 새 문의마다 자동으로 채워집니다. <b>{이름}</b> <b>{패키지}</b> <b>{기간}</b> <b>{인원}</b> <b>{시기}</b> 자리에는 손님이 고른 내용이 자동으로 들어갑니다.</div>
+          <textarea id="wi-sms-tpl" style="width:100%;min-height:150px;padding:10px;border:1.5px solid #e5e7eb;border-radius:10px;font-family:inherit;font-size:13px;line-height:1.6;resize:vertical;box-sizing:border-box;"></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <button onclick="wiSmsSaveTpl()" style="flex:1;background:#1D9E75;color:#fff;border:none;border-radius:8px;padding:10px;font-size:12px;font-weight:700;cursor:pointer;">💾 기본 문안으로 저장</button>
+            <button onclick="wiSmsResetTpl()" style="background:#f4f4f5;color:#6b7280;border:none;border-radius:8px;padding:10px 12px;font-size:12px;font-weight:700;cursor:pointer;">처음 문안으로 되돌리기</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -4010,11 +4039,19 @@ let _webInquiryDB = null; // 삭제 함수에서 재사용
 async function loadWebInquiries() {
   const body = document.getElementById('web-inquiry-body');
   if (!body) return;
-  body.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:#9ca3af;">불러오는 중... ⏳</td></tr>';
+  body.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:20px;color:#9ca3af;">불러오는 중... ⏳</td></tr>';
   try {
     const db = await initCardDB(); // 패키지 카드와 같은 Firebase 프로젝트(iclarkgolf) 재사용
     _webInquiryDB = db;
-    const { collection, query, orderBy, onSnapshot } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const { collection, query, orderBy, onSnapshot, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+
+    // 페이지(card1 등) → 패키지 이름 매핑 (실패해도 문의 목록 표시에는 영향 없음)
+    try {
+      const cardSnap = await getDocs(collection(db, 'package_cards'));
+      const map = {};
+      cardSnap.docs.forEach(cd => { const c = cd.data() || {}; map[cd.id] = [c.titleEn, c.sub1, c.sub2].filter(Boolean).join(' '); });
+      window._webInquiryCardNames = map;
+    } catch(e) { console.warn('패키지 카드 이름 매핑 실패(무시):', e); }
 
     if (_webInquiryUnsubscribe) { _webInquiryUnsubscribe(); _webInquiryUnsubscribe = null; }
 
@@ -4022,27 +4059,128 @@ async function loadWebInquiries() {
     _webInquiryUnsubscribe = onSnapshot(q, (snap) => {
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       window._webInquiryDocs = docs; // 전체 삭제용
+      const cardNames = window._webInquiryCardNames || {};
       body.innerHTML = docs.length ? docs.map(d => {
         const dateStr = d.created?.toDate ? d.created.toDate().toLocaleString('ko-KR') : '-';
         const status = d.상태 || '선택중';
         const statusStyle = status === '카카오이동' ? 'background:#d1fae5;color:#065f46;' : (status === '선택완료' ? 'background:#FEF9C3;color:#92400e;' : 'background:#f4f4f5;color:#6b7280;');
+        const cardName = d.페이지 && cardNames[d.페이지] ? `<div style="font-size:10px;color:#9ca3af;white-space:nowrap;">${cardNames[d.페이지]}</div>` : '';
+        const phone = wiCleanPhone(d.연락처);
+        const contactBtns = phone
+          ? `<div style="display:flex;gap:4px;white-space:nowrap;">
+               <button onclick="openWiSms('${d.id}')" style="background:#534AB7;color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;">📱 문자</button>
+               <a href="tel:${phone}" style="background:#d1fae5;color:#065f46;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;text-decoration:none;">📞 전화</a>
+             </div>`
+          : '<span style="font-size:11px;color:#d1d5db;">연락처 없음</span>';
         return `<tr>
           <td>${dateStr}</td>
           <td>${d.이름||'-'}</td>
           <td>${d.기간||'-'}</td>
           <td>${d.인원||'-'}</td>
           <td>${d.시기||'-'}</td>
-          <td>${d.페이지||'-'}</td>
+          <td>${d.페이지||'-'}${cardName}</td>
           <td>${d.연락처||'-'}</td>
+          <td>${contactBtns}</td>
           <td><span style="${statusStyle}padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;">${status}</span></td>
           <td><button onclick="deleteWebInquiry('${d.id}')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:16px;">🗑️</button></td>
         </tr>`;
-      }).join('') : '<tr><td colspan="9" style="text-align:center;color:#9ca3af;padding:20px;">아직 수집된 웹 문의가 없습니다</td></tr>';
+      }).join('') : '<tr><td colspan="10" style="text-align:center;color:#9ca3af;padding:20px;">아직 수집된 웹 문의가 없습니다</td></tr>';
     });
   } catch(e) {
     console.error('웹 문의 로드 실패:', e);
-    body.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#dc2626;padding:20px;">⚠️ 로드 실패 — Firebase 확인 필요</td></tr>';
+    body.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#dc2626;padding:20px;">⚠️ 로드 실패 — Firebase 확인 필요</td></tr>';
   }
+}
+
+/* ── 30초 문의 → 손님에게 문자 보내기 ── */
+const WI_SMS_DEFAULT_TPL = `안녕하세요, iCLARKGOLF 장수남 프로입니다.
+{이름}홈페이지에서 클락 골프 전지훈련({패키지} · {기간} · {인원} · {시기}) 문의를 남겨주셔서 연락드립니다.
+원하시는 출발 시기와 인원을 알려주시면 맞춤 견적을 카톡으로 보내드리겠습니다.
+카카오톡 상담: https://pf.kakao.com/_nbHKX/chat`;
+let _wiSmsCur = null; // 현재 모달에 띄운 문의 {phone, ...}
+
+function wiCleanPhone(raw) {
+  const digits = String(raw || '').replace(/[^0-9+]/g, '');
+  return digits.length >= 9 ? digits : '';
+}
+function wiSmsGetTpl() {
+  try { return localStorage.getItem('wi_sms_template') || WI_SMS_DEFAULT_TPL; } catch(e) { return WI_SMS_DEFAULT_TPL; }
+}
+function wiSmsBuild(d) {
+  const cardNames = window._webInquiryCardNames || {};
+  const name = (d.이름 && d.이름 !== '-') ? d.이름 + '님, ' : '';
+  const pkg = (d.페이지 && cardNames[d.페이지]) || d.페이지 || '패키지';
+  return wiSmsGetTpl()
+    .replace(/\{이름\}/g, name)
+    .replace(/\{패키지\}/g, pkg)
+    .replace(/\{기간\}/g, d.기간 || '-')
+    .replace(/\{인원\}/g, d.인원 || '-')
+    .replace(/\{시기\}/g, d.시기 || '-');
+}
+function openWiSms(docId) {
+  const d = (window._webInquiryDocs || []).find(x => x.id === docId);
+  if (!d) { alert('문의 정보를 찾을 수 없습니다. 화면을 새로고침 해주세요.'); return; }
+  const phone = wiCleanPhone(d.연락처);
+  if (!phone) { alert('이 문의에는 연락처가 없습니다.'); return; }
+  _wiSmsCur = { ...d, phone };
+  const cardNames = window._webInquiryCardNames || {};
+  const dateStr = d.created?.toDate ? d.created.toDate().toLocaleString('ko-KR') : '-';
+  document.getElementById('wi-sms-info').innerHTML =
+    `<b>${d.이름 || '이름 없음'}</b> · ${d.연락처}<br>` +
+    `${dateStr} · ${(d.페이지 && cardNames[d.페이지]) || d.페이지 || '-'} · ${d.기간||'-'} · ${d.인원||'-'} · ${d.시기||'-'}`;
+  document.getElementById('wi-sms-text').value = wiSmsBuild(d);
+  document.getElementById('wi-sms-tpl').value = wiSmsGetTpl();
+  document.getElementById('wi-sms-tpl-box').style.display = 'none';
+  document.getElementById('wi-sms-modal').style.display = 'flex';
+}
+function closeWiSms() {
+  document.getElementById('wi-sms-modal').style.display = 'none';
+  _wiSmsCur = null;
+}
+function wiSmsSend() {
+  if (!_wiSmsCur) return;
+  const text = document.getElementById('wi-sms-text').value.trim();
+  if (!text) { alert('문자 내용이 비어 있습니다.'); return; }
+  // iOS는 sms:번호&body= , 안드로이드는 sms:번호?body= 형식
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const sep = isIOS ? '&' : '?';
+  const url = `sms:${_wiSmsCur.phone}${sep}body=${encodeURIComponent(text)}`;
+  window.location.href = url;
+  // PC(문자앱 없음)일 때를 위한 안내 — 내용은 자동 복사
+  setTimeout(() => {
+    if (typeof showToast === 'function') showToast('문자앱이 안 열리면 "문자 내용 복사" 후 폰에서 붙여넣기 하세요', 'info');
+  }, 1500);
+}
+async function wiSmsCopy() {
+  const text = document.getElementById('wi-sms-text').value;
+  try {
+    await navigator.clipboard.writeText(text);
+    if (typeof showToast === 'function') showToast('📋 문자 내용이 복사되었습니다'); else alert('복사되었습니다.');
+  } catch(e) {
+    const ta = document.getElementById('wi-sms-text'); ta.focus(); ta.select();
+    try { document.execCommand('copy'); if (typeof showToast === 'function') showToast('📋 문자 내용이 복사되었습니다'); } catch(e2) { alert('복사에 실패했습니다. 직접 드래그해서 복사해 주세요.'); }
+  }
+}
+function wiSmsCall() {
+  if (!_wiSmsCur) return;
+  window.location.href = 'tel:' + _wiSmsCur.phone;
+}
+function wiSmsToggleTpl() {
+  const box = document.getElementById('wi-sms-tpl-box');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+}
+function wiSmsSaveTpl() {
+  const tpl = document.getElementById('wi-sms-tpl').value;
+  if (!tpl.trim()) { alert('문안이 비어 있습니다.'); return; }
+  try { localStorage.setItem('wi_sms_template', tpl); } catch(e) {}
+  if (_wiSmsCur) document.getElementById('wi-sms-text').value = wiSmsBuild(_wiSmsCur);
+  if (typeof showToast === 'function') showToast('💾 기본 문안이 저장되었습니다'); else alert('저장되었습니다.');
+}
+function wiSmsResetTpl() {
+  if (!confirm('처음 문안으로 되돌릴까요?')) return;
+  try { localStorage.removeItem('wi_sms_template'); } catch(e) {}
+  document.getElementById('wi-sms-tpl').value = WI_SMS_DEFAULT_TPL;
+  if (_wiSmsCur) document.getElementById('wi-sms-text').value = wiSmsBuild(_wiSmsCur);
 }
 
 async function deleteWebInquiry(docId) {
