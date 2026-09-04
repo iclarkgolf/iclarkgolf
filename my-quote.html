@@ -441,7 +441,9 @@ window.verifyAndShow = async function() {
       return;
     }
     // 가장 최근 견적서 표시
-    const docs = snap.docs.sort((a,b) => (b.data().createdAt||0) - (a.data().createdAt||0));
+    // 최신 견적서 고르기 — createdAt이 ISO 문자열이라 숫자 빼기로는 정렬이 안 됨(항상 NaN) → 날짜로 바꿔 비교
+    const ts = d => { const c = d.createdAt; if (!c) return 0; if (c.toDate) return c.toDate().getTime(); const t = new Date(c).getTime(); return isNaN(t) ? 0 : t; };
+    const docs = snap.docs.sort((a,b) => ts(b.data()) - ts(a.data()));
     quoteData = docs[0].data();
   }
 
