@@ -4508,19 +4508,19 @@ async function loadVisitorStats() {
   .q2-row input[type=checkbox]{width:18px;height:18px;margin-top:3px;cursor:pointer;}
   .q2-name{font-size:13.5px;font-weight:700;color:#1b4332;}
   .q2-note{font-size:11px;color:#6b7280;margin-top:1px;}
-  .q2-calc{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px;align-items:end;}
+  .q2-calc{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-top:8px;align-items:end;}
   .q2-calc label{font-size:10px;font-weight:700;color:#9ca3af;display:block;margin-bottom:2px;}
   .q2-calc input{width:100%;border:1.5px solid #e0d8ce;border-radius:6px;padding:6px 8px;font-size:13px;text-align:right;box-sizing:border-box;}
   .q2-calc input[readonly]{background:#f3f4f6;color:#6b7280;}
   .q2-amt{font-size:14px;font-weight:800;color:#1b4332;text-align:right;}
   .q2-amt small{display:block;font-size:10px;font-weight:600;color:#9ca3af;}
   .q2-extra{font-size:11px;color:#b45309;margin-top:4px;}
-  .q2-add{display:grid;grid-template-columns:2fr 1fr 60px 40px;gap:6px;margin-top:8px;align-items:center;}
+  .q2-add{display:grid;grid-template-columns:2fr 1fr 60px 60px 40px;gap:6px;margin-top:8px;align-items:center;}
   .q2-add input{border:1.5px solid #e0d8ce;border-radius:6px;padding:7px 8px;font-size:13px;box-sizing:border-box;width:100%;}
   .q2-add button{background:#1D9E75;color:#fff;border:none;border-radius:8px;padding:8px 0;font-size:16px;font-weight:800;cursor:pointer;}
   .q2-del{background:none;border:none;color:#dc2626;font-size:15px;cursor:pointer;padding:0 4px;}
   .q2-total{background:#0d1f17;border-radius:12px;padding:16px 18px;margin:14px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
-  @media(max-width:600px){ .q2-grid{grid-template-columns:1fr 1fr;} .q2-calc{grid-template-columns:1fr 1fr 1fr;} .q2-add{grid-template-columns:1fr 1fr 50px 40px;} }
+  @media(max-width:600px){ .q2-grid{grid-template-columns:1fr 1fr;} .q2-calc{grid-template-columns:1fr 1fr 1fr 1fr;} .q2-add{grid-template-columns:1fr 1fr 50px 50px 40px;} }
 </style>
 
   <div class="q2-card">
@@ -4779,7 +4779,7 @@ function q2RenderGolf(){
       +'<input type="checkbox" id="q2g-on-'+g.id+'" '+(on?'checked':'')+' onchange="q2GolfToggle(\''+g.id+'\')">'
       +'<div><div class="q2-name">'+q2Esc(g.name)+' <span style="font-weight:400;color:#6b7280;font-size:11px;">비수기 ₱'+Number(g.weekday).toLocaleString()+' · 성수기 ₱'+gfPeakWeekday(g).toLocaleString()+' (주중)</span></div>'
       +(extras?'<div class="q2-extra">현지 별도: '+extras+'</div>':'')
-      +'<div class="q2-calc" id="q2g-calc-'+g.id+'" style="display:'+(on?'grid':'none')+';">'
+      +'<div class="q2-calc" id="q2g-calc-'+g.id+'" style="display:'+(on?'grid':'none')+';grid-template-columns:1fr 1fr 1fr;">'
       +'<div><label>그린피 ₱/인·라운드</label><input type="number" id="q2g-php-'+g.id+'" value="'+(on?Q2.golf[g.id].php:q2SeasonFee(g))+'" min="0" oninput="this.dataset.manual=1;q2Recalc()"></div>'
       +'<div><label>라운드</label><input type="number" id="q2g-r-'+g.id+'" value="'+(on?Q2.golf[g.id].rounds:1)+'" min="1" oninput="q2Recalc()"></div>'
       +'<div class="q2-amt" id="q2g-amt-'+g.id+'">$0<small>× 골퍼 '+q2Golfers()+'명</small></div>'
@@ -4814,35 +4814,37 @@ function q2RenderSections(){
         +'<div class="q2-calc" id="q2i-calc-'+q2Esc(key)+'" style="display:'+(on?'grid':'none')+';">'
         +'<div><label>단가 ₱/'+q2Esc(it.unit||'회')+'</label><input type="number" id="q2i-php-'+q2Esc(key)+'" value="'+(on?Q2.items[key].php:q2U2P(it.price))+'" min="0" oninput="q2Recalc()"></div>'
         +'<div><label>수량</label><input type="number" id="q2i-q-'+q2Esc(key)+'" value="'+(on?Q2.items[key].qty:1)+'" min="1" oninput="q2Recalc()"></div>'
-        +'<div class="q2-amt" id="q2i-amt-'+q2Esc(key)+'">$0'+(it.perPerson?'<small>× 인원 '+(q2Golfers()+q2NonGolfers())+'명</small>':'')+'</div>'
+        +'<div><label>인원</label><input type="number" id="q2i-m-'+q2Esc(key)+'" value="'+(on?Q2.items[key].mult:(it.perPerson?(q2Golfers()+q2NonGolfers()):1))+'" min="1" oninput="this.dataset.manual=1;q2Recalc()"></div>'
+        +'<div class="q2-amt" id="q2i-amt-'+q2Esc(key)+'">$0</div>'
         +'</div></div></div>';
     }).join('');
     var customs=Q2.custom.map(function(c,i){ if(c.section!==sec.key) return '';
       return '<div class="q2-row on" style="grid-template-columns:1fr auto;"><div><div class="q2-name">✍️ '+q2Esc(c.name)+' <span style="font-weight:400;color:#6b7280;font-size:11px;">직접 추가</span></div>'
         +'<div class="q2-calc"><div><label>단가 ₱</label><input type="number" value="'+c.php+'" min="0" oninput="Q2.custom['+i+'].php=parseFloat(this.value)||0;q2Recalc()"></div>'
         +'<div><label>수량</label><input type="number" value="'+c.qty+'" min="1" oninput="Q2.custom['+i+'].qty=Math.max(1,parseFloat(this.value)||1);q2Recalc()"></div>'
+        +'<div><label>인원</label><input type="number" value="'+(c.mult||1)+'" min="1" oninput="Q2.custom['+i+'].mult=Math.max(1,parseFloat(this.value)||1);q2Recalc()"></div>'
         +'<div class="q2-amt" id="q2c-amt-'+i+'">$0</div></div></div>'
         +'<button class="q2-del" onclick="Q2.custom.splice('+i+',1);q2RenderSections();q2Recalc()" title="삭제">✕</button></div>';
     }).join('');
     return '<div class="q2-card"><div class="q2-title">'+sec.label+' <small>맞춤견적 항목 탭과 동일</small></div>'+rows+customs
-      +'<div class="q2-add"><input placeholder="직접 추가: 항목명 (예: 전용차량 하루)" id="q2add-name-'+sec.key+'"><input type="number" placeholder="₱ 단가" id="q2add-php-'+sec.key+'"><input type="number" placeholder="수량" value="1" min="1" id="q2add-q-'+sec.key+'"><button onclick="q2AddCustom(\''+sec.key+'\')" title="추가">＋</button></div>'
+      +'<div class="q2-add"><input placeholder="직접 추가: 항목명 (예: 전용차량 하루)" id="q2add-name-'+sec.key+'"><input type="number" placeholder="₱ 단가" id="q2add-php-'+sec.key+'"><input type="number" placeholder="수량" value="1" min="1" id="q2add-q-'+sec.key+'" title="수량"><input type="number" placeholder="인원" value="1" min="1" id="q2add-m-'+sec.key+'" title="인원"><button onclick="q2AddCustom(\''+sec.key+'\')" title="추가">＋</button></div>'
       +'</div>';
   }).join('');
 }
 function q2ItemToggle(secKey,itemId){
   var key=secKey+'|'+itemId, on=document.getElementById('q2i-on-'+key).checked;
   var sec=q2SectionDefs().find(function(s){return s.key===secKey;}); var it=sec&&sec.items.find(function(x){return String(x.id)===String(itemId);});
-  if(on&&it){ Q2.items[key]={ sectionKey:secKey, sectionLabel:sec.label, id:it.id, name:it.name, icon:it.icon||'', unit:it.unit||'회', perPerson:!!it.perPerson, php:q2Num('q2i-php-'+key,q2U2P(it.price)), qty:Math.max(1,q2Num('q2i-q-'+key,1)) }; }
+  if(on&&it){ Q2.items[key]={ sectionKey:secKey, sectionLabel:sec.label, id:it.id, name:it.name, icon:it.icon||'', unit:it.unit||'회', perPerson:!!it.perPerson, php:q2Num('q2i-php-'+key,q2U2P(it.price)), qty:Math.max(1,q2Num('q2i-q-'+key,1)), mult:Math.max(1,q2Num('q2i-m-'+key,it.perPerson?(q2Golfers()+q2NonGolfers()):1)) }; }
   else delete Q2.items[key];
   document.getElementById('q2i-row-'+key).classList.toggle('on',on);
   document.getElementById('q2i-calc-'+key).style.display=on?'grid':'none';
   q2Recalc();
 }
 function q2AddCustom(secKey){
-  var name=q2Val('q2add-name-'+secKey), php=q2Num('q2add-php-'+secKey,0), qty=Math.max(1,q2Num('q2add-q-'+secKey,1));
+  var name=q2Val('q2add-name-'+secKey), php=q2Num('q2add-php-'+secKey,0), qty=Math.max(1,q2Num('q2add-q-'+secKey,1)), mult=Math.max(1,q2Num('q2add-m-'+secKey,1));
   if(!name){ alert('항목명을 입력하세요.'); return; }
   var sec=q2SectionDefs().find(function(s){return s.key===secKey;});
-  Q2.custom.push({ section:secKey, sectionLabel:sec?sec.label:'추가 항목', name:name, php:php, qty:qty });
+  Q2.custom.push({ section:secKey, sectionLabel:sec?sec.label:'추가 항목', name:name, php:php, qty:qty, mult:mult });
   q2RenderSections(); q2Recalc();
 }
 
@@ -4869,10 +4871,13 @@ function q2Recalc(){
   // 항목
   Object.keys(Q2.items).forEach(function(key){
     var it=Q2.items[key]; it.php=q2Num('q2i-php-'+key,it.php); it.qty=Math.max(1,q2Num('q2i-q-'+key,1));
-    var m=it.perPerson?pax:1; var amt=q2P2U(it.php*it.qty*m); it.amountUsd=amt; total+=amt;
-    var a=document.getElementById('q2i-amt-'+key); if(a) a.innerHTML=q2Fmt$(amt)+'<small>'+(it.perPerson?'× 인원 '+pax+'명 · ':'')+q2FmtP(it.php*it.qty*m)+'</small>';
+    var mEl=document.getElementById('q2i-m-'+key);
+    if(mEl&&it.perPerson&&!mEl.dataset.manual) mEl.value=pax; // 인원수 배수 항목은 골퍼/비골퍼 바꾸면 따라감(손으로 고치기 전까지)
+    var m=Math.max(1,q2Num('q2i-m-'+key,it.perPerson?pax:1)); it.mult=m;
+    var amt=q2P2U(it.php*it.qty*m); it.amountUsd=amt; total+=amt;
+    var a=document.getElementById('q2i-amt-'+key); if(a) a.innerHTML=q2Fmt$(amt)+'<small>'+it.qty+' × '+m+'명 · '+q2FmtP(it.php*it.qty*m)+'</small>';
   });
-  Q2.custom.forEach(function(c,i){ var amt=q2P2U(c.php*c.qty); c.amountUsd=amt; total+=amt; var a=document.getElementById('q2c-amt-'+i); if(a) a.innerHTML=q2Fmt$(amt)+'<small>'+q2FmtP(c.php*c.qty)+'</small>'; });
+  Q2.custom.forEach(function(c,i){ var m=Math.max(1,Number(c.mult)||1); var amt=q2P2U(c.php*c.qty*m); c.amountUsd=amt; total+=amt; var a=document.getElementById('q2c-amt-'+i); if(a) a.innerHTML=q2Fmt$(amt)+'<small>'+c.qty+' × '+m+'명 · '+q2FmtP(c.php*c.qty*m)+'</small>'; });
   // 합계
   var r=_qfGetR();
   total=Math.round(total*100)/100;
@@ -4892,9 +4897,9 @@ function q2BuildDoc(){
   var quoteNo=q2Val('q2No')||'QT-001';
   var golf=Object.keys(Q2.golf).map(function(id){ var s=Q2.golf[id], gf=gfData.find(function(x){return x.id===id;})||{};
     return { id:id, name:gf.name||id, php:s.php, usd:q2P2U(s.php), rounds:s.rounds, golfers:g, amountUsd:s.amountUsd, caddy:Number(gf.caddy)||0, cart:Number(gf.cart)||0 }; });
-  var items=Object.keys(Q2.items).map(function(k){ var it=Q2.items[k]; var m=it.perPerson?pax:1;
+  var items=Object.keys(Q2.items).map(function(k){ var it=Q2.items[k]; var m=Math.max(1,Number(it.mult)||1);
     return { section:it.sectionKey, sectionLabel:it.sectionLabel, id:String(it.id), name:it.name, icon:it.icon, unit:it.unit, php:it.php, usd:q2P2U(it.php), qty:it.qty, perPerson:it.perPerson, pax:m, amountUsd:it.amountUsd, custom:false }; })
-    .concat(Q2.custom.map(function(c){ return { section:c.section, sectionLabel:c.sectionLabel, id:'', name:c.name, icon:'✍️', unit:'', php:c.php, usd:q2P2U(c.php), qty:c.qty, perPerson:false, pax:1, amountUsd:c.amountUsd, custom:true }; }));
+    .concat(Q2.custom.map(function(c){ return { section:c.section, sectionLabel:c.sectionLabel, id:'', name:c.name, icon:'✍️', unit:'', php:c.php, usd:q2P2U(c.php), qty:c.qty, perPerson:(Number(c.mult)||1)>1, pax:Math.max(1,Number(c.mult)||1), amountUsd:c.amountUsd, custom:true }; }));
   var hotel=Q2.hotel?{ id:Q2.hotel.id, name:Q2.hotel.name, type:Q2.hotel.type, php:Q2.hotel.php, usd:q2P2U(Q2.hotel.php), nights:Q2.hotel.nights, mult:Q2.hotel.mult, multLabel:Q2.hotel.multLabel, amountUsd:Q2.hotel.amountUsd }:null;
   var nights=q2Nights();
   return {
@@ -4976,9 +4981,11 @@ function q2Prefill(p){
     (p.golf||[]).forEach(function(x){ var g=q2FindCourse(x.id,x.name); if(!g) return; Q2.golf[g.id]={ php:x.php||q2SeasonFee(g), rounds:Math.max(1,Number(x.rounds)||1) }; });
     // 항목
     (p.items||[]).forEach(function(x){ var f=q2FindItem(x.id,x.name); if(!f) { if(x.name) Q2.custom.push({section:'extras',sectionLabel:'🍽️ 식사 · 기타 서비스',name:x.name,php:x.php||0,qty:Math.max(1,Number(x.qty)||1)}); return; }
-      Q2.items[f.sec.key+'|'+f.item.id]={ sectionKey:f.sec.key, sectionLabel:f.sec.label, id:f.item.id, name:f.item.name, icon:f.item.icon||'', unit:f.item.unit||'회', perPerson:!!f.item.perPerson, php:x.php||q2U2P(f.item.price), qty:Math.max(1,Number(x.qty)||1) }; });
-    (p.custom||[]).forEach(function(c){ Q2.custom.push({section:c.section||'extras',sectionLabel:c.sectionLabel||'추가 항목',name:c.name,php:c.php||0,qty:Math.max(1,Number(c.qty)||1)}); });
-    q2RenderGolf(); q2RenderSections(); qfSeasonBadge(); q2Recalc();
+      Q2.items[f.sec.key+'|'+f.item.id]={ sectionKey:f.sec.key, sectionLabel:f.sec.label, id:f.item.id, name:f.item.name, icon:f.item.icon||'', unit:f.item.unit||'회', perPerson:!!f.item.perPerson, php:x.php||q2U2P(f.item.price), qty:Math.max(1,Number(x.qty)||1), mult:Math.max(1,Number(x.pax)||(f.item.perPerson?(q2Golfers()+q2NonGolfers()):1)) }; });
+    (p.custom||[]).forEach(function(c){ Q2.custom.push({section:c.section||'extras',sectionLabel:c.sectionLabel||'추가 항목',name:c.name,php:c.php||0,qty:Math.max(1,Number(c.qty)||1),mult:Math.max(1,Number(c.pax)||1)}); });
+    q2RenderGolf(); q2RenderSections();
+    Object.keys(Q2.items).forEach(function(k){ var e=document.getElementById('q2i-m-'+k); if(e) e.dataset.manual=1; }); // 불러온 인원 값 유지
+    qfSeasonBadge(); q2Recalc();
     if(p.bannerHtml){ var b=document.getElementById('qfFromInquiry'); if(b){ b.innerHTML=p.bannerHtml+'<button onclick="document.getElementById(\'qfFromInquiry\').style.display=\'none\'" style="position:absolute;top:8px;right:10px;background:none;border:none;font-size:16px;color:#9ca3af;cursor:pointer;">✕</button>'; b.style.display='block'; } }
     window.scrollTo({top:0,behavior:'smooth'});
   };
@@ -5000,8 +5007,8 @@ function qfLoad(){
       return q2Prefill({ clientName:d.clientName, contact:d.contact, checkIn:d.checkIn!=='-'?d.checkIn:'', checkOut:d.checkOut!=='-'?d.checkOut:'', nights:d.nights, golfers:d.golfers, nonGolfers:d.nonGolfers, season:d.season, packageId:d.itineraryPackageId, remarks:d.remarks,
         hotelId:d.hotel?d.hotel.id:'', hotelName:d.hotel?d.hotel.name:'', hotelPhp:d.hotel?d.hotel.php:0, hotelNights:d.hotel?d.hotel.nights:0,
         golf:(d.golf||[]).map(function(x){return {id:x.id,name:x.name,rounds:x.rounds,php:x.php};}),
-        items:(d.items||[]).filter(function(x){return !x.custom;}).map(function(x){return {id:x.id,name:x.name,qty:x.qty,php:x.php};}),
-        custom:(d.items||[]).filter(function(x){return x.custom;}).map(function(x){return {section:x.section,sectionLabel:x.sectionLabel,name:x.name,php:x.php,qty:x.qty};})
+        items:(d.items||[]).filter(function(x){return !x.custom;}).map(function(x){return {id:x.id,name:x.name,qty:x.qty,php:x.php,pax:x.pax};}),
+        custom:(d.items||[]).filter(function(x){return x.custom;}).map(function(x){return {section:x.section,sectionLabel:x.sectionLabel,name:x.name,php:x.php,qty:x.qty,pax:x.pax};})
       }).then(function(){ document.getElementById('q2No').value=d.quoteNo||''; document.getElementById('q2Doctype').value=d.docType||'견적서'; if(typeof showToast==='function') showToast('✅ '+d.clientName+' 견적서 불러오기 완료'); });
     }
     // 구버전(v1) 견적서 — 기본 정보만 가져오고 항목은 새 형식으로 다시 고름
