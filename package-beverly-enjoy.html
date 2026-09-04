@@ -345,6 +345,34 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
   <a href="quote.html" class="btn-quote" data-i18n="btn.quote">📋 맞춤 견적</a>
 </div>
 
+<!-- 2026-09-04: 새 문의 즉시 이메일 알림 (Web3Forms) — 설정은 admin.html "새 문의 이메일 알림"에서, 키는 Firestore settings/notify 에 저장 -->
+<script>
+window.iclarkNotifyNewLead = async function(lead){
+  try {
+    const cfgRes = await fetch('https://firestore.googleapis.com/v1/projects/iclarkgolf/databases/(default)/documents/settings/notify?key=AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU');
+    if (!cfgRes.ok) return;
+    const cfg = await cfgRes.json();
+    const f = (cfg && cfg.fields) || {};
+    const key = f.web3formsKey && f.web3formsKey.stringValue;
+    const enabled = !(f.enabled && f.enabled.booleanValue === false);
+    if (!key || !enabled) return;
+    const when = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+    const body = Object.assign({
+      access_key: key,
+      subject: '📩 [iCLARKGOLF] 새 문의 — ' + (lead['이름'] || '이름 없음') + (lead['연락처'] ? ' · ' + lead['연락처'] : ''),
+      from_name: 'iCLARKGOLF 새 문의 알림',
+      '접수시각': when,
+      '관리자 페이지': 'https://iclarkgolf.com/admin.html'
+    }, lead);
+    await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(body)
+    });
+  } catch(e) { console.warn('새 문의 알림 전송 실패(무시):', e); }
+};
+</script>
+
 <script type="module">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getFirestore, doc, getDoc, collection, addDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
@@ -696,6 +724,12 @@ const db  = getFirestore(app);
       saveFailed = true;
       console.error('문의 저장 실패:', err);
       try { if (window.gtag) gtag('event', 'pkg_save_failed', { 페이지: cardId, 오류: String(err && err.code || err) }); } catch(e2) {}
+    }
+
+    // 2026-09-04: 이름 또는 연락처를 남긴 실제 리드는 PJ에게 즉시 이메일 알림(전송 실패해도 손님 흐름에는 영향 없음)
+    if ((name || phone) && typeof window.iclarkNotifyNewLead === 'function') {
+      const pkgName = (PKG && [PKG.titleEn, PKG.sub1, PKG.sub2].filter(Boolean).join(' ')) || cardId;
+      window.iclarkNotifyNewLead({ '문의종류':'30초 간편 문의(패키지 페이지)', '이름':name||'', '연락처':phone||'', '패키지':pkgName+' ('+cardId+')', '기간':curDuration()||'', '인원':sel.party||'', '시기':sel.timing||'', 'Firestore 저장': saveFailed ? '실패(이 메일이 유일한 기록)' : '정상' });
     }
 
     // 요약 복사 후 카카오 채널 열기
