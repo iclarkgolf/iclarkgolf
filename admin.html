@@ -856,11 +856,19 @@ window.adminLogout = function() {
 <div class="panel" id="panel-greenfee">
   <div class="mgmt-card">
     <div class="mgmt-title">⛳ 골프장 요금 관리 <span>변경 후 저장 클릭</span></div>
+    <!-- 성수기 기간 설정 — 그린피만 성수기/비수기로 나뉨(캐디·카트는 연중 동일) -->
+    <div id="gf-peak-card" style="background:#FEF9C3;border:1.5px solid #fde68a;border-radius:12px;padding:12px 16px;margin-bottom:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+        <div style="font-size:13px;font-weight:800;color:#92400e;">🔥 성수기 기간 <span style="font-weight:400;font-size:11.5px;color:#a16207;">체크한 달은 견적서에 성수기 그린피가 자동 적용됩니다</span></div>
+        <button onclick="savePeakMonths()" style="padding:7px 14px;background:#92400e;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">💾 성수기 기간 저장</button>
+      </div>
+      <div id="gf-peak-months" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;"></div>
+    </div>
     <button onclick="saveAllGF()" style="width:100%;padding:12px;background:#1D9E75;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;margin-bottom:12px;">💾 전체 골프장 요금 한번에 저장 (Firebase 반영)</button>
     <div class="tbl-wrap">
       <table class="tbl" id="greenfee-tbl">
         <thead>
-          <tr><th>골프장</th><th>주중 판매가 (PHP)</th><th>주말 판매가 (PHP)</th><th>캐디 (PHP)</th><th>카트 (PHP)</th><th>저장</th><th>상세</th></tr>
+          <tr><th>골프장</th><th>비수기 주중 (PHP)</th><th>비수기 주말 (PHP)</th><th style="background:#92400e;">🔥 성수기 주중</th><th style="background:#92400e;">🔥 성수기 주말</th><th>캐디 (PHP)</th><th>카트 (PHP)</th><th>저장</th><th>상세</th></tr>
         </thead>
         <tbody id="greenfee-body">
           <!-- JS로 렌더링 -->
@@ -3282,13 +3290,79 @@ function getGreenfee() {
   return saved ? JSON.parse(saved) : DEFAULT_GREENFEE;
 }
 
-function renderGreenfeeTbl() {
+/* ── 성수기(그린피만) 설정 ── */
+const DEFAULT_PEAK_MONTHS = [11, 12, 1, 2];
+function getPeakMonths() {
+  try { const s = localStorage.getItem('iclark_peak_months'); if (s) { const a = JSON.parse(s); if (Array.isArray(a)) return a; } } catch(e) {}
+  return DEFAULT_PEAK_MONTHS.slice();
+}
+function isPeakMonth(m) { return getPeakMonths().includes(Number(m)); }
+function peakMonthsLabel() {
+  const ms = getPeakMonths().slice().sort((a,b)=>a-b);
+  return ms.length ? ms.map(m => m + '월').join('·') : '없음';
+}
+// 골프장 항목의 성수기 그린피 — 아직 입력 안 했으면 비수기 값과 동일하게 취급
+function gfPeakWeekday(g) { return (g.peakWeekday != null && g.peakWeekday !== '') ? Number(g.peakWeekday) : Number(g.weekday) || 0; }
+function gfPeakWeekend(g) { return (g.peakWeekend != null && g.peakWeekend !== '') ? Number(g.peakWeekend) : Number(g.weekend) || 0; }
+// settings/greenfee 문서 형태 — setDoc(덮어쓰기)라 성수기 기간도 항상 함께 넣어야 유실되지 않음
+function gfBuildDoc(data) { return { data: data, peakMonths: getPeakMonths(), updatedAt: new Date().toLocaleString('ko-KR') }; }
+
+function renderPeakMonths() {
+  const box = document.getElementById('gf-peak-months');
+  if (!box) return;
+  const cur = getPeakMonths();
+  box.innerHTML = Array.from({length:12}, (_, i) => i + 1).map(m =>
+    `<label style="display:inline-flex;align-items:center;gap:4px;background:${cur.includes(m)?'#92400e':'#fff'};color:${cur.includes(m)?'#fff':'#374151'};border:1.5px solid ${cur.includes(m)?'#92400e':'#e5e7eb'};border-radius:20px;padding:5px 11px;font-size:12.5px;font-weight:700;cursor:pointer;">
+       <input type="checkbox" class="gf-peak-m" value="${m}" ${cur.includes(m)?'checked':''} onchange="renderPeakMonthsPreview()" style="display:none;">${m}월</label>`
+  ).join('');
+}
+function renderPeakMonthsPreview() {
+  document.querySelectorAll('#gf-peak-months label').forEach(l => {
+    const on = l.querySelector('input').checked;
+    l.style.background = on ? '#92400e' : '#fff'; l.style.color = on ? '#fff' : '#374151'; l.style.borderColor = on ? '#92400e' : '#e5e7eb';
+  });
+}
+async function savePeakMonths() {
+  const ms = Array.from(document.querySelectorAll('.gf-peak-m:checked')).map(c => Number(c.value));
+  localStorage.setItem('iclark_peak_months', JSON.stringify(ms));
+  try {
+    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    const { getFirestore, doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+    const app = getApps().find(a=>a.name==='admin-auth') || initializeApp(cfg,'admin-auth');
+    await setDoc(doc(getFirestore(app), 'settings', 'greenfee'), { peakMonths: ms, updatedAt: new Date().toLocaleString('ko-KR') }, { merge: true });
+    showToast('🔥 성수기 기간 저장: ' + peakMonthsLabel());
+  } catch(e) { alert('❌ Firebase 저장 실패: ' + e.message + '\n(이 기기에는 저장되었습니다)'); }
+}
+
+// Firebase(settings/greenfee)의 최신 요금·성수기 기간을 이 기기로 가져옴 — 다른 기기에서 저장한 값도 보이게
+let _gfSynced = false;
+async function syncGreenfeeFromFirebase() {
+  if (_gfSynced) return; _gfSynced = true;
+  try {
+    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+    const app = getApps().find(a=>a.name==='admin-auth') || initializeApp(cfg,'admin-auth');
+    const snap = await getDoc(doc(getFirestore(app), 'settings', 'greenfee'));
+    if (!snap.exists()) return;
+    const d = snap.data() || {};
+    if (Array.isArray(d.data) && d.data.length) localStorage.setItem('iclark_greenfee', JSON.stringify(d.data));
+    if (Array.isArray(d.peakMonths)) localStorage.setItem('iclark_peak_months', JSON.stringify(d.peakMonths));
+  } catch(e) { console.warn('요금표 Firebase 동기화 실패(로컬 값 사용):', e.message); }
+}
+
+async function renderGreenfeeTbl() {
+  await syncGreenfeeFromFirebase();
+  renderPeakMonths();
   const data = getGreenfee();
   document.getElementById('greenfee-body').innerHTML = data.map(g => `
     <tr>
       <td style="font-weight:700;">${g.name}</td>
       <td><input type="number" value="${g.weekday}" id="gf-wd-${g.id}" style="width:90px;border:1px solid #c8edd9;border-radius:6px;padding:5px 8px;font-family:'Nunito',sans-serif;"></td>
       <td><input type="number" value="${g.weekend}" id="gf-we-${g.id}" style="width:90px;border:1px solid #c8edd9;border-radius:6px;padding:5px 8px;font-family:'Nunito',sans-serif;"></td>
+      <td style="background:#FEF9C3;"><input type="number" value="${gfPeakWeekday(g)}" id="gf-pwd-${g.id}" style="width:90px;border:1px solid #fde68a;border-radius:6px;padding:5px 8px;font-family:'Nunito',sans-serif;background:#fffbeb;"></td>
+      <td style="background:#FEF9C3;"><input type="number" value="${gfPeakWeekend(g)}" id="gf-pwe-${g.id}" style="width:90px;border:1px solid #fde68a;border-radius:6px;padding:5px 8px;font-family:'Nunito',sans-serif;background:#fffbeb;"></td>
       <td><input type="number" value="${g.caddy}"   id="gf-cd-${g.id}" style="width:80px;border:1px solid #c8edd9;border-radius:6px;padding:5px 8px;font-family:'Nunito',sans-serif;"></td>
       <td><input type="number" value="${g.cart}"    id="gf-ct-${g.id}" style="width:80px;border:1px solid #c8edd9;border-radius:6px;padding:5px 8px;font-family:'Nunito',sans-serif;"></td>
       <td><button class="btn-edit" onclick="saveOneGF('${g.id}')">저장</button></td>
@@ -3307,6 +3381,10 @@ async function saveAllGF() {
     const ct = document.getElementById('gf-ct-'+g.id);
     if (wd) g.weekday = parseInt(wd.value) || g.weekday;
     if (we) g.weekend = parseInt(we.value) || g.weekend;
+    const pwd = document.getElementById('gf-pwd-'+g.id);
+    const pwe = document.getElementById('gf-pwe-'+g.id);
+    if (pwd) g.peakWeekday = parseInt(pwd.value) || gfPeakWeekday(g);
+    if (pwe) g.peakWeekend = parseInt(pwe.value) || gfPeakWeekend(g);
     if (cd) g.caddy   = parseInt(cd.value) || g.caddy;
     if (ct) g.cart    = parseInt(ct.value) || g.cart;
   });
@@ -3317,7 +3395,7 @@ async function saveAllGF() {
     const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
     const app = getApps().find(a=>a.name==='admin-auth') || initializeApp(cfg,'admin-auth');
     const db = getFirestore(app);
-    await setDoc(doc(db, 'settings', 'greenfee'), { data: data, updatedAt: new Date().toLocaleString('ko-KR') });
+    await setDoc(doc(db, 'settings', 'greenfee'), gfBuildDoc(data));
     alert('✅ 전체 골프장 요금이 Firebase에 저장됐어요!\n모든 기기에 즉시 반영됩니다.');
   } catch(e) {
     alert('❌ Firebase 저장 실패: ' + e.message);
@@ -3330,6 +3408,8 @@ function saveOneGF(id) {
   if (idx >= 0) {
     data[idx].weekday = parseInt(document.getElementById('gf-wd-'+id).value) || 0;
     data[idx].weekend = parseInt(document.getElementById('gf-we-'+id).value) || 0;
+    data[idx].peakWeekday = parseInt(document.getElementById('gf-pwd-'+id).value) || 0;
+    data[idx].peakWeekend = parseInt(document.getElementById('gf-pwe-'+id).value) || 0;
     data[idx].caddy   = parseInt(document.getElementById('gf-cd-'+id).value) || 0;
     data[idx].cart    = parseInt(document.getElementById('gf-ct-'+id).value) || 0;
     localStorage.setItem('iclark_greenfee', JSON.stringify(data));
@@ -3341,7 +3421,7 @@ function saveOneGF(id) {
         const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
         const app = getApps().find(a=>a.name==='admin-auth') || initializeApp(cfg,'admin-auth');
         const db = getFirestore(app);
-        await setDoc(doc(db, 'settings', 'greenfee'), { data: data, updatedAt: new Date().toLocaleString('ko-KR') });
+        await setDoc(doc(db, 'settings', 'greenfee'), gfBuildDoc(data));
         alert('✅ ' + data[idx].name + ' 요금 저장됐어요!\n(모든 기기에 반영됩니다)');
       } catch(e) {
         alert('✅ ' + data[idx].name + ' 요금 저장됐어요! (로컬 저장)');
@@ -3437,7 +3517,7 @@ async function saveGfDetail() {
     const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
     const app = getApps().find(a=>a.name==='admin-auth') || initializeApp(cfg,'admin-auth');
     const db = getFirestore(app);
-    await setDoc(doc(db, 'settings', 'greenfee'), { data: data, updatedAt: new Date().toLocaleString('ko-KR') });
+    await setDoc(doc(db, 'settings', 'greenfee'), gfBuildDoc(data));
     alert('✅ ' + data[idx].name + ' 상세 정보가 저장됐어요!\n(요금표 페이지에 즉시 반영됩니다)');
     closeGfDetail();
   } catch(e) {
@@ -4285,6 +4365,11 @@ function wiToQuote(docId) {
   if (pkgId && cardAccom[pkgId]) set('qfAccom', cardAccom[pkgId]);
   // 도착일 칸엔 손님이 고른 시기를 힌트로 (예: "겨울 (예상)") — 날짜 확정되면 PJ가 고쳐 씀
   if (d.시기 && d.시기 !== '-') set('qfCheckin', d.시기 + ' (예상)');
+  // 시즌 자동 결정 — 겨울이면 성수기 그린피, 가을은 11월부터 성수기라 배너로 주의 표시
+  const seasonGuess = /겨울/.test(d.시기 || '') ? 'peak' : 'off';
+  const seasonNote = /가을/.test(d.시기 || '') ? '<div style="color:#b45309;font-weight:700;margin-top:4px;">⚠️ 가을 문의: 11월 출발이면 시즌을 "성수기"로 바꾸세요 (성수기: ' + peakMonthsLabel() + ')</div>'
+                   : (seasonGuess === 'peak' ? '<div style="color:#b45309;font-weight:700;margin-top:4px;">🔥 겨울 문의 → 성수기 그린피로 자동 설정됨</div>' : '');
+  if (typeof qfSetSeason === 'function') qfSetSeason(seasonGuess);
 
   // 3) 일정표(아이티너리) 패키지 선택 — 목록이 아직 로드 중이면 data-pending으로 넘김(qfLoadPackages가 이어받음)
   const pkgSel = document.getElementById('qfPackage');
@@ -4300,7 +4385,8 @@ function wiToQuote(docId) {
       `<div style="font-weight:800;color:#1b4332;margin-bottom:4px;">📩 30초 문의 내용으로 자동 채웠습니다</div>` +
       `<div style="font-size:12.5px;color:#374151;line-height:1.6;"><b>${d.이름 || '이름 없음'}</b> · ${d.연락처 || '연락처 없음'} · ${dateStr}<br>` +
       `${pkgName} · ${d.기간 || '-'} · ${d.인원 || '-'} · ${d.시기 || '-'}</div>` +
-      `<div style="font-size:11.5px;color:#6b7280;margin-top:6px;">도착일·출발일·항목 수량은 확인 후 고쳐 쓰고, 아래 "견적서 저장" 버튼을 누르세요.</div>` +
+      seasonNote +
+      `<div style="font-size:11.5px;color:#6b7280;margin-top:6px;">골프장을 고르면 그린피·캐디·카트가 요금표에서 자동 입력됩니다. 도착일·출발일·수량 확인 후 "견적서 저장" 버튼을 누르세요.</div>` +
       `<button onclick="document.getElementById('qfFromInquiry').style.display='none'" style="position:absolute;top:8px;right:10px;background:none;border:none;font-size:16px;color:#9ca3af;cursor:pointer;">✕</button>`;
     banner.style.display = 'block';
   }
@@ -4415,8 +4501,14 @@ async function loadVisitorStats() {
       <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">체류 기간</label><input type="text" id="qfDuration" placeholder="7박 8일" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
       <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">도착일</label><input type="text" id="qfCheckin" placeholder="2026-07-10 (예상일)" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
       <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">출발일</label><input type="text" id="qfCheckout" placeholder="2026-07-17 (예상일)" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
-      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">골프장</label><input type="text" id="qfCourse" value="프라데라 베르데" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
+      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">골프장 <span style="font-weight:400;color:#9ca3af;">(요금표에서 그린피·캐디·카트 자동 입력)</span></label>
+        <select id="qfCourseSel" onchange="qfCourseChanged()" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;margin-bottom:6px;"><option value="">직접 입력</option></select>
+        <input type="text" id="qfCourse" value="프라데라 베르데" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;">
+        <div id="qfCourseHint" style="font-size:11px;color:#6b7280;margin-top:4px;"></div></div>
       <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">숙소</label><input type="text" id="qfAccom" value="HOTEL & 숙소" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
+      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">시즌 <span id="qfSeasonMonths" style="font-weight:400;color:#9ca3af;"></span></label>
+        <select id="qfSeason" onchange="qfSeasonChanged()" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"><option value="off">비수기</option><option value="peak">🔥 성수기</option></select>
+        <div id="qfSeasonBadge" style="font-size:11.5px;font-weight:700;margin-top:4px;"></div></div>
       <div style="grid-column:1/-1;"><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">🗺️ 일정표(아이티너리) 첨부 — 패키지 상세페이지 일정표를 견적서에 그대로 넣어드려요</label><select id="qfPackage" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"><option value="">선택 안 함</option></select></div></div>
 
     </div>
@@ -4529,6 +4621,84 @@ function qfInit(){
   });
   qfUpdateTotal();
   qfLoadPackages();
+  qfSeasonInit();
+}
+
+// ── 골프장 드롭다운 + 시즌(성수기/비수기) → 요금표 연동 ──
+var _qfSeasonReady=false;
+function qfSeasonInit(){
+  var sm=document.getElementById('qfSeasonMonths');
+  var ci=document.getElementById('qfCheckin');
+  if(ci && !ci._qfSeasonBound){ ci._qfSeasonBound=true; ci.addEventListener('input',function(){ var s=qfDetectSeason(ci.value); if(s) qfSetSeason(s); }); }
+  var p=(typeof syncGreenfeeFromFirebase==='function')?syncGreenfeeFromFirebase():Promise.resolve();
+  p.then(function(){
+    if(sm) sm.textContent='(성수기: '+peakMonthsLabel()+')';
+    qfFillCourses();
+    _qfSeasonReady=true;
+    // 먼저 선택돼 있던 시즌(30초 문의에서 넘어온 경우)을 요금에 반영
+    qfApplyCoursePrices();
+    qfSeasonBadge();
+  });
+}
+function qfFillCourses(){
+  var sel=document.getElementById('qfCourseSel');
+  if(!sel) return;
+  var data=(typeof getGreenfee==='function')?getGreenfee():[];
+  var cur=(document.getElementById('qfCourse')||{}).value||'';
+  var pending=sel.getAttribute('data-pending')||'';
+  var opts='<option value="">직접 입력</option>';
+  data.forEach(function(g){ opts+='<option value="'+g.id+'">'+g.name+'</option>'; });
+  sel.innerHTML=opts;
+  var match=pending ? data.find(function(g){return g.id===pending;}) : null;
+  if(!match && cur) match=data.find(function(g){ return cur.indexOf(g.name)>=0 || g.name.indexOf(cur)>=0; });
+  if(match) sel.value=match.id;
+  qfCourseHint();
+}
+function qfSelectedCourse(){
+  var sel=document.getElementById('qfCourseSel');
+  if(!sel||!sel.value) return null;
+  return (getGreenfee()||[]).find(function(g){return g.id===sel.value;})||null;
+}
+function qfCourseChanged(){
+  var g=qfSelectedCourse();
+  if(g) document.getElementById('qfCourse').value=g.name;
+  qfApplyCoursePrices(); qfCourseHint();
+}
+function qfSeasonChanged(){ qfApplyCoursePrices(); qfSeasonBadge(); qfCourseHint(); }
+function qfGetSeason(){ var s=document.getElementById('qfSeason'); return (s&&s.value==='peak')?'peak':'off'; }
+function qfSetSeason(s){ var e=document.getElementById('qfSeason'); if(!e) return; e.value=(s==='peak')?'peak':'off'; qfSeasonChanged(); }
+// 도착일 칸 내용(2026-12-10 / 12월 / 겨울 등)에서 시즌 추정 — 못 알아내면 null
+function qfDetectSeason(text){
+  var t=String(text||'');
+  var m=t.match(/(\d{4})\s*[-./년]\s*(\d{1,2})/) || t.match(/(^|[^\d])(\d{1,2})\s*월/);
+  var month=m ? parseInt(m[m.length-1],10) : 0;
+  if(month>=1&&month<=12) return isPeakMonth(month)?'peak':'off';
+  if(/겨울/.test(t)) return 'peak';
+  if(/여름|봄/.test(t)) return 'off';
+  return null;
+}
+function qfApplyCoursePrices(){
+  var g=qfSelectedCourse();
+  if(!g) return;
+  var peak=qfGetSeason()==='peak';
+  var fee=peak?gfPeakWeekday(g):Number(g.weekday)||0;
+  var set=function(k,v){ var e=document.getElementById('qfp_'+k); if(e){ e.value=v; qfU(k);} };
+  set('greenfee',fee); set('caddy',Number(g.caddy)||0); set('cart',Number(g.cart)||0);
+  qfUpdateTotal();
+}
+function qfCourseHint(){
+  var h=document.getElementById('qfCourseHint'); if(!h) return;
+  var g=qfSelectedCourse();
+  if(!g){ h.textContent=''; return; }
+  var peak=qfGetSeason()==='peak';
+  h.innerHTML='비수기 주중 ₱'+Number(g.weekday).toLocaleString()+' · 주말 ₱'+Number(g.weekend).toLocaleString()
+    +' &nbsp;|&nbsp; 🔥 성수기 주중 ₱'+gfPeakWeekday(g).toLocaleString()+' · 주말 ₱'+gfPeakWeekend(g).toLocaleString()
+    +'<br><b style="color:'+(peak?'#b45309':'#1b4332')+';">→ 그린피에 '+(peak?'성수기':'비수기')+' 주중가 적용됨</b> (주말 라운드가 있으면 직접 조정)';
+}
+function qfSeasonBadge(){
+  var b=document.getElementById('qfSeasonBadge'); if(!b) return;
+  if(qfGetSeason()==='peak'){ b.textContent='🔥 성수기 그린피 적용 중'; b.style.color='#b45309'; }
+  else { b.textContent='비수기 그린피 적용 중'; b.style.color='#1b4332'; }
 }
 
 // ── 견적서용 패키지(일정표/아이티너리) 목록 로드 ──
@@ -4591,6 +4761,11 @@ function qfLoad(){
     document.getElementById('qfCheckout').value=d.checkOut||'';
     document.getElementById('qfCourse').value=d.golfCourse||'';
     document.getElementById('qfAccom').value=d.accommodation||'';
+    // 골프장 드롭다운·시즌 복원 (요금은 저장된 items 값을 그대로 쓰므로 여기서 재계산하지 않음)
+    var cSel=document.getElementById('qfCourseSel');
+    if(cSel){ cSel.setAttribute('data-pending', d.golfCourseId||''); if(d.golfCourseId) cSel.value=d.golfCourseId; }
+    var sSel=document.getElementById('qfSeason');
+    if(sSel){ sSel.value=(d.season==='peak')?'peak':'off'; qfSeasonBadge(); qfCourseHint(); }
     document.getElementById('qfRemarks').value=d.remarks||'';
     // 일정표(아이티너리) 선택 복원 — 패키지 목록이 아직 로드 중일 수 있어 data-pending에 기록해두면 qfLoadPackages가 이어받음
     var pkgSel=document.getElementById('qfPackage');
@@ -4641,6 +4816,8 @@ function qfSave(){
     itineraryPackageId:pkgId||'',
     itineraryTitle:pkg?pkg.title:'',
     itineraryHtml:pkg?pkg.trainingSchedule:'',
+    season:qfGetSeason(),seasonLabel:(qfGetSeason()==='peak'?'성수기':'비수기'),
+    golfCourseId:get('qfCourseSel')||'',peakMonths:getPeakMonths(),
     createdAt:new Date().toISOString(),status:'active'
   };
   Promise.all([
