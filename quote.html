@@ -664,6 +664,7 @@ async function loadGolfPricingFromFirebase() {
         if (!keyword) return;
         const target = GOLF.find(x => x.name.includes(keyword));
         if (!target) return;
+        target.gfId = g.id; // 요금표 id — admin 견적서 자동 채움에서 같은 골프장을 찾는 데 사용
         if (g.weekday) {
           target.fee = target.fee || {};
           target.fee.wd_sell = g.weekday.toLocaleString();
@@ -1220,8 +1221,10 @@ async function submitInquiry() {
   const totalAmt = parseInt(document.getElementById('fixed-total-amt').textContent.replace('$','')) || 0;
 
   const hotelObj = selHotel ? HOTELS.find(x=>x.id===selHotel) : null;
-  const activeGolf = GOLF.filter(g=>(selGolf[g.id]||0)>0).map(g=>({ name:g.name, rounds:selGolf[g.id] }));
-  const checkItems = Object.values(selCheck).filter(s=>s.qty>0).map(s=>({ name:s.item.name, qty:s.qty }));
+  // 2026-09-04: admin 견적서 작성(v2)이 손님 선택을 그대로 이어받을 수 있도록 id·단가도 함께 저장 (기존 name/rounds/qty는 그대로 유지)
+  const activeGolf = GOLF.filter(g=>(selGolf[g.id]||0)>0).map(g=>({ name:g.name, rounds:selGolf[g.id], gfId:g.gfId||'', priceUSD:g.price||0 }));
+  const checkItems = Object.values(selCheck).filter(s=>s.qty>0).map(s=>({ name:s.item.name, qty:s.qty, id:String(s.item.id||''), priceUSD:s.item.price||0, perPerson:!!s.item.perPerson }));
+  const customHotelPriceUSD = (hotelObj && hotelObj.custom) ? (parseFloat(document.getElementById('custom-hotel-price').value)||0) : 0;
 
   const quoteData = {
     name,
@@ -1232,6 +1235,11 @@ async function submitInquiry() {
     nonGolfers: pax.n,
     totalUSD: totalAmt,
     hotel: hotelObj ? hotelObj.name : '미선택',
+    hotelId: hotelObj ? hotelObj.id : '',
+    hotelNights: selHotel ? Math.max(1, hotelNights||1) : 0,
+    customHotelPriceUSD,
+    arrDate: document.getElementById('arr-date').value || '',
+    depDate: document.getElementById('dep-date').value || '',
     golfCourses: activeGolf,
     extras: checkItems,
     status: 'pending',

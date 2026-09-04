@@ -4053,6 +4053,7 @@ async function loadInquiries(filter = 'all') {
       }));
 
       // 필터
+      window._inquiryDocs = docs; // 견적서 자동 채움용
       const filtered = filter === 'all' ? docs : docs.filter(d => d.status === filter);
 
       // 상태 배지 색상
@@ -4074,6 +4075,7 @@ async function loadInquiries(filter = 'all') {
           <td style="font-weight:700;color:#534AB7;">$${q.totalUSD||0}</td>
           <td>${badgeHtml(q.status)}</td>
           <td>
+            <button onclick="inqToQuote('${q.id}')" title="이 신청 내용으로 견적서 작성" style="display:block;margin-bottom:4px;background:#1b4332;color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">📋 견적서</button>
             <select onchange="changeInquiryStatus('${q.id}',this.value)" style="font-size:11px;padding:4px 6px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;">
               <option value="">상태변경</option>
               <option value="pending">대기중</option>
@@ -4354,47 +4356,48 @@ function wiToQuote(docId) {
   const pkgId = d.페이지 || '';
   const pkgName = (pkgId && cardNames[pkgId]) || pkgId || '-';
   const dateStr = d.created?.toDate ? d.created.toDate().toLocaleString('ko-KR') : '-';
-
-  // 1) 견적서 작성 탭으로 이동 (qfInit 실행 → 폼·패키지 목록 준비)
-  const tabBtn = document.querySelector('.tab-btn[onclick*="quotemake"]');
-  showTab('quotemake', tabBtn);
-
-  // 2) 기본 정보 채우기 — 문의에 값이 있는 칸만 덮어씀
-  const set = (id, v) => { const e = document.getElementById(id); if (e && v) e.value = v; };
-  const nameEl = document.getElementById('qfName');
-  if (nameEl) nameEl.value = (d.이름 && d.이름 !== '-') ? d.이름 : ''; // 이름 없는 문의면 이전 값이 남지 않도록 비움
-  set('qfPersons', String(wiParsePersons(d.인원)));
-  set('qfDuration', wiParseDuration(d.기간));
-  if (pkgId && cardAccom[pkgId]) set('qfAccom', cardAccom[pkgId]);
-  // 도착일 칸엔 손님이 고른 시기를 힌트로 (예: "겨울 (예상)") — 날짜 확정되면 PJ가 고쳐 씀
-  if (d.시기 && d.시기 !== '-') set('qfCheckin', d.시기 + ' (예상)');
-  // 시즌 자동 결정 — 겨울이면 성수기 그린피, 가을은 11월부터 성수기라 배너로 주의 표시
+  const days = (String(d.기간||'').match(/(\d+)/)||[])[1];
+  const nights = days ? Math.max(1, parseInt(days,10) - 1) : 0;
   const seasonGuess = /겨울/.test(d.시기 || '') ? 'peak' : 'off';
   const seasonNote = /가을/.test(d.시기 || '') ? '<div style="color:#b45309;font-weight:700;margin-top:4px;">⚠️ 가을 문의: 11월 출발이면 시즌을 "성수기"로 바꾸세요 (성수기: ' + peakMonthsLabel() + ')</div>'
                    : (seasonGuess === 'peak' ? '<div style="color:#b45309;font-weight:700;margin-top:4px;">🔥 겨울 문의 → 성수기 그린피로 자동 설정됨</div>' : '');
-  if (typeof qfSetSeason === 'function') qfSetSeason(seasonGuess);
-
-  // 3) 일정표(아이티너리) 패키지 선택 — 목록이 아직 로드 중이면 data-pending으로 넘김(qfLoadPackages가 이어받음)
-  const pkgSel = document.getElementById('qfPackage');
-  if (pkgSel && pkgId) {
-    pkgSel.setAttribute('data-pending', pkgId);
-    if (typeof _qfPackageMap !== 'undefined' && _qfPackageMap[pkgId]) pkgSel.value = pkgId;
-  }
-
-  // 4) 어디서 가져왔는지 배너 표시(저장되지 않는 안내용) — 연락처는 여기서만 보여줌
-  const banner = document.getElementById('qfFromInquiry');
-  if (banner) {
-    banner.innerHTML =
+  q2Prefill({
+    clientName: (d.이름 && d.이름 !== '-') ? d.이름 : '',
+    contact: d.연락처 || '',
+    nights: nights,
+    golfers: wiParsePersons(d.인원),
+    season: seasonGuess,
+    packageId: pkgId,
+    hotelName: cardAccom[pkgId] || '',
+    bannerHtml:
       `<div style="font-weight:800;color:#1b4332;margin-bottom:4px;">📩 30초 문의 내용으로 자동 채웠습니다</div>` +
-      `<div style="font-size:12.5px;color:#374151;line-height:1.6;"><b>${d.이름 || '이름 없음'}</b> · ${d.연락처 || '연락처 없음'} · ${dateStr}<br>` +
-      `${pkgName} · ${d.기간 || '-'} · ${d.인원 || '-'} · ${d.시기 || '-'}</div>` +
+      `<div style="font-size:12.5px;color:#374151;line-height:1.6;"><b>${d.이름 || '이름 없음'}</b> · ${d.연락처 || '연락처 없음'} · ${dateStr}<br>${pkgName} · ${d.기간 || '-'} · ${d.인원 || '-'} · ${d.시기 || '-'}</div>` +
       seasonNote +
-      `<div style="font-size:11.5px;color:#6b7280;margin-top:6px;">골프장을 고르면 그린피·캐디·카트가 요금표에서 자동 입력됩니다. 도착일·출발일·수량 확인 후 "견적서 저장" 버튼을 누르세요.</div>` +
-      `<button onclick="document.getElementById('qfFromInquiry').style.display='none'" style="position:absolute;top:8px;right:10px;background:none;border:none;font-size:16px;color:#9ca3af;cursor:pointer;">✕</button>`;
-    banner.style.display = 'block';
-  }
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (typeof showToast === 'function') showToast('📋 ' + (d.이름 || '문의') + ' 정보로 견적서 폼을 채웠습니다', 'info');
+      `<div style="font-size:11.5px;color:#6b7280;margin-top:6px;">숙소·골프장·항목을 체크하면 요금표·숙소 관리·맞춤견적 항목의 가격이 자동으로 들어옵니다. 확인 후 "견적서 저장" 버튼을 누르세요.</div>`
+  }).then(function(){ if (typeof showToast === 'function') showToast('📋 ' + (d.이름 || '문의') + ' 정보로 견적서 폼을 채웠습니다', 'info'); });
+}
+
+/* ── 맞춤견적 신청(inquiries) → 견적서 작성 자동 채움 ── */
+function inqToQuote(docId) {
+  const q = (window._inquiryDocs || []).find(x => x.id === docId);
+  if (!q) { alert('견적 신청 정보를 찾을 수 없습니다. 화면을 새로고침 해주세요.'); return; }
+  const golf = Array.isArray(q.golfCourses) ? q.golfCourses.map(x => ({ id: x.gfId || '', name: x.name, rounds: x.rounds })) : [];
+  const items = Array.isArray(q.extras) ? q.extras.map(x => ({ id: x.id || '', name: x.name, qty: x.qty })) : [];
+  const custom = (q.hotel === '다른 호텔 찾기' && q.customHotelPriceUSD) ? [] : [];
+  q2Prefill({
+    clientName: q.name || '', contact: q.contact || '',
+    checkIn: q.arrDate || '', checkOut: q.depDate || '', nights: q.nights || 0,
+    golfers: q.golfers || 1, nonGolfers: q.nonGolfers || 0,
+    hotelId: q.hotelId || '', hotelName: q.hotel || '', hotelPhp: q.customHotelPriceUSD ? Math.round(q.customHotelPriceUSD * q2Rate()) : 0, hotelNights: q.hotelNights || 0,
+    golf: golf, items: items, custom: custom,
+    remarks: q.memo ? '고객 메모: ' + q.memo : '',
+    bannerHtml:
+      `<div style="font-weight:800;color:#1b4332;margin-bottom:4px;">🎯 맞춤견적 신청 내용으로 자동 채웠습니다</div>` +
+      `<div style="font-size:12.5px;color:#374151;line-height:1.6;"><b>${q.name || '-'}</b> · ${q.contact || '-'} · ${q.createdAtStr || ''}<br>` +
+      `손님이 본 예상 총액 <b>$${q.totalUSD || 0}</b> · ${q.nights || 0}박 · 골퍼 ${q.golfers || 0}명${q.nonGolfers ? ' + 동반 ' + q.nonGolfers + '명' : ''} · 숙소: ${q.hotel || '미선택'}</div>` +
+      (q.memo ? `<div style="font-size:12px;color:#374151;margin-top:4px;">💬 ${q.memo}</div>` : '') +
+      `<div style="font-size:11.5px;color:#6b7280;margin-top:6px;">손님이 고른 항목이 체크된 상태입니다. 가격(₱)·수량을 확인해 고치고 "견적서 저장"을 누르면 손님이 "나의 견적"에서 보게 됩니다.</div>`
+  }).then(function(){ if (typeof showToast === 'function') showToast('📋 ' + (q.name || '신청') + ' 내용으로 견적서 폼을 채웠습니다', 'info'); });
 }
 
 async function deleteWebInquiry(docId) {
@@ -4490,350 +4493,431 @@ async function loadVisitorStats() {
 }
 </script>
 
-<!-- ========== 견적서 작성 ========== -->
+<!-- ========== 견적서 작성 (v2 — 맞춤견적 quote.html과 같은 항목·같은 가격 출처. PJ는 페소로 입력, 손님에게는 달러로 표시) ========== -->
 <div class="panel" id="panel-quotemake">
-  <div class="mgmt-card">
-    <div class="mgmt-title">📋 견적서 작성 &amp; 고객 링크 공유</div>
-    <div id="qfFromInquiry" style="display:none;position:relative;background:#FEF9C3;border:1.5px solid #fde68a;border-radius:10px;padding:12px 36px 12px 16px;margin-bottom:12px;"></div>
-    <div id="qfRateInfo" style="background:#eaf3ee;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#1b4332;font-weight:600;"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">고객명</label><input type="text" id="qfName" placeholder="홍길동" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
-      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">견적 번호</label><input type="text" id="qfNo" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
-      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">문서 종류</label><select id="qfDoctype" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"><option>견적서</option><option>확정서</option></select></div>
-      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">인원 수</label><input type="number" id="qfPersons" value="1" min="1" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
-      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">체류 기간</label><input type="text" id="qfDuration" placeholder="7박 8일" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
-      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">도착일</label><input type="text" id="qfCheckin" placeholder="2026-07-10 (예상일)" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
-      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">출발일</label><input type="text" id="qfCheckout" placeholder="2026-07-17 (예상일)" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
-      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">골프장 <span style="font-weight:400;color:#9ca3af;">(요금표에서 그린피·캐디·카트 자동 입력)</span></label>
-        <select id="qfCourseSel" onchange="qfCourseChanged()" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;margin-bottom:6px;"><option value="">직접 입력</option></select>
-        <input type="text" id="qfCourse" value="프라데라 베르데" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;">
-        <div id="qfCourseHint" style="font-size:11px;color:#6b7280;margin-top:4px;"></div></div>
-      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">숙소</label><input type="text" id="qfAccom" value="HOTEL & 숙소" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"></div>
-      <div><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">시즌 <span id="qfSeasonMonths" style="font-weight:400;color:#9ca3af;"></span></label>
-        <select id="qfSeason" onchange="qfSeasonChanged()" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"><option value="off">비수기</option><option value="peak">🔥 성수기</option></select>
-        <div id="qfSeasonBadge" style="font-size:11.5px;font-weight:700;margin-top:4px;"></div></div>
-      <div style="grid-column:1/-1;"><label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">🗺️ 일정표(아이티너리) 첨부 — 패키지 상세페이지 일정표를 견적서에 그대로 넣어드려요</label><select id="qfPackage" style="width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;"><option value="">선택 안 함</option></select></div></div>
+<style>
+  .q2-card{background:#fff;border-radius:16px;border:1.5px solid #c8edd9;padding:16px;margin-bottom:14px;}
+  .q2-title{font-size:15px;font-weight:800;color:#26215C;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+  .q2-title small{font-size:11.5px;font-weight:400;color:#6b7280;}
+  .q2-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .q2-grid .full{grid-column:1/-1;}
+  .q2-lbl{font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;}
+  .q2-inp{width:100%;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;box-sizing:border-box;background:#fff;}
+  .q2-row{display:grid;grid-template-columns:22px 1fr;gap:8px;align-items:start;padding:9px 8px;border-radius:10px;margin-bottom:6px;background:#f9fafb;border:1.5px solid transparent;}
+  .q2-row.on{background:#f0f7f3;border-color:#c8edd9;}
+  .q2-row input[type=checkbox]{width:18px;height:18px;margin-top:3px;cursor:pointer;}
+  .q2-name{font-size:13.5px;font-weight:700;color:#1b4332;}
+  .q2-note{font-size:11px;color:#6b7280;margin-top:1px;}
+  .q2-calc{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px;align-items:end;}
+  .q2-calc label{font-size:10px;font-weight:700;color:#9ca3af;display:block;margin-bottom:2px;}
+  .q2-calc input{width:100%;border:1.5px solid #e0d8ce;border-radius:6px;padding:6px 8px;font-size:13px;text-align:right;box-sizing:border-box;}
+  .q2-calc input[readonly]{background:#f3f4f6;color:#6b7280;}
+  .q2-amt{font-size:14px;font-weight:800;color:#1b4332;text-align:right;}
+  .q2-amt small{display:block;font-size:10px;font-weight:600;color:#9ca3af;}
+  .q2-extra{font-size:11px;color:#b45309;margin-top:4px;}
+  .q2-add{display:grid;grid-template-columns:2fr 1fr 60px 40px;gap:6px;margin-top:8px;align-items:center;}
+  .q2-add input{border:1.5px solid #e0d8ce;border-radius:6px;padding:7px 8px;font-size:13px;box-sizing:border-box;width:100%;}
+  .q2-add button{background:#1D9E75;color:#fff;border:none;border-radius:8px;padding:8px 0;font-size:16px;font-weight:800;cursor:pointer;}
+  .q2-del{background:none;border:none;color:#dc2626;font-size:15px;cursor:pointer;padding:0 4px;}
+  .q2-total{background:#0d1f17;border-radius:12px;padding:16px 18px;margin:14px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+  @media(max-width:600px){ .q2-grid{grid-template-columns:1fr 1fr;} .q2-calc{grid-template-columns:1fr 1fr 1fr;} .q2-add{grid-template-columns:1fr 1fr 50px 40px;} }
+</style>
 
+  <div class="q2-card">
+    <div class="q2-title">📋 견적서 작성 &amp; 고객 링크 공유 <small>맞춤견적(quote.html)과 같은 항목·같은 가격 · 페소 입력 → 달러 표시</small></div>
+    <div id="qfFromInquiry" style="display:none;position:relative;background:#FEF9C3;border:1.5px solid #fde68a;border-radius:10px;padding:12px 36px 12px 16px;margin-bottom:12px;"></div>
+    <div id="q2RateInfo" style="background:#eaf3ee;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12.5px;color:#1b4332;font-weight:600;"></div>
+    <div class="q2-grid">
+      <div><label class="q2-lbl">고객명</label><input class="q2-inp" type="text" id="q2Name" placeholder="홍길동"></div>
+      <div><label class="q2-lbl">연락처</label><input class="q2-inp" type="text" id="q2Contact" placeholder="010-0000-0000"></div>
+      <div><label class="q2-lbl">견적 번호</label><input class="q2-inp" type="text" id="q2No"></div>
+      <div><label class="q2-lbl">문서 종류</label><select class="q2-inp" id="q2Doctype"><option>견적서</option><option>확정서</option></select></div>
+      <div><label class="q2-lbl">도착일</label><input class="q2-inp" type="date" id="q2Checkin" onchange="q2DatesChanged()"></div>
+      <div><label class="q2-lbl">출발일</label><input class="q2-inp" type="date" id="q2Checkout" onchange="q2DatesChanged()"></div>
+      <div><label class="q2-lbl">박수 <span style="font-weight:400;color:#9ca3af;">(날짜 넣으면 자동)</span></label><input class="q2-inp" type="number" id="q2Nights" min="1" value="4" oninput="q2NightsChanged()"></div>
+      <div><label class="q2-lbl">시즌 <span id="q2SeasonMonths" style="font-weight:400;color:#9ca3af;"></span></label>
+        <select class="q2-inp" id="q2Season" onchange="q2SeasonChanged()"><option value="off">비수기</option><option value="peak">🔥 성수기</option></select>
+        <div id="q2SeasonBadge" style="font-size:11px;font-weight:700;margin-top:3px;"></div></div>
+      <div><label class="q2-lbl">골퍼 (명)</label><input class="q2-inp" type="number" id="q2Golfers" min="1" value="1" oninput="q2Recalc()"></div>
+      <div><label class="q2-lbl">동반 비골퍼 (명)</label><input class="q2-inp" type="number" id="q2NonGolfers" min="0" value="0" oninput="q2Recalc()"></div>
+      <div class="full"><label class="q2-lbl">🗺️ 패키지 연결 — 일정표(아이티너리) + 포함/불포함 목록을 견적서에 그대로 넣습니다</label>
+        <select class="q2-inp" id="qfPackage" onchange="qfPackageHint()"><option value="">선택 안 함</option></select>
+        <div id="qfPackageHint" style="font-size:11.5px;color:#6b7280;margin-top:6px;line-height:1.5;"></div></div>
     </div>
-    <div style="font-weight:800;color:#1b4332;margin:12px 0 8px;border-left:3px solid #f4a261;padding-left:10px;font-size:13px;">⛳ 골프 비용</div><div id="qfGolf"></div>
-    <div style="font-weight:800;color:#1b4332;margin:12px 0 8px;border-left:3px solid #f4a261;padding-left:10px;font-size:13px;">🏋 레슨 비용</div><div id="qfLesson"></div>
-    <div style="font-weight:800;color:#1b4332;margin:12px 0 8px;border-left:3px solid #f4a261;padding-left:10px;font-size:13px;">🏡 HOTEL & 숙소 · 이동 비용</div><div id="qfStay"></div>
-    <div style="background:#0d1f17;border-radius:12px;padding:16px 20px;margin:16px 0;display:flex;justify-content:space-between;align-items:center;">
-      <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);">견적 합계 <span style="font-size:11px;font-weight:400;opacity:0.6;">(포함 항목만)</span></div>
-      <div>
-        <div id="qfTotalUsd" style="font-size:24px;font-weight:900;color:#f4a261;">$0.00</div>
-        <div id="qfTotalKrw" style="font-size:12px;color:rgba(255,255,255,0.4);text-align:right;"></div>
-      </div>
+  </div>
+
+  <div class="q2-card">
+    <div class="q2-title">🏨 숙박 <small>숙소 관리 + 아고다 실시간 목록 (맞춤견적과 동일)</small></div>
+    <select class="q2-inp" id="q2Hotel" onchange="q2HotelChanged()"><option value="">숙소 없음 (별도)</option></select>
+    <div id="q2HotelBox"></div>
+  </div>
+
+  <div class="q2-card">
+    <div class="q2-title">⛳ 골프장 <small>요금표 그린피(시즌 적용) × 라운드 × 골퍼 · 카트·캐디는 현지 별도 참고</small></div>
+    <div id="q2GolfList"></div>
+  </div>
+
+  <div id="q2Sections"></div>
+
+  <div class="q2-total">
+    <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.75);">견적 합계<br><span id="q2TotalMeta" style="font-size:11px;font-weight:400;opacity:0.6;"></span></div>
+    <div style="text-align:right;">
+      <div id="q2TotalUsd" style="font-size:26px;font-weight:900;color:#f4a261;">$0</div>
+      <div id="q2TotalSub" style="font-size:11.5px;color:rgba(255,255,255,0.5);"></div>
     </div>
-    <div style="font-weight:800;color:#1b4332;margin:12px 0 8px;border-left:3px solid #f4a261;padding-left:10px;font-size:13px;">📝 Remarks</div>
-    <textarea id="qfRemarks" placeholder="특이사항 보충 설명" style="width:100%;min-height:80px;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;resize:vertical;"></textarea>
-    <!-- 기존 견적서 불러오기 -->
-    <div style="background:#f8f5f0;border-radius:12px;padding:14px 16px;margin-bottom:12px;border:1.5px solid #e0d8ce;">
-      <div style="font-size:12px;font-weight:700;color:#6b7280;margin-bottom:8px;">🔍 기존 견적서 불러오기 (고객 이름 입력)</div>
-      <div style="display:flex;gap:8px;">
-        <input type="text" id="qfLoadName" placeholder="이태주" style="flex:1;border:1.5px solid #e0d8ce;border-radius:8px;padding:9px 12px;font-size:14px;">
-        <button onclick="qfLoad()" style="padding:9px 16px;background:#534AB7;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">불러오기</button>
-      </div>
-      <div id="qfLoadMsg" style="font-size:12px;color:#e74c3c;margin-top:6px;display:none;"></div>
+  </div>
+
+  <div class="q2-card">
+    <div class="q2-title">📝 Remarks <small>손님 견적서 하단에 그대로 표시</small></div>
+    <textarea class="q2-inp" id="q2Remarks" placeholder="특이사항 보충 설명" style="min-height:90px;resize:vertical;"></textarea>
+  </div>
+
+  <div class="q2-card" style="background:#f8f5f0;">
+    <div style="font-size:12px;font-weight:700;color:#6b7280;margin-bottom:8px;">🔍 기존 견적서 불러오기 (고객 이름 입력)</div>
+    <div style="display:flex;gap:8px;">
+      <input class="q2-inp" type="text" id="qfLoadName" placeholder="이태주" style="flex:1;">
+      <button onclick="qfLoad()" style="padding:9px 16px;background:#534AB7;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">불러오기</button>
     </div>
-    <button onclick="qfSave()" style="width:100%;margin-top:4px;padding:14px;background:#1b4332;color:#fff;border:none;border-radius:50px;font-size:15px;font-weight:800;cursor:pointer;">📄 견적서 저장 &amp; 링크 만들기</button>
-    <div id="qfLinkBox" style="display:none;margin-top:16px;background:#eaf3ee;border-radius:12px;padding:16px;">
-      <div style="font-size:12px;font-weight:700;color:#1b4332;margin-bottom:8px;">🔗 고객 공유 링크</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <input type="text" id="qfLinkUrl" readonly style="flex:1;min-width:180px;border:1.5px solid #c8e6c9;border-radius:8px;padding:9px 12px;font-size:13px;background:#fff;">
-        <button onclick="qfCopy()" style="padding:9px 14px;background:#1b4332;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">📋 복사</button>
-        <button onclick="qfKakao()" style="padding:9px 14px;background:#FEE500;color:#000;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">💬 카톡</button>
-        <button onclick="qfPreview()" style="padding:9px 14px;background:#534AB7;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">👁 미리보기</button>
-      </div>
+    <div id="qfLoadMsg" style="font-size:12px;color:#e74c3c;margin-top:6px;display:none;"></div>
+  </div>
+
+  <button onclick="qfSave()" style="width:100%;padding:14px;background:#1b4332;color:#fff;border:none;border-radius:50px;font-size:15px;font-weight:800;cursor:pointer;">📄 견적서 저장 &amp; 링크 만들기</button>
+  <div id="qfLinkBox" style="display:none;margin-top:16px;background:#eaf3ee;border-radius:12px;padding:16px;">
+    <div style="font-size:12px;font-weight:700;color:#1b4332;margin-bottom:8px;">🔗 고객 공유 링크</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <input type="text" id="qfLinkUrl" readonly style="flex:1;min-width:180px;border:1.5px solid #c8e6c9;border-radius:8px;padding:9px 12px;font-size:13px;background:#fff;">
+      <button onclick="qfCopy()" style="padding:9px 14px;background:#1b4332;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">📋 복사</button>
+      <button onclick="qfKakao()" style="padding:9px 14px;background:#FEE500;color:#000;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">💬 카톡</button>
+      <button onclick="qfPreview()" style="padding:9px 14px;background:#534AB7;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">👁 미리보기</button>
     </div>
   </div>
 </div>
 
 <script>
+/* ============================================================
+   견적서 작성 v2 — 맞춤견적(quote.html)과 한 시스템
+   · 항목·가격 출처: 숙소 관리/아고다, 요금표(+시즌), 맞춤견적 항목(settings/quote_config)
+   · PJ는 페소(₱)로 입력, 손님에게는 달러($)로 표시 (환율: settings/exchange)
+   · 저장 문서: quotes/{QT-...} version:2 — my-quote.html이 v2 형식으로 표시(구버전 문서는 예전 방식 유지)
+   ============================================================ */
 var _qfDone=false;
-var _qfItems=[
-  {g:'qfGolf',   list:[{k:'greenfee',n:'그린피',u:'라운드',p:4500,i:1},{k:'caddy',n:'캐디피',u:'라운드',p:1800,i:0},{k:'cart',n:'카트비',u:'라운드',p:1200,i:0},{k:'insurance',n:'보험료',u:'라운드',p:150,i:0},{k:'consum',n:'컨슘어블',u:'라운드',p:500,i:0}]},
-  {g:'qfLesson', list:[{k:'fieldLesson',n:'필드 레슨비',u:'회',p:2500,i:1},{k:'rangeLesson',n:'연습장 레슨비',u:'회',p:1500,i:1},{k:'rangeFee',n:'연습장 이용료',u:'일',p:500,i:1}]},
-  {g:'qfStay',   list:[{k:'accom',n:'HOTEL & 숙소',u:'박',p:3000,i:1},{k:'drop',n:'숙소-골프장 드롭',u:'일',p:500,i:1},{k:'pickup',n:'공항 픽업',u:'회',p:2000,i:1},{k:'sendoff',n:'공항 샌딩',u:'회',p:2000,i:1}]}
-];
+var _q2Ready=null;           // 설정(요금표·숙소·맞춤견적 항목·패키지) 로드 완료 Promise
+var Q2={ hotel:null, golf:{}, items:{}, custom:[] };
+var Q2_CFG={ transfers:[], lessons:[], extras:[], customSections:[] };
+var Q2_HOTELS=[];            // {id,name,type:'local'|'hotel'|'agoda'|'custom',php,note}
+var _qfPackageMap={};
 
-function _qfGetR(){try{var s=localStorage.getItem('iclark_exchange');if(s){var r=JSON.parse(s);return r;}}catch(e){}return {appliedUsdPhp:53.2,usdKrw:1380};}
-function _qfP2U(p){var r=_qfGetR();return Math.round(p/(r.appliedUsdPhp||53.2)*100)/100;}
+function _qfGetR(){try{var s=localStorage.getItem('iclark_exchange');if(s){return JSON.parse(s);}}catch(e){}return {appliedUsdPhp:53.2,usdKrw:1380};}
+function q2Rate(){ var r=_qfGetR(); return Number(r.appliedUsdPhp)||53.2; }
+function q2P2U(php){ return Math.round((Number(php)||0)/q2Rate()*100)/100; }
+function q2U2P(usd){ return Math.round((Number(usd)||0)*q2Rate()); }
+function q2Fmt$(v){ return '$'+Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function q2FmtP(v){ return '₱'+Math.round(Number(v)||0).toLocaleString(); }
+function q2Num(id,def){ var e=document.getElementById(id); var v=e?parseFloat(e.value):NaN; return isNaN(v)?(def||0):v; }
+function q2Val(id){ var e=document.getElementById(id); return e?String(e.value||'').trim():''; }
+function q2Esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
 
-function qfU(k){
-  var pe=document.getElementById('qfp_'+k);
-  var qe=document.getElementById('qfq_'+k);
-  var ue=document.getElementById('qfu_'+k);
-  if(!pe||!qe||!ue)return;
-  ue.textContent='$'+_qfP2U((parseFloat(pe.value)||0)*(parseFloat(qe.value)||0)).toFixed(2);
-  qfUpdateTotal();
-}
-function qfUpdateTotal(){
-  var total=0;
-  _qfItems.forEach(function(grp){
-    grp.list.forEach(function(item){
-      if(!item.i) return;
-      var p=parseFloat((document.getElementById('qfp_'+item.k)||{}).value)||0;
-      var q=parseFloat((document.getElementById('qfq_'+item.k)||{}).value)||0;
-      total+=_qfP2U(p*q);
-    });
-  });
-  var r=_qfGetR();
-  var tu=document.getElementById('qfTotalUsd');
-  var tk=document.getElementById('qfTotalKrw');
-  if(tu) tu.textContent='$'+total.toFixed(2);
-  if(tk) tk.textContent='약 ₩'+Math.round(total*(r.usdKrw||1380)).toLocaleString();
-}
-
+/* ── 초기화 (탭 열 때 1회) ── */
 function qfInit(){
-  if(_qfDone)return; _qfDone=true;
+  if(_qfDone) return; _qfDone=true;
   var r=_qfGetR();
-  var ri=document.getElementById('qfRateInfo');
-  if(ri)ri.innerHTML='&#128178; 환율: <b>$1=&#8369;'+(r.appliedUsdPhp||53.2).toFixed(2)+'</b> | <b>$1=&#8361;'+Number(r.usdKrw||1380).toLocaleString()+'</b>'+(r.updatedAt?' ('+r.updatedAt+')':'');
-  _qfItems.forEach(function(grp){
-    var c=document.getElementById(grp.g);
-    if(!c)return;
-    var h='';
-    grp.list.forEach(function(item){
-      var bg=item.i?'#f0f7f3':'#f9f9f9';
-      var nc=item.i?'#1b4332':'#999';
-      var uc=item.i?'#1b4332':'#bbb';
-      var bd=item.i?'<span style="font-size:10px;background:#eaf3ee;color:#1b4332;padding:2px 7px;border-radius:20px;font-weight:700;">포함</span>':'<span style="font-size:10px;background:#f3f3f3;color:#999;padding:2px 7px;border-radius:20px;font-weight:700;">별도</span>';
-      h+='<div style="display:grid;grid-template-columns:2fr 1fr 1fr 80px 55px;gap:6px;align-items:center;margin-bottom:7px;padding:7px 9px;border-radius:8px;background:'+bg+';">';
-      h+='<div style="font-size:13px;font-weight:600;color:'+nc+';">'+item.n+'</div>';
-      h+='<input type="number" id="qfp_'+item.k+'" data-key="'+item.k+'" value="'+item.p+'" min="0" class="qf-inp" style="border:1.5px solid #e0d8ce;border-radius:6px;padding:6px 7px;font-size:13px;text-align:right;width:100%;">';
-      h+='<input type="number" id="qfq_'+item.k+'" data-key="'+item.k+'" value="1" min="0" class="qf-inp" style="border:1.5px solid #e0d8ce;border-radius:6px;padding:6px 7px;font-size:13px;text-align:right;width:100%;">';
-      h+='<div id="qfu_'+item.k+'" style="font-size:13px;font-weight:700;text-align:right;color:'+uc+';">$0</div>';
-      h+=bd+'</div>';
-    });
-    c.innerHTML=h;
-    grp.list.forEach(function(item){qfU(item.k);});
-  });
-  var t=new Date();
-  var el=document.getElementById('qfNo');
-  if(el&&!el.value)el.value='QT-'+t.getFullYear()+('0'+(t.getMonth()+1)).slice(-2)+('0'+t.getDate()).slice(-2)+'-001';
-
-  // 이벤트 위임 — 모든 .qf-inp 입력에 반응
-  ['qfGolf','qfLesson','qfStay'].forEach(function(gid){
-    var gc=document.getElementById(gid);
-    if(!gc) return;
-    gc.addEventListener('input', function(e){
-      var k=e.target.getAttribute('data-key');
-      if(k) { qfU(k); qfUpdateTotal(); }
-    });
-  });
-  qfUpdateTotal();
-  qfLoadPackages();
-  qfSeasonInit();
+  var ri=document.getElementById('q2RateInfo');
+  if(ri) ri.innerHTML='💱 적용 환율 <b>$1 = ₱'+q2Rate().toFixed(2)+'</b> · <b>$1 = ₩'+Number(r.usdKrw||1380).toLocaleString()+'</b>'+(r.updatedAt?' <span style="font-weight:400;color:#6b7280;">('+r.updatedAt+')</span>':'')+' <span style="font-weight:400;color:#6b7280;">— 요금표 탭에서 갱신</span>';
+  var t=new Date(), el=document.getElementById('q2No');
+  if(el&&!el.value) el.value='QT-'+t.getFullYear()+('0'+(t.getMonth()+1)).slice(-2)+('0'+t.getDate()).slice(-2)+'-001';
+  var ci=document.getElementById('q2Checkin');
+  if(ci && !ci._bound){ ci._bound=true; ci.addEventListener('input',function(){ var s=qfDetectSeason(ci.value); if(s) qfSetSeason(s); }); }
+  var sync=(typeof syncGreenfeeFromFirebase==='function')?syncGreenfeeFromFirebase():Promise.resolve();
+  _q2Ready=Promise.all([ sync, q2LoadConfig(), q2LoadHotels(), qfLoadPackages() ]).then(function(){
+    var sm=document.getElementById('q2SeasonMonths'); if(sm) sm.textContent='(성수기: '+peakMonthsLabel()+')';
+    q2RenderHotelOptions(); q2RenderGolf(); q2RenderSections(); qfSeasonBadge(); q2Recalc();
+  }).catch(function(e){ console.error('견적서 초기화 실패:',e); q2RenderGolf(); q2RenderSections(); q2Recalc(); });
 }
 
-// ── 골프장 드롭다운 + 시즌(성수기/비수기) → 요금표 연동 ──
-var _qfSeasonReady=false;
-function qfSeasonInit(){
-  var sm=document.getElementById('qfSeasonMonths');
-  var ci=document.getElementById('qfCheckin');
-  if(ci && !ci._qfSeasonBound){ ci._qfSeasonBound=true; ci.addEventListener('input',function(){ var s=qfDetectSeason(ci.value); if(s) qfSetSeason(s); }); }
-  var p=(typeof syncGreenfeeFromFirebase==='function')?syncGreenfeeFromFirebase():Promise.resolve();
-  p.then(function(){
-    if(sm) sm.textContent='(성수기: '+peakMonthsLabel()+')';
-    qfFillCourses();
-    _qfSeasonReady=true;
-    // 먼저 선택돼 있던 시즌(30초 문의에서 넘어온 경우)을 요금에 반영
-    qfApplyCoursePrices();
-    qfSeasonBadge();
+/* ── 설정 로드 ── */
+function q2Fb(){
+  return Promise.all([
+    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'),
+    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js')
+  ]).then(function(ms){
+    var cfg={apiKey:'AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU',authDomain:'iclarkgolf.firebaseapp.com',projectId:'iclarkgolf'};
+    var app=ms[0].getApps().length?ms[0].getApps()[0]:ms[0].initializeApp(cfg);
+    return { db:ms[1].getFirestore(app), fs:ms[1] };
   });
 }
-function qfFillCourses(){
-  var sel=document.getElementById('qfCourseSel');
-  if(!sel) return;
-  var data=(typeof getGreenfee==='function')?getGreenfee():[];
-  var cur=(document.getElementById('qfCourse')||{}).value||'';
-  var pending=sel.getAttribute('data-pending')||'';
-  var opts='<option value="">직접 입력</option>';
-  data.forEach(function(g){ opts+='<option value="'+g.id+'">'+g.name+'</option>'; });
-  sel.innerHTML=opts;
-  var match=pending ? data.find(function(g){return g.id===pending;}) : null;
-  if(!match && cur) match=data.find(function(g){ return cur.indexOf(g.name)>=0 || g.name.indexOf(cur)>=0; });
-  if(match) sel.value=match.id;
-  qfCourseHint();
+function q2LoadConfig(){
+  return q2Fb().then(function(o){ return o.fs.getDoc(o.fs.doc(o.db,'settings','quote_config')); }).then(function(snap){
+    var d=snap.exists()?snap.data():{};
+    var def=(typeof QI_DEFAULTS!=='undefined')?QI_DEFAULTS:{transfers:[],lessons:[],extras:[],customSections:[]};
+    Q2_CFG.transfers=(Array.isArray(d.transfers)&&d.transfers.length)?d.transfers:def.transfers;
+    Q2_CFG.lessons=(Array.isArray(d.lessons)&&d.lessons.length)?d.lessons:def.lessons;
+    Q2_CFG.extras=(Array.isArray(d.extras)&&d.extras.length)?d.extras:def.extras;
+    Q2_CFG.customSections=Array.isArray(d.customSections)?d.customSections.filter(function(s){return s&&Array.isArray(s.items)&&s.items.length;}):[];
+  }).catch(function(e){ console.warn('맞춤견적 항목 로드 실패 — 기본값 사용:',e.message); var def=(typeof QI_DEFAULTS!=='undefined')?QI_DEFAULTS:null; if(def){Q2_CFG.transfers=def.transfers;Q2_CFG.lessons=def.lessons;Q2_CFG.extras=def.extras;} });
 }
-function qfSelectedCourse(){
-  var sel=document.getElementById('qfCourseSel');
-  if(!sel||!sel.value) return null;
-  return (getGreenfee()||[]).find(function(g){return g.id===sel.value;})||null;
+function q2LoadHotels(){
+  Q2_HOTELS=[];
+  var pA=q2Fb().then(function(o){ return o.fs.getDocs(o.fs.collection(o.db,'accommodations')); }).then(function(snap){
+    snap.forEach(function(ds){ var d=ds.data()||{}; if(d.active===false) return;
+      var php=Number(d.pricePHP)||q2U2P(d.priceUSD);
+      Q2_HOTELS.push({ id:ds.id, name:d.name||ds.id, type:(d.type==='local'?'local':'hotel'), php:php, note:d.location||'' });
+    });
+  }).catch(function(e){ console.warn('숙소 목록 로드 실패:',e.message); });
+  var pB=fetch('agoda-hotels.json?t='+Date.now()).then(function(r){ return r.ok?r.json():{hotels:[]}; }).then(function(j){
+    (Array.isArray(j.hotels)?j.hotels:[]).forEach(function(h){
+      Q2_HOTELS.push({ id:'agoda-'+h.hotelId, name:h.name||'', type:'agoda', php:Number(h.price)||0, note:(h.starRating>0?'⭐'.repeat(Math.round(h.starRating))+' ':'')+(h.reviewScore?'평점 '+h.reviewScore:'') });
+    });
+  }).catch(function(){ /* 아고다 목록 없어도 진행 */ });
+  return Promise.all([pA,pB]).then(function(){
+    var order={local:0,hotel:1,agoda:2};
+    Q2_HOTELS.sort(function(a,b){ return (order[a.type]-order[b.type])||a.name.localeCompare(b.name,'ko'); });
+    Q2_HOTELS.push({ id:'custom', name:'직접 입력 (목록에 없는 숙소)', type:'custom', php:0, note:'' });
+  });
 }
-function qfCourseChanged(){
-  var g=qfSelectedCourse();
-  if(g) document.getElementById('qfCourse').value=g.name;
-  qfApplyCoursePrices(); qfCourseHint();
+function qfLoadPackages(){
+  return q2Fb().then(function(o){ return o.fs.getDocs(o.fs.collection(o.db,'package_cards')); }).then(function(snap){
+    _qfPackageMap={};
+    snap.forEach(function(d){ var c=d.data()||{};
+      var title=(c.titleEn||'')+(c.sub1?' · '+c.sub1:'')+(c.sub2?' · '+c.sub2:'');
+      _qfPackageMap[d.id]={ title:title||d.id, trainingSchedule:c.trainingSchedule||'', inclYes:Array.isArray(c.inclYes)?c.inclYes:[], inclNo:Array.isArray(c.inclNo)?c.inclNo:[], accomName:c.accomName||'' };
+    });
+    var sel=document.getElementById('qfPackage'); if(!sel) return;
+    var pending=sel.getAttribute('data-pending')||sel.value||'';
+    var opts='<option value="">선택 안 함</option>';
+    Object.keys(_qfPackageMap).forEach(function(id){ var p=_qfPackageMap[id]; opts+='<option value="'+id+'">'+q2Esc(p.title)+(p.trainingSchedule.trim()?'':' (일정표 없음)')+'</option>'; });
+    sel.innerHTML=opts;
+    if(pending&&_qfPackageMap[pending]) sel.value=pending;
+    qfPackageHint();
+  }).catch(function(e){ console.warn('패키지 목록 로드 실패:',e.message); });
 }
-function qfSeasonChanged(){ qfApplyCoursePrices(); qfSeasonBadge(); qfCourseHint(); }
-function qfGetSeason(){ var s=document.getElementById('qfSeason'); return (s&&s.value==='peak')?'peak':'off'; }
-function qfSetSeason(s){ var e=document.getElementById('qfSeason'); if(!e) return; e.value=(s==='peak')?'peak':'off'; qfSeasonChanged(); }
-// 도착일 칸 내용(2026-12-10 / 12월 / 겨울 등)에서 시즌 추정 — 못 알아내면 null
+function qfPackageHint(){
+  var h=document.getElementById('qfPackageHint'); if(!h) return;
+  var id=q2Val('qfPackage'), p=id?_qfPackageMap[id]:null;
+  if(!p){ h.innerHTML='패키지를 고르지 않으면 견적서 포함/불포함 칸은 선택한 항목으로 자동 작성됩니다.'; return; }
+  var y=p.inclYes||[], n=p.inclNo||[];
+  if(!y.length&&!n.length){ h.innerHTML='<span style="color:#b45309;">이 패키지 카드에는 포함/불포함 항목이 없어 선택 항목으로 자동 작성됩니다. (패키지/견적 탭에서 입력 가능)</span>'; return; }
+  h.innerHTML='<b style="color:#1b4332;">✅ 포함 '+y.length+'개</b> · <b style="color:#b91c1c;">❌ 불포함 '+n.length+'개</b> — 패키지 카드의 목록이 견적서에 그대로 들어갑니다'
+    +'<div style="margin-top:4px;color:#374151;">'+y.map(function(t){return '✅ '+q2Esc(t);}).join(' · ')+'</div>'
+    +'<div style="margin-top:2px;color:#7f1d1d;">'+n.map(function(t){return '❌ '+q2Esc(t);}).join(' · ')+'</div>';
+}
+
+/* ── 날짜·박수·인원·시즌 ── */
+function q2DatesChanged(){
+  var a=q2Val('q2Checkin'), d=q2Val('q2Checkout');
+  if(a&&d){ var n=Math.round((new Date(d)-new Date(a))/86400000); if(n>=1){ document.getElementById('q2Nights').value=n; } }
+  q2NightsChanged();
+}
+function q2NightsChanged(){
+  var n=Math.max(1,Math.round(q2Num('q2Nights',1)));
+  var hn=document.getElementById('q2h-nights'); if(hn&&!hn.dataset.manual) hn.value=n;
+  q2Recalc();
+}
+function q2Nights(){ return Math.max(1,Math.round(q2Num('q2Nights',1))); }
+function q2Golfers(){ return Math.max(1,Math.round(q2Num('q2Golfers',1))); }
+function q2NonGolfers(){ return Math.max(0,Math.round(q2Num('q2NonGolfers',0))); }
+function qfGetSeason(){ var s=document.getElementById('q2Season'); return (s&&s.value==='peak')?'peak':'off'; }
+function qfSetSeason(s){ var e=document.getElementById('q2Season'); if(!e) return; e.value=(s==='peak')?'peak':'off'; q2SeasonChanged(); }
+function q2SeasonChanged(){
+  // 손으로 고치지 않은 골프장 그린피만 시즌 가격으로 갱신
+  (getGreenfee()||[]).forEach(function(g){ var inp=document.getElementById('q2g-php-'+g.id); if(inp&&!inp.dataset.manual) inp.value=q2SeasonFee(g); });
+  qfSeasonBadge(); q2Recalc();
+}
+function qfSeasonBadge(){
+  var b=document.getElementById('q2SeasonBadge'); if(!b) return;
+  if(qfGetSeason()==='peak'){ b.textContent='🔥 성수기 그린피 적용 중'; b.style.color='#b45309'; } else { b.textContent='비수기 그린피 적용 중'; b.style.color='#1b4332'; }
+}
 function qfDetectSeason(text){
   var t=String(text||'');
   var m=t.match(/(\d{4})\s*[-./년]\s*(\d{1,2})/) || t.match(/(^|[^\d])(\d{1,2})\s*월/);
-  var month=m ? parseInt(m[m.length-1],10) : 0;
+  var month=m?parseInt(m[m.length-1],10):0;
   if(month>=1&&month<=12) return isPeakMonth(month)?'peak':'off';
   if(/겨울/.test(t)) return 'peak';
   if(/여름|봄/.test(t)) return 'off';
   return null;
 }
-function qfApplyCoursePrices(){
-  var g=qfSelectedCourse();
-  if(!g) return;
-  var peak=qfGetSeason()==='peak';
-  var fee=peak?gfPeakWeekday(g):Number(g.weekday)||0;
-  var set=function(k,v){ var e=document.getElementById('qfp_'+k); if(e){ e.value=v; qfU(k);} };
-  set('greenfee',fee); set('caddy',Number(g.caddy)||0); set('cart',Number(g.cart)||0);
-  qfUpdateTotal();
-}
-function qfCourseHint(){
-  var h=document.getElementById('qfCourseHint'); if(!h) return;
-  var g=qfSelectedCourse();
-  if(!g){ h.textContent=''; return; }
-  var peak=qfGetSeason()==='peak';
-  h.innerHTML='비수기 주중 ₱'+Number(g.weekday).toLocaleString()+' · 주말 ₱'+Number(g.weekend).toLocaleString()
-    +' &nbsp;|&nbsp; 🔥 성수기 주중 ₱'+gfPeakWeekday(g).toLocaleString()+' · 주말 ₱'+gfPeakWeekend(g).toLocaleString()
-    +'<br><b style="color:'+(peak?'#b45309':'#1b4332')+';">→ 그린피에 '+(peak?'성수기':'비수기')+' 주중가 적용됨</b> (주말 라운드가 있으면 직접 조정)';
-}
-function qfSeasonBadge(){
-  var b=document.getElementById('qfSeasonBadge'); if(!b) return;
-  if(qfGetSeason()==='peak'){ b.textContent='🔥 성수기 그린피 적용 중'; b.style.color='#b45309'; }
-  else { b.textContent='비수기 그린피 적용 중'; b.style.color='#1b4332'; }
-}
+function q2SeasonFee(g){ return qfGetSeason()==='peak'?gfPeakWeekday(g):(Number(g.weekday)||0); }
 
-// ── 견적서용 패키지(일정표/아이티너리) 목록 로드 ──
-var _qfPackageMap={};
-function qfLoadPackages(){
-  var sel=document.getElementById('qfPackage');
-  if(!sel) return;
-  Promise.all([
-    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'),
-    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js')
-  ]).then(function(ms){
-    var iA=ms[0].initializeApp,gA=ms[0].getApps;
-    var gF=ms[1].getFirestore,cl=ms[1].collection,gD=ms[1].getDocs;
-    var cfg={apiKey:'AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU',authDomain:'iclarkgolf.firebaseapp.com',projectId:'iclarkgolf'};
-    var app=gA().length?gA()[0]:iA(cfg);
-    return gD(cl(gF(app),'package_cards'));
-  }).then(function(snap){
-    var pending=sel.getAttribute('data-pending')||'';
-    snap.forEach(function(d){
-      var c=d.data();
-      var title=(c.titleEn||'')+(c.sub1?' · '+c.sub1:'')+(c.sub2?' · '+c.sub2:'');
-      _qfPackageMap[d.id]={title:title||d.id, trainingSchedule:c.trainingSchedule||''};
-    });
-    var opts='<option value="">선택 안 함</option>';
-    Object.keys(_qfPackageMap).forEach(function(id){
-      var hasItin=_qfPackageMap[id].trainingSchedule.trim()?'':' (일정표 없음)';
-      opts+='<option value="'+id+'">'+_qfPackageMap[id].title+hasItin+'</option>';
-    });
-    sel.innerHTML=opts;
-    if(pending && _qfPackageMap[pending]) sel.value=pending;
-  }).catch(function(e){ console.warn('패키지 목록 로드 실패:', e.message); });
-}
-
-function qfLoad(){
-  var name = (document.getElementById('qfLoadName').value||'').trim();
-  if(!name){ document.getElementById('qfLoadMsg').textContent='이름을 입력하세요.'; document.getElementById('qfLoadMsg').style.display='block'; return; }
-  document.getElementById('qfLoadMsg').style.display='none';
-  Promise.all([
-    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'),
-    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js')
-  ]).then(function(ms){
-    var iA=ms[0].initializeApp,gA=ms[0].getApps;
-    var gF=ms[1].getFirestore,cl=ms[1].collection,qr=ms[1].query,wh=ms[1].where,gD=ms[1].getDocs;
-    var cfg={apiKey:'AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU',authDomain:'iclarkgolf.firebaseapp.com',projectId:'iclarkgolf'};
-    var app=gA().length?gA()[0]:iA(cfg);
-    var q=qr(cl(gF(app),'quotes'),wh('clientName','==',name));
-    return gD(q);
-  }).then(function(snap){
-    if(snap.empty){ document.getElementById('qfLoadMsg').textContent='해당 이름의 견적서가 없습니다.'; document.getElementById('qfLoadMsg').style.display='block'; return; }
-    // 가장 최근 견적서
-    var docs=snap.docs.sort(function(a,b){return (b.data().createdAt||0)>(a.data().createdAt||0)?1:-1;});
-    var d=docs[0].data();
-    // 폼에 채우기
-    document.getElementById('qfName').value=d.clientName||'';
-    document.getElementById('qfNo').value=d.quoteNo||'';
-    document.getElementById('qfDoctype').value=d.docType||'견적서';
-    document.getElementById('qfPersons').value=d.persons||'1';
-    document.getElementById('qfDuration').value=d.duration||'';
-    document.getElementById('qfCheckin').value=d.checkIn||'';
-    document.getElementById('qfCheckout').value=d.checkOut||'';
-    document.getElementById('qfCourse').value=d.golfCourse||'';
-    document.getElementById('qfAccom').value=d.accommodation||'';
-    // 골프장 드롭다운·시즌 복원 (요금은 저장된 items 값을 그대로 쓰므로 여기서 재계산하지 않음)
-    var cSel=document.getElementById('qfCourseSel');
-    if(cSel){ cSel.setAttribute('data-pending', d.golfCourseId||''); if(d.golfCourseId) cSel.value=d.golfCourseId; }
-    var sSel=document.getElementById('qfSeason');
-    if(sSel){ sSel.value=(d.season==='peak')?'peak':'off'; qfSeasonBadge(); qfCourseHint(); }
-    document.getElementById('qfRemarks').value=d.remarks||'';
-    // 일정표(아이티너리) 선택 복원 — 패키지 목록이 아직 로드 중일 수 있어 data-pending에 기록해두면 qfLoadPackages가 이어받음
-    var pkgSel=document.getElementById('qfPackage');
-    if(pkgSel){
-      pkgSel.setAttribute('data-pending', d.itineraryPackageId||'');
-      if(d.itineraryPackageId && _qfPackageMap[d.itineraryPackageId]) pkgSel.value=d.itineraryPackageId;
-    }
-    // 항목 금액/수량 채우기
-    if(d.items){
-      Object.keys(d.items).forEach(function(k){
-        var php=document.getElementById('qfp_'+k);
-        var qty=document.getElementById('qfq_'+k);
-        if(php) php.value=d.items[k].php||0;
-        if(qty) qty.value=d.items[k].qty||0;
-      });
-    }
-    qfUpdateTotal();
-    document.getElementById('qfLoadMsg').style.display='none';
-    if(typeof showToast==='function') showToast('✅ '+d.clientName+' 견적서 불러오기 완료!','success');
-    else alert('✅ '+d.clientName+' 견적서 불러오기 완료!\n수정 후 저장 버튼을 누르세요.');
-  }).catch(function(e){
-    document.getElementById('qfLoadMsg').textContent='오류: '+e.message;
-    document.getElementById('qfLoadMsg').style.display='block';
+/* ── 숙박 ── */
+function q2RenderHotelOptions(){
+  var sel=document.getElementById('q2Hotel'); if(!sel) return;
+  var cur=sel.value;
+  var icon={local:'🏠',hotel:'🏨',agoda:'🏨',custom:'✍️'};
+  var opts='<option value="">숙소 없음 (별도)</option>';
+  Q2_HOTELS.forEach(function(h){
+    var tag=h.type==='local'?' — ₱'+h.php.toLocaleString()+'/일 올인클루시브':(h.type==='agoda'?' — ₱'+h.php.toLocaleString()+'/박 (아고다)':(h.type==='hotel'?' — ₱'+h.php.toLocaleString()+'/박':''));
+    opts+='<option value="'+q2Esc(h.id)+'">'+icon[h.type]+' '+q2Esc(h.name)+tag+'</option>';
   });
+  sel.innerHTML=opts; if(cur) sel.value=cur;
+}
+function q2HotelChanged(){
+  var id=q2Val('q2Hotel'), box=document.getElementById('q2HotelBox');
+  var h=Q2_HOTELS.find(function(x){return x.id===id;});
+  if(!h){ Q2.hotel=null; box.innerHTML=''; q2Recalc(); return; }
+  var multLabel=h.type==='local'?'인원 (골퍼)':(h.type==='custom'?'인원':'객실 수');
+  var mult=h.type==='local'?q2Golfers():(h.type==='custom'?(q2Golfers()+q2NonGolfers()):1);
+  Q2.hotel={ id:h.id, name:h.name, type:h.type, multLabel:multLabel };
+  box.innerHTML=
+    '<div class="q2-row on" style="grid-template-columns:1fr;">'
+    +(h.type==='custom'?'<input class="q2-inp" id="q2h-name" placeholder="숙소 이름" oninput="q2Recalc()" style="margin-bottom:4px;">':'<div class="q2-name">'+q2Esc(h.name)+'</div><div class="q2-note">'+q2Esc(h.note)+(h.type==='local'?' · 올인클루시브(1인·1일 기준)':'')+'</div>')
+    +'<div class="q2-calc" style="grid-template-columns:1fr 1fr 1fr 1fr;">'
+    +'<div><label>단가 ₱/'+(h.type==='local'?'일·1인':'박')+'</label><input type="number" id="q2h-php" value="'+h.php+'" min="0" oninput="q2Recalc()"></div>'
+    +'<div><label>박수</label><input type="number" id="q2h-nights" value="'+q2Nights()+'" min="1" oninput="this.dataset.manual=1;q2Recalc()"></div>'
+    +'<div><label>'+multLabel+'</label><input type="number" id="q2h-mult" value="'+mult+'" min="1" oninput="this.dataset.manual=1;q2Recalc()"></div>'
+    +'<div class="q2-amt" id="q2h-amt">$0</div>'
+    +'</div></div>';
+  q2Recalc();
 }
 
-function qfSave(){
-  var get=function(id){var e=document.getElementById(id);return e?e.value.trim():'';};
-  var items={};
-  _qfItems.forEach(function(grp){
-    grp.list.forEach(function(item){
-      items[item.k]={
-        php:parseFloat((document.getElementById('qfp_'+item.k)||{}).value)||0,
-        qty:parseFloat((document.getElementById('qfq_'+item.k)||{}).value)||0,
-        inc:item.i
-      };
-    });
+/* ── 골프장 ── */
+function q2RenderGolf(){
+  var list=document.getElementById('q2GolfList'); if(!list) return;
+  var data=getGreenfee()||[];
+  list.innerHTML=data.map(function(g){
+    var on=!!Q2.golf[g.id];
+    var extras=[g.cart?'카트 ₱'+Number(g.cart).toLocaleString():'', g.caddy?'캐디 ₱'+Number(g.caddy).toLocaleString():''].filter(Boolean).join(' · ');
+    return '<div class="q2-row'+(on?' on':'')+'" id="q2g-row-'+g.id+'">'
+      +'<input type="checkbox" id="q2g-on-'+g.id+'" '+(on?'checked':'')+' onchange="q2GolfToggle(\''+g.id+'\')">'
+      +'<div><div class="q2-name">'+q2Esc(g.name)+' <span style="font-weight:400;color:#6b7280;font-size:11px;">비수기 ₱'+Number(g.weekday).toLocaleString()+' · 성수기 ₱'+gfPeakWeekday(g).toLocaleString()+' (주중)</span></div>'
+      +(extras?'<div class="q2-extra">현지 별도: '+extras+'</div>':'')
+      +'<div class="q2-calc" id="q2g-calc-'+g.id+'" style="display:'+(on?'grid':'none')+';">'
+      +'<div><label>그린피 ₱/인·라운드</label><input type="number" id="q2g-php-'+g.id+'" value="'+(on?Q2.golf[g.id].php:q2SeasonFee(g))+'" min="0" oninput="this.dataset.manual=1;q2Recalc()"></div>'
+      +'<div><label>라운드</label><input type="number" id="q2g-r-'+g.id+'" value="'+(on?Q2.golf[g.id].rounds:1)+'" min="1" oninput="q2Recalc()"></div>'
+      +'<div class="q2-amt" id="q2g-amt-'+g.id+'">$0<small>× 골퍼 '+q2Golfers()+'명</small></div>'
+      +'</div></div></div>';
+  }).join('') || '<div style="font-size:12px;color:#9ca3af;">요금표에 골프장이 없습니다</div>';
+}
+function q2GolfToggle(id){
+  var on=document.getElementById('q2g-on-'+id).checked;
+  var g=(getGreenfee()||[]).find(function(x){return x.id===id;});
+  if(on){ Q2.golf[id]={ php:q2Num('q2g-php-'+id, g?q2SeasonFee(g):0), rounds:Math.max(1,q2Num('q2g-r-'+id,1)) }; }
+  else delete Q2.golf[id];
+  document.getElementById('q2g-row-'+id).classList.toggle('on',on);
+  document.getElementById('q2g-calc-'+id).style.display=on?'grid':'none';
+  q2Recalc();
+}
+
+/* ── 이동·레슨·식사·기타·커스텀 섹션 ── */
+function q2SectionDefs(){
+  var defs=[ {key:'transfers',label:'🚗 이동 서비스',items:Q2_CFG.transfers}, {key:'lessons',label:'🏌️ 레슨',items:Q2_CFG.lessons}, {key:'extras',label:'🍽️ 식사 · 기타 서비스',items:Q2_CFG.extras} ];
+  (Q2_CFG.customSections||[]).forEach(function(s,i){ defs.push({key:'custom'+i,label:'✨ '+(s.title||'추가 항목'),items:s.items||[]}); });
+  return defs;
+}
+function q2RenderSections(){
+  var wrap=document.getElementById('q2Sections'); if(!wrap) return;
+  wrap.innerHTML=q2SectionDefs().map(function(sec){
+    var rows=(sec.items||[]).map(function(it){
+      var key=sec.key+'|'+it.id, on=!!Q2.items[key];
+      return '<div class="q2-row'+(on?' on':'')+'" id="q2i-row-'+q2Esc(key)+'">'
+        +'<input type="checkbox" id="q2i-on-'+q2Esc(key)+'" '+(on?'checked':'')+' onchange="q2ItemToggle(\''+sec.key+'\',\''+q2Esc(it.id)+'\')">'
+        +'<div><div class="q2-name">'+(it.icon||'')+' '+q2Esc(it.name)+' <span style="font-weight:400;color:#6b7280;font-size:11px;">$'+(it.price||0)+'/'+q2Esc(it.unit||'회')+(it.perPerson?' · 인원수 배수':'')+'</span></div>'
+        +(it.note?'<div class="q2-note">'+q2Esc(it.note)+'</div>':'')
+        +'<div class="q2-calc" id="q2i-calc-'+q2Esc(key)+'" style="display:'+(on?'grid':'none')+';">'
+        +'<div><label>단가 ₱/'+q2Esc(it.unit||'회')+'</label><input type="number" id="q2i-php-'+q2Esc(key)+'" value="'+(on?Q2.items[key].php:q2U2P(it.price))+'" min="0" oninput="q2Recalc()"></div>'
+        +'<div><label>수량</label><input type="number" id="q2i-q-'+q2Esc(key)+'" value="'+(on?Q2.items[key].qty:1)+'" min="1" oninput="q2Recalc()"></div>'
+        +'<div class="q2-amt" id="q2i-amt-'+q2Esc(key)+'">$0'+(it.perPerson?'<small>× 인원 '+(q2Golfers()+q2NonGolfers())+'명</small>':'')+'</div>'
+        +'</div></div></div>';
+    }).join('');
+    var customs=Q2.custom.map(function(c,i){ if(c.section!==sec.key) return '';
+      return '<div class="q2-row on" style="grid-template-columns:1fr auto;"><div><div class="q2-name">✍️ '+q2Esc(c.name)+' <span style="font-weight:400;color:#6b7280;font-size:11px;">직접 추가</span></div>'
+        +'<div class="q2-calc"><div><label>단가 ₱</label><input type="number" value="'+c.php+'" min="0" oninput="Q2.custom['+i+'].php=parseFloat(this.value)||0;q2Recalc()"></div>'
+        +'<div><label>수량</label><input type="number" value="'+c.qty+'" min="1" oninput="Q2.custom['+i+'].qty=Math.max(1,parseFloat(this.value)||1);q2Recalc()"></div>'
+        +'<div class="q2-amt" id="q2c-amt-'+i+'">$0</div></div></div>'
+        +'<button class="q2-del" onclick="Q2.custom.splice('+i+',1);q2RenderSections();q2Recalc()" title="삭제">✕</button></div>';
+    }).join('');
+    return '<div class="q2-card"><div class="q2-title">'+sec.label+' <small>맞춤견적 항목 탭과 동일</small></div>'+rows+customs
+      +'<div class="q2-add"><input placeholder="직접 추가: 항목명 (예: 전용차량 하루)" id="q2add-name-'+sec.key+'"><input type="number" placeholder="₱ 단가" id="q2add-php-'+sec.key+'"><input type="number" placeholder="수량" value="1" min="1" id="q2add-q-'+sec.key+'"><button onclick="q2AddCustom(\''+sec.key+'\')" title="추가">＋</button></div>'
+      +'</div>';
+  }).join('');
+}
+function q2ItemToggle(secKey,itemId){
+  var key=secKey+'|'+itemId, on=document.getElementById('q2i-on-'+key).checked;
+  var sec=q2SectionDefs().find(function(s){return s.key===secKey;}); var it=sec&&sec.items.find(function(x){return String(x.id)===String(itemId);});
+  if(on&&it){ Q2.items[key]={ sectionKey:secKey, sectionLabel:sec.label, id:it.id, name:it.name, icon:it.icon||'', unit:it.unit||'회', perPerson:!!it.perPerson, php:q2Num('q2i-php-'+key,q2U2P(it.price)), qty:Math.max(1,q2Num('q2i-q-'+key,1)) }; }
+  else delete Q2.items[key];
+  document.getElementById('q2i-row-'+key).classList.toggle('on',on);
+  document.getElementById('q2i-calc-'+key).style.display=on?'grid':'none';
+  q2Recalc();
+}
+function q2AddCustom(secKey){
+  var name=q2Val('q2add-name-'+secKey), php=q2Num('q2add-php-'+secKey,0), qty=Math.max(1,q2Num('q2add-q-'+secKey,1));
+  if(!name){ alert('항목명을 입력하세요.'); return; }
+  var sec=q2SectionDefs().find(function(s){return s.key===secKey;});
+  Q2.custom.push({ section:secKey, sectionLabel:sec?sec.label:'추가 항목', name:name, php:php, qty:qty });
+  q2RenderSections(); q2Recalc();
+}
+
+/* ── 계산 ── */
+function q2Recalc(){
+  var g=q2Golfers(), n=q2NonGolfers(), pax=g+n, nights=q2Nights();
+  var total=0;
+  // 숙박
+  if(Q2.hotel){
+    Q2.hotel.php=q2Num('q2h-php',0); Q2.hotel.nights=Math.max(1,q2Num('q2h-nights',nights));
+    var multEl=document.getElementById('q2h-mult');
+    if(multEl&&!multEl.dataset.manual){ multEl.value=(Q2.hotel.type==='local'?g:(Q2.hotel.type==='custom'?pax:1)); }
+    Q2.hotel.mult=Math.max(1,q2Num('q2h-mult',1));
+    if(Q2.hotel.type==='custom') Q2.hotel.name=q2Val('q2h-name')||'직접 입력 숙소';
+    var hAmt=q2P2U(Q2.hotel.php*Q2.hotel.nights*Q2.hotel.mult); Q2.hotel.amountUsd=hAmt; total+=hAmt;
+    var ha=document.getElementById('q2h-amt'); if(ha) ha.innerHTML=q2Fmt$(hAmt)+'<small>'+q2FmtP(Q2.hotel.php*Q2.hotel.nights*Q2.hotel.mult)+'</small>';
+  }
+  // 골프
+  Object.keys(Q2.golf).forEach(function(id){
+    var s=Q2.golf[id]; s.php=q2Num('q2g-php-'+id,s.php); s.rounds=Math.max(1,q2Num('q2g-r-'+id,1));
+    var amt=q2P2U(s.php*s.rounds*g); s.amountUsd=amt; total+=amt;
+    var a=document.getElementById('q2g-amt-'+id); if(a) a.innerHTML=q2Fmt$(amt)+'<small>'+s.rounds+'R × 골퍼 '+g+'명 · '+q2FmtP(s.php*s.rounds*g)+'</small>';
   });
-  var pkgId=get('qfPackage');
-  var pkg=pkgId ? (_qfPackageMap[pkgId]||null) : null;
-  var data={
-    clientName:get('qfName')||'고객',quoteNo:get('qfNo')||'QT-001',
-    docType:get('qfDoctype'),persons:get('qfPersons')||'1',
-    duration:get('qfDuration')||'-',checkIn:get('qfCheckin')||'-',
-    checkOut:get('qfCheckout')||'-',golfCourse:get('qfCourse'),
-    accommodation:get('qfAccom'),clientPin:'',
-    remarks:get('qfRemarks'),items:items,rate:_qfGetR(),
-    itineraryPackageId:pkgId||'',
-    itineraryTitle:pkg?pkg.title:'',
-    itineraryHtml:pkg?pkg.trainingSchedule:'',
-    season:qfGetSeason(),seasonLabel:(qfGetSeason()==='peak'?'성수기':'비수기'),
-    golfCourseId:get('qfCourseSel')||'',peakMonths:getPeakMonths(),
-    createdAt:new Date().toISOString(),status:'active'
+  // 항목
+  Object.keys(Q2.items).forEach(function(key){
+    var it=Q2.items[key]; it.php=q2Num('q2i-php-'+key,it.php); it.qty=Math.max(1,q2Num('q2i-q-'+key,1));
+    var m=it.perPerson?pax:1; var amt=q2P2U(it.php*it.qty*m); it.amountUsd=amt; total+=amt;
+    var a=document.getElementById('q2i-amt-'+key); if(a) a.innerHTML=q2Fmt$(amt)+'<small>'+(it.perPerson?'× 인원 '+pax+'명 · ':'')+q2FmtP(it.php*it.qty*m)+'</small>';
+  });
+  Q2.custom.forEach(function(c,i){ var amt=q2P2U(c.php*c.qty); c.amountUsd=amt; total+=amt; var a=document.getElementById('q2c-amt-'+i); if(a) a.innerHTML=q2Fmt$(amt)+'<small>'+q2FmtP(c.php*c.qty)+'</small>'; });
+  // 합계
+  var r=_qfGetR();
+  total=Math.round(total*100)/100;
+  var tu=document.getElementById('q2TotalUsd'); if(tu) tu.textContent=q2Fmt$(total);
+  var ts=document.getElementById('q2TotalSub'); if(ts) ts.textContent='≈ '+q2FmtP(total*q2Rate())+' · 약 ₩'+Math.round(total*(Number(r.usdKrw)||1380)).toLocaleString()+(pax>0?' · 1인 약 '+q2Fmt$(total/pax):'');
+  var tm=document.getElementById('q2TotalMeta'); if(tm) tm.textContent=nights+'박 '+(nights+1)+'일 · 골퍼 '+g+'명'+(n?' + 동반 '+n+'명':'');
+  Q2.totalUSD=total;
+  return total;
+}
+
+/* ── 저장 문서 만들기 / 저장 ── */
+function q2BuildDoc(){
+  q2Recalc();
+  var g=q2Golfers(), n=q2NonGolfers(), pax=g+n;
+  var gfData=getGreenfee()||[];
+  var pkgId=q2Val('qfPackage'), pkg=pkgId?(_qfPackageMap[pkgId]||null):null;
+  var quoteNo=q2Val('q2No')||'QT-001';
+  var golf=Object.keys(Q2.golf).map(function(id){ var s=Q2.golf[id], gf=gfData.find(function(x){return x.id===id;})||{};
+    return { id:id, name:gf.name||id, php:s.php, usd:q2P2U(s.php), rounds:s.rounds, golfers:g, amountUsd:s.amountUsd, caddy:Number(gf.caddy)||0, cart:Number(gf.cart)||0 }; });
+  var items=Object.keys(Q2.items).map(function(k){ var it=Q2.items[k]; var m=it.perPerson?pax:1;
+    return { section:it.sectionKey, sectionLabel:it.sectionLabel, id:String(it.id), name:it.name, icon:it.icon, unit:it.unit, php:it.php, usd:q2P2U(it.php), qty:it.qty, perPerson:it.perPerson, pax:m, amountUsd:it.amountUsd, custom:false }; })
+    .concat(Q2.custom.map(function(c){ return { section:c.section, sectionLabel:c.sectionLabel, id:'', name:c.name, icon:'✍️', unit:'', php:c.php, usd:q2P2U(c.php), qty:c.qty, perPerson:false, pax:1, amountUsd:c.amountUsd, custom:true }; }));
+  var hotel=Q2.hotel?{ id:Q2.hotel.id, name:Q2.hotel.name, type:Q2.hotel.type, php:Q2.hotel.php, usd:q2P2U(Q2.hotel.php), nights:Q2.hotel.nights, mult:Q2.hotel.mult, multLabel:Q2.hotel.multLabel, amountUsd:Q2.hotel.amountUsd }:null;
+  var nights=q2Nights();
+  return {
+    version:2, source:'admin-v2',
+    clientName:q2Val('q2Name')||'고객', contact:q2Val('q2Contact'), quoteNo:quoteNo, docType:q2Val('q2Doctype')||'견적서',
+    checkIn:q2Val('q2Checkin')||'-', checkOut:q2Val('q2Checkout')||'-', nights:nights, duration:nights+'박 '+(nights+1)+'일',
+    golfers:g, nonGolfers:n, persons:String(pax),
+    season:qfGetSeason(), seasonLabel:qfGetSeason()==='peak'?'성수기':'비수기', peakMonths:getPeakMonths(),
+    rate:_qfGetR(), hotel:hotel, golf:golf, items:items,
+    totalUSD:Q2.totalUSD||0, totalPHP:Math.round((Q2.totalUSD||0)*q2Rate()),
+    golfCourse:golf.map(function(x){return x.name;}).join(', '), accommodation:hotel?hotel.name:'',
+    remarks:q2Val('q2Remarks'), clientPin:'',
+    itineraryPackageId:pkgId||'', itineraryTitle:pkg?pkg.title:'', itineraryHtml:pkg?pkg.trainingSchedule:'',
+    packageInclYes:pkg?(pkg.inclYes||[]):[], packageInclNo:pkg?(pkg.inclNo||[]):[],
+    createdAt:new Date().toISOString(), status:'active'
   };
-  Promise.all([
-    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'),
-    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js')
-  ]).then(function(ms){
-    var iA=ms[0].initializeApp,gA=ms[0].getApps;
-    var gF=ms[1].getFirestore,dc=ms[1].doc,sD=ms[1].setDoc;
-    var cfg={apiKey:'AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU',authDomain:'iclarkgolf.firebaseapp.com',projectId:'iclarkgolf'};
-    var app=gA().length?gA()[0]:iA(cfg);
-    return sD(dc(gF(app),'quotes',data.quoteNo.replace(/[^a-zA-Z0-9-]/g,'_')),data);
-  }).then(function(){
-    var link='https://iclarkgolf.com/my-quote.html?id='+data.quoteNo.replace(/[^a-zA-Z0-9-]/g,'_');
+}
+function qfSave(){
+  var data=q2BuildDoc();
+  if(!data.hotel && !data.golf.length && !data.items.length){ if(!confirm('선택한 항목이 하나도 없습니다. 그래도 저장할까요?')) return; }
+  var docId=data.quoteNo.replace(/[^a-zA-Z0-9-]/g,'_');
+  q2Fb().then(function(o){ return o.fs.setDoc(o.fs.doc(o.db,'quotes',docId),data); }).then(function(){
+    var link='https://iclarkgolf.com/my-quote.html?id='+docId;
     document.getElementById('qfLinkUrl').value=link;
     document.getElementById('qfLinkBox').style.display='block';
     document.getElementById('qfLinkBox').scrollIntoView({behavior:'smooth'});
@@ -4841,23 +4925,95 @@ function qfSave(){
   }).catch(function(e){ alert('❌ 저장 실패: '+e.message); });
 }
 
-function qfPreview(){
-  var link=document.getElementById('qfLinkUrl').value;
-  if(link) window.open(link,'_blank');
-  else alert('먼저 견적서를 저장해주세요.');
+/* ── 폼에 문서/상태 적용 ── */
+function q2Reset(){
+  Q2={ hotel:null, golf:{}, items:{}, custom:[] };
+  ['q2Name','q2Contact','q2Checkin','q2Checkout','q2Remarks'].forEach(function(id){ var e=document.getElementById(id); if(e) e.value=''; });
+  document.getElementById('q2Nights').value=4; document.getElementById('q2Golfers').value=1; document.getElementById('q2NonGolfers').value=0;
+  document.getElementById('q2Hotel').value=''; document.getElementById('q2HotelBox').innerHTML='';
+  var ps=document.getElementById('qfPackage'); if(ps){ ps.value=''; ps.removeAttribute('data-pending'); } qfPackageHint();
+  var b=document.getElementById('qfFromInquiry'); if(b) b.style.display='none';
+  document.getElementById('qfLinkBox').style.display='none';
+  q2RenderGolf(); q2RenderSections(); q2Recalc();
+}
+function q2FindHotel(id,name){
+  var h=null;
+  if(id) h=Q2_HOTELS.find(function(x){return x.id===id;});
+  if(!h&&name){ var nm=String(name).trim(); h=Q2_HOTELS.find(function(x){return x.type!=='custom'&&(x.name===nm||nm.indexOf(x.name)>=0||x.name.indexOf(nm)>=0);}); }
+  return h||null;
+}
+function q2FindCourse(id,name){
+  var data=getGreenfee()||[]; var g=null;
+  if(id) g=data.find(function(x){return x.id===id;});
+  if(!g&&name){ var nm=String(name).replace(/\s|GC|CC|골프장|컨트리클럽/gi,''); g=data.find(function(x){ var xn=x.name.replace(/\s/g,''); return nm.indexOf(xn)>=0||xn.indexOf(nm)>=0; }); }
+  return g||null;
+}
+function q2FindItem(id,name){
+  var defs=q2SectionDefs();
+  for(var i=0;i<defs.length;i++){ var it=defs[i].items.find(function(x){ return (id&&String(x.id)===String(id)) || (name&&x.name===name); }); if(it) return {sec:defs[i],item:it}; }
+  return null;
+}
+// p: {clientName, contact, checkIn, checkOut, nights, golfers, nonGolfers, season, packageId, hotelId, hotelName, hotelPhp, golf:[{id,name,rounds,php}], items:[{id,name,qty,php}], custom:[{section,name,php,qty}], remarks, bannerHtml}
+function q2Prefill(p){
+  var run=function(){
+    q2Reset();
+    var set=function(id,v){ var e=document.getElementById(id); if(e&&v!=null&&v!=='') e.value=v; };
+    set('q2Name',p.clientName); set('q2Contact',p.contact); set('q2Checkin',p.checkIn); set('q2Checkout',p.checkOut);
+    if(p.nights) set('q2Nights',p.nights);
+    if(p.golfers) set('q2Golfers',p.golfers); if(p.nonGolfers!=null) set('q2NonGolfers',p.nonGolfers);
+    set('q2Remarks',p.remarks);
+    if(p.checkIn&&p.checkOut) q2DatesChanged();
+    var season=p.season||(p.checkIn?qfDetectSeason(p.checkIn):null);
+    var sel=document.getElementById('q2Season'); if(sel) sel.value=(season==='peak')?'peak':'off';
+    // 패키지
+    var ps=document.getElementById('qfPackage');
+    if(ps&&p.packageId){ ps.setAttribute('data-pending',p.packageId); if(_qfPackageMap[p.packageId]) ps.value=p.packageId; qfPackageHint(); }
+    // 숙소
+    var h=q2FindHotel(p.hotelId,p.hotelName);
+    if(!h && p.hotelName && p.hotelName!=='미선택') h=Q2_HOTELS.find(function(x){return x.type==='custom';});
+    if(h){ document.getElementById('q2Hotel').value=h.id; q2HotelChanged(); if(h.type==='custom'){ set('q2h-name',p.hotelName); } if(p.hotelPhp) set('q2h-php',p.hotelPhp); if(p.hotelNights){ set('q2h-nights',p.hotelNights); document.getElementById('q2h-nights').dataset.manual=1; } }
+    // 골프장
+    (p.golf||[]).forEach(function(x){ var g=q2FindCourse(x.id,x.name); if(!g) return; Q2.golf[g.id]={ php:x.php||q2SeasonFee(g), rounds:Math.max(1,Number(x.rounds)||1) }; });
+    // 항목
+    (p.items||[]).forEach(function(x){ var f=q2FindItem(x.id,x.name); if(!f) { if(x.name) Q2.custom.push({section:'extras',sectionLabel:'🍽️ 식사 · 기타 서비스',name:x.name,php:x.php||0,qty:Math.max(1,Number(x.qty)||1)}); return; }
+      Q2.items[f.sec.key+'|'+f.item.id]={ sectionKey:f.sec.key, sectionLabel:f.sec.label, id:f.item.id, name:f.item.name, icon:f.item.icon||'', unit:f.item.unit||'회', perPerson:!!f.item.perPerson, php:x.php||q2U2P(f.item.price), qty:Math.max(1,Number(x.qty)||1) }; });
+    (p.custom||[]).forEach(function(c){ Q2.custom.push({section:c.section||'extras',sectionLabel:c.sectionLabel||'추가 항목',name:c.name,php:c.php||0,qty:Math.max(1,Number(c.qty)||1)}); });
+    q2RenderGolf(); q2RenderSections(); qfSeasonBadge(); q2Recalc();
+    if(p.bannerHtml){ var b=document.getElementById('qfFromInquiry'); if(b){ b.innerHTML=p.bannerHtml+'<button onclick="document.getElementById(\'qfFromInquiry\').style.display=\'none\'" style="position:absolute;top:8px;right:10px;background:none;border:none;font-size:16px;color:#9ca3af;cursor:pointer;">✕</button>'; b.style.display='block'; } }
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+  var tabBtn=document.querySelector('.tab-btn[onclick*="quotemake"]');
+  showTab('quotemake',tabBtn);
+  return (_q2Ready||Promise.resolve()).then(run);
 }
 
-function qfCopy(){
-  navigator.clipboard.writeText(document.getElementById('qfLinkUrl').value)
-    .then(function(){if(typeof showToast==='function')showToast('📋 링크 복사됨!','success');});
+/* ── 기존 견적서 불러오기 ── */
+function qfLoad(){
+  var name=q2Val('qfLoadName'); var msg=document.getElementById('qfLoadMsg');
+  if(!name){ msg.textContent='이름을 입력하세요.'; msg.style.display='block'; return; }
+  msg.style.display='none';
+  q2Fb().then(function(o){ return o.fs.getDocs(o.fs.query(o.fs.collection(o.db,'quotes'),o.fs.where('clientName','==',name))); }).then(function(snap){
+    if(snap.empty){ msg.textContent='해당 이름의 견적서가 없습니다.'; msg.style.display='block'; return; }
+    var docs=snap.docs.sort(function(a,b){return (b.data().createdAt||0)>(a.data().createdAt||0)?1:-1;});
+    var d=docs[0].data();
+    if(d.version===2){
+      return q2Prefill({ clientName:d.clientName, contact:d.contact, checkIn:d.checkIn!=='-'?d.checkIn:'', checkOut:d.checkOut!=='-'?d.checkOut:'', nights:d.nights, golfers:d.golfers, nonGolfers:d.nonGolfers, season:d.season, packageId:d.itineraryPackageId, remarks:d.remarks,
+        hotelId:d.hotel?d.hotel.id:'', hotelName:d.hotel?d.hotel.name:'', hotelPhp:d.hotel?d.hotel.php:0, hotelNights:d.hotel?d.hotel.nights:0,
+        golf:(d.golf||[]).map(function(x){return {id:x.id,name:x.name,rounds:x.rounds,php:x.php};}),
+        items:(d.items||[]).filter(function(x){return !x.custom;}).map(function(x){return {id:x.id,name:x.name,qty:x.qty,php:x.php};}),
+        custom:(d.items||[]).filter(function(x){return x.custom;}).map(function(x){return {section:x.section,sectionLabel:x.sectionLabel,name:x.name,php:x.php,qty:x.qty};})
+      }).then(function(){ document.getElementById('q2No').value=d.quoteNo||''; document.getElementById('q2Doctype').value=d.docType||'견적서'; if(typeof showToast==='function') showToast('✅ '+d.clientName+' 견적서 불러오기 완료'); });
+    }
+    // 구버전(v1) 견적서 — 기본 정보만 가져오고 항목은 새 형식으로 다시 고름
+    return q2Prefill({ clientName:d.clientName, remarks:d.remarks, golfers:parseInt(d.persons)||1, packageId:d.itineraryPackageId, season:d.season,
+      bannerHtml:'<div style="font-weight:800;color:#92400e;">⚠️ 구버전 견적서를 불러왔습니다</div><div style="font-size:12px;color:#374151;margin-top:4px;">이름·인원·Remarks만 가져왔습니다. 숙소·골프장·항목은 아래에서 다시 골라 저장하면 새 형식으로 바뀝니다. (손님이 보던 옛 견적서는 그대로 남아 있습니다)</div>' })
+      .then(function(){ document.getElementById('q2No').value=d.quoteNo||''; document.getElementById('q2Doctype').value=d.docType||'견적서'; });
+  }).catch(function(e){ msg.textContent='오류: '+e.message; msg.style.display='block'; });
 }
 
-function qfKakao(){
-  var link=document.getElementById('qfLinkUrl').value;
-  var name=document.getElementById('qfName').value||'고객';
-  navigator.clipboard.writeText('[iCLARKGOLF 견적서] '+name+'님 견적서: '+link)
-    .then(function(){if(typeof showToast==='function')showToast('💬 카톡 메시지 복사됨!','success');});
-}
+function qfPreview(){ var link=document.getElementById('qfLinkUrl').value; if(link) window.open(link,'_blank'); else alert('먼저 견적서를 저장해주세요.'); }
+function qfCopy(){ navigator.clipboard.writeText(document.getElementById('qfLinkUrl').value).then(function(){ if(typeof showToast==='function') showToast('📋 링크 복사됨!','success'); }); }
+function qfKakao(){ var link=document.getElementById('qfLinkUrl').value; var name=q2Val('q2Name')||'고객'; navigator.clipboard.writeText('[iCLARKGOLF 견적서] '+name+'님 견적서: '+link).then(function(){ if(typeof showToast==='function') showToast('💬 카톡 메시지 복사됨!','success'); }); }
 </script>
 
 </body>

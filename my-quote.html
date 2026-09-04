@@ -195,7 +195,8 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
     <div class="section-title">📅 <span id="itin-title">여행 일정</span></div>
     <div id="out-itinerary"></div>
   </div>
-  <div class="cost-section">
+  <div class="cost-section" id="cost-v2" style="display:none;"></div>
+  <div class="cost-section" id="cost-v1">
     <div class="section-title">⛳ 골프 비용</div>
     <table><thead><tr><th>항목</th><th>단가</th><th>수량</th><th>금액</th></tr></thead>
     <tbody id="out-golf"></tbody></table>
@@ -207,7 +208,7 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
     <tbody id="out-stay"></tbody></table>
   </div>
   <div class="total-section">
-    <div class="total-label">견적 합계<br><span style="font-size:11px;font-weight:400;opacity:0.6;">※ 캐디피·카트비·보험료·컨슘어블은 현지 별도 지불</span></div>
+    <div class="total-label">견적 합계<br><span id="out-total-note" style="font-size:11px;font-weight:400;opacity:0.6;">※ 캐디피·카트비·보험료·컨슘어블은 현지 별도 지불</span></div>
     <div>
       <div class="total-usd" id="out-total-usd"></div>
       <div class="total-krw" id="out-total-krw"></div>
@@ -288,6 +289,72 @@ const GOLF_ITEMS   = [{key:'greenfee',name:'그린피',unit:'라운드',included
 const LESSON_ITEMS = [{key:'fieldLesson',name:'필드 레슨비',unit:'회',included:true},{key:'rangeLesson',name:'연습장 레슨비',unit:'회',included:true},{key:'rangeFee',name:'연습장 이용료',unit:'일',included:true}];
 const STAY_ITEMS   = [{key:'accom',name:'HOTEL & 숙소',unit:'박',included:true},{key:'drop',name:'숙소 ↔ 골프장 드롭 픽업',unit:'일',included:true},{key:'pickup',name:'공항 픽업',unit:'회',included:true},{key:'sendoff',name:'공항 샌딩',unit:'회',included:true}];
 
+/* ── v2 견적서 (admin 견적서 작성 v2 = 맞춤견적 quote.html과 같은 항목 구조) ──
+   PJ가 페소로 입력한 값을 저장 시점 환율로 달러 표시. 표 단가 옆에 ₱ 참고 병기. */
+function fmtUsd(v){ return '$' + Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2}); }
+function fmtPhp(v){ return '₱' + Math.round(Number(v)||0).toLocaleString(); }
+function esc(t){ return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+function renderQuoteV2(data, krwRate) {
+  const g = Number(data.golfers)||1, n = Number(data.nonGolfers)||0, pax = g + n;
+  document.getElementById('out-persons').textContent = '골퍼 ' + g + '명' + (n ? ' + 동반 ' + n + '명' : '');
+  document.getElementById('out-course').textContent  = (data.golf||[]).map(x=>x.name).join(', ') || '-';
+  document.getElementById('out-accom').textContent   = data.hotel ? data.hotel.name : '-';
+  document.getElementById('cost-v1').style.display = 'none';
+  const box = document.getElementById('cost-v2'); box.style.display = 'block';
+
+  const table = (title, rows) => rows.length ? `<div class="section-title">${title}</div>
+    <table><thead><tr><th>항목</th><th>단가</th><th>수량</th><th>금액</th></tr></thead><tbody>${rows.join('')}</tbody></table>` : '';
+  let html = '', total = 0;
+
+  if (data.hotel) {
+    const h = data.hotel; total += Number(h.amountUsd)||0;
+    const unit = h.type === 'local' ? '일·1인' : '박';
+    const qty = h.nights + '박' + (h.mult > 1 || h.type==='local' ? ' × ' + h.mult + (h.type==='local' ? '명' : (h.type==='custom' ? '명' : '객실')) : '');
+    html += table('🏨 숙박', [`<tr><td>${esc(h.name)}${h.type==='local' ? ' <span style="font-size:11px;color:#888;">올인클루시브</span>' : ''}</td><td>${fmtUsd(h.usd)} <span class="unit">(${fmtPhp(h.php)}/${unit})</span></td><td>${qty}</td><td>${fmtUsd(h.amountUsd)}</td></tr>`]);
+  }
+  const golfRows = (data.golf||[]).map(x => { total += Number(x.amountUsd)||0;
+    const extra = [x.cart ? '카트 ' + fmtPhp(x.cart) : '', x.caddy ? '캐디 ' + fmtPhp(x.caddy) : ''].filter(Boolean).join(' · ');
+    return `<tr><td>${esc(x.name)} 그린피${extra ? '<br><span style="font-size:11px;color:#b45309;">현지 별도: ' + extra + '</span>' : ''}</td><td>${fmtUsd(x.usd)} <span class="unit">(${fmtPhp(x.php)}/인)</span></td><td>${x.rounds}R × ${x.golfers}명</td><td>${fmtUsd(x.amountUsd)}</td></tr>`; });
+  html += table('⛳ 골프장' + (data.seasonLabel ? ' <span style="font-size:11px;color:#888;font-weight:400;">' + esc(data.seasonLabel) + ' 그린피</span>' : ''), golfRows);
+  // 이동·레슨·식사·기타·커스텀 — 저장된 섹션 순서대로 묶기
+  const groups = [];
+  (data.items||[]).forEach(it => { let grp = groups.find(x => x.key === it.section); if (!grp) { grp = { key: it.section, label: it.sectionLabel || '추가 항목', rows: [] }; groups.push(grp); }
+    total += Number(it.amountUsd)||0;
+    grp.rows.push(`<tr><td>${it.icon ? it.icon + ' ' : ''}${esc(it.name)}</td><td>${fmtUsd(it.usd)} <span class="unit">(${fmtPhp(it.php)}${it.unit ? '/' + esc(it.unit) : ''})</span></td><td>${it.qty}${it.unit && !it.custom ? esc(it.unit) : ''}${it.perPerson ? ' × ' + it.pax + '명' : ''}</td><td>${fmtUsd(it.amountUsd)}</td></tr>`); });
+  groups.forEach(grp => { html += table(esc(grp.label), grp.rows); });
+  if (!html) html = '<div style="font-size:13px;color:#999;padding:12px 0;">선택된 항목이 없습니다.</div>';
+  box.innerHTML = html;
+
+  total = Number(data.totalUSD) || Math.round(total*100)/100;
+  document.getElementById('out-total-usd').textContent = fmtUsd(total);
+  document.getElementById('out-total-krw').textContent = '약 ₩' + Math.round(total*krwRate).toLocaleString() + ' (환율 ' + Number(krwRate).toLocaleString() + '원 기준)' + (pax > 0 ? ' · 1인 약 ' + fmtUsd(total/pax) : '');
+  const hasExtra = (data.golf||[]).some(x => x.cart || x.caddy);
+  document.getElementById('out-total-note').textContent = hasExtra ? '※ 카트·캐디피는 골프장에서 현지 별도 지불' : (data.nights ? data.nights + '박 ' + (data.nights+1) + '일 기준' : '');
+
+  // 포함/불포함 — 패키지 연결 시 카드 목록, 아니면 선택 항목으로
+  const pkgYes = Array.isArray(data.packageInclYes) ? data.packageInclYes.filter(Boolean) : [];
+  const pkgNo  = Array.isArray(data.packageInclNo)  ? data.packageInclNo.filter(Boolean)  : [];
+  let inc = pkgYes, exc = pkgNo;
+  if (!inc.length && !exc.length) {
+    inc = [];
+    if (data.hotel) inc.push(data.hotel.name + ' ' + data.hotel.nights + '박');
+    (data.golf||[]).forEach(x => inc.push(x.name + ' 그린피 ' + x.rounds + '라운드'));
+    (data.items||[]).forEach(it => inc.push(it.name + (it.qty > 1 ? ' ×' + it.qty : '')));
+    exc = [];
+    (data.golf||[]).forEach(x => { const e = [x.cart ? '카트 ' + fmtPhp(x.cart) : '', x.caddy ? '캐디 ' + fmtPhp(x.caddy) : ''].filter(Boolean).join(' · '); if (e) exc.push(x.name + ' ' + e); });
+    exc.push('항공권'); exc.push('여행자 보험');
+  }
+  document.getElementById('out-includes').innerHTML = inc.map(i=>`<li>${esc(i)}</li>`).join('');
+  document.getElementById('out-excludes').innerHTML = exc.map(i=>`<li>${esc(i)}</li>`).join('');
+
+  if (data.remarks) { document.getElementById('out-remarks').textContent = data.remarks; document.getElementById('out-remarks-section').style.display = 'block'; }
+  if (data.itineraryHtml && data.itineraryHtml.trim()) {
+    document.getElementById('out-itinerary').innerHTML = data.itineraryHtml;
+    document.getElementById('itin-title').textContent = data.itineraryTitle ? data.itineraryTitle + ' 여행 일정' : '여행 일정';
+    document.getElementById('itinSection').style.display = 'block';
+  }
+}
+
 function renderQuote(data) {
   const rate = data.rate?.appliedUsdPhp || 53.2;
   const krwRate = data.rate?.usdKrw || 1380;
@@ -304,6 +371,8 @@ function renderQuote(data) {
   document.getElementById('out-course').textContent   = data.golfCourse;
   document.getElementById('out-accom').textContent    = data.accommodation;
 
+  if (data.version === 2) { renderQuoteV2(data, krwRate); return; }
+
   const g = renderTable(GOLF_ITEMS,   data, 'out-golf');
   const l = renderTable(LESSON_ITEMS, data, 'out-lesson');
   const s = renderTable(STAY_ITEMS,   data, 'out-stay');
@@ -312,7 +381,13 @@ function renderQuote(data) {
   document.getElementById('out-total-usd').textContent = '$' + Number(total.toFixed(2)).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
   document.getElementById('out-total-krw').textContent = '약 ₩' + Math.round(total*krwRate).toLocaleString() + ' (환율 ' + Number(krwRate).toLocaleString() + '원 기준)';
 
-  // 포함/불포함
+  // 포함/불포함 — admin에서 패키지를 연결해 저장했으면 그 패키지 카드의 포함/불포함 목록을 그대로 사용
+  const pkgYes = Array.isArray(data.packageInclYes) ? data.packageInclYes.filter(Boolean) : [];
+  const pkgNo  = Array.isArray(data.packageInclNo)  ? data.packageInclNo.filter(Boolean)  : [];
+  if (pkgYes.length || pkgNo.length) {
+    document.getElementById('out-includes').innerHTML = pkgYes.map(i=>`<li>${i}</li>`).join('');
+    document.getElementById('out-excludes').innerHTML = pkgNo.map(i=>`<li>${i}</li>`).join('');
+  } else {
   const inc = [];
   if ((data.items?.accom?.qty||0)>0)        inc.push('HOTEL & 숙소 '+data.items.accom.qty+'박');
   if ((data.items?.greenfee?.qty||0)>0)     inc.push('그린피 '+data.items.greenfee.qty+'라운드');
@@ -330,6 +405,7 @@ function renderQuote(data) {
   if ((data.items?.consum?.qty||0)>0)    exc.push('컨슘어블 (현지 직접 지불)');
   exc.push('항공권'); exc.push('여행자 보험'); exc.push('식사는 모두 불포함');
   document.getElementById('out-excludes').innerHTML = exc.map(i=>`<li>${i}</li>`).join('');
+  }
 
   if (data.remarks) {
     document.getElementById('out-remarks').textContent = data.remarks;
