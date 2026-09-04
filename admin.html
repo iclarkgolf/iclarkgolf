@@ -1461,6 +1461,23 @@ window.adminLogout = function() {
 
 <!-- ========== 문의 내역 ========== -->
 <div class="panel" id="panel-inquiry">
+  <!-- 2026-09-04: 새 문의 즉시 이메일 알림 설정 (Web3Forms 무료 — 키는 Firestore settings/notify 에 저장, 손님 페이지가 읽어감) -->
+  <div class="mgmt-card" style="border:1.5px solid #c7d2fe;background:#f8f9ff;">
+    <div class="mgmt-title">📣 새 문의 이메일 알림
+      <span id="ntf-status" style="font-size:12px;font-weight:700;color:#9ca3af;">확인 중...</span>
+    </div>
+    <div style="font-size:12px;color:#6b7280;line-height:1.7;margin-bottom:10px;">
+      손님이 <b>30초 간편 문의(이름·연락처 남김)</b> 또는 <b>맞춤 견적 신청</b>을 하면 그 즉시 이메일로 알려줍니다.<br>
+      처음 한 번만: <a href="https://web3forms.com" target="_blank" style="color:#534AB7;font-weight:700;">web3forms.com</a> 에서 알림 받을 이메일 입력 → 메일로 온 <b>Access Key</b>를 아래에 붙여넣고 저장.
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <input id="ntf-key" type="text" placeholder="Web3Forms Access Key (예: 1a2b3c4d-....)" style="flex:1;min-width:220px;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:inherit;">
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#18181b;white-space:nowrap;"><input id="ntf-enabled" type="checkbox" checked style="width:18px;height:18px;"> 알림 켜기</label>
+      <button onclick="saveNotifySettings()" style="background:#534AB7;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:800;cursor:pointer;">💾 저장</button>
+      <button onclick="testNotify()" style="background:#d1fae5;color:#065f46;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:800;cursor:pointer;">✉️ 테스트 메일 보내기</button>
+    </div>
+  </div>
+
   <div class="mgmt-card">
     <div class="mgmt-title">📩 견적 문의 내역 <span>전체</span></div>
     <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
@@ -1903,7 +1920,7 @@ function showTab(name, el) {
   if (name === 'accommodation') loadAccoms();
   if (name === 'greenfee') renderGreenfeeTbl();
   if (name === 'caddy') loadCaddyData();
-  if (name === 'inquiry') { loadInquiries(); loadWebInquiries(); }
+  if (name === 'inquiry') { loadInquiries(); loadWebInquiries(); loadNotifySettings(); }
   if (name === 'gallery') loadGalleryAdmin();
   if (name === 'package') loadCards();
   if (name === 'profile') loadProfile();
@@ -4090,6 +4107,51 @@ async function loadWebInquiries() {
     console.error('웹 문의 로드 실패:', e);
     body.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#dc2626;padding:20px;">⚠️ 로드 실패 — Firebase 확인 필요</td></tr>';
   }
+}
+
+/* ── 새 문의 이메일 알림 설정 (settings/notify) ── */
+async function loadNotifySettings() {
+  const st = document.getElementById('ntf-status');
+  if (!st) return;
+  try {
+    const db = await initCardDB();
+    const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDoc(doc(db, 'settings', 'notify'));
+    const d = snap.exists() ? snap.data() : {};
+    document.getElementById('ntf-key').value = d.web3formsKey || '';
+    document.getElementById('ntf-enabled').checked = d.enabled !== false;
+    if (!d.web3formsKey) { st.textContent = '⚠️ 아직 설정 안 됨'; st.style.color = '#dc2626'; }
+    else if (d.enabled === false) { st.textContent = '⏸ 꺼짐'; st.style.color = '#92400e'; }
+    else { st.textContent = '✅ 켜짐'; st.style.color = '#065f46'; }
+  } catch(e) {
+    console.error('알림 설정 로드 실패:', e);
+    st.textContent = '로드 실패'; st.style.color = '#dc2626';
+  }
+}
+async function saveNotifySettings() {
+  const key = document.getElementById('ntf-key').value.trim();
+  const enabled = document.getElementById('ntf-enabled').checked;
+  if (!key) { alert('Access Key를 붙여넣어 주세요. (web3forms.com 에서 이메일 입력 후 메일로 받습니다)'); return; }
+  try {
+    const db = await initCardDB();
+    const { doc, setDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await setDoc(doc(db, 'settings', 'notify'), { web3formsKey: key, enabled, updated: serverTimestamp() }, { merge: true });
+    showToast('💾 알림 설정 저장 완료');
+    loadNotifySettings();
+  } catch(e) { alert('저장 실패: ' + e.message); }
+}
+async function testNotify() {
+  const key = document.getElementById('ntf-key').value.trim();
+  if (!key) { alert('먼저 Access Key를 입력·저장해 주세요.'); return; }
+  try {
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ access_key: key, subject: '✅ [iCLARKGOLF] 알림 테스트', from_name: 'iCLARKGOLF 새 문의 알림', '내용': '관리자 페이지에서 보낸 테스트 메일입니다. 이 메일이 왔다면 새 문의 알림이 정상 작동합니다.', '보낸시각': new Date().toLocaleString('ko-KR') })
+    });
+    const j = await res.json().catch(() => ({}));
+    if (res.ok && j.success !== false) showToast('✉️ 테스트 메일 발송 — 받은편지함(스팸함도) 확인하세요');
+    else alert('발송 실패: ' + (j.message || res.status) + '\nAccess Key가 맞는지 확인해 주세요.');
+  } catch(e) { alert('발송 실패: ' + e.message); }
 }
 
 /* ── 30초 문의 → 손님에게 문자 보내기 ── */
