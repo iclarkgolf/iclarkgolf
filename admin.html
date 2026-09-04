@@ -4572,6 +4572,12 @@ async function loadVisitorStats() {
     <textarea class="q2-inp" id="q2Remarks" placeholder="특이사항 보충 설명" style="min-height:90px;resize:vertical;"></textarea>
   </div>
 
+  <div class="q2-card">
+    <div class="q2-title">🗂️ 저장된 견적서 목록 <small>손님은 "나의 견적"에서 이름으로 가장 최근 것을 봅니다 · 필요 없는 견적서는 여기서 삭제</small>
+      <button onclick="q2ListQuotes()" style="background:#EEEDFE;color:#3C3489;border:none;border-radius:100px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;">🔄 새로고침</button></div>
+    <div id="q2QuoteList" style="font-size:13px;color:#9ca3af;">불러오는 중...</div>
+  </div>
+
   <div class="q2-card" style="background:#f8f5f0;">
     <div style="font-size:12px;font-weight:700;color:#6b7280;margin-bottom:8px;">🔍 기존 견적서 불러오기 (고객 이름 입력)</div>
     <div style="display:flex;gap:8px;">
@@ -4630,7 +4636,7 @@ function qfInit(){
   var sync=(typeof syncGreenfeeFromFirebase==='function')?syncGreenfeeFromFirebase():Promise.resolve();
   _q2Ready=Promise.all([ sync, q2LoadConfig(), q2LoadHotels(), qfLoadPackages() ]).then(function(){
     var sm=document.getElementById('q2SeasonMonths'); if(sm) sm.textContent='(성수기: '+peakMonthsLabel()+')';
-    q2RenderHotelOptions(); q2RenderGolf(); q2RenderSections(); qfSeasonBadge(); q2Recalc();
+    q2RenderHotelOptions(); q2RenderGolf(); q2RenderSections(); qfSeasonBadge(); q2Recalc(); q2ListQuotes();
   }).catch(function(e){ console.error('견적서 초기화 실패:',e); q2RenderGolf(); q2RenderSections(); q2Recalc(); });
 }
 
@@ -4927,6 +4933,7 @@ function qfSave(){
     document.getElementById('qfLinkBox').style.display='block';
     document.getElementById('qfLinkBox').scrollIntoView({behavior:'smooth'});
     alert('✅ 견적서 저장 완료!\n\n링크가 아래에 생성됐습니다.\n복사 버튼을 눌러 고객에게 전송하세요.');
+    q2ListQuotes();
   }).catch(function(e){ alert('❌ 저장 실패: '+e.message); });
 }
 
@@ -5016,6 +5023,35 @@ function qfLoad(){
       bannerHtml:'<div style="font-weight:800;color:#92400e;">⚠️ 구버전 견적서를 불러왔습니다</div><div style="font-size:12px;color:#374151;margin-top:4px;">이름·인원·Remarks만 가져왔습니다. 숙소·골프장·항목은 아래에서 다시 골라 저장하면 새 형식으로 바뀝니다. (손님이 보던 옛 견적서는 그대로 남아 있습니다)</div>' })
       .then(function(){ document.getElementById('q2No').value=d.quoteNo||''; document.getElementById('q2Doctype').value=d.docType||'견적서'; });
   }).catch(function(e){ msg.textContent='오류: '+e.message; msg.style.display='block'; });
+}
+
+/* ── 저장된 견적서 목록 / 삭제 ── */
+var _q2QuoteDocs=[];
+function q2ListQuotes(){
+  var box=document.getElementById('q2QuoteList'); if(!box) return;
+  box.innerHTML='<span style="color:#9ca3af;">불러오는 중...</span>';
+  q2Fb().then(function(o){ return o.fs.getDocs(o.fs.collection(o.db,'quotes')); }).then(function(snap){
+    var list=[]; snap.forEach(function(d){ list.push({ id:d.id, data:d.data()||{} }); });
+    list.sort(function(a,b){ return String(b.data.createdAt||'').localeCompare(String(a.data.createdAt||'')); });
+    _q2QuoteDocs=list;
+    if(!list.length){ box.innerHTML='<span style="color:#9ca3af;">저장된 견적서가 없습니다</span>'; return; }
+    box.innerHTML='<div class="tbl-wrap"><table class="tbl" style="font-size:12.5px;"><thead><tr><th>견적번호</th><th>고객명</th><th>저장일</th><th>합계</th><th>형식</th><th>보기</th><th>삭제</th></tr></thead><tbody>'
+      +list.map(function(x){ var d=x.data; var dt=d.createdAt?new Date(d.createdAt).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'-';
+        var total=(d.version===2)?('$'+Number(d.totalUSD||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})):'-';
+        return '<tr><td style="white-space:nowrap;font-weight:700;">'+q2Esc(d.quoteNo||x.id)+'</td><td style="white-space:nowrap;">'+q2Esc(d.clientName||'-')+'</td><td style="white-space:nowrap;">'+dt+'</td><td style="white-space:nowrap;">'+total+'</td>'
+          +'<td>'+(d.version===2?'<span style="background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;">새 형식</span>':'<span style="background:#f3f4f6;color:#6b7280;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;">구버전</span>')+'</td>'
+          +'<td><a href="https://iclarkgolf.com/my-quote.html?id='+encodeURIComponent(x.id)+'" target="_blank" style="color:#534AB7;font-weight:700;text-decoration:none;white-space:nowrap;">👁 보기</a></td>'
+          +'<td><button onclick="q2DeleteQuote(\''+q2Esc(x.id)+'\')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:16px;" title="삭제">🗑️</button></td></tr>'; }).join('')
+      +'</tbody></table></div>';
+  }).catch(function(e){ box.innerHTML='<span style="color:#dc2626;">목록 로드 실패: '+q2Esc(e.message)+'</span>'; });
+}
+function q2DeleteQuote(id){
+  var x=_q2QuoteDocs.find(function(q){return q.id===id;}); var d=x?x.data:{};
+  if(!confirm('견적서 '+(d.quoteNo||id)+' ('+(d.clientName||'-')+')을(를) 삭제할까요?\n삭제하면 손님도 이 견적서를 더 볼 수 없습니다. 되돌릴 수 없습니다.')) return;
+  q2Fb().then(function(o){ return o.fs.deleteDoc(o.fs.doc(o.db,'quotes',id)); }).then(function(){
+    if(typeof showToast==='function') showToast('🗑️ '+(d.quoteNo||id)+' 삭제됨');
+    q2ListQuotes();
+  }).catch(function(e){ alert('삭제 실패: '+e.message); });
 }
 
 function qfPreview(){ var link=document.getElementById('qfLinkUrl').value; if(link) window.open(link,'_blank'); else alert('먼저 견적서를 저장해주세요.'); }
