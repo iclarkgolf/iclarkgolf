@@ -1465,15 +1465,21 @@ try {
      </a>
     <!-- AUTO-GENERATED:LODGING:END -->
   </div>
+  <div id="lodging-more-wrap" style="margin-top:16px;text-align:center;"></div>
 </div>
 
 <script>
 /* ── 2026-08-15: 숙소 4곳 수동 관리를 그만두고, 아고다(Agoda) 클락/앙헬레스
    지역의 실시간 호텔 가격·사진을 그대로 보여주는 방식으로 전환.
    agoda-hotels.json은 GitHub Actions가 6시간마다 아고다 API를 호출해
-   자동으로 갱신하는 정적 파일(.github/scripts/fetch-agoda-data.js) ── */
+   자동으로 갱신하는 정적 파일(.github/scripts/fetch-agoda-data.js)
+   2026-09-10: 가격 높은 순 정렬 + "더보기" 페이지네이션 추가 (기본 8개 노출) ── */
 (async function(){
   const grid = document.getElementById('lodging-grid');
+  const moreWrap = document.getElementById('lodging-more-wrap');
+  const LODGING_PAGE_SIZE = 8;
+  let lodgingExpanded = false;
+  let sortedHotels = [];
 
   function escapeHtml(str) {
     return String(str ?? '').replace(/[&<>"']/g, (c) => ({
@@ -1487,6 +1493,47 @@ try {
     return '★'.repeat(Math.min(full,5)) + '☆'.repeat(Math.max(5-full,0));
   }
 
+  function cardHtml(h) {
+    const stars = starsHtml(h.starRating);
+    const priceNum = Math.round(Number(h.price) || 0);
+    const thumbHTML = h.image
+      ? `<img src="${escapeHtml(h.image)}" alt="${escapeHtml(h.name)}" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'thumb-emoji\\'>🏨</span>'">`
+      : `<span class="thumb-emoji">🏨</span>`;
+    const reviewTag = h.reviewScore ? `<span class="lodging-tag special">후기 ${h.reviewScore}점</span>` : '';
+
+    return `
+    <a href="${escapeHtml(h.bookingUrl)}" target="_blank" rel="noopener" class="lodging-card" style="text-decoration:none;display:flex;flex-direction:column;cursor:pointer;">
+      <div class="lodging-thumb">
+        ${thumbHTML}
+        <span class="lodging-type-badge hotel">아고다</span>
+      </div>
+      <div class="lodging-body">
+        ${stars ? `<div class="lodging-stars">${stars}</div>` : ''}
+        <div class="lodging-name">${escapeHtml(h.name)}</div>
+        <div class="lodging-price">₱${priceNum.toLocaleString()}<span style="font-size:11px;">/박</span></div>
+        <div class="lodging-location">📍 앙헬레스 / 클락</div>
+        ${reviewTag ? `<div class="lodging-tags">${reviewTag}</div>` : ''}
+        <div class="lodging-btn">아고다에서 예약 →</div>
+      </div>
+    </a>`;
+  }
+
+  function renderLodgingGrid() {
+    const visible = lodgingExpanded ? sortedHotels : sortedHotels.slice(0, LODGING_PAGE_SIZE);
+    grid.innerHTML = visible.map(cardHtml).join('');
+
+    if (sortedHotels.length > LODGING_PAGE_SIZE) {
+      moreWrap.innerHTML = `<button type="button" id="lodging-more-btn" style="padding:12px 28px;background:#fff;color:#534AB7;border:1.5px dashed #534AB7;border-radius:100px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;">${lodgingExpanded ? '접기 ▲' : `숙소 더보기 (전체 ${sortedHotels.length}개) ▼`}</button>`;
+      document.getElementById('lodging-more-btn').onclick = function(){
+        lodgingExpanded = !lodgingExpanded;
+        renderLodgingGrid();
+        if (!lodgingExpanded) grid.scrollIntoView({behavior:'smooth', block:'start'});
+      };
+    } else {
+      moreWrap.innerHTML = '';
+    }
+  }
+
   try {
     const res = await fetch('agoda-hotels.json?t=' + Date.now());
     if (!res.ok) throw new Error('agoda-hotels.json fetch failed: ' + res.status);
@@ -1498,32 +1545,9 @@ try {
       return;
     }
 
-    const html = hotels.map(h => {
-      const stars = starsHtml(h.starRating);
-      const priceNum = Math.round(Number(h.price) || 0);
-      const thumbHTML = h.image
-        ? `<img src="${escapeHtml(h.image)}" alt="${escapeHtml(h.name)}" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'thumb-emoji\\'>🏨</span>'">`
-        : `<span class="thumb-emoji">🏨</span>`;
-      const reviewTag = h.reviewScore ? `<span class="lodging-tag special">후기 ${h.reviewScore}점</span>` : '';
-
-      return `
-      <a href="${escapeHtml(h.bookingUrl)}" target="_blank" rel="noopener" class="lodging-card" style="text-decoration:none;display:flex;flex-direction:column;cursor:pointer;">
-        <div class="lodging-thumb">
-          ${thumbHTML}
-          <span class="lodging-type-badge hotel">아고다</span>
-        </div>
-        <div class="lodging-body">
-          ${stars ? `<div class="lodging-stars">${stars}</div>` : ''}
-          <div class="lodging-name">${escapeHtml(h.name)}</div>
-          <div class="lodging-price">₱${priceNum.toLocaleString()}<span style="font-size:11px;">/박</span></div>
-          <div class="lodging-location">📍 앙헬레스 / 클락</div>
-          ${reviewTag ? `<div class="lodging-tags">${reviewTag}</div>` : ''}
-          <div class="lodging-btn">아고다에서 예약 →</div>
-        </div>
-      </a>`;
-    }).join('');
-
-    grid.innerHTML = html;
+    // 비싼 호텔부터 싼 호텔 순으로 정렬
+    sortedHotels = hotels.slice().sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
+    renderLodgingGrid();
   } catch(e) {
     console.error('아고다 숙소 목록 로드 실패:', e);
     grid.innerHTML = '<p style="color:#9ca3af;font-size:13px;padding:20px 0;">숙소 정보를 불러오지 못했습니다. 잠시 후 다시 확인해주세요.</p>';
