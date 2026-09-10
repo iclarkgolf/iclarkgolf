@@ -1039,6 +1039,7 @@ async function loadGreenfeeFromFirebase() {
             thumbWrap.classList.add('show');
             const img = thumbWrap.querySelector('.cc-thumb-img');
             img.src = g.img;
+            img.alt = nameEl.textContent.trim() + ' 골프장 전경 사진';
             img.style.objectPosition = 'center ' + (g.imgPosY !== undefined ? g.imgPosY : 50) + '%';
           } else {
             thumbWrap.classList.remove('show');
@@ -1061,7 +1062,7 @@ async function loadGreenfeeFromFirebase() {
         if (gallery) {
           if (g.photos && g.photos.length) {
             gallery.classList.add('show');
-            gallery.innerHTML = g.photos.map(u => '<img src="' + u + '" loading="lazy" onerror="this.style.display=\'none\'">').join('');
+            gallery.innerHTML = g.photos.map((u, i) => '<img src="' + u + '" alt="' + nameEl.textContent.trim() + ' 골프장 사진 ' + (i + 1) + '" loading="lazy" onerror="this.style.display=\'none\'">').join('');
           } else {
             gallery.classList.remove('show');
             gallery.innerHTML = '';

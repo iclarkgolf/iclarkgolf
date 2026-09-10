@@ -762,6 +762,7 @@ function openModal(id,imgUrl,title,nick,likes,desc){
   window._modalTranslated=null;
   window._modalShowingTranslated=false;
   document.getElementById('modal-img').src=imgUrl;
+  document.getElementById('modal-img').alt=title||'클락 골프 갤러리 사진';
   document.getElementById('modal-title').textContent=title;
   document.getElementById('modal-nick').textContent='👤 '+nick;
   document.getElementById('modal-likes').textContent=likes;
