@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-13T01:48:00.336Z",
+  "updatedAt": "2026-09-13T07:12:06.181Z",
   "hotels": [
     {
       "hotelId": 90091,
@@ -112,17 +112,6 @@
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=675470&currency=PHP&checkin=2026-09-27&checkout=2026-09-28&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     },
     {
-      "hotelId": 294784,
-      "name": "데베라 호텔",
-      "price": 1406.08,
-      "crossedOutPrice": 2800,
-      "currency": "PHP",
-      "image": "http://pix8.agoda.net/hotelImages/294784/-1/466373037f6ef0bed369d101877b5dd1.jpg?ce=0&s=800x600",
-      "starRating": 3,
-      "reviewScore": 8.2,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=294784&currency=PHP&checkin=2026-09-27&checkout=2026-09-28&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
-    },
-    {
       "hotelId": 2190917,
       "name": "리샨 빌리지 레지던스",
       "price": 1578.43,
@@ -220,6 +209,127 @@
       "starRating": 5,
       "reviewScore": 8,
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=274383&currency=PHP&checkin=2026-09-27&checkout=2026-09-28&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+    },
+    {
+      "hotelId": 272536,
+      "name": "와일드 오키드 리조트",
+      "price": 3081.72,
+      "crossedOutPrice": 4000,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/272536/-1/1112b6ccefcd132cb9020b0330a1733b.jpg?ce=0&s=800x600",
+      "starRating": 3,
+      "reviewScore": 8.3,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=272536&currency=PHP&checkin=2026-09-27&checkout=2026-09-28&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+    },
+    {
+      "hotelId": 412834,
+      "name": "더 펜트하우스 호텔",
+      "price": 3097.41,
+      "crossedOutPrice": 6500,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/412/412834/412834_15070813270031861376.jpg?ca=4&ce=1&s=800x600",
+      "starRating": 3,
+      "reviewScore": 7.9,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=412834&currency=PHP&checkin=2026-09-27&checkout=2026-09-28&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+    },
+    {
+      "hotelId": 284370,
+      "name": "필즈 플라자 호텔",
+      "price": 7198.25,
+      "crossedOutPrice": 9845.11,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/284370/0/63ad82b9ce2e0dbdc77a6ea71cda6763.jpg?ce=0&s=800x600",
+      "starRating": 5,
+      "reviewScore": 9,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=284370&currency=PHP&checkin=2026-09-27&checkout=2026-09-28&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+    },
+    {
+      "hotelId": 344992,
+      "name": "클락 임페리얼 호텔 앙헬레스 시티",
+      "price": 1287.43,
+      "crossedOutPrice": 5149.71,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/344992/0/9ec5b59c1958b5af4572cfda55e74839.png?ce=3&s=800x600",
+      "starRating": 3,
+      "reviewScore": 7.7,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=344992&currency=PHP&checkin=2026-09-27&checkout=2026-09-28&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+    },
+    {
+      "hotelId": 761644,
+      "name": "디 암스테르담 호텔",
+      "price": 1904.56,
+      "crossedOutPrice": 2590,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/761644/0/eb161ab2122cf90433812af75f031df7.jpg?ce=3&s=800x600",
+      "starRating": 3,
+      "reviewScore": 8.3,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=761644&currency=PHP&checkin=2026-09-27&checkout=2026-09-28&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+    },
+    {
+      "hotelId": 185970,
+      "name": "서배너 리조트 호텔",
+      "price": 2391.32,
+      "crossedOutPrice": 5700,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/185/185970/185970_17062017000053898564.jpg?ca=6&ce=1&s=800x600",
+      "starRating": 4,
+      "reviewScore": 8.1,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=185970&currency=PHP&checkin=2026-09-27&checkout=2026-09-28&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+    },
+    {
+      "hotelId": 8807370,
+      "name": "Clark-Pad Inn, Angeles City",
+      "price": 714.28,
+      "crossedOutPrice": 0,
+      "currency": "PHP",
+      "image": "http://q-xx.bstatic.com/xdata/images/hotel/840x460/209036221.jpg?k=350c4784047491b2e0d908e2eebe9977d17893f2114903fe16302ddfea61c838&o=",
+      "starRating": 3.5,
+      "reviewScore": 8.2,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=8807370&currency=PHP&checkin=2026-09-27&checkout=2026-09-28&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+    },
+    {
+      "hotelId": 611501,
+      "name": "아폴로니아 로열 호텔",
+      "price": 1413.08,
+      "crossedOutPrice": 2500,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/611501/-1/5584c0efcd5ed36bd3299ee3c606f11f.jpg?ca=8&ce=1&s=800x600",
+      "starRating": 3,
+      "reviewScore": 7.9,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=611501&currency=PHP&checkin=2026-09-27&checkout=2026-09-28&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+    },
+    {
+      "hotelId": 46018777,
+      "name": "OYO 1119 헤베아 호텔 앤 리조트",
+      "price": 1892.13,
+      "crossedOutPrice": 0,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/46018777/0/90c4313ec69178a78e79082bd3817760.jpg?ce=2&s=800x600",
+      "starRating": 4,
+      "reviewScore": 7.6,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=46018777&currency=PHP&checkin=2026-09-27&checkout=2026-09-28&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+    },
+    {
+      "hotelId": 271843,
+      "name": "오키드 인 리조트",
+      "price": 1777.91,
+      "crossedOutPrice": 0,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/271843/0/4a95f7b659d9941e7f46a2b7d3bf59b0.jpg?ce=0&s=800x600",
+      "starRating": 3,
+      "reviewScore": 7.7,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=271843&currency=PHP&checkin=2026-09-27&checkout=2026-09-28&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
+    },
+    {
+      "hotelId": 522436,
+      "name": "발렌티노스 호텔",
+      "price": 1611.42,
+      "crossedOutPrice": 4700,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/522436/-1/833aef4c82dba32b4a018804127583aa.jpg?ce=0&s=800x600",
+      "starRating": 3,
+      "reviewScore": 7.9,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=522436&currency=PHP&checkin=2026-09-27&checkout=2026-09-28&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6"
     }
   ]
 }
