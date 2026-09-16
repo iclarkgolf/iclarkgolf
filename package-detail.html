@@ -32,8 +32,8 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 .hero{min-height:260px;display:flex;align-items:flex-end;padding:70px 20px 24px;position:relative;overflow:hidden;}
 .hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#054535,#1D9E75);}
 .hero-img{position:absolute;inset:0;background-size:cover;background-position:center 45%;}
-.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.42) 0%,rgba(0,0,0,0.04) 100%);}
-.hero-glow{position:absolute;right:-20px;top:-20px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.07);}
+.hero-overlay{position:absolute;inset:0;background:none;} /* 사진에 어둡게 색 입히던 효과 제거 — 원본 사진 그대로 보이게 함 */
+.hero-glow{position:absolute;right:-20px;top:-20px;width:160px;height:160px;border-radius:50%;background:none;} /* 사진 위 흰색 번짐 효과 제거 */
 .hero-line{position:absolute;left:0;top:0;bottom:0;width:4px;background:rgba(255,255,255,0.35);}
 .hero-content{position:relative;z-index:2;}
 .hero-tag{font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:.08em;margin-bottom:8px;text-shadow:0 1px 6px rgba(0,0,0,0.5);}
@@ -80,11 +80,12 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
   .itin-table th,.itin-table td{padding:7px 6px;}
   .itin-img{max-width:140px;}
   /* 모바일에서만 날짜·장소·시간 칸을 좁혀서 세부일정 칸이 더 넓게 펼쳐지도록 함 (데스크탑은 이 미디어쿼리 밖 규칙 그대로 유지) */
-  .itin-table th:nth-child(1){width:13%;}
-  .itin-table th:nth-child(2){width:19%;}
-  .itin-table th:nth-child(3){width:13%;}
-  .itin-table th:nth-child(4){width:55%;}
-  .itin-day,.itin-place,.itin-time{white-space:normal;}
+  .itin-table th:nth-child(1){width:16%;}
+  .itin-table th:nth-child(2){width:15%;}
+  .itin-table th:nth-child(3){width:12%;}
+  .itin-table th:nth-child(4){width:57%;}
+  /* 날짜·시간은 글자가 항상 짧아서(제1일, 24:40) 줄바꿈 없이 유지 — 장소만 이름이 길 수 있어 줄바꿈 허용 */
+  .itin-place{white-space:normal;}
 }
 
 /* 포함/불포함 */
