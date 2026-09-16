@@ -2697,20 +2697,17 @@ function ceSchSetEditMode(editing) {
   btn.textContent = editing ? '✅ 수정 완료' : '✏️ 직접 수정';
   if (editing) editor.focus();
 }
+// 표가 있으면 무조건 "일정표 만들기" 칸칸이 도구로 보낸다(묻지 않음) — 표 안 글자를 여기저기서
+// 손보다가 구조가 꼬이는 걸 막기 위해, 표가 있는 한 편집은 항상 이 도구를 통해서만 하도록 통일했다.
+// 표가 없을 때(글로만 간단히 쓴 경우)만 예전처럼 자유롭게 타이핑하는 모드로 들어간다.
 function ceSchToggleEdit() {
   const editor = document.getElementById('ce-schedule-editor');
   const editing = editor && editor.getAttribute('contenteditable') === 'true';
-  // 편집을 "시작"하려는 시점에 표가 들어있으면, 글자를 직접 손보게 하는 대신
-  // 원래 표를 만들었던 "일정표 만들기" 칸칸이 도구로 불러와서 일차 삭제 등 구조적으로 고치게 안내한다
   if (!editing && editor && editor.querySelector('.itin-table')) {
-    const useBuilder = confirm('표가 들어있네요.\n\n"일정표 만들기" 도구로 불러와서 일차 삭제·수정처럼 칸칸이 편집할까요?\n\n(취소를 누르면 지금처럼 표 안 글자를 직접 손보는 모드로 들어갑니다)');
-    if (useBuilder) {
-      if (ceItinLoadFromEditor()) {
-        showToast('📥 기존 표를 불러왔습니다. 아래에서 일차를 지우거나 고친 뒤 "표 삽입"을 다시 눌러주세요.');
-        document.getElementById('ce-itin-builder').scrollIntoView({behavior:'smooth', block:'start'});
-        return;
-      }
-    }
+    ceItinLoadFromEditor();
+    showToast('📥 기존 표를 불러왔습니다. 일차를 지우거나 고친 뒤 "표 삽입"을 누르면 통째로 교체됩니다.');
+    document.getElementById('ce-itin-builder').scrollIntoView({behavior:'smooth', block:'start'});
+    return;
   }
   ceSchSetEditMode(!editing);
 }
@@ -2722,8 +2719,6 @@ function ceSchClearAll() {
   if (!confirm('일정표 전체를 지울까요?\n\n저장하기 전까지는 실제 사이트에 반영되지 않고, 실수했다면 Ctrl+Z로 되돌릴 수 있습니다.')) return;
   editor.innerHTML = '';
   _ceDirty = true;
-  const builderBox = document.getElementById('ce-itin-builder');
-  if (builderBox) builderBox.dataset.replaceMode = '0'; // 비웠으니 더 이상 "기존 표 교체" 대상이 없음
   showToast('🗑️ 일정표를 전부 지웠습니다. 다시 채운 뒤 맨 아래 "저장하기"를 눌러야 반영돼요!');
 }
 // 에디터 안의 .itin-table 하나를 ceItinAddDay 등이 쓰는 days 배열 구조로 되돌려 파싱한다
@@ -2777,8 +2772,10 @@ function ceItinParseTable(tableEl) {
   });
   return days;
 }
-// 에디터에 이미 들어있는 표(들)를 "일정표 만들기" 도구로 불러온다 — 이후 "표 삽입"은
-// 새로 추가하는 대신 기존 표를 통째로 교체하도록 replaceMode를 켜둔다
+// 에디터에 이미 들어있는 표(들)를 "일정표 만들기" 도구로 불러온다.
+// 에디터에 표가 여러 개(중복분 포함) 있으면 전부 합쳐서 불러오므로, 필요 없는 일차를
+// "일차 삭제"로 지운 뒤 "표 삽입"을 누르면 된다 — 삽입은 항상 에디터 전체를 교체하므로
+// 몇 번을 다시 불러오고 고쳐도 부스러기가 남지 않는다.
 function ceItinLoadFromEditor() {
   const editor = document.getElementById('ce-schedule-editor');
   const tables = editor ? Array.from(editor.querySelectorAll('table.itin-table')) : [];
@@ -2787,7 +2784,6 @@ function ceItinLoadFromEditor() {
   tables.forEach(t => { allDays = allDays.concat(ceItinParseTable(t)); });
   ceItinSetDays(allDays);
   const box = document.getElementById('ce-itin-builder');
-  box.dataset.replaceMode = '1';
   box.style.display = 'block';
   document.getElementById('ce-itin-toggle-btn').textContent = '접기';
   ceItinRenderBuilder();
@@ -2801,7 +2797,12 @@ function ceItinToggle() {
   const opening = box.style.display === 'none';
   box.style.display = opening ? 'block' : 'none';
   btn.textContent = opening ? '접기' : '열기';
-  if (opening && ceItinGetDays().length === 0) ceItinAddDay();
+  // 처음 열 때 이미 에디터에 표가 있으면 먼저 그 내용을 불러온다 — "표 삽입"이 이제 항상
+  // 에디터 전체를 교체하므로, 기존 내용을 안 불러온 채로 새로 채워서 삽입하면 기존 표가 그대로
+  // 사라져버린다. 그런 일이 없도록 표가 있으면 무조건 먼저 불러오고, 없을 때만 빈 일차로 시작한다.
+  if (opening && ceItinGetDays().length === 0) {
+    if (!ceItinLoadFromEditor()) ceItinAddDay();
+  }
 }
 function ceItinGetDays() {
   try { return JSON.parse(document.getElementById('ce-itin-builder').dataset.days || '[]'); } catch { return []; }
@@ -2977,30 +2978,15 @@ function ceItinRenderPreview() {
   const html = ceItinBuildTableHTML();
   document.getElementById('ce-itin-preview').innerHTML = html || '<div style="font-size:12px;color:#9ca3af;">내용을 입력하면 여기 표 미리보기가 표시됩니다.</div>';
 }
+// "표 삽입"은 항상 에디터 전체를 지금 만든 표 하나로 통째로 교체한다(추가/append 아님).
+// 이렇게 통일해야 몇 번을 고치고 다시 넣어도 예전 표나 부스러기 줄바꿈이 절대 남지 않는다.
 function ceItinInsert() {
   const html = ceItinBuildTableHTML();
   if (!html) { showToast('표에 넣을 내용이 없습니다','error'); return; }
   const editor = document.getElementById('ce-schedule-editor');
-  const builderBox = document.getElementById('ce-itin-builder');
-  const replaceMode = builderBox && builderBox.dataset.replaceMode === '1';
-  if (replaceMode) {
-    // "✏️ 직접 수정" → 기존 표 불러오기를 거쳐 온 경우 — 새로 추가하지 않고 기존 표(들)를 통째로 교체
-    editor.querySelectorAll('table.itin-table').forEach(t => t.remove());
-    editor.focus();
-    editor.insertAdjacentHTML('beforeend', '<br>' + html + '<br>');
-    _ceDirty = true;
-    showToast('✅ 표를 교체했습니다. 아직 저장되지 않았어요 — 맨 아래 "저장하기"까지 눌러야 완료됩니다!');
-    editor.scrollIntoView({behavior:'smooth', block:'center'});
-    return;
-  }
-  if (editor.innerHTML.includes(html)) {
-    // 이미 똑같은 표가 들어있음 — 실수로 다시 눌러 중복 삽입되는 것을 막기 위해 확인 후 진행
-    if (!confirm('이미 같은 일정표가 삽입되어 있어요. 그래도 또 추가할까요?\n\n(취소하면 중복 삽입을 막습니다)')) return;
-  }
-  editor.focus();
-  editor.insertAdjacentHTML('beforeend', '<br>' + html + '<br>');
+  editor.innerHTML = html;
   _ceDirty = true; // 표 삽입은 입력 이벤트가 안 잡히므로 직접 표시 — 저장 전 이탈 방지용
-  showToast('✅ 표를 삽입했습니다. 아직 저장되지 않았어요 — 맨 아래 "저장하기"까지 눌러야 완료됩니다!');
+  showToast('✅ 표를 반영했습니다. 아직 저장되지 않았어요 — 맨 아래 "저장하기"까지 눌러야 완료됩니다!');
   editor.scrollIntoView({behavior:'smooth', block:'center'});
 }
 
