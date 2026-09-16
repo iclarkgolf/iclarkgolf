@@ -1234,7 +1234,10 @@ window.adminLogout = function() {
       <div style="background:#f0f7f4;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #c8edd9;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
           <div style="font-size:13px;font-weight:800;color:#085041;">📅 전지훈련 하루 일정표</div>
-          <button type="button" onclick="ceSchToggleEdit()" id="ce-sch-edit-btn" style="padding:5px 10px;background:#fff;border:1px solid #c8edd9;border-radius:6px;font-size:11px;font-weight:700;color:#1b4332;cursor:pointer;">✏️ 직접 수정</button>
+          <div style="display:flex;gap:6px;">
+            <button type="button" onclick="ceSchClearAll()" id="ce-sch-clear-btn" style="padding:5px 10px;background:#fff;border:1px solid #fecaca;border-radius:6px;font-size:11px;font-weight:700;color:#dc2626;cursor:pointer;">🗑️ 전체 지우기</button>
+            <button type="button" onclick="ceSchToggleEdit()" id="ce-sch-edit-btn" style="padding:5px 10px;background:#fff;border:1px solid #c8edd9;border-radius:6px;font-size:11px;font-weight:700;color:#1b4332;cursor:pointer;">✏️ 직접 수정</button>
+          </div>
         </div>
         <div style="font-size:11px;color:#6b7280;margin-bottom:10px;">평소엔 아래 "🗓️ 일정표 만들기" 도구로만 채우시면 됩니다 — 여기는 그 결과가 그대로 보이는 미리보기예요. 표를 만들지 않고 글로만 간단히 쓰고 싶거나, 완성된 표의 문구를 직접 손보고 싶을 때만 위 "✏️ 직접 수정" 버튼을 눌러주세요.</div>
 
@@ -2496,6 +2499,7 @@ async function saveCard() {
     msg.style.background = '#f0fdf4';
     msg.style.color = '#16a34a';
     msg.textContent = '✅ 저장됐어요!';
+    showToast('✅ 저장됐어요!'); // 스크롤 위치와 무관하게 화면 하단에 확실히 보이는 알림 (모바일에서 저장 확인이 잘 안 보여 다시 저장하는 것을 방지)
     _ceDirty = false; // 저장이 실제로 끝났으므로 이제 벗어나도 안전함
     setTimeout(() => { closeCardEditor(); loadCards(); }, 1500);
   } catch(e) {
@@ -2696,7 +2700,99 @@ function ceSchSetEditMode(editing) {
 function ceSchToggleEdit() {
   const editor = document.getElementById('ce-schedule-editor');
   const editing = editor && editor.getAttribute('contenteditable') === 'true';
+  // 편집을 "시작"하려는 시점에 표가 들어있으면, 글자를 직접 손보게 하는 대신
+  // 원래 표를 만들었던 "일정표 만들기" 칸칸이 도구로 불러와서 일차 삭제 등 구조적으로 고치게 안내한다
+  if (!editing && editor && editor.querySelector('.itin-table')) {
+    const useBuilder = confirm('표가 들어있네요.\n\n"일정표 만들기" 도구로 불러와서 일차 삭제·수정처럼 칸칸이 편집할까요?\n\n(취소를 누르면 지금처럼 표 안 글자를 직접 손보는 모드로 들어갑니다)');
+    if (useBuilder) {
+      if (ceItinLoadFromEditor()) {
+        showToast('📥 기존 표를 불러왔습니다. 아래에서 일차를 지우거나 고친 뒤 "표 삽입"을 다시 눌러주세요.');
+        document.getElementById('ce-itin-builder').scrollIntoView({behavior:'smooth', block:'start'});
+        return;
+      }
+    }
+  }
   ceSchSetEditMode(!editing);
+}
+// 중복/꼬임 등 문제가 생겼을 때 일일이 손으로 고치지 않고 통째로 비운 뒤 다시 채울 수 있게 하는 안전판
+function ceSchClearAll() {
+  const editor = document.getElementById('ce-schedule-editor');
+  if (!editor) return;
+  if (!editor.innerHTML.trim()) { showToast('이미 비어있어요', 'info'); return; }
+  if (!confirm('일정표 전체를 지울까요?\n\n저장하기 전까지는 실제 사이트에 반영되지 않고, 실수했다면 Ctrl+Z로 되돌릴 수 있습니다.')) return;
+  editor.innerHTML = '';
+  _ceDirty = true;
+  const builderBox = document.getElementById('ce-itin-builder');
+  if (builderBox) builderBox.dataset.replaceMode = '0'; // 비웠으니 더 이상 "기존 표 교체" 대상이 없음
+  showToast('🗑️ 일정표를 전부 지웠습니다. 다시 채운 뒤 맨 아래 "저장하기"를 눌러야 반영돼요!');
+}
+// 에디터 안의 .itin-table 하나를 ceItinAddDay 등이 쓰는 days 배열 구조로 되돌려 파싱한다
+// (rowspan으로 병합된 날짜·장소 칸을 그대로 되짚어 각 행에 다시 나눠 붙인다)
+function ceItinParseTable(tableEl) {
+  const days = [];
+  let curDay = null, dayLeft = 0;
+  let curSeg = null, segLeft = 0;
+  tableEl.querySelectorAll('tbody tr').forEach(tr => {
+    const tds = Array.from(tr.children);
+    let idx = 0;
+    if (dayLeft <= 0) {
+      const dayTd = tds[idx];
+      const dateSpan = dayTd.querySelector('.itin-date');
+      const dateText = dateSpan ? dateSpan.textContent.trim() : '';
+      const clone = dayTd.cloneNode(true);
+      const spanInClone = clone.querySelector('.itin-date');
+      if (spanInClone) spanInClone.remove();
+      curDay = { label: clone.textContent.trim(), date: dateText, segments: [] };
+      days.push(curDay);
+      dayLeft = parseInt(dayTd.getAttribute('rowspan') || '1', 10);
+      idx++;
+      segLeft = 0; // 새 일차는 항상 새 장소 구간으로 시작
+    }
+    dayLeft--;
+    if (segLeft <= 0) {
+      const placeTd = tds[idx];
+      curSeg = { place: placeTd.textContent.trim(), rows: [] };
+      curDay.segments.push(curSeg);
+      segLeft = parseInt(placeTd.getAttribute('rowspan') || '1', 10);
+      idx++;
+    }
+    segLeft--;
+    const timeTd = tds[idx]; idx++;
+    const detailTd = tds[idx];
+    const time = timeTd ? timeTd.textContent.trim() : '';
+    let emphasis = false, text = '', img = '';
+    if (detailTd) {
+      const imgEl = detailTd.querySelector('img.itin-img');
+      if (imgEl) img = imgEl.getAttribute('src') || '';
+      const strongEl = detailTd.querySelector('strong.itin-optional');
+      if (strongEl) { emphasis = true; text = strongEl.textContent.trim(); }
+      else {
+        const dClone = detailTd.cloneNode(true);
+        const imgInClone = dClone.querySelector('img');
+        if (imgInClone) imgInClone.remove();
+        text = dClone.textContent.trim();
+      }
+    }
+    curSeg.rows.push({ time, text, emphasis, img });
+  });
+  return days;
+}
+// 에디터에 이미 들어있는 표(들)를 "일정표 만들기" 도구로 불러온다 — 이후 "표 삽입"은
+// 새로 추가하는 대신 기존 표를 통째로 교체하도록 replaceMode를 켜둔다
+function ceItinLoadFromEditor() {
+  const editor = document.getElementById('ce-schedule-editor');
+  const tables = editor ? Array.from(editor.querySelectorAll('table.itin-table')) : [];
+  if (tables.length === 0) return false;
+  let allDays = [];
+  tables.forEach(t => { allDays = allDays.concat(ceItinParseTable(t)); });
+  ceItinSetDays(allDays);
+  const box = document.getElementById('ce-itin-builder');
+  box.dataset.replaceMode = '1';
+  box.style.display = 'block';
+  document.getElementById('ce-itin-toggle-btn').textContent = '접기';
+  ceItinRenderBuilder();
+  ceItinRenderPreview();
+  return true;
 }
 
 function ceItinToggle() {
@@ -2885,6 +2981,22 @@ function ceItinInsert() {
   const html = ceItinBuildTableHTML();
   if (!html) { showToast('표에 넣을 내용이 없습니다','error'); return; }
   const editor = document.getElementById('ce-schedule-editor');
+  const builderBox = document.getElementById('ce-itin-builder');
+  const replaceMode = builderBox && builderBox.dataset.replaceMode === '1';
+  if (replaceMode) {
+    // "✏️ 직접 수정" → 기존 표 불러오기를 거쳐 온 경우 — 새로 추가하지 않고 기존 표(들)를 통째로 교체
+    editor.querySelectorAll('table.itin-table').forEach(t => t.remove());
+    editor.focus();
+    editor.insertAdjacentHTML('beforeend', '<br>' + html + '<br>');
+    _ceDirty = true;
+    showToast('✅ 표를 교체했습니다. 아직 저장되지 않았어요 — 맨 아래 "저장하기"까지 눌러야 완료됩니다!');
+    editor.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  if (editor.innerHTML.includes(html)) {
+    // 이미 똑같은 표가 들어있음 — 실수로 다시 눌러 중복 삽입되는 것을 막기 위해 확인 후 진행
+    if (!confirm('이미 같은 일정표가 삽입되어 있어요. 그래도 또 추가할까요?\n\n(취소하면 중복 삽입을 막습니다)')) return;
+  }
   editor.focus();
   editor.insertAdjacentHTML('beforeend', '<br>' + html + '<br>');
   _ceDirty = true; // 표 삽입은 입력 이벤트가 안 잡히므로 직접 표시 — 저장 전 이탈 방지용
