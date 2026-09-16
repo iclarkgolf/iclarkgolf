@@ -75,7 +75,17 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 .itin-detail{color:#2c2c2c;}
 .itin-optional{color:#1b4332;text-decoration:underline;}
 .itin-img{max-width:220px;border-radius:8px;margin-top:8px;display:block;}
-@media(max-width:640px){.itin-table{font-size:11.5px;} .itin-table th,.itin-table td{padding:7px 8px;} .itin-img{max-width:140px;}}
+@media(max-width:640px){
+  .itin-table{font-size:11.5px;table-layout:fixed;}
+  .itin-table th,.itin-table td{padding:7px 6px;}
+  .itin-img{max-width:140px;}
+  /* 모바일에서만 날짜·장소·시간 칸을 좁혀서 세부일정 칸이 더 넓게 펼쳐지도록 함 (데스크탑은 이 미디어쿼리 밖 규칙 그대로 유지) */
+  .itin-table th:nth-child(1){width:13%;}
+  .itin-table th:nth-child(2){width:19%;}
+  .itin-table th:nth-child(3){width:13%;}
+  .itin-table th:nth-child(4){width:55%;}
+  .itin-day,.itin-place,.itin-time{white-space:normal;}
+}
 
 /* 포함/불포함 */
 .inc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
