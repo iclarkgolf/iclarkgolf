@@ -859,6 +859,22 @@ footer {
   footer { padding: 32px 40px; }
 }
 /* ── 숙소 섹션 ── */
+.lodging-search-wrap { margin: 14px 0 4px; }
+.lodging-search-input {
+  width: 100%;
+  padding: 12px 18px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-full);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--gray-900);
+  outline: none;
+  background: var(--white);
+  transition: border-color .15s;
+  box-sizing: border-box;
+}
+.lodging-search-input::placeholder { color: var(--gray-400); }
+.lodging-search-input:focus { border-color: #f59e0b; }
 .lodging-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
@@ -1405,6 +1421,9 @@ try {
     <h2 class="sec-title">🏨 추천 숙소</h2>
     <span style="background:linear-gradient(135deg,#f59e0b,#ea580c);color:#fff;font-size:11px;font-weight:800;padding:5px 12px;border-radius:100px;white-space:nowrap;">아고다 실시간 연동</span>
   </div>
+  <div class="lodging-search-wrap">
+    <input type="text" id="lodging-search" class="lodging-search-input" placeholder="🔍 예) 수빅이라고 쳐보세요 (클락·팜팡가·타를락·바타안도 검색 가능)" autocomplete="off">
+  </div>
   <div class="lodging-grid" id="lodging-grid">
     <!-- AUTO-GENERATED:LODGING:START (2026-08-12 기준 — admin.html 숙소 관리 탭과 동기화 필요) -->
     <a href="lodging-clarkton.html" class="lodging-card" style="text-decoration:none;display:flex;flex-direction:column;cursor:pointer;">
@@ -1477,9 +1496,28 @@ try {
 (async function(){
   const grid = document.getElementById('lodging-grid');
   const moreWrap = document.getElementById('lodging-more-wrap');
+  const searchInput = document.getElementById('lodging-search');
   const LODGING_PAGE_SIZE = 8;
   let lodgingExpanded = false;
   let sortedHotels = [];
+  let searchQuery = '';
+
+  function getFilteredHotels() {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return sortedHotels;
+    return sortedHotels.filter(h =>
+      (h.name || '').toLowerCase().includes(q) ||
+      (h.region || '').toLowerCase().includes(q)
+    );
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      searchQuery = this.value;
+      lodgingExpanded = false;
+      renderLodgingGrid();
+    });
+  }
 
   function escapeHtml(str) {
     return String(str ?? '').replace(/[&<>"']/g, (c) => ({
@@ -1511,7 +1549,7 @@ try {
         ${stars ? `<div class="lodging-stars">${stars}</div>` : ''}
         <div class="lodging-name">${escapeHtml(h.name)}</div>
         <div class="lodging-price">₱${priceNum.toLocaleString()}<span style="font-size:11px;">/박</span></div>
-        <div class="lodging-location">📍 앙헬레스 / 클락</div>
+        <div class="lodging-location">📍 ${escapeHtml(h.region || '앙헬레스 / 클락')}</div>
         ${reviewTag ? `<div class="lodging-tags">${reviewTag}</div>` : ''}
         <div class="lodging-btn">아고다에서 예약 →</div>
       </div>
@@ -1519,11 +1557,19 @@ try {
   }
 
   function renderLodgingGrid() {
-    const visible = lodgingExpanded ? sortedHotels : sortedHotels.slice(0, LODGING_PAGE_SIZE);
+    const list = getFilteredHotels();
+
+    if (list.length === 0) {
+      grid.innerHTML = `<p style="grid-column:1/-1;color:#9ca3af;font-size:13px;padding:20px 0;text-align:center;">'${escapeHtml(searchQuery)}'에 해당하는 숙소가 없습니다.<br>다른 지역명으로 검색해보세요 (예: 클락, 팜팡가, 타를락, 수빅, 바타안)</p>`;
+      moreWrap.innerHTML = '';
+      return;
+    }
+
+    const visible = lodgingExpanded ? list : list.slice(0, LODGING_PAGE_SIZE);
     grid.innerHTML = visible.map(cardHtml).join('');
 
-    if (sortedHotels.length > LODGING_PAGE_SIZE) {
-      moreWrap.innerHTML = `<button type="button" id="lodging-more-btn" style="padding:12px 28px;background:#fff;color:#534AB7;border:1.5px dashed #534AB7;border-radius:100px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;">${lodgingExpanded ? '접기 ▲' : `숙소 더보기 (전체 ${sortedHotels.length}개) ▼`}</button>`;
+    if (list.length > LODGING_PAGE_SIZE) {
+      moreWrap.innerHTML = `<button type="button" id="lodging-more-btn" style="padding:12px 28px;background:#fff;color:#534AB7;border:1.5px dashed #534AB7;border-radius:100px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;">${lodgingExpanded ? '접기 ▲' : `숙소 더보기 (전체 ${list.length}개) ▼`}</button>`;
       document.getElementById('lodging-more-btn').onclick = function(){
         lodgingExpanded = !lodgingExpanded;
         renderLodgingGrid();
