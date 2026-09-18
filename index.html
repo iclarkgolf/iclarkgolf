@@ -1501,14 +1501,25 @@ try {
   let lodgingExpanded = false;
   let sortedHotels = [];
   let searchQuery = '';
+  let dataLoaded = false;
+
+  const REGION_ALIASES = {
+    '앙헬레스/클락': 'angeles clark 앙헬레스 클락',
+    '산페르난도(팜팡가)': 'san fernando pampanga 산페르난도 팜팡가',
+    '마발라캇(팜팡가)': 'mabalacat pampanga 마발라캇 팜팡가',
+    '타를락시티': 'tarlac 타를락',
+    '올롱가포/수빅(잠발레스)': 'olongapo subic zambales 올롱가포 수빅 잠발레스',
+    '이바(잠발레스)': 'iba zambales 이바 잠발레스',
+    '바타안(발랑가/마리벨레스/모롱)': 'bataan balanga mariveles morong 바타안 발랑가 마리벨레스 모롱',
+  };
 
   function getFilteredHotels() {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return sortedHotels;
-    return sortedHotels.filter(h =>
-      (h.name || '').toLowerCase().includes(q) ||
-      (h.region || '').toLowerCase().includes(q)
-    );
+    return sortedHotels.filter(h => {
+      const haystack = [h.name || '', h.region || '', REGION_ALIASES[h.region] || ''].join(' ').toLowerCase();
+      return haystack.includes(q);
+    });
   }
 
   if (searchInput) {
@@ -1560,7 +1571,9 @@ try {
     const list = getFilteredHotels();
 
     if (list.length === 0) {
-      grid.innerHTML = `<p style="grid-column:1/-1;color:#9ca3af;font-size:13px;padding:20px 0;text-align:center;">'${escapeHtml(searchQuery)}'에 해당하는 숙소가 없습니다.<br>다른 지역명으로 검색해보세요 (예: 클락, 팜팡가, 타를락, 수빅, 바타안)</p>`;
+      grid.innerHTML = !dataLoaded
+        ? '<p style="grid-column:1/-1;color:#9ca3af;font-size:13px;padding:20px 0;text-align:center;">숙소 정보를 불러오는 중입니다...</p>'
+        : `<p style="grid-column:1/-1;color:#9ca3af;font-size:13px;padding:20px 0;text-align:center;">'${escapeHtml(searchQuery)}'에 해당하는 숙소가 없습니다.<br>다른 지역명으로 검색해보세요 (예: 클락, 팜팡가, 타를락, 수빅, 바타안)</p>`;
       moreWrap.innerHTML = '';
       return;
     }
@@ -1587,14 +1600,17 @@ try {
     const hotels = Array.isArray(data.hotels) ? data.hotels : [];
 
     if (hotels.length === 0) {
+      dataLoaded = true;
       grid.innerHTML = '<p style="color:#9ca3af;font-size:13px;padding:20px 0;">숙소 정보를 불러오는 중입니다. 잠시 후 다시 확인해주세요.</p>';
       return;
     }
 
     // 비싼 호텔부터 싼 호텔 순으로 정렬
     sortedHotels = hotels.slice().sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
+    dataLoaded = true;
     renderLodgingGrid();
   } catch(e) {
+    dataLoaded = true;
     console.error('아고다 숙소 목록 로드 실패:', e);
     grid.innerHTML = '<p style="color:#9ca3af;font-size:13px;padding:20px 0;">숙소 정보를 불러오지 못했습니다. 잠시 후 다시 확인해주세요.</p>';
   }
