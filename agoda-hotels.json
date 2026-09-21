@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-21T02:06:02.299Z",
+  "updatedAt": "2026-09-21T11:18:16.199Z",
   "hotels": [
     {
       "hotelId": 90091,
@@ -17,8 +17,8 @@
     {
       "hotelId": 497733,
       "name": "프라임 아시아 호텔",
-      "price": 2049.19,
-      "crossedOutPrice": 8196.76,
+      "price": 2092.46,
+      "crossedOutPrice": 8369.85,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/497733/-1/f5a7e36175451686909973219d792eab.jpg?ce=0&s=800x600",
       "starRating": 4,
@@ -496,19 +496,6 @@
       "cityId": 180098
     },
     {
-      "hotelId": 37210720,
-      "name": "마갈랑의 아파트먼트 (27m², 침실 1개, 프라이빗 욕실 1개)",
-      "price": 1581.14,
-      "crossedOutPrice": 0,
-      "currency": "PHP",
-      "image": "http://pix8.agoda.net/hotelImages/37210720/0/5b66349d20f13daf0527c923b31d8e81.png?ce=3&s=800x600",
-      "starRating": 3.5,
-      "reviewScore": 8.7,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=37210720&currency=PHP&checkin=2026-10-05&checkout=2026-10-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
-      "region": "산페르난도(팜팡가)",
-      "cityId": 180098
-    },
-    {
       "hotelId": 47060480,
       "name": "The Aces Crib at Azure North Pampanga",
       "price": 2565,
@@ -782,6 +769,19 @@
       "cityId": 180098
     },
     {
+      "hotelId": 87179750,
+      "name": "Cozy.co",
+      "price": 1998.49,
+      "crossedOutPrice": 3000,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/87179750/0/465a503898745f65b3851ba8923c5191.jpg?ce=3&s=800x600",
+      "starRating": 5,
+      "reviewScore": 8.9,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=87179750&currency=PHP&checkin=2026-10-05&checkout=2026-10-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
+      "region": "산페르난도(팜팡가)",
+      "cityId": 180098
+    },
+    {
       "hotelId": 104974,
       "name": "위더스 호텔 클락",
       "price": 5287.13,
@@ -836,7 +836,7 @@
     {
       "hotelId": 5862582,
       "name": "클락 메리어트 호텔",
-      "price": 10200,
+      "price": 9600,
       "crossedOutPrice": 0,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/5862582/-1/eebc943c5dabc54e08a2a573b111cb2f.jpg?ca=9&ce=1&s=800x600",
@@ -849,7 +849,7 @@
     {
       "hotelId": 10556623,
       "name": "힐튼 클락 선 밸리 리조트",
-      "price": 13592.3,
+      "price": 13035.5,
       "crossedOutPrice": 0,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/10556623/-1/11d705cefeaece0349d86435d2b8ecfe.jpg?ce=0&s=800x600",
@@ -1523,19 +1523,6 @@
       "cityId": 18217
     },
     {
-      "hotelId": 1156399,
-      "name": "더 리프 호텔 앤 레지던스",
-      "price": 2238.43,
-      "crossedOutPrice": 3900,
-      "currency": "PHP",
-      "image": "http://pix8.agoda.net/hotelImages/115/1156399/1156399_16011907290039225484.jpg?ca=6&ce=1&s=800x600",
-      "starRating": 3,
-      "reviewScore": 7.9,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=1156399&currency=PHP&checkin=2026-10-05&checkout=2026-10-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
-      "region": "올롱가포/수빅(잠발레스)",
-      "cityId": 18217
-    },
-    {
       "hotelId": 546632,
       "name": "체리 미드타운 호텔",
       "price": 1648.53,
@@ -1614,19 +1601,6 @@
       "cityId": 18217
     },
     {
-      "hotelId": 487356,
-      "name": "수빅 워터프런트 뷰 리조트",
-      "price": 1961.67,
-      "crossedOutPrice": 7846.68,
-      "currency": "PHP",
-      "image": "http://pix8.agoda.net/hotelImages/487356/0/3ae2b1343f05b4aa263efac2cdfb5cf3.jpg?ce=2&s=800x600",
-      "starRating": 3,
-      "reviewScore": 6.8,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=487356&currency=PHP&checkin=2026-10-05&checkout=2026-10-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
-      "region": "올롱가포/수빅(잠발레스)",
-      "cityId": 18217
-    },
-    {
       "hotelId": 4120404,
       "name": "망고스 비치프런트 리조트",
       "price": 1891.23,
@@ -1636,6 +1610,19 @@
       "starRating": 4.5,
       "reviewScore": 7.9,
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=4120404&currency=PHP&checkin=2026-10-05&checkout=2026-10-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
+      "region": "올롱가포/수빅(잠발레스)",
+      "cityId": 18217
+    },
+    {
+      "hotelId": 487356,
+      "name": "수빅 워터프런트 뷰 리조트",
+      "price": 1961.67,
+      "crossedOutPrice": 7846.68,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/487356/0/3ae2b1343f05b4aa263efac2cdfb5cf3.jpg?ce=2&s=800x600",
+      "starRating": 3,
+      "reviewScore": 6.8,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=487356&currency=PHP&checkin=2026-10-05&checkout=2026-10-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
       "region": "올롱가포/수빅(잠발레스)",
       "cityId": 18217
     },
@@ -1714,6 +1701,19 @@
       "starRating": 4.5,
       "reviewScore": 8.8,
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=30896281&currency=PHP&checkin=2026-10-05&checkout=2026-10-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
+      "region": "올롱가포/수빅(잠발레스)",
+      "cityId": 18217
+    },
+    {
+      "hotelId": 30896817,
+      "name": "더 팜스 리조트 앤 바",
+      "price": 1636.56,
+      "crossedOutPrice": 4000,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/30896817/0/27202fa879aa55292f2d0968a1e49920.jpeg?ce=0&s=800x600",
+      "starRating": 3,
+      "reviewScore": 7.6,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=30896817&currency=PHP&checkin=2026-10-05&checkout=2026-10-06&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
       "region": "올롱가포/수빅(잠발레스)",
       "cityId": 18217
     },
