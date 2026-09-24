@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-24T01:58:07.350Z",
+  "updatedAt": "2026-09-24T10:40:25.618Z",
   "hotels": [
     {
       "hotelId": 90091,
@@ -784,7 +784,7 @@
     {
       "hotelId": 104974,
       "name": "위더스 호텔 클락",
-      "price": 5286,
+      "price": 5191.13,
       "crossedOutPrice": 7800,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/104/104974/104974_14072516240020492698.jpg?ca=2&ce=1&s=800x600",
@@ -797,7 +797,7 @@
     {
       "hotelId": 4521249,
       "name": "더 맨션",
-      "price": 5256.32,
+      "price": 5054.52,
       "crossedOutPrice": 0,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/4521249/0/33966896298ea4dd008012995e84a67f.jpg?ce=2&s=800x600",
@@ -810,7 +810,7 @@
     {
       "hotelId": 1165590,
       "name": "로이스 호텔 앤 카지노",
-      "price": 8901.23,
+      "price": 8885.73,
       "crossedOutPrice": 0,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/1165590/0/2dc6495e04e150126e66121b15c435d9.png?ce=3&s=800x600",
@@ -862,8 +862,8 @@
     {
       "hotelId": 2161469,
       "name": "호텔 서울",
-      "price": 3092.34,
-      "crossedOutPrice": 7150,
+      "price": 3011.1,
+      "crossedOutPrice": 7700,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/2161469/-1/bf9a9da25f8b1bee8d14e25f1e307ef1.png?ce=0&s=800x600",
       "starRating": 3,
@@ -875,7 +875,7 @@
     {
       "hotelId": 36406456,
       "name": "엠 스테이 호텔",
-      "price": 3073.99,
+      "price": 2953.35,
       "crossedOutPrice": 9000,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/36406456/602762793/369cfa28026fc45e8bd1b706a11eb9e0.jpeg?s=800x600",
@@ -888,12 +888,12 @@
     {
       "hotelId": 79831202,
       "name": "더 퍼스트 클라크 호텔 앤 레지던스",
-      "price": 5289.6,
+      "price": 5066.64,
       "crossedOutPrice": 15904,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/79831202/0/2a92cd1fb9fda9f7af981cf1a141fcbf.png?ce=2&s=800x600",
       "starRating": 5,
-      "reviewScore": 9.1,
+      "reviewScore": 9.2,
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=79831202&currency=PHP&checkin=2026-10-08&checkout=2026-10-09&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
       "region": "마발라캇(팜팡가)",
       "cityId": 176012
@@ -901,7 +901,7 @@
     {
       "hotelId": 37280629,
       "name": "온 호텔 클락 브랜치",
-      "price": 3003.52,
+      "price": 2998.32,
       "crossedOutPrice": 4500,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/37280629/0/23fa63ebd495d129026410cc51f02599.jpeg?ce=0&s=800x600",
@@ -914,7 +914,7 @@
     {
       "hotelId": 967385,
       "name": "킹슬리스 호텔 앤 가스트로 펍",
-      "price": 2856.13,
+      "price": 2848.82,
       "crossedOutPrice": 5000,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/967385/-1/4ccf840a1584052e251d297ec80050d4.jpg?ca=10&ce=1&s=800x600",
@@ -927,7 +927,7 @@
     {
       "hotelId": 46609822,
       "name": "더 세븐 클락 콘도",
-      "price": 2200.47,
+      "price": 2196.67,
       "crossedOutPrice": 0,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/46609822/0/fc65bb804bda4d2287ff03c146ecac04.jpg?ce=3&s=800x600",
@@ -940,7 +940,7 @@
     {
       "hotelId": 52530815,
       "name": "The Glory Hotel",
-      "price": 4541.14,
+      "price": 4492.92,
       "crossedOutPrice": 7000,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/52530815/0/fe79e5bf7d2da2b6aaba61ede51154f8.jpg?ce=3&s=800x600",
@@ -966,7 +966,7 @@
     {
       "hotelId": 84042124,
       "name": "The Henry Glass House Clark",
-      "price": 7114.18,
+      "price": 7101.86,
       "crossedOutPrice": 16000,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/84042124/0/38f05a19a01b9e4b7f6426d6cf4976fe.jpg?ce=3&s=800x600",
@@ -992,7 +992,7 @@
     {
       "hotelId": 60584321,
       "name": "OYUSTAY Clark Terrace",
-      "price": 2529.28,
+      "price": 2524.9,
       "crossedOutPrice": 6500,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/60584321/0/3038a0a38e6f078f5acf987f0de93b6b.jpg?ce=0&s=800x600",
@@ -1031,7 +1031,7 @@
     {
       "hotelId": 35130439,
       "name": "클락 자유 무역항 지역의 아파트먼트 (51m², 침실 2개, 프라이빗 욕실 1개)",
-      "price": 1667.01,
+      "price": 1649.32,
       "crossedOutPrice": 2790,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/35130439/0/1dd175cc37c31fdd9406dee8bcc170e1.jpg?ce=0&s=800x600",
@@ -1044,7 +1044,7 @@
     {
       "hotelId": 28374322,
       "name": "클락 자유 무역항 지역의 프라이빗 하우스 (55m², 침실 2개, 프라이빗 욕실 1개)",
-      "price": 1467.98,
+      "price": 1409.44,
       "crossedOutPrice": 0,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/28374322/0/44daf0d2011f4fde861f52c10c13f17e.jpg?ce=0&s=800x600",
@@ -1057,7 +1057,7 @@
     {
       "hotelId": 18962493,
       "name": "클락 자유 무역항 지역의 프라이빗 하우스 (55m², 침실 1개, 프라이빗 욕실 1개)",
-      "price": 1313.21,
+      "price": 1260.85,
       "crossedOutPrice": 0,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/18962493/0/83e298fe2ddda8e1769bcf1f873a55b5.jpg?ca=26&ce=0&s=800x600",
@@ -1096,7 +1096,7 @@
     {
       "hotelId": 31066872,
       "name": "클락 자유 무역항 지역의 프라이빗 하우스 (55m², 침실 2개, 프라이빗 욕실 1개)",
-      "price": 1573.1,
+      "price": 1510.36,
       "crossedOutPrice": 0,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/31066872/0/583b0cd7cee717031622e7b70052c686.jpg?ce=0&s=800x600",
@@ -1109,7 +1109,7 @@
     {
       "hotelId": 28374275,
       "name": "클락 자유 무역항 지역의 프라이빗 하우스 (55m², 침실 2개, 프라이빗 욕실 1개)",
-      "price": 1751.21,
+      "price": 1681.37,
       "crossedOutPrice": 0,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/28374275/0/e34158d1173fc52450f86bfef5972183.jpg?ce=0&s=800x600",
