@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-25T02:14:50.365Z",
+  "updatedAt": "2026-09-25T10:43:54.337Z",
   "hotels": [
     {
       "hotelId": 90091,
@@ -490,7 +490,7 @@
       "currency": "PHP",
       "image": "http://q-xx.bstatic.com/xdata/images/hotel/840x460/717305910.jpg?k=3f64707eb017bb201660b72a268b94e1f32fbcd96e0079070634df6ed68598f4&o=",
       "starRating": 3,
-      "reviewScore": 8.6,
+      "reviewScore": 8.8,
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=47060480&currency=PHP&checkin=2026-10-09&checkout=2026-10-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
       "region": "산페르난도(팜팡가)",
       "cityId": 180098
@@ -639,19 +639,6 @@
       "cityId": 180098
     },
     {
-      "hotelId": 63935905,
-      "name": "SDC San Fernando Pampanga Azure North",
-      "price": 1876.5,
-      "crossedOutPrice": 0,
-      "currency": "PHP",
-      "image": "http://pix8.agoda.net/hotelImages/63935905/0/7c190d5a5b0653ea4d6b5cc302103d12.jpg?ce=0&s=800x600",
-      "starRating": 5,
-      "reviewScore": 9.7,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=63935905&currency=PHP&checkin=2026-10-09&checkout=2026-10-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
-      "region": "산페르난도(팜팡가)",
-      "cityId": 180098
-    },
-    {
       "hotelId": 31494542,
       "name": "시티 센터의 프라이빗 하우스 (140m², 침실 4개, 프라이빗 욕실 3개)",
       "price": 1797.62,
@@ -782,6 +769,19 @@
       "cityId": 180098
     },
     {
+      "hotelId": 76057870,
+      "name": "KRYSTL KRIB Azure North",
+      "price": 2520,
+      "crossedOutPrice": 0,
+      "currency": "PHP",
+      "image": "http://q-xx.bstatic.com/xdata/images/hotel/840x460/704356376.jpg?k=42402f53571fc1c7f6629a073219585a17b5511abd94b5d7781a9496d36d9df3&o=",
+      "starRating": 3,
+      "reviewScore": 9.7,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=76057870&currency=PHP&checkin=2026-10-09&checkout=2026-10-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
+      "region": "산페르난도(팜팡가)",
+      "cityId": 180098
+    },
+    {
       "hotelId": 104974,
       "name": "위더스 호텔 클락",
       "price": 4635,
@@ -906,7 +906,7 @@
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/79831202/0/2a92cd1fb9fda9f7af981cf1a141fcbf.png?ce=2&s=800x600",
       "starRating": 5,
-      "reviewScore": 9.2,
+      "reviewScore": 9.1,
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=79831202&currency=PHP&checkin=2026-10-09&checkout=2026-10-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
       "region": "마발라캇(팜팡가)",
       "cityId": 176012
@@ -1062,7 +1062,7 @@
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/35130439/0/1dd175cc37c31fdd9406dee8bcc170e1.jpg?ce=0&s=800x600",
       "starRating": 2.5,
-      "reviewScore": 7.8,
+      "reviewScore": 7.7,
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=35130439&currency=PHP&checkin=2026-10-09&checkout=2026-10-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
       "region": "마발라캇(팜팡가)",
       "cityId": 176012
@@ -1152,7 +1152,7 @@
       "crossedOutPrice": 0,
       "currency": "PHP",
       "image": "http://q-xx.bstatic.com/xdata/images/hotel/840x460/565797874.jpg?k=1758508e79b8fec249ea7cbe1451921ae75fdbf7d28a786d7a36f48961d4b8cd&o=",
-      "starRating": 2.5,
+      "starRating": 3,
       "reviewScore": 7.5,
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=56696422&currency=PHP&checkin=2026-10-09&checkout=2026-10-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
       "region": "마발라캇(팜팡가)",
@@ -1543,7 +1543,7 @@
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/35342584/0/d5b54ff797d9034da6c2181c3c97f4cb.jpg?ce=0&s=800x600",
       "starRating": 4,
-      "reviewScore": 8.8,
+      "reviewScore": 8.9,
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=35342584&currency=PHP&checkin=2026-10-09&checkout=2026-10-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
       "region": "올롱가포/수빅(잠발레스)",
       "cityId": 18217
@@ -1932,7 +1932,7 @@
       "crossedOutPrice": 2500,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/41304012/0/3a200e60e3f1dde11a6d0498bed5380b.png?ce=0&s=800x600",
-      "starRating": 3.5,
+      "starRating": 4,
       "reviewScore": 7.9,
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=41304012&currency=PHP&checkin=2026-10-09&checkout=2026-10-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
       "region": "바타안(발랑가/마리벨레스/모롱)",
@@ -2062,7 +2062,7 @@
       "crossedOutPrice": 0,
       "currency": "PHP",
       "image": "http://q-xx.bstatic.com/xdata/images/hotel/840x460/640650937.jpg?k=12f1f12a2a6bca112a8c362d0239ee17507ba243ea176e10b92344efdded2600&o=",
-      "starRating": 4,
+      "starRating": 4.5,
       "reviewScore": 8.6,
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=65496527&currency=PHP&checkin=2026-10-09&checkout=2026-10-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
       "region": "바타안(발랑가/마리벨레스/모롱)",
