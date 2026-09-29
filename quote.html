@@ -369,12 +369,13 @@ footer{text-align:center;font-size:12px;color:var(--muted);padding:20px 16px 10p
    ──────────────────────────────────────────────── */
 const AGODA_CID = '1969951';
 const CLARK_CITY_ID = '18875';
+// 2026-09-29: 아고다 목록 전체(수빅·바타안·산페르난도·타를락 등 포함)를 모두 보여줌 — 처음엔 몇 개만, "모두 보기"로 전부.
+// 클락 인근(아래 두 지역)은 각 탭의 맨 앞에 먼저 나오도록 정렬만 우선시함
 const HOTEL_REGIONS = ['앙헬레스/클락', '마발라캇(팜팡가)'];
-const NOT_HOTEL = /아파트먼트|프라이빗 하우스|스튜디오|Apartment|Condo|Staycation|Studio|Pad|Home|Cabin|Crib|Unit|\bBR\b/i;
 const TIERS = [
-  { id:'lux',  name:'⭐ 특급호텔',   desc:'메리어트·힐튼·스위소텔 등 클락 대표 특급호텔 (1박 ₱6,000 이상)', test:h=>h.price>=6000 },
-  { id:'mid',  name:'🏨 4성급',      desc:'시설과 가격의 균형이 좋은 호텔 (1박 ₱3,000~6,000)', test:h=>h.price>=3000 && h.price<6000 },
-  { id:'eco',  name:'💰 가성비',     desc:'혼자·장기 골프 여행에 알맞은 호텔 (1박 ₱3,000 미만)', test:h=>h.price<3000 },
+  { id:'lux',  name:'⭐ 특급호텔',   desc:'메리어트·힐튼·스위소텔 등 특급호텔 (1박 ₱6,000 이상) · 클락 인근이 먼저, "모두 보기"로 수빅·바타안 등 전체', test:h=>h.price>=6000 },
+  { id:'mid',  name:'🏨 4성급',      desc:'시설과 가격의 균형이 좋은 숙소 (1박 ₱3,000~6,000) · 클락 인근이 먼저, "모두 보기"로 전체', test:h=>h.price>=3000 && h.price<6000 },
+  { id:'eco',  name:'💰 가성비',     desc:'혼자·장기 골프 여행에 알맞은 숙소 (1박 ₱3,000 미만) · 클락 인근이 먼저, "모두 보기"로 전체', test:h=>h.price<3000 },
 ];
 const PAGE = 6;
 const DEFAULT_GREENFEE = [
@@ -516,7 +517,7 @@ function renderHotels(){
       ${h.image ? `<img class="hotel-img" src="${esc(h.image.replace(/^http:/,'https:'))}" alt="${esc(h.name)}" loading="lazy" onerror="this.style.visibility='hidden'">` : '<div class="hotel-img"></div>'}
       <div class="hotel-info">
         <div class="hotel-name">${esc(h.name)}</div>
-        <div class="hotel-meta">${stars}${h.reviewScore ? ' · 평점 ' + h.reviewScore : ''}</div>
+        <div class="hotel-meta">${stars}${h.reviewScore ? ' · 평점 ' + h.reviewScore : ''}${h.region ? ' · 📍' + esc(h.region) : ''}</div>
         <div class="hotel-price">참고가 ${perNight} <small>/ 1박·객실</small></div>
         <div class="hotel-btns">
           <a class="btn-agoda" href="${esc(agodaUrl(h.hotelId))}" target="_blank" rel="noopener sponsored" onclick="trackAgoda('${esc(h.name)}')">${n ? '이 날짜로 예약하기 →' : '아고다에서 보기 →'}</a>
@@ -524,7 +525,7 @@ function renderHotels(){
         </div>
       </div>
     </div>`;
-  }).join('') + (list.length > PAGE ? `<button type="button" class="more-btn" onclick="expanded=!expanded;renderHotels()">${expanded ? '접기 ▲' : '더보기 (전체 ' + list.length + '개) ▼'}</button>` : '')
+  }).join('') + (list.length > PAGE ? `<button type="button" class="more-btn" onclick="expanded=!expanded;renderHotels()">${expanded ? '접기 ▲' : '모두 보기 (전체 ' + list.length + '개) ▼'}</button>` : '')
     || '<div style="text-align:center;color:var(--muted);padding:16px;font-size:13px;">이 등급의 호텔 정보가 잠시 없습니다. 아래 검색 버튼을 이용해 주세요.</div>';
   const h = findHotel(selHotel);
   $('hotel-sum').textContent = h ? h.name : '선택 안 함';
@@ -731,10 +732,10 @@ async function loadHotels(){
     const j = await res.json();
     const seen = new Set();
     HOTELS = (j.hotels || [])
-      .filter(h => HOTEL_REGIONS.includes(h.region) && !NOT_HOTEL.test(h.name || '') && Number(h.price) > 0 && (!h.reviewScore || h.reviewScore >= 7.5))
+      .filter(h => Number(h.price) > 0)
       .filter(h => !seen.has(h.hotelId) && seen.add(h.hotelId))
-      .map(h => ({ ...h, key: 'agoda-' + h.hotelId, kind: 'agoda', price: Number(h.price) }))
-      .sort((a,b) => b.price - a.price);
+      .map(h => ({ ...h, key: 'agoda-' + h.hotelId, kind: 'agoda', price: Number(h.price), near: HOTEL_REGIONS.includes(h.region) }))
+      .sort((a,b) => (b.near - a.near) || (b.price - a.price));
   } catch(e) {
     console.error('호텔 목록 불러오기 실패:', e);
     $('hotel-list').innerHTML = '<div style="text-align:center;color:var(--muted);padding:16px;font-size:13px;">호텔 목록을 불러오지 못했어요. 아래 검색 버튼을 이용해 주세요.</div>';
