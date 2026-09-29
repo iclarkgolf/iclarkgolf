@@ -297,7 +297,7 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 <!-- 3탭 미니 문의 -->
 <div class="mini-inquiry" id="miniInquiry">
   <div class="mi-title" data-i18n="mi.title">⛳ 30초 간편 문의</div>
-  <div class="mi-sub" data-i18n="mi.sub">버튼만 선택하면, 카카오톡으로 바로 답변 도와드려요</div>
+  <div class="mi-sub" data-i18n="mi.sub">버튼만 선택하면, 호텔·골프 견적으로 바로 이어집니다</div>
 
   <div class="mi-q" data-i18n="mi.q1">기간이 어떻게 되세요?</div>
   <div class="mi-chips" data-group="duration">
@@ -328,21 +328,21 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
     <div class="mi-estimate-label" data-i18n="mi.est.label">💡 예상 견적 (참고용)</div>
     <div class="mi-estimate-amount" id="miEstimateAmount"></div>
     <div class="mi-estimate-basis" id="miEstimateBasis"></div>
-    <div class="mi-estimate-note" data-i18n="mi.est.note">정확한 금액은 카카오 상담에서 확정해 드려요. 아래 버튼은 편하게, 선택사항으로 눌러주세요.</div>
+    <div class="mi-estimate-note" data-i18n="mi.est.note">호텔과 골프장을 고르시면 정확한 견적이 바로 나와요.</div>
   </div>
 
-  <div class="mi-phone">
+  <div class="mi-phone" style="display:none;">
     <label data-i18n="mi.name">성함 또는 닉네임을 입력하면 홈페이지에서 내 견적서를 볼 수 있어요</label>
     <input type="text" id="miName" placeholder="홍길동">
   </div>
 
-  <div class="mi-phone">
+  <div class="mi-phone" style="display:none;">
     <label data-i18n="mi.phone">연락처를 입력하면 핸드폰에서 내 견적서를 볼 수 있어요</label>
     <input type="tel" id="miPhone" inputmode="numeric" placeholder="010-0000-0000">
   </div>
 
-  <button class="mi-btn" id="miBtn" data-i18n="mi.btn" disabled>💬 이 내용으로 카카오채널 문의하기</button>
-  <div class="mi-toast" id="miToast" data-i18n="mi.toast">✅ 문의 내용이 복사되었습니다!<br>카카오채널 채팅창에 붙여넣기(길게 눌러 붙여넣기)만 해주세요.</div>
+  <button class="mi-btn" id="miBtn" data-i18n="mi.btn" disabled>🏨 이 내용으로 호텔·골프 견적 이어가기 →</button>
+  <div class="mi-toast" id="miToast">✅ 문의 내용이 복사되었습니다!<br>카카오채널 채팅창에 붙여넣기(길게 눌러 붙여넣기)만 해주세요.</div>
 </div>
 
 <!-- 하단 CTA -->
@@ -396,16 +396,16 @@ const TRANS = {
     'sec.schedule':'📅 주요 일정','sec.incl':'✅ 포함 · 불포함','incl.yes':'✅ 포함','incl.no':'❌ 불포함',
     'sec.accom':'🏠 숙소 안내','sec.training':'⛳ 전지훈련',
     'sec.price':'💰 기간별 가격','sec.detail':'📝 상세 안내','btn.kakao':'💬 카카오 문의','btn.quote':'📋 맞춤 견적',
-    'mi.title':'⛳ 30초 간편 문의','mi.sub':'버튼만 선택하면, 카카오톡으로 바로 답변 도와드려요',
+    'mi.title':'⛳ 30초 간편 문의','mi.sub':'버튼만 선택하면, 호텔·골프 견적으로 바로 이어집니다',
     'mi.q1':'기간이 어떻게 되세요?','mi.d1':'3일','mi.d2':'4일','mi.d3':'5일','mi.d4':'7일','mi.d5':'14일',
     'mi.q2':'몇 분이세요?','mi.p1':'혼자','mi.p2':'2명','mi.p3':'3명 이상',
     'mi.q3':'언제쯤 생각하세요?','mi.t1':'7월','mi.t2':'8월','mi.t3':'가을','mi.t4':'겨울','mi.t5':'미정',
     'mi.name':'성함 또는 닉네임을 입력하면 홈페이지에서 내 견적서를 볼 수 있어요',
     'mi.phone':'연락처를 입력하면 핸드폰에서 내 견적서를 볼 수 있어요',
-    'mi.btn':'💬 이 내용으로 카카오채널 문의하기',
-    'mi.btn.soft':'💬 더 자세히 물어보기 (선택사항)',
+    'mi.btn':'🏨 이 내용으로 호텔·골프 견적 이어가기 →',
+    'mi.btn.soft':'🏨 호텔·골프 견적 이어가기 →',
     'mi.est.label':'💡 예상 견적 (참고용)',
-    'mi.est.note':'정확한 금액은 카카오 상담에서 확정해 드려요. 아래 버튼은 편하게, 선택사항으로 눌러주세요.',
+    'mi.est.note':'호텔과 골프장을 고르시면 정확한 견적이 바로 나와요.',
     'seo.h2':'iCLARKGOLF 골프 패키지 안내',
     'seo.intro1':'iCLARKGOLF의 모든 골프 패키지는 필리핀 클락에서 <b>25년째</b> 골프를 가르치고 안내해온 <b>전문가가 직접 설계하고 운영</b>합니다. <b>PRADERA C.C</b>와 <b>BEVERLY C.C</b> 두 골프장을 중심으로, 라운드와 연습장 훈련, 숙소, 캐디, 경비까지 하나로 묶어 안내합니다.',
     'seo.intro2':'아래에서 이 패키지의 <b>기간별 가격</b>, <b>포함·불포함 항목</b>, 숙소 정보와 주요 일정을 확인하실 수 있고, 궁금한 점은 <b>30초 간편 문의</b>로 바로 여쭤보실 수 있습니다. 처음 혼자 떠나는 골프 여행도, 여러 명이 함께하는 전지훈련도 이 페이지 하나로 준비할 수 있도록 만들었습니다.',
@@ -415,16 +415,16 @@ const TRANS = {
     'sec.schedule':'📅 Key Schedule','sec.incl':'✅ Included · Excluded','incl.yes':'✅ Included','incl.no':'❌ Not Included',
     'sec.accom':'🏠 Accommodation','sec.training':'⛳ Training Photos',
     'sec.price':'💰 Pricing','sec.detail':'📝 Details','btn.kakao':'💬 KakaoTalk','btn.quote':'📋 Get a Quote',
-    'mi.title':'⛳ 30-Second Inquiry','mi.sub':'Just pick your options, then we’ll help you right on KakaoTalk',
+    'mi.title':'⛳ 30-Second Inquiry','mi.sub':'Just pick your options and continue to your hotel & golf quote',
     'mi.q1':'How long will you stay?','mi.d1':'3 days','mi.d2':'4 days','mi.d3':'5 days','mi.d4':'7 days','mi.d5':'14 days',
     'mi.q2':'How many people?','mi.p1':'Solo','mi.p2':'2 people','mi.p3':'3 or more',
     'mi.q3':'When are you thinking?','mi.t1':'July','mi.t2':'August','mi.t3':'Fall','mi.t4':'Winter','mi.t5':'Not sure',
     'mi.name':'Enter your name or nickname to view your quote on the site',
     'mi.phone':'Enter your contact to view your quote on your phone',
-    'mi.btn':'💬 Message via Kakao Channel',
-    'mi.btn.soft':'💬 Ask for More Details (optional)',
+    'mi.btn':'🏨 Continue to Hotel & Golf Quote →',
+    'mi.btn.soft':'🏨 Continue to Hotel & Golf Quote →',
     'mi.est.label':'💡 Estimated Price (reference only)',
-    'mi.est.note':'We’ll confirm the exact price over KakaoTalk. The button below is optional — feel free to just ask.',
+    'mi.est.note':'Pick your hotel and golf courses next to see the exact quote.',
     'seo.h2':'iCLARKGOLF Golf Packages',
     'seo.intro1':'Every iCLARKGOLF package is designed and run directly by <b>a golf professional</b> who has lived and taught in Clark, Philippines for <b>25 years</b>. Centered on <b>PRADERA C.C</b> and <b>BEVERLY C.C</b>, each package bundles rounds, practice-range training, lodging, caddies, and cost into one plan.',
     'seo.intro2':'Below you can check <b>pricing by duration</b>, <b>what is included and excluded</b>, lodging details, and a key schedule — and send a quick <b>30-second inquiry</b> if you have questions. Whether this is a first solo golf trip or a group training camp, this page has everything needed to plan it.',
@@ -738,10 +738,14 @@ const db  = getFirestore(app);
       window.iclarkNotifyNewLead({ '문의종류':'30초 간편 문의(패키지 페이지)', '이름':name||'', '연락처':phone||'', '패키지':pkgName+' ('+cardId+')', '기간':curDuration()||'', '인원':sel.party||'', '시기':sel.timing||'', 'Firestore 저장': saveFailed ? '실패(이 메일이 유일한 기록)' : '정상' });
     }
 
-    // 요약 복사 후 카카오 채널 열기
-    try { await navigator.clipboard.writeText(summary); } catch(e) {}
+    // 2026-09-29: 카카오 채널 대신 맞춤 견적 장바구니(quote.html)로 이어서 이동.
+    // 기간·인원·시기·패키지는 주소(URL)로, 이름·연락처는 개인정보라 주소에 넣지 않고 sessionStorage로만 전달.
+    try { sessionStorage.setItem('iclark_lead', JSON.stringify({ name: name||'', phone: phone||'' })); } catch(e) {}
+    const pkgTitle = (PKG && PKG.titleEn) || '';
+    const qs = new URLSearchParams({ from: cardId, pkg: pkgTitle, dur: curDuration()||'', party: sel.party||'', timing: sel.timing||'' });
+    document.getElementById('miToast').innerHTML = '✅ 선택하신 내용으로 호텔·골프 견적 페이지로 이동합니다…';
     document.getElementById('miToast').style.display = 'block';
-    setTimeout(() => { window.open('https://pf.kakao.com/_nbHKX/chat', '_blank'); }, 900);
+    setTimeout(() => { location.href = 'quote.html?' + qs.toString(); }, 600);
   });
 })();
 
