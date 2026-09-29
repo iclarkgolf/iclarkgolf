@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- 새 문의 즉시 이메일 알림 (Web3Forms) — quote.html과 동일한 방식, 설정은 admin.html "새 문의 이메일 알림" -->
+<script>
+window.iclarkNotifyNewLead = async function(lead){
+  try {
+    const cfgRes = await fetch('https://firestore.googleapis.com/v1/projects/iclarkgolf/databases/(default)/documents/settings/notify?key=AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU');
+    if (!cfgRes.ok) return;
+    const cfg = await cfgRes.json();
+    const f = (cfg && cfg.fields) || {};
+    const key = f.web3formsKey && f.web3formsKey.stringValue;
+    const enabled = !(f.enabled && f.enabled.booleanValue === false);
+    if (!key || !enabled) return;
+    const when = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+    const body = Object.assign({
+      access_key: key,
+      subject: '📩 [iCLARKGOLF] 새 문의 — ' + (lead['이름'] || '이름 없음') + (lead['연락처'] ? ' · ' + lead['연락처'] : ''),
+      from_name: 'iCLARKGOLF 새 문의 알림',
+      '접수시각': when,
+      '관리자 페이지': 'https://iclarkgolf.com/admin.html'
+    }, lead);
+    await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(body)
+    });
+  } catch(e) { console.warn('새 문의 알림 전송 실패(무시):', e); }
+};
+</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8S6Z4PD9VZ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-8S6Z4PD9VZ');
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>클락 호텔 + 골프 패키지 — iCLARKGOLF</title>
+<meta name="description" content="필리핀 클락 호텔은 아고다 최저가로 직접 예약하고, 골프장 부킹은 iCLARKGOLF가 현지 최저가로 해결합니다. 메리어트·힐튼·스위소텔 특급호텔부터 가성비 호텔까지 날짜별 요금 확인.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://iclarkgolf.com/hotel-golf.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="iCLARKGOLF">
+<meta property="og:title" content="클락 호텔 + 골프 패키지 — iCLARKGOLF">
+<meta property="og:description" content="호텔은 아고다 최저가 그대로, 골프 부킹은 현지 최저가로. 여기서 호텔을 예약하시면 여행 정보를 수시로 챙겨 드립니다.">
+<meta property="og:url" content="https://iclarkgolf.com/hotel-golf.html">
+<meta property="og:image" content="https://iclarkgolf.com/images/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+button,a,input,select,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+:root{
+  --purple:#534AB7; --purple-dark:#3C3489; --purple-deep:#26215C; --purple-pale:#EEEDFE; --purple-border:#AFA9EC;
+  --mint:#1D9E75; --mint-light:#E1F5EE; --mint-border:#c8edd9;
+  --gold:#b45309; --gold-light:#fef3c7; --gold-border:#fcd34d;
+  --bg:#f4faf7; --white:#fff; --text:#26215C; --muted:#6b7280;
+  --radius:14px; --shadow:0 2px 12px rgba(83,74,183,0.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{overflow-x:hidden;max-width:100%;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:96px;}
+a{text-decoration:none;color:inherit;}
+
+nav{background:linear-gradient(135deg,#26215C,#534AB7);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#fff;letter-spacing:2px;}
+.nav-logo .i{color:#ff4444!important;-webkit-text-fill-color:#ff4444!important;font-family:'Nunito',sans-serif;font-weight:800;font-size:22px;letter-spacing:0;vertical-align:middle;}
+.nav-back{color:rgba(255,255,255,.85);font-size:13px;font-weight:700;}
+
+.hero{background:linear-gradient(135deg,#1D9E75,#534AB7);color:#fff;padding:34px 20px 38px;text-align:center;}
+.hero-badge{display:inline-block;background:rgba(255,255,255,.22);border:1.5px solid rgba(255,255,255,.5);font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;margin-bottom:14px;}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(34px,7vw,54px);letter-spacing:2px;line-height:1.05;margin-bottom:12px;}
+.hero h1 span{color:#FBBF24;}
+.hero p{font-size:15px;opacity:.9;max-width:520px;margin:0 auto;line-height:1.7;}
+
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px;}
+
+.benefit{background:var(--white);border:2px solid var(--mint);border-radius:var(--radius);padding:20px;margin-bottom:18px;box-shadow:var(--shadow);}
+.benefit h2{font-size:18px;font-weight:800;color:var(--purple-deep);margin-bottom:6px;line-height:1.4;}
+.benefit .lead{font-size:13.5px;color:#4b5563;line-height:1.8;margin-bottom:12px;}
+.benefit ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.benefit li{background:var(--mint-light);border-radius:10px;padding:10px 12px;font-size:13px;font-weight:700;color:#085041;line-height:1.5;}
+.benefit li small{display:block;font-weight:600;color:#3f6b5c;font-size:11.5px;margin-top:2px;}
+.benefit .honest{margin-top:12px;font-size:12.5px;color:var(--muted);line-height:1.7;background:#f9fafb;border-radius:10px;padding:10px 12px;}
+@media(max-width:520px){.benefit ul{grid-template-columns:1fr;}}
+
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden;}
+.card-head{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid #eef0f4;}
+.step{width:28px;height:28px;border-radius:50%;background:var(--purple);color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.card-title{font-size:16px;font-weight:800;}
+.card-sub{margin-left:auto;font-size:12px;color:var(--muted);font-weight:700;text-align:right;}
+.card-body{padding:16px 18px;}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+@media(max-width:520px){.grid3{grid-template-columns:1fr 1fr;}}
+label.f{display:block;font-size:12px;font-weight:800;color:var(--muted);margin-bottom:5px;}
+input.inp,textarea.inp{width:100%;border:1.5px solid var(--mint-border);border-radius:10px;padding:11px 12px;font-family:'Nunito',sans-serif;font-size:16px;color:var(--text);outline:none;background:#fff;}
+input.inp:focus,textarea.inp:focus{border-color:var(--purple);}
+.stepper{display:flex;align-items:center;border:1.5px solid var(--mint-border);border-radius:10px;overflow:hidden;background:#fff;}
+.stepper button{width:40px;height:44px;border:none;background:var(--mint-light);color:var(--mint);font-size:20px;font-weight:800;cursor:pointer;}
+.stepper span{flex:1;text-align:center;font-size:16px;font-weight:800;}
+.season-note{margin-top:12px;font-size:13px;font-weight:800;border-radius:10px;padding:9px 12px;display:none;}
+.season-note.peak{display:block;background:var(--gold-light);color:var(--gold);border:1.5px solid var(--gold-border);}
+.season-note.off{display:block;background:var(--mint-light);color:#085041;border:1.5px solid var(--mint-border);}
+
+.tabs{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.tab{flex:1;min-width:0;padding:10px 6px;border-radius:12px;border:1.5px solid var(--purple-border);background:#fff;color:var(--purple);font-family:'Nunito',sans-serif;font-size:13.5px;font-weight:800;cursor:pointer;white-space:nowrap;}
+.tab.on{background:var(--purple);color:#fff;border-color:var(--purple);}
+.tab-desc{font-size:12.5px;color:var(--muted);margin:-4px 0 12px;line-height:1.6;}
+
+.hotel{display:flex;gap:12px;border:1.5px solid #e5e7eb;border-radius:12px;padding:10px;margin-bottom:10px;background:#fff;transition:border-color .15s;}
+.hotel.on{border-color:var(--mint);background:#f3fbf7;}
+.hotel-img{width:104px;height:92px;border-radius:9px;object-fit:cover;flex-shrink:0;background:#eef0f4;}
+.hotel-info{flex:1;min-width:0;}
+.hotel-name{font-size:14.5px;font-weight:800;line-height:1.35;}
+.hotel-meta{font-size:12px;color:var(--muted);margin-top:2px;}
+.hotel-price{font-size:13px;font-weight:800;color:var(--purple);margin-top:4px;}
+.hotel-price small{font-weight:600;color:var(--muted);font-size:11px;}
+.hotel-btns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.btn-agoda{background:#e8453c;color:#fff;border-radius:8px;padding:8px 12px;font-size:12.5px;font-weight:800;display:inline-block;}
+.btn-pick{background:#fff;color:var(--mint);border:1.5px solid var(--mint);border-radius:8px;padding:7px 12px;font-size:12.5px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;}
+.hotel.on .btn-pick{background:var(--mint);color:#fff;}
+@media(max-width:420px){.hotel-img{width:84px;height:84px;}}
+.more-btn{width:100%;padding:12px;background:#fff;color:var(--purple);border:1.5px dashed var(--purple-border);border-radius:12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+.other-hotel{display:block;text-align:center;margin-top:10px;font-size:13px;font-weight:800;color:var(--purple);padding:10px;border-radius:10px;background:var(--purple-pale);}
+.need-date{font-size:12.5px;color:var(--gold);font-weight:800;background:var(--gold-light);border-radius:10px;padding:9px 12px;margin-bottom:12px;}
+
+.golf{border:1.5px solid #e5e7eb;border-radius:12px;padding:12px;margin-bottom:8px;background:#fff;}
+.golf.on{border-color:var(--mint);background:#f3fbf7;}
+.golf-top{display:flex;align-items:center;gap:10px;}
+.golf-name{font-size:14.5px;font-weight:800;}
+.golf-fee{font-size:12px;color:var(--muted);margin-top:2px;}
+.golf-fee b{color:var(--purple);}
+.golf-extra{font-size:11.5px;color:#c2410c;margin-top:2px;}
+.golf .stepper{width:130px;margin-left:auto;flex-shrink:0;}
+.golf .stepper button{width:36px;height:38px;}
+
+.sum-row{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:7px 0;border-bottom:1px dashed #e5e7eb;}
+.sum-row:last-child{border-bottom:none;}
+.sum-row .k{color:#4b5563;}
+.sum-row .v{font-weight:800;text-align:right;}
+.sum-total{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;padding-top:12px;border-top:2px solid var(--purple);}
+.sum-total .k{font-size:15px;font-weight:800;}
+.sum-total .v{font-size:24px;font-weight:800;color:var(--purple);}
+.sum-note{font-size:11.5px;color:var(--muted);line-height:1.7;margin-top:10px;}
+
+.submit{width:100%;padding:15px;border:none;border-radius:12px;background:linear-gradient(135deg,#1D9E75,#534AB7);color:#fff;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;margin-top:14px;}
+.submit:disabled{opacity:.6;}
+.msg{display:none;margin-top:12px;border-radius:10px;padding:12px;font-size:14px;font-weight:800;line-height:1.6;}
+.kakao{display:block;text-align:center;margin-top:10px;background:#FEE500;color:#3c1e1e;border-radius:12px;padding:13px;font-weight:800;font-size:14px;}
+
+.fixed-bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1.5px solid var(--mint-border);padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px;z-index:90;box-shadow:0 -4px 16px rgba(0,0,0,.06);}
+.fixed-bar .t{flex:1;min-width:0;}
+.fixed-bar .t small{display:block;font-size:11px;color:var(--muted);font-weight:700;}
+.fixed-bar .t b{font-size:20px;color:var(--purple);}
+.fixed-bar button{background:var(--purple);color:#fff;border:none;border-radius:10px;padding:12px 18px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap;}
+footer{text-align:center;font-size:12px;color:var(--muted);padding:20px 16px 10px;}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://iclarkgolf.com" class="nav-logo"><span class="i">i</span>CLARKGOLF</a>
+  <a href="https://iclarkgolf.com" class="nav-back">← 홈으로</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">호텔 + 골프 패키지</div>
+  <h1>호텔은 <span>아고다 최저가</span><br>골프는 <span>현지 최저가</span></h1>
+  <p>원하는 호텔을 직접 고르고, 골프장만 담으세요.<br>호텔 예약은 아고다에서 바로, 골프 부킹은 iCLARKGOLF가 챙깁니다.</p>
+</div>
+
+<div class="wrap">
+
+  <div class="benefit">
+    <h2>🎁 이 페이지에서 호텔을 예약하시면<br>여행 정보를 수시로 챙겨 드립니다</h2>
+    <p class="lead">가격은 아고다와 <b>똑같습니다</b>. 대신 25년 넘게 클락 현장에 있는 투어프로가 출발 전부터 귀국할 때까지 필요한 정보를 카카오톡으로 직접 알려 드립니다.</p>
+    <ul>
+      <li>✈️ 출발 전 준비 안내<small>환전·유심·입국서류(eTravel)·골프 짐 팁</small></li>
+      <li>⛳ 골프장 라운드 안내<small>티타임·코스 공략·복장·캐디팁 기준</small></li>
+      <li>💬 현지 체류 중 1:1 카톡 상담<small>궁금한 것은 언제든 바로 질문</small></li>
+      <li>🍽️ 현지 생활 정보<small>맛집·마사지·이동수단·주의사항</small></li>
+    </ul>
+    <p class="honest">💡 호텔 예약과 결제는 아고다에서 직접 하시고, 요금도 아고다에서 직접 예약하시는 것과 같습니다.</p>
+  </div>
+
+  <!-- 1. 날짜·인원 -->
+  <div class="card">
+    <div class="card-head"><div class="step">1</div><div class="card-title">여행 날짜와 인원</div><div class="card-sub" id="date-sum"></div></div>
+    <div class="card-body">
+      <div class="grid2">
+        <div><label class="f" for="arr">도착일 (체크인)</label><input type="date" class="inp" id="arr"></div>
+        <div><label class="f" for="dep">출발일 (체크아웃)</label><input type="date" class="inp" id="dep"></div>
+      </div>
+      <div class="grid3" style="margin-top:12px;">
+        <div><label class="f">골퍼</label><div class="stepper"><button type="button" onclick="chg('g',-1)">−</button><span id="n-g">2</span><button type="button" onclick="chg('g',1)">+</button></div></div>
+        <div><label class="f">동반 비골퍼</label><div class="stepper"><button type="button" onclick="chg('n',-1)">−</button><span id="n-n">0</span><button type="button" onclick="chg('n',1)">+</button></div></div>
+        <div><label class="f">객실 수</label><div class="stepper"><button type="button" onclick="chg('r',-1)">−</button><span id="n-r">1</span><button type="button" onclick="chg('r',1)">+</button></div></div>
+      </div>
+      <div class="season-note" id="season-note"></div>
+    </div>
+  </div>
+
+  <!-- 2. 호텔 -->
+  <div class="card">
+    <div class="card-head"><div class="step">2</div><div class="card-title">호텔 고르기</div><div class="card-sub" id="hotel-sum">선택 안 함</div></div>
+    <div class="card-body">
+      <div class="need-date" id="need-date">📅 먼저 날짜를 넣으시면, 아고다 버튼이 그 날짜로 바로 열립니다.</div>
+      <div class="tabs" id="tabs"></div>
+      <div class="tab-desc" id="tab-desc"></div>
+      <div id="hotel-list"><div style="text-align:center;color:var(--muted);padding:20px;font-size:13px;">호텔 목록을 불러오는 중…</div></div>
+      <a class="other-hotel" id="other-hotel" target="_blank" rel="noopener sponsored" onclick="trackAgoda('search')">🔍 목록에 없는 호텔은 아고다에서 검색하기 →</a>
+    </div>
+  </div>
+
+  <!-- 3. 골프장 -->
+  <div class="card">
+    <div class="card-head"><div class="step">3</div><div class="card-title">골프장 담기</div><div class="card-sub" id="golf-sum">0라운드</div></div>
+    <div class="card-body">
+      <div id="golf-list"></div>
+      <p class="sum-note">그린피는 1인 1라운드 주중 기준입니다. 카트·캐디비는 현지에서 따로 냅니다. 주말은 요금이 조금 높을 수 있고, 확정 요금은 견적서로 안내해 드립니다.</p>
+    </div>
+  </div>
+
+  <!-- 4. 합계 -->
+  <div class="card" id="sum-card">
+    <div class="card-head"><div class="step">4</div><div class="card-title">예상 합계</div></div>
+    <div class="card-body">
+      <div id="sum-rows"></div>
+      <div class="sum-total"><span class="k">예상 총액</span><span class="v" id="sum-total">$0</span></div>
+      <p class="sum-note" id="sum-note"></p>
+    </div>
+  </div>
+
+  <!-- 5. 신청 -->
+  <div class="card" id="apply-card">
+    <div class="card-head"><div class="step">5</div><div class="card-title">골프 부킹 신청</div></div>
+    <div class="card-body">
+      <div class="grid2">
+        <div><label class="f" for="nm">이름 *</label><input class="inp" id="nm" autocomplete="name"></div>
+        <div><label class="f" for="ct">연락처 (휴대폰·카톡) *</label><input class="inp" id="ct" inputmode="tel" autocomplete="tel"></div>
+      </div>
+      <div style="margin-top:12px;">
+        <label class="f" for="bk">아고다 예약번호 (예약하셨다면)</label>
+        <input class="inp" id="bk" inputmode="numeric" placeholder="예: 1234567890">
+        <div style="font-size:11.5px;color:var(--muted);margin-top:5px;line-height:1.6;">예약번호를 남겨 주시면 여행 정보 서비스 대상으로 바로 등록해 드립니다. 나중에 카톡으로 알려 주셔도 됩니다.</div>
+      </div>
+      <div style="margin-top:12px;">
+        <label class="f" for="mm">요청사항</label>
+        <textarea class="inp" id="mm" rows="3" placeholder="희망 티타임(오전/오후), 공항 픽업 필요 여부 등"></textarea>
+      </div>
+      <button class="submit" id="submit-btn" onclick="submitApply()">골프 부킹 신청하기 ✨</button>
+      <div class="msg" id="msg"></div>
+      <a class="kakao" href="https://pf.kakao.com/_nbHKX/chat" target="_blank" rel="noopener" onclick="if(window.gtag)gtag('event','hotelgolf_kakao_click')">💬 카카오톡으로 바로 물어보기</a>
+    </div>
+  </div>
+
+</div>
+
+<div class="fixed-bar">
+  <div class="t"><small id="bar-sub">호텔 + 골프 예상 총액</small><b id="bar-total">$0</b></div>
+  <button type="button" onclick="document.getElementById('apply-card').scrollIntoView({behavior:'smooth',block:'start'})">📝 신청하기</button>
+</div>
+
+<footer><a href="https://iclarkgolf.com">iCLARKGOLF</a> · Clark, Pampanga, Philippines</footer>
+
+<script>
+/* ────────────────────────────────────────────────
+   hotel-golf.html — 호텔(아고다 커미션 링크) + 골프 부킹 패키지
+   · 호텔: agoda-hotels.json(GitHub Actions 6시간 자동 갱신)에서 앙헬레스/클락 지역만
+   · 아고다 링크: 고객이 입력한 날짜·인원·객실 + 파트너 cid 자동 포함
+   · 골프: Firestore settings/greenfee(admin 요금표) + 성수기 기간(peakMonths) 자동 적용
+   · 신청: Firestore inquiries (quote.html과 같은 형식 → admin 문의 내역·견적서 자동 채움 그대로 사용)
+   ──────────────────────────────────────────────── */
+const AGODA_CID = '1969951';
+const CLARK_CITY_ID = '18875';
+const HOTEL_REGIONS = ['앙헬레스/클락', '마발라캇(팜팡가)'];
+const NOT_HOTEL = /아파트먼트|프라이빗 하우스|스튜디오|Apartment|Condo|Staycation|Studio|Pad|Home|Cabin|Crib|Unit|\bBR\b/i;
+const TIERS = [
+  { id:'lux',  name:'⭐ 특급호텔',   desc:'메리어트·힐튼·스위소텔 등 클락 대표 특급호텔 (1박 ₱6,000 이상)', test:h=>h.price>=6000 },
+  { id:'mid',  name:'🏨 4성급',      desc:'시설과 가격의 균형이 좋은 호텔 (1박 ₱3,000~6,000)', test:h=>h.price>=3000 && h.price<6000 },
+  { id:'eco',  name:'💰 가성비',     desc:'혼자·장기 골프 여행에 알맞은 호텔 (1박 ₱3,000 미만)', test:h=>h.price<3000 },
+];
+const PAGE = 6;
+const DEFAULT_GREENFEE = [
+  { id:'pradera',  name:'프라데라',       weekday:2500, weekend:3000, caddy:600, cart:1500 },
+  { id:'korea-cc', name:'코리아 CC',      weekday:1800, weekend:2200, caddy:700, cart:2000 },
+  { id:'luisita',  name:'루이시타',       weekday:1600, weekend:1800, caddy:600, cart:1600 },
+  { id:'dheights', name:'디하이츠',       weekday:2900, weekend:3400, caddy:700, cart:1500 },
+  { id:'mimosa',   name:'미모사',         weekday:3900, weekend:4400, caddy:600, cart:1600 },
+  { id:'new-asia', name:'뉴 아시아',      weekday:1000, weekend:1000, caddy:600, cart:1500 },
+  { id:'beverly',  name:'베벌리',         weekday:1000, weekend:1000, caddy:600, cart:1500 },
+  { id:'royal',    name:'로얄 센트럴',    weekday:1500, weekend:2000, caddy:600, cart:1600 },
+  { id:'lakewood', name:'레이크우드',     weekday:800,  weekend:800,  caddy:600, cart:1600 },
+  { id:'vista-am', name:'비스타 오전',    weekday:3600, weekend:4000, caddy:700, cart:0 },
+  { id:'vista-pm', name:'비스타 오후',    weekday:3200, weekend:3600, caddy:700, cart:0 },
+  { id:'hann',     name:'한 리저브',      weekday:8600, weekend:8600, caddy:1000, cart:1700 },
+  { id:'subic',    name:'수빅 인터내셔널', weekday:6000, weekend:10000, caddy:0, cart:0 },
+];
+
+let RATE = 57;                       // $1 = ₱ (admin 환율로 덮어씀)
+let PEAK_MONTHS = [11,12,1,2];       // admin 성수기 기간으로 덮어씀
+let GREENFEE = DEFAULT_GREENFEE.slice();
+let HOTELS = [];
+let tier = 'lux', expanded = false, selHotel = null;
+let pax = { g:2, n:0, r:1 };
+let selGolf = {};                    // id → rounds
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const usd = php => php / RATE;
+const fmtUsd = v => '$' + Math.round(v).toLocaleString();
+const fmtPhp = v => '₱' + Math.round(v).toLocaleString();
+
+/* ── 날짜 ── */
+function nights(){
+  const a = $('arr').value, d = $('dep').value;
+  if (!a || !d) return 0;
+  const n = Math.round((new Date(d) - new Date(a)) / 86400000);
+  return n > 0 ? n : 0;
+}
+function isPeak(){
+  const a = $('arr').value;
+  if (!a) return false;
+  return PEAK_MONTHS.includes(Number(a.slice(5,7)));
+}
+function onDates(){
+  const a = $('arr').value;
+  if (a) {
+    $('dep').min = a;
+    if ($('dep').value && $('dep').value <= a) $('dep').value = '';
+  }
+  const n = nights();
+  $('date-sum').textContent = n ? n + '박 ' + (n+1) + '일' : '';
+  $('need-date').style.display = n ? 'none' : 'block';
+  const sn = $('season-note');
+  if (a) {
+    sn.className = 'season-note ' + (isPeak() ? 'peak' : 'off');
+    sn.textContent = isPeak()
+      ? '🔥 성수기(' + PEAK_MONTHS.slice().sort((x,y)=>x-y).join('·') + '월) 그린피가 적용됩니다'
+      : '🌿 비수기 그린피가 적용됩니다';
+  } else sn.className = 'season-note';
+  renderHotels(); renderGolf(); renderSum();
+}
+function chg(k, d){
+  const min = k === 'n' ? 0 : 1;
+  pax[k] = Math.max(min, Math.min(20, pax[k] + d));
+  if (k !== 'r') {
+    // 객실 수는 인원(2인 1실) 기준으로 자동 제안하되, 직접 바꾼 값보다 작아지지는 않게
+    const need = Math.ceil((pax.g + pax.n) / 2);
+    if (pax.r < need) pax.r = need;
+  }
+  $('n-g').textContent = pax.g; $('n-n').textContent = pax.n; $('n-r').textContent = pax.r;
+  renderHotels(); renderGolf(); renderSum();
+}
+
+/* ── 아고다 커미션 링크 ── */
+function agodaUrl(hid){
+  const a = $('arr').value, d = $('dep').value;
+  const p = new URLSearchParams({ cid: AGODA_CID, currency: 'KRW', NumberofAdults: String(pax.g + pax.n), NumberofChildren: '0', Rooms: String(pax.r) });
+  if (hid) { p.set('hid', hid); p.set('pcs', '6'); } else { p.set('city', CLARK_CITY_ID); p.set('pcs', '1'); }
+  if (a && d && nights()) { p.set('checkin', a); p.set('checkout', d); }
+  return 'https://www.agoda.com/ko-kr/partners/partnersearch.aspx?' + p.toString();
+}
+function trackAgoda(what){ if (window.gtag) gtag('event', 'hotelgolf_agoda_click', { hotel: what }); }
+
+/* ── 호텔 ── */
+function renderTabs(){
+  $('tabs').innerHTML = TIERS.map(t => {
+    const cnt = HOTELS.filter(t.test).length;
+    return `<button type="button" class="tab${tier===t.id?' on':''}" onclick="setTier('${t.id}')">${t.name} <span style="opacity:.7">${cnt}</span></button>`;
+  }).join('');
+  $('tab-desc').textContent = TIERS.find(t => t.id === tier).desc;
+}
+function setTier(id){ tier = id; expanded = false; renderTabs(); renderHotels(); }
+function renderHotels(){
+  $('other-hotel').href = agodaUrl('');
+  if (!HOTELS.length) return;
+  const t = TIERS.find(x => x.id === tier);
+  const list = HOTELS.filter(t.test);
+  const shown = expanded ? list : list.slice(0, PAGE);
+  const n = nights();
+  $('hotel-list').innerHTML = shown.map(h => {
+    const stars = h.starRating > 0 ? '⭐'.repeat(Math.round(h.starRating)) : '';
+    const perNight = fmtPhp(h.price) + ' (≈' + fmtUsd(usd(h.price)) + ')';
+    return `<div class="hotel${selHotel===h.hotelId?' on':''}">
+      ${h.image ? `<img class="hotel-img" src="${esc(h.image.replace(/^http:/,'https:'))}" alt="${esc(h.name)}" loading="lazy" onerror="this.style.visibility='hidden'">` : '<div class="hotel-img"></div>'}
+      <div class="hotel-info">
+        <div class="hotel-name">${esc(h.name)}</div>
+        <div class="hotel-meta">${stars}${h.reviewScore ? ' · 평점 ' + h.reviewScore : ''}</div>
+        <div class="hotel-price">참고가 ${perNight} <small>/ 1박·객실</small></div>
+        <div class="hotel-btns">
+          <a class="btn-agoda" href="${esc(agodaUrl(h.hotelId))}" target="_blank" rel="noopener sponsored" onclick="trackAgoda('${esc(h.name)}')">${n ? '이 날짜로 예약하기 →' : '아고다에서 보기 →'}</a>
+          <button type="button" class="btn-pick" onclick="pickHotel(${h.hotelId})">${selHotel===h.hotelId ? '✓ 견적에 담김' : '견적에 담기'}</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('') + (list.length > PAGE ? `<button type="button" class="more-btn" onclick="expanded=!expanded;renderHotels()">${expanded ? '접기 ▲' : '더보기 (전체 ' + list.length + '개) ▼'}</button>` : '')
+    || '<div style="text-align:center;color:var(--muted);padding:16px;font-size:13px;">이 등급의 호텔 정보가 잠시 없습니다. 아래 검색 버튼을 이용해 주세요.</div>';
+  const h = HOTELS.find(x => x.hotelId === selHotel);
+  $('hotel-sum').textContent = h ? h.name : '선택 안 함';
+}
+function pickHotel(id){ selHotel = selHotel === id ? null : id; renderHotels(); renderSum(); }
+
+/* ── 골프 ── */
+function fee(g){
+  const peakWd = (g.peakWeekday != null && g.peakWeekday !== '') ? Number(g.peakWeekday) : Number(g.weekday) || 0;
+  return isPeak() ? peakWd : Number(g.weekday) || 0;
+}
+function renderGolf(){
+  $('golf-list').innerHTML = GREENFEE.filter(g => Number(g.weekday) > 0).map(g => {
+    const r = selGolf[g.id] || 0, f = fee(g);
+    const extra = [g.cart ? '카트 ₱' + Number(g.cart).toLocaleString() : '', g.caddy ? '캐디 ₱' + Number(g.caddy).toLocaleString() : ''].filter(Boolean).join(' · ');
+    return `<div class="golf${r?' on':''}">
+      <div class="golf-top">
+        <div style="min-width:0;">
+          <div class="golf-name">${esc(g.name)}</div>
+          <div class="golf-fee"><b>${fmtPhp(f)}</b> (≈${fmtUsd(usd(f))}) / 1인·1R${isPeak() ? ' 🔥' : ''}</div>
+          ${extra ? `<div class="golf-extra">현지 별도: ${extra}</div>` : ''}
+        </div>
+        <div class="stepper"><button type="button" onclick="chgGolf('${g.id}',-1)">−</button><span>${r}R</span><button type="button" onclick="chgGolf('${g.id}',1)">+</button></div>
+      </div>
+    </div>`;
+  }).join('');
+  const total = Object.values(selGolf).reduce((s,v) => s + v, 0);
+  $('golf-sum').textContent = total + '라운드';
+}
+function chgGolf(id, d){
+  selGolf[id] = Math.max(0, Math.min(30, (selGolf[id] || 0) + d));
+  if (!selGolf[id]) delete selGolf[id];
+  renderGolf(); renderSum();
+}
+
+/* ── 합계 ── */
+function calc(){
+  const n = nights();
+  const h = HOTELS.find(x => x.hotelId === selHotel);
+  const hotelPhp = h && n ? h.price * n * pax.r : 0;
+  const golf = GREENFEE.filter(g => selGolf[g.id]).map(g => ({ g, rounds: selGolf[g.id], php: fee(g) * selGolf[g.id] * pax.g }));
+  const golfPhp = golf.reduce((s,x) => s + x.php, 0);
+  return { n, h, hotelPhp, golf, golfPhp, totalUsd: usd(hotelPhp + golfPhp) };
+}
+function renderSum(){
+  const c = calc();
+  let rows = '';
+  if (c.h) rows += `<div class="sum-row"><span class="k">🏨 ${esc(c.h.name)}<br><small>${c.n ? c.n + '박 × 객실 ' + pax.r + '개 (참고가)' : '날짜를 넣으면 계산됩니다'}</small></span><span class="v">${c.n ? fmtUsd(usd(c.hotelPhp)) : '-'}</span></div>`;
+  c.golf.forEach(x => { rows += `<div class="sum-row"><span class="k">⛳ ${esc(x.g.name)}<br><small>${x.rounds}R × 골퍼 ${pax.g}명</small></span><span class="v">${fmtUsd(usd(x.php))}</span></div>`; });
+  $('sum-rows').innerHTML = rows || '<div style="color:var(--muted);font-size:13px;padding:6px 0;">호텔과 골프장을 담으면 여기에 합계가 나옵니다.</div>';
+  $('sum-total').textContent = fmtUsd(c.totalUsd);
+  $('bar-total').textContent = fmtUsd(c.totalUsd);
+  $('bar-sub').textContent = (c.h ? '호텔 + ' : '') + '골프 ' + Object.values(selGolf).reduce((s,v)=>s+v,0) + 'R 예상 총액';
+  $('sum-note').innerHTML = '환율 $1 = ₱' + RATE.toFixed(2) + ' 기준입니다. 호텔 요금은 날짜에 따라 달라지니 <b>실제 요금은 아고다 화면에서 확인</b>하세요. 호텔 요금은 아고다에서 결제하고, 골프 요금은 확정 견적서로 따로 안내해 드립니다.';
+}
+
+/* ── 신청 ── */
+async function submitApply(){
+  const name = $('nm').value.trim(), contact = $('ct').value.trim();
+  const booking = $('bk').value.trim(), memoIn = $('mm').value.trim();
+  const msg = $('msg'), btn = $('submit-btn');
+  const show = (ok, t) => { msg.style.display = 'block'; msg.style.background = ok ? '#f0fdf4' : '#fef2f2'; msg.style.color = ok ? '#16a34a' : '#dc2626'; msg.textContent = t; };
+  if (!name || !contact) { show(false, '⚠️ 이름과 연락처를 입력해 주세요'); return; }
+  const c = calc();
+  if (!c.golf.length && !c.h) { show(false, '⚠️ 호텔이나 골프장을 하나 이상 담아 주세요'); return; }
+
+  const memo = ['🏨 호텔+골프 패키지 신청', booking ? '아고다 예약번호: ' + booking : '아고다 예약번호: 미입력', memoIn].filter(Boolean).join(' / ');
+  const data = {
+    name, contact, memo,
+    nights: c.n,
+    golfers: pax.g, nonGolfers: pax.n,
+    totalUSD: Math.round(c.totalUsd),
+    hotel: c.h ? c.h.name : '미선택',
+    hotelId: c.h ? 'agoda-' + c.h.hotelId : '',
+    hotelNights: c.h ? c.n : 0,
+    customHotelPriceUSD: 0,
+    arrDate: $('arr').value || '', depDate: $('dep').value || '',
+    golfCourses: c.golf.map(x => ({ name: x.g.name, rounds: x.rounds, gfId: x.g.id, priceUSD: Math.round(usd(fee(x.g)) * 100) / 100 })),
+    extras: [],
+    status: 'pending',
+    source: 'hotel-golf.html',
+    packageType: 'hotel-golf',
+    season: isPeak() ? 'peak' : 'off',
+    rooms: pax.r,
+    agodaBookingNo: booking,
+  };
+
+  btn.disabled = true; btn.textContent = '저장 중...';
+  try {
+    const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const { getFirestore, collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const app = getApps().length ? getApps()[0] : initializeApp({ apiKey:'AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU', authDomain:'iclarkgolf.firebaseapp.com', projectId:'iclarkgolf' });
+    await addDoc(collection(getFirestore(app), 'inquiries'), { ...data, createdAt: serverTimestamp() });
+    window.iclarkNotifyNewLead && window.iclarkNotifyNewLead({
+      '문의종류': '🏨 호텔+골프 패키지(hotel-golf.html)', '이름': name, '연락처': contact,
+      '날짜': (data.arrDate || '-') + ' ~ ' + (data.depDate || '-') + ' (' + c.n + '박)',
+      '인원': '골퍼 ' + pax.g + ' / 비골퍼 ' + pax.n + ' / 객실 ' + pax.r,
+      '호텔': data.hotel, '아고다 예약번호': booking || '미입력',
+      '골프장': c.golf.map(x => x.g.name + ' ' + x.rounds + 'R').join(', ') || '-',
+      '시즌': isPeak() ? '성수기' : '비수기', '예상총액': '$' + data.totalUSD, '요청사항': memoIn || ''
+    });
+    if (window.gtag) gtag('event', 'hotelgolf_submit', { value: data.totalUSD, hotel_booked: booking ? 'yes' : 'no' });
+    show(true, '✅ 신청이 완료됐어요! 곧 카카오톡이나 문자로 연락드릴게요 😊' + (booking ? '' : '\n호텔을 아직 예약하지 않으셨다면 위의 "이 날짜로 예약하기" 버튼을 이용해 주세요.'));
+    msg.style.whiteSpace = 'pre-line';
+    btn.textContent = '신청 완료 ✅';
+  } catch(e) {
+    console.error('신청 저장 실패:', e);
+    btn.disabled = false; btn.textContent = '골프 부킹 신청하기 ✨';
+    show(false, '⚠️ 저장에 실패했어요. 아래 카카오톡으로 직접 문의해 주세요');
+  }
+}
+
+/* ── 데이터 불러오기 ── */
+async function loadGolf(){
+  try {
+    const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const { getFirestore, doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const app = getApps().length ? getApps()[0] : initializeApp({ apiKey:'AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU', authDomain:'iclarkgolf.firebaseapp.com', projectId:'iclarkgolf' });
+    const db = getFirestore(app);
+    const [ex, gf] = await Promise.all([getDoc(doc(db, 'settings', 'exchange')), getDoc(doc(db, 'settings', 'greenfee'))]);
+    if (ex.exists() && Number(ex.data().appliedUsdPhp) > 0) RATE = Number(ex.data().appliedUsdPhp);
+    if (gf.exists()) {
+      const d = gf.data();
+      if (Array.isArray(d.data) && d.data.length) GREENFEE = d.data.filter(g => g && g.id && g.name);
+      if (Array.isArray(d.peakMonths)) PEAK_MONTHS = d.peakMonths.map(Number);
+    }
+  } catch(e) { console.warn('요금표 불러오기 실패 — 기본값 사용:', e); }
+}
+async function loadHotels(){
+  try {
+    const res = await fetch('agoda-hotels.json?t=' + Date.now());
+    const j = await res.json();
+    const seen = new Set();
+    HOTELS = (j.hotels || [])
+      .filter(h => HOTEL_REGIONS.includes(h.region) && !NOT_HOTEL.test(h.name || '') && Number(h.price) > 0 && (!h.reviewScore || h.reviewScore >= 7.5))
+      .filter(h => !seen.has(h.hotelId) && seen.add(h.hotelId))
+      .map(h => ({ ...h, price: Number(h.price) }))
+      .sort((a,b) => b.price - a.price);
+  } catch(e) {
+    console.error('호텔 목록 불러오기 실패:', e);
+    $('hotel-list').innerHTML = '<div style="text-align:center;color:var(--muted);padding:16px;font-size:13px;">호텔 목록을 불러오지 못했어요. 아래 검색 버튼을 이용해 주세요.</div>';
+  }
+}
+
+(async function init(){
+  const t = new Date(); t.setDate(t.getDate() + 1);
+  $('arr').min = t.toISOString().slice(0,10);
+  $('arr').addEventListener('change', onDates); $('dep').addEventListener('change', onDates);
+  $('arr').addEventListener('input', onDates);  $('dep').addEventListener('input', onDates);
+  renderGolf(); renderSum(); onDates();
+  await Promise.all([loadGolf(), loadHotels()]);
+  renderTabs(); onDates();
+})();
+</script>
+</body>
+</html>
