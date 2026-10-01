@@ -55,6 +55,9 @@ a{text-decoration:none;color:inherit;}
 .hero h1{font-size:26px;font-weight:800;line-height:1.25;color:var(--gray-900);margin-bottom:8px;}
 .hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--green),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .hero-sub{font-size:13px;color:var(--gray-400);font-weight:600;margin-bottom:16px;}
+.season-sw{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap;}
+.season-sw button{border:1.5px solid var(--green);background:#fff;color:var(--green);border-radius:999px;padding:8px 14px;font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit;}
+.season-sw button.on{background:linear-gradient(135deg,var(--green),var(--purple));color:#fff;border-color:transparent;}
 .season-tag{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--green),var(--purple));color:#fff;font-size:12px;font-weight:700;padding:7px 18px;border-radius:var(--radius-full);}
 
 /* 안내박스 */
@@ -203,7 +206,11 @@ a{text-decoration:none;color:inherit;}
   <div class="hero-badge">⛳ BBK Golf & Tour Agency 제공</div>
   <h1>클락 골프장<br><em>요금 현황</em></h1>
   <div class="hero-sub">필리핀 클락(Angeles City) 전체 골프장 그린피</div>
-  <div class="season-tag">🌧 2026년 6월 ~ 9월 린 시즌</div>
+  <div class="season-tag" id="season-tag">🌿 비수기 요금</div>
+  <div class="season-sw">
+    <button type="button" id="sw-off" onclick="setSeason('off')">🌿 비수기 요금</button>
+    <button type="button" id="sw-peak" onclick="setSeason('peak')">🔥 성수기 요금</button>
+  </div>
 </div>
 
 <!-- 안내 -->
@@ -1008,7 +1015,10 @@ async function loadGreenfeeFromFirebase() {
       'lakewood': '레이크우드',
       'subic':    '수빅',
       'hann':     '한 리저브',
+      'vista-am': '비스타 — 오전',
+      'vista-pm': '비스타 — 오후',
     };
+    GF_PEAK_MONTHS = Array.isArray(snap.data().peakMonths) ? snap.data().peakMonths.map(Number) : GF_PEAK_MONTHS;
 
     list.forEach(g => {
       const keyword = NAME_MAP[g.id];
@@ -1017,16 +1027,14 @@ async function loadGreenfeeFromFirebase() {
         if (!nameEl.textContent.includes(keyword)) return;
         const card = nameEl.closest('.course-card');
         if (!card) return;
-        // cc-price-main (주중 판매가)
-        const mainPrice = card.querySelector('.cc-price-main');
-        if (mainPrice) {
-          mainPrice.textContent = g.weekday.toLocaleString();
-          mainPrice.dataset.php = g.weekday;
-        }
-        // fee-val 중 3번째(주중판매가), 4번째(주말판매가) 업데이트
-        const feeVals = card.querySelectorAll('.fee-val');
-        if (feeVals[2]) { feeVals[2].textContent = g.weekday.toLocaleString(); feeVals[2].dataset.php = g.weekday; }
-        if (feeVals[3]) { feeVals[3].textContent = g.weekend.toLocaleString(); feeVals[3].dataset.php = g.weekend; }
+        // 2026-10-01: 비수기/성수기 판매가를 카드에 저장해 두고, 위쪽 시즌 버튼에 따라 바꿔 보여줌(gfApplySeason)
+        const pw = (g.peakWeekday != null && g.peakWeekday !== '') ? Number(g.peakWeekday) : Number(g.weekday);
+        const pe = (g.peakWeekend != null && g.peakWeekend !== '') ? Number(g.peakWeekend) : Number(g.weekend);
+        card.dataset.offWd = g.weekday; card.dataset.offWe = g.weekend;
+        card.dataset.peakWd = pw; card.dataset.peakWe = pe;
+        const fv = card.querySelectorAll('.fee-val');
+        if (fv[0] && !card.dataset.walkWd) card.dataset.walkWd = fv[0].dataset.php || '';
+        if (fv[1] && !card.dataset.walkWe) card.dataset.walkWe = fv[1].dataset.php || '';
         // 카트/캐디 업데이트
         card.querySelectorAll('.extra-tag').forEach(tag => {
           if (tag.textContent.includes('카트') && g.cart) tag.innerHTML = '카트 <b>' + g.cart.toLocaleString() + '</b>';
@@ -1070,12 +1078,44 @@ async function loadGreenfeeFromFirebase() {
         }
       });
     });
+    gfApplySeason();
     // USD 단위면 재변환
     if (currentUnit === 'usd') setUnit('usd');
   } catch(e) {
     console.log('Firebase 요금 로드 실패, 기존값 유지');
   }
 }
+
+/* ── 비수기/성수기 요금 전환 (admin 요금표의 성수기 기간·성수기 판매가와 연동) ── */
+let GF_PEAK_MONTHS = [11, 12, 1, 2];
+let GF_SEASON = null;   // null = 아직 사용자가 안 고름 → 오늘 날짜 기준
+function gfMonthsLabel(){ const k = m => m < 7 ? m + 12 : m; return GF_PEAK_MONTHS.slice().sort((a,b)=>k(a)-k(b)).map(m => m + '월').join('·'); }  // 11·12·1·2월 순서
+function gfApplySeason(){
+  const season = GF_SEASON || (GF_PEAK_MONTHS.includes(new Date().getMonth() + 1) ? 'peak' : 'off');
+  const peak = season === 'peak';
+  document.getElementById('sw-off').classList.toggle('on', !peak);
+  document.getElementById('sw-peak').classList.toggle('on', peak);
+  document.getElementById('sw-peak').textContent = '🔥 성수기 요금 (' + gfMonthsLabel() + ')';
+  document.getElementById('season-tag').textContent = peak ? '🔥 지금 보고 계신 요금: 성수기 (' + gfMonthsLabel() + ')' : '🌿 지금 보고 계신 요금: 비수기';
+  document.querySelectorAll('.course-card').forEach(card => {
+    if (!card.dataset.offWd) return;   // Firebase 요금이 연결된 카드만
+    const wd = peak ? card.dataset.peakWd : card.dataset.offWd;
+    const we = peak ? card.dataset.peakWe : card.dataset.offWe;
+    const set = (el, v) => { if (!el) return; el.dataset.php = v; el.textContent = Number(v).toLocaleString(); };
+    set(card.querySelector('.cc-price-main'), wd);
+    const lbl = card.querySelector('.cc-price-label'); if (lbl) lbl.textContent = (peak ? '🔥 성수기 ' : '') + '주중 판매가';
+    const fv = card.querySelectorAll('.fee-val');
+    set(fv[2], wd); set(fv[3], we);
+    // 워크인 요금은 비수기 값만 있어서, 성수기에서는 "현장 확인"으로 표시
+    [0, 1].forEach(i => {
+      if (!fv[i]) return;
+      if (peak) { fv[i].dataset.php = ''; fv[i].textContent = '현장 확인'; }
+      else { const v = i === 0 ? card.dataset.walkWd : card.dataset.walkWe; if (v) set(fv[i], v); }
+    });
+  });
+  if (typeof currentUnit !== 'undefined' && currentUnit === 'usd') setUnit('usd');
+}
+function setSeason(s){ GF_SEASON = s; gfApplySeason(); if (window.gtag) gtag('event', 'greenfee_season_' + s); }
 
 window.addEventListener('DOMContentLoaded', () => {
   initRateBanner();
