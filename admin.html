@@ -5258,7 +5258,8 @@ function qfKakao(){ var link=document.getElementById('qfLinkUrl').value; var nam
     </div>
     <div class="bk-grid2">
       <div><label>고객 이름 (한글, PJ님만 봄)</label><input id="bkf-nameKo"></div>
-      <div><label>고객 영문 이름 * (파트너·골프장용)</label><input id="bkf-nameEn" placeholder="HONG GILDONG"></div>
+      <div><label>대표자 영문 이름 * (예약대기용)</label><input id="bkf-nameEn" placeholder="HONG GILDONG"></div>
+      <div><label>대표자 여권 영문 이름 (예약 단계에서 필요)</label><input id="bkf-passport" placeholder="여권과 똑같이: HONG GIL DONG"></div>
       <div><label>고객 연락처 (PJ님만 봄)</label><input id="bkf-contact"></div>
       <div><label>담당 파트너 *</label><select id="bkf-partner"></select></div>
       <div><label>도착일</label><input id="bkf-arr" type="date"></div>
@@ -5291,7 +5292,7 @@ function qfKakao(){ var link=document.getElementById('qfLinkUrl').value; var nam
         <option value="inquiry">① 문의</option>
         <option value="talking">② 고객과 진행 중</option>
       </select>
-      <div style="font-size:11.5px;color:#9ca3af;margin-top:4px;">③ 확정(파트너에게 전달)은 저장 후 목록에서 버튼으로 진행합니다.</div>
+      <div style="font-size:11.5px;color:#9ca3af;margin-top:4px;">파트너에게 보내기(예약대기 → 예약 → 확정)는 저장 후 목록의 버튼으로 진행합니다.</div>
     </div>
     <div class="bk-actions" style="margin-top:14px;">
       <button class="bk-btn" onclick="bkSaveBooking()">💾 저장</button>
@@ -5301,17 +5302,21 @@ function qfKakao(){ var link=document.getElementById('qfLinkUrl').value; var nam
 
 <script>
 /* ═════════ 🤝 부킹 파트너 (admin) ═════════ */
+// 클락 골프장 부킹 표준 3단계: [예약대기] 대표자 이름만·돈 무관 → [예약] 시간대 조율·여권 이름·경비 고지 → [확정] 입금 확인·바우처
 const BK_STATUS = [
-  { id:'inquiry',   ko:'① 문의',           en:'Inquiry' },
-  { id:'talking',   ko:'② 고객과 진행',     en:'In discussion' },
-  { id:'sent',      ko:'③ 확정·파트너 전달', en:'New booking request' },
-  { id:'booked',    ko:'③ 파트너 부킹 완료', en:'Booked — awaiting payment' },
-  { id:'paid',      ko:'④ 송금 완료',       en:'Payment sent' },
-  { id:'voucher',   ko:'⑤ 바우처 받음',     en:'Voucher issued' },
-  { id:'done',      ko:'⑥ 고객 전달 완료',   en:'Completed' },
-  { id:'cancelled', ko:'취소',             en:'Cancelled' },
+  { id:'inquiry',   ko:'① 문의',              en:'Inquiry' },
+  { id:'talking',   ko:'② 고객과 진행',        en:'In discussion' },
+  { id:'sent',      ko:'예약대기 요청',         en:'Waitlist request' },
+  { id:'hold',      ko:'예약대기 접수됨',       en:'On hold (waitlist)' },
+  { id:'reserve',   ko:'예약 요청(여권·시간)',   en:'Reservation request' },
+  { id:'booked',    ko:'예약 완료·경비 고지',    en:'Reserved — awaiting payment' },
+  { id:'paid',      ko:'④ 송금 완료',          en:'Payment sent' },
+  { id:'voucher',   ko:'⑤ 바우처 받음',        en:'Voucher issued' },
+  { id:'done',      ko:'⑥ 고객 전달 완료',      en:'Completed' },
+  { id:'cancelled', ko:'취소',                en:'Cancelled' },
 ];
-const BK_STEPS = ['inquiry','talking','sent','booked','paid','voucher','done'];
+const BK_STEPS = ['inquiry','talking','sent','hold','reserve','booked','paid','voucher','done'];
+const BK_PHASE = { sent:'1 예약대기', hold:'1 예약대기', reserve:'2 예약', booked:'2 예약', paid:'3 확정', voucher:'3 확정', done:'3 확정' };
 // 골프장 영문 이름 (파트너 화면용) — 요금표 id 기준. 틀리면 부킹 만들 때 영문 칸에서 고치면 됨
 const BK_COURSE_EN = {
   'pradera':'Pradera Verde Golf & Country Club', 'korea-cc':'Korea Country Club', 'luisita':'Luisita Golf & Country Club',
@@ -5387,7 +5392,7 @@ function bkPartnerInvite(uid){
 function bkRenderFilter(){
   const counts = { active:0, all:_bkDocs.length };
   _bkDocs.forEach(d => { if (!['done','cancelled'].includes(d.status)) counts.active++; counts[d.status] = (counts[d.status] || 0) + 1; });
-  const tabs = [['active','진행 중'],['all','전체'],['sent','③ 파트너 전달'],['booked','부킹 완료'],['paid','④ 송금'],['voucher','⑤ 바우처'],['done','⑥ 완료'],['cancelled','취소']];
+  const tabs = [['active','진행 중'],['all','전체'],['sent','예약대기 요청'],['hold','예약대기 접수'],['reserve','예약 요청'],['booked','경비 고지'],['paid','④ 송금'],['voucher','⑤ 바우처'],['done','⑥ 완료'],['cancelled','취소']];
   document.getElementById('bk-filter').innerHTML = tabs.map(([k,l]) => `<button class="${_bkFilter===k?'on':''}" onclick="_bkFilter='${k}';bkRenderList()">${l} ${counts[k]||0}</button>`).join('');
 }
 function bkRoundsTable(b, withPartner){
@@ -5409,23 +5414,26 @@ function bkRenderList(){
     const steps = b.status === 'cancelled' ? '<span class="now" style="background:#b91c1c;">취소됨</span>'
       : BK_STEPS.map((s, i) => `<span class="${i < idx ? 'done' : i === idx ? 'now' : ''}">${bkSt(s).ko}</span>`).join('');
     let act = '';
-    if (['inquiry','talking'].includes(b.status)) act += `<button class="bk-btn purple" onclick="bkSend('${b.id}')">③ 확정 → 파트너에게 보내기</button>`;
-    if (b.status === 'sent') act += `<button class="bk-btn sub" onclick="bkCopy(bkPartnerMsg('${b.id}'))">📋 파트너 알림 메시지 복사</button>`;
-    if (b.status === 'booked') act += `<button class="bk-btn purple" onclick="bkPay('${b.id}')">④ 송금 완료 입력</button>`;
+    if (['inquiry','talking'].includes(b.status)) act += `<button class="bk-btn purple" onclick="bkSend('${b.id}')">1️⃣ 예약대기 요청 보내기</button><button class="bk-btn sub" onclick="bkReserve('${b.id}')">바로 예약 요청</button>`;
+    if (b.status === 'hold') act += `<button class="bk-btn purple" onclick="bkReserve('${b.id}')">2️⃣ 예약 요청 (여권 이름·시간대)</button>`;
+    if (['sent','reserve'].includes(b.status)) act += `<button class="bk-btn sub" onclick="bkCopy(bkPartnerMsg('${b.id}'))">📋 파트너 알림 메시지 복사</button>`;
+    if (b.status === 'booked') act += `<button class="bk-btn purple" onclick="bkPay('${b.id}')">3️⃣ 송금 완료 입력</button>`;
     if (b.status === 'voucher') act += `<button class="bk-btn purple" onclick="bkDeliver('${b.id}')">⑥ 고객에게 바우처 보내기</button>`;
     if (b.voucherId) act += `<button class="bk-btn sub" onclick="bkCopy(bkCustomerMsg('${b.id}'))">📋 고객용 메시지 복사</button><a class="bk-btn sub" style="text-decoration:none;" target="_blank" href="voucher.html?v=${encodeURIComponent(b.voucherId)}">🎫 바우처 보기</a>`;
     act += `<button class="bk-btn sub" onclick="bkOpenEdit('${b.id}')">✏️ 수정</button>`;
     if (!['done','cancelled'].includes(b.status)) act += `<button class="bk-btn warn" onclick="bkCancel('${b.id}')">취소</button>`;
     return `<div class="bk-card">
       <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;">
-        <h4>${bkEsc(b.nameKo || b.nameEn)} <span style="font-weight:600;color:#6b7280;font-size:12px;">${bkEsc(b.nameEn || '')}</span></h4>
+        <h4>${bkEsc(b.nameKo || b.nameEn)} <span style="font-weight:600;color:#6b7280;font-size:12px;">${bkEsc(b.nameEn || '')}${b.passportName ? ' · 여권 ' + bkEsc(b.passportName) : ''}</span></h4>
         <span style="font-size:11px;color:#9ca3af;">${bkEsc(b.id)}</span>
       </div>
       <div class="bk-meta">📅 ${bkEsc(b.arrDate || '-')} ~ ${bkEsc(b.depDate || '-')} · 골퍼 ${b.golfers || '-'}명 · 🏢 ${bkEsc(partner ? partner.name : '파트너 미지정')}${b.contact ? ' · ☎ ' + bkEsc(b.contact) : ''}</div>
       <div class="bk-steps">${steps}</div>
+      ${BK_PHASE[b.status] ? `<div style="font-size:12px;font-weight:800;color:#534AB7;">현재: ${BK_PHASE[b.status]} 단계</div>` : ''}
       ${bkRoundsTable(b, ['booked','paid','voucher','done'].includes(b.status))}
       ${b.noteEn ? `<div class="bk-box">✉️ 파트너에게: ${bkEsc(b.noteEn)}${b.noteKo ? `<br><span style="color:#6b7280;font-size:12px;">(원문: ${bkEsc(b.noteKo)})</span>` : ''}</div>` : ''}
       ${b.memo ? `<div class="bk-box" style="background:#f9fafb;">🔒 내부 메모: ${bkEsc(b.memo)}</div>` : ''}
+      ${pd.holdNote ? `<div class="bk-box">🕒 예약대기 접수 메모(파트너): ${bkEsc(pd.holdNote)}</div>` : ''}
       ${pd.amountPhp ? `<div class="bk-box yellow">💰 파트너 청구 금액: <b>₱${Number(pd.amountPhp).toLocaleString()}</b>${pd.note ? '<br>파트너 메모: ' + bkEsc(pd.note) : ''}</div>` : ''}
       ${pay.amountPhp ? `<div class="bk-box green">✅ 송금: ₱${Number(pay.amountPhp).toLocaleString()} · ${bkEsc(pay.date || '')} · ${bkEsc(pay.method || '')} ${bkEsc(pay.ref || '')}</div>` : ''}
       ${vc.no || vc.url ? `<div class="bk-box green">🎫 파트너 바우처: ${bkEsc(vc.no || '')} ${vc.url ? `<a href="${bkEsc(vc.url)}" target="_blank">원본 보기</a>` : ''}${vc.note ? '<br>' + bkEsc(vc.note) : ''}</div>` : ''}
@@ -5505,7 +5513,7 @@ function bkFillFromInquiry(id){
 function bkOpenNew(){
   _bkEditId = null;
   document.getElementById('bk-modal-title').textContent = '새 부킹';
-  ['bkf-nameKo','bkf-nameEn','bkf-contact','bkf-arr','bkf-dep','bkf-hotel','bkf-noteKo','bkf-noteEn','bkf-memo'].forEach(id => document.getElementById(id).value = '');
+  ['bkf-nameKo','bkf-nameEn','bkf-passport','bkf-contact','bkf-arr','bkf-dep','bkf-hotel','bkf-noteKo','bkf-noteEn','bkf-memo'].forEach(id => document.getElementById(id).value = '');
   _bkNoteSrc = ''; document.getElementById('bkf-noteMsg').textContent = '';
   document.getElementById('bkf-golfers').value = 2;
   document.getElementById('bkf-status').value = 'talking';
@@ -5519,7 +5527,7 @@ function bkOpenEdit(id){
   _bkEditId = id;
   document.getElementById('bk-modal-title').textContent = '부킹 수정 · ' + id;
   const set = (k, v) => { document.getElementById(k).value = v == null ? '' : v; };
-  set('bkf-nameKo', b.nameKo); set('bkf-nameEn', b.nameEn); set('bkf-contact', b.contact); set('bkf-arr', b.arrDate); set('bkf-dep', b.depDate);
+  set('bkf-nameKo', b.nameKo); set('bkf-nameEn', b.nameEn); set('bkf-passport', b.passportName); set('bkf-contact', b.contact); set('bkf-arr', b.arrDate); set('bkf-dep', b.depDate);
   set('bkf-golfers', b.golfers); set('bkf-hotel', b.hotelEn); set('bkf-noteKo', b.noteKo); set('bkf-noteEn', b.noteEn); set('bkf-memo', b.memo);
   _bkNoteSrc = b.noteKo || ''; document.getElementById('bkf-noteMsg').textContent = '';
   const stSel = document.getElementById('bkf-status');
@@ -5538,7 +5546,7 @@ function bkReadForm(){
     const c = bkCourses().find(x => x.id === sel.value);
     return { date: row.querySelector('.r-date').value, courseId: sel.value, courseKo: c ? c.name : '', courseEn: row.querySelector('.r-en').value.trim(), players: Number(row.querySelector('.r-players').value) || 1, time: row.querySelector('.r-time').value };
   }).filter(r => r.courseId || r.courseEn);
-  return { nameKo: v('bkf-nameKo'), nameEn: v('bkf-nameEn').toUpperCase(), contact: v('bkf-contact'), arrDate: v('bkf-arr'), depDate: v('bkf-dep'),
+  return { nameKo: v('bkf-nameKo'), nameEn: v('bkf-nameEn').toUpperCase(), passportName: v('bkf-passport').toUpperCase(), contact: v('bkf-contact'), arrDate: v('bkf-arr'), depDate: v('bkf-dep'),
     golfers: Number(v('bkf-golfers')) || 1, hotelEn: v('bkf-hotel'), noteKo: v('bkf-noteKo'), noteEn: v('bkf-noteEn'), memo: v('bkf-memo'), partnerUid: v('bkf-partner'), rounds };
 }
 async function bkSaveBooking(){
@@ -5548,7 +5556,7 @@ async function bkSaveBooking(){
   if (koEl.value.trim() && (koEl.value.trim() !== _bkNoteSrc || !enEl.value.trim())) await bkTranslateNote(true);
   if (bkHasKo(enEl.value)) { alert('영어 번역이 완료되지 않았어요. 영어 칸을 확인해 주세요.'); return; }
   const f = bkReadForm();
-  if (!f.nameEn) { alert('고객 영문 이름을 넣어 주세요 (골프장 예약에 필요합니다).'); return; }
+  if (!f.nameEn) { alert('대표자 영문 이름을 넣어 주세요 (예약대기에 필요합니다).'); return; }
   if (!f.rounds.length) { alert('라운드를 하나 이상 넣어 주세요.'); return; }
   try {
     const { db, fs } = await bkFs();
@@ -5577,9 +5585,20 @@ async function bkUpdate(id, data, msg){
 async function bkSend(id){
   const b = _bkDocs.find(x => x.id === id); if (!b) return;
   if (!b.partnerUid || !_bkPartners.find(p => p.uid === b.partnerUid && p.active !== false)) { alert('활성 파트너를 먼저 지정해 주세요 (✏️ 수정).'); return; }
-  if (!b.nameEn || !(b.rounds || []).length || (b.rounds || []).some(r => !r.date)) { alert('영문 이름과 모든 라운드의 날짜를 넣어 주세요 (✏️ 수정).'); return; }
-  if (!confirm('고객이 확정했나요? 이 부킹을 파트너에게 보냅니다.')) return;
-  try { await bkUpdate(id, { status: 'sent', sentAt: new Date().toISOString() }, 'Booking request sent to partner'); bkCopy(bkPartnerMsg(id), '📋 파트너에게 보낼 메시지가 복사됐어요. 카톡/바이버/왓츠앱에 붙여넣으세요.'); }
+  if (!b.nameEn || !(b.rounds || []).length || (b.rounds || []).some(r => !r.date)) { alert('대표자 영문 이름과 모든 라운드의 날짜를 넣어 주세요 (✏️ 수정).'); return; }
+  if (!confirm('예약대기(대표자 이름만, 금액 무관)로 파트너에게 보냅니다.')) return;
+  try { await bkUpdate(id, { status: 'sent', sentAt: new Date().toISOString() }, 'Waitlist request sent to partner'); bkCopy(bkPartnerMsg(id), '📋 파트너에게 보낼 메시지가 복사됐어요. 카톡/바이버/왓츠앱에 붙여넣으세요.'); }
+  catch(e) { alert('실패: ' + e.message); }
+}
+async function bkReserve(id){
+  const b = _bkDocs.find(x => x.id === id); if (!b) return;
+  if (!b.partnerUid || !_bkPartners.find(p => p.uid === b.partnerUid && p.active !== false)) { alert('활성 파트너를 먼저 지정해 주세요 (✏️ 수정).'); return; }
+  if ((b.rounds || []).some(r => !r.date) || !(b.rounds || []).length) { alert('모든 라운드의 날짜를 넣어 주세요 (✏️ 수정).'); return; }
+  let pass = b.passportName || '';
+  if (!pass) { pass = prompt('대표자 여권 영문 이름 (여권과 똑같이)', b.nameEn || ''); if (pass === null) return; pass = pass.trim().toUpperCase(); }
+  if (!pass) { alert('여권 영문 이름이 필요합니다.'); return; }
+  if (!confirm('예약 단계로 넘깁니다. 파트너가 시간대를 조율하고 경비를 알려 줍니다.\n(희망 시간대는 라운드의 오전/오후 설정이 그대로 전달됩니다)')) return;
+  try { await bkUpdate(id, { status: 'reserve', passportName: pass, reserveAt: new Date().toISOString() }, 'Reservation request sent (passport name: ' + pass + ')'); bkCopy(bkPartnerMsg(id), '📋 파트너에게 보낼 예약 요청 메시지가 복사됐어요.'); }
   catch(e) { alert('실패: ' + e.message); }
 }
 async function bkPay(id){
@@ -5600,7 +5619,7 @@ async function bkDeliver(id){
     const { db, fs } = await bkFs();
     const vid = b.voucherId || (Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2, 8));
     await fs.setDoc(fs.doc(db, 'vouchers', vid), {
-      bookingId: b.id, nameKo: b.nameKo || '', nameEn: b.nameEn || '', golfers: b.golfers || 0, arrDate: b.arrDate || '', depDate: b.depDate || '',
+      bookingId: b.id, nameKo: b.nameKo || '', nameEn: b.passportName || b.nameEn || '', golfers: b.golfers || 0, arrDate: b.arrDate || '', depDate: b.depDate || '',
       rounds: (b.rounds || []).map((r, i) => { const pr = (pd.rounds || [])[i] || {}; return { date: r.date || '', courseKo: r.courseKo || '', courseEn: r.courseEn || '', players: r.players || b.golfers || 0, teeTime: pr.teeTime || '', confNo: pr.confNo || '' }; }),
       voucherNo: vc.no || '', originalUrl: includeOriginal ? (vc.url || '') : '', partnerNote: vc.note || '', issuedAt: new Date().toISOString()
     });
@@ -5617,7 +5636,8 @@ async function bkCancel(id){
 function bkPartnerMsg(id){
   const b = _bkDocs.find(x => x.id === id) || {};
   const rounds = (b.rounds || []).map(r => `- ${r.date} | ${r.courseEn || r.courseKo} | ${r.players || b.golfers} pax | ${BK_TIME_EN[r.time] || 'Any time'}`).join('\n');
-  return `[iCLARKGOLF] New booking request ${b.id}\nGuest: ${b.nameEn} (${b.golfers} golfers)\n${rounds}${b.noteEn ? '\nNote: ' + b.noteEn : ''}\n\nPlease confirm tee times and the total amount on our partner page:\nhttps://iclarkgolf.com/partner.html`;
+  if (b.status === 'reserve') return `[iCLARKGOLF] Reservation request ${b.id}\nLead guest (passport name): ${b.passportName || b.nameEn} (${b.golfers} golfers)\n${rounds}${b.noteEn ? '\nNote: ' + b.noteEn : ''}\n\nPlease arrange the tee times and let us know the total cost on our partner page:\nhttps://iclarkgolf.com/partner.html`;
+  return `[iCLARKGOLF] Waitlist request ${b.id}\nLead guest: ${b.nameEn} (${b.golfers} golfers)\n${rounds}${b.noteEn ? '\nNote: ' + b.noteEn : ''}\n\nPlease put this on hold (waitlist). Passport name, time slots and payment will follow.\nhttps://iclarkgolf.com/partner.html`;
 }
 function bkCustomerMsg(id, vidArg){
   const b = _bkDocs.find(x => x.id === id) || {};

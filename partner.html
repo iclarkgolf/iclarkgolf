@@ -83,7 +83,7 @@ td input{padding:7px 8px;font-size:14px;}
   <div id="main" style="display:none;">
     <div class="card">
       <h1 id="hello">Booking requests</h1>
-      <p class="muted">① New request → ② Enter tee times, confirmation numbers and total amount → <b>Confirm booking</b> → ③ We send payment → ④ <b>Issue voucher</b>.</p>
+      <p class="muted"><b>1 · Waitlist</b> — lead name only, no payment → <b>Accept hold</b><br><b>2 · Reservation</b> — passport name & time preference → enter tee times and total cost → <b>Confirm reservation</b><br><b>3 · Confirmation</b> — we send payment → confirm receipt and <b>Issue voucher</b></p>
     </div>
     <div class="tabs" id="tabs"></div>
     <div id="list"></div>
@@ -99,9 +99,11 @@ const app = initializeApp({ apiKey:'AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU', au
 const auth = getAuth(app), db = getFirestore(app);
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const VISIBLE = ['sent','booked','paid','voucher','done','cancelled'];
-const ST = { sent:'New request', booked:'Booked — awaiting payment', paid:'Payment sent', voucher:'Voucher issued', done:'Completed', cancelled:'Cancelled' };
-const STEPS = ['sent','booked','paid','voucher','done'];
+// Clark standard: 1 Waitlist (lead name only, no payment) → 2 Reservation (time slots, passport name, cost) → 3 Confirmation (payment received, voucher)
+const VISIBLE = ['sent','hold','reserve','booked','paid','voucher','done','cancelled'];
+const ST = { sent:'Waitlist request', hold:'On hold (waitlist)', reserve:'Reservation request', booked:'Reserved — awaiting payment', paid:'Payment sent', voucher:'Voucher issued', done:'Completed', cancelled:'Cancelled' };
+const STEPS = ['sent','hold','reserve','booked','paid','voucher','done'];
+const PHASE = { sent:'1 · Waitlist', hold:'1 · Waitlist', reserve:'2 · Reservation', booked:'2 · Reservation', paid:'3 · Confirmation', voucher:'3 · Confirmation', done:'3 · Confirmation' };
 const TIME = { any:'Any time', am:'Morning', pm:'Afternoon' };
 let ME = null, PARTNER = null, DOCS = [], FILTER = 'open', unsub = null;
 
@@ -141,7 +143,7 @@ onAuthStateChanged(auth, async user => {
 
 function render(){
   const cnt = { open:0, all:DOCS.length }; DOCS.forEach(d => { cnt[d.status] = (cnt[d.status]||0) + 1; if (!['done','cancelled'].includes(d.status)) cnt.open++; });
-  const tabs = [['open','Open'],['sent','New'],['booked','Awaiting payment'],['paid','Paid — issue voucher'],['voucher','Voucher issued'],['done','Completed'],['cancelled','Cancelled'],['all','All']];
+  const tabs = [['open','Open'],['sent','Waitlist requests'],['hold','On hold'],['reserve','Reservation requests'],['booked','Awaiting payment'],['paid','Paid — issue voucher'],['voucher','Voucher issued'],['done','Completed'],['cancelled','Cancelled'],['all','All']];
   $('tabs').innerHTML = tabs.map(([k,l]) => `<button class="${FILTER===k?'on':''}" onclick="setFilter('${k}')">${l} ${cnt[k]||0}</button>`).join('');
   const list = DOCS.filter(d => FILTER === 'all' ? true : FILTER === 'open' ? !['done','cancelled'].includes(d.status) : d.status === FILTER);
   $('list').innerHTML = list.length ? list.map(card).join('') : '<div class="card muted">No bookings here.</div>';
@@ -150,34 +152,41 @@ window.setFilter = k => { FILTER = k; render(); };
 
 function card(b){
   const pd = b.partner || {}, pay = b.payment || {}, vc = pd.voucher || {};
-  const editRounds = b.status === 'sent';
+  const editRounds = b.status === 'reserve';
+  const showTimes = ['reserve','booked','paid','voucher','done'].includes(b.status);
   const idx = STEPS.indexOf(b.status);
   const steps = b.status === 'cancelled' ? '' : `<div class="steps">${STEPS.map((s,i) => `<span class="${i<idx?'done':i===idx?'now':''}">${ST[s]}</span>`).join('')}</div>`;
   const rows = (b.rounds || []).map((r, i) => {
     const pr = (pd.rounds || [])[i] || {};
     return `<tr><td data-l="Date">${esc(r.date)}</td><td data-l="Course">${esc(r.courseEn || r.courseKo)}</td><td data-l="Players">${r.players || b.golfers}</td><td data-l="Preferred">${esc(TIME[r.time] || 'Any time')}</td>
-      <td data-l="Tee time">${editRounds ? `<input id="tt-${b.id}-${i}" placeholder="07:30" value="${esc(pr.teeTime||'')}">` : `<b>${esc(pr.teeTime || '-')}</b>`}</td>
-      <td data-l="Conf. no.">${editRounds ? `<input id="cf-${b.id}-${i}" placeholder="optional" value="${esc(pr.confNo||'')}">` : esc(pr.confNo || '-')}</td></tr>`;
+      ${showTimes ? `<td data-l="Tee time">${editRounds ? `<input id="tt-${b.id}-${i}" placeholder="07:30" value="${esc(pr.teeTime||'')}">` : `<b>${esc(pr.teeTime || '-')}</b>`}</td>
+      <td data-l="Conf. no.">${editRounds ? `<input id="cf-${b.id}-${i}" placeholder="optional" value="${esc(pr.confNo||'')}">` : esc(pr.confNo || '-')}</td>` : ''}</tr>`;
   }).join('');
   let action = '';
   if (b.status === 'sent') action = `
+    <div class="box warn">🕒 <b>Waitlist request</b> — please hold these dates for the lead guest. No payment yet; passport name and time slots will follow.</div>
+    <label for="hn-${b.id}">Note to iCLARKGOLF (optional)</label><textarea id="hn-${b.id}" rows="2" placeholder="e.g. On hold. Peak season rates will be announced in November."></textarea>
+    <div style="margin-top:12px;"><button class="btn green" onclick="acceptHold('${b.id}')">✅ Accept hold (waitlist)</button></div><div class="msg" id="m-${b.id}"></div>`;
+  if (b.status === 'hold') action = `<div class="box note">🕒 On hold. iCLARKGOLF will send the reservation details (passport name and time preference) when the guest confirms.${pd.holdNote ? '<br>Your note: ' + esc(pd.holdNote) : ''}</div>`;
+  if (b.status === 'reserve') action = `
+    <div class="box warn">📝 <b>Reservation request</b> — lead guest passport name: <b>${esc(b.passportName || b.nameEn)}</b>. Please arrange the tee times and tell us the total cost.</div>
     <label for="amt-${b.id}">Total amount due (PHP) *</label><input id="amt-${b.id}" inputmode="decimal" placeholder="e.g. 12400" value="${esc(pd.amountPhp||'')}">
     <label for="pn-${b.id}">Note to iCLARKGOLF (optional)</label><textarea id="pn-${b.id}" rows="2" placeholder="e.g. Caddy fee paid on site">${esc(pd.note||'')}</textarea>
-    <div style="margin-top:12px;"><button class="btn green" onclick="confirmBooking('${b.id}')">✅ Confirm booking</button></div><div class="msg" id="m-${b.id}"></div>`;
-  if (b.status === 'booked') action = `<div class="box warn">⏳ Booking confirmed. Waiting for payment from iCLARKGOLF (PHP ${Number(pd.amountPhp||0).toLocaleString()}).</div>`;
+    <div style="margin-top:12px;"><button class="btn green" onclick="confirmBooking('${b.id}')">✅ Confirm reservation</button></div><div class="msg" id="m-${b.id}"></div>`;
+  if (b.status === 'booked') action = `<div class="box warn">⏳ Reserved. Waiting for payment from iCLARKGOLF (PHP ${Number(pd.amountPhp||0).toLocaleString()}).</div>`;
   if (b.status === 'paid') action = `
     <div class="box pay">💸 <b>Payment sent</b>: PHP ${Number(pay.amountPhp||0).toLocaleString()} · ${esc(pay.date||'')} · ${esc(pay.method||'')} ${pay.ref ? '· Ref ' + esc(pay.ref) : ''}</div>
     <label for="vn-${b.id}">Voucher / booking reference no. *</label><input id="vn-${b.id}" value="${esc(vc.no||'')}">
     <label for="vu-${b.id}">Voucher link (optional — Google Drive, PDF, image link)</label><input id="vu-${b.id}" placeholder="https://..." value="${esc(vc.url||'')}">
     <label for="vt-${b.id}">Voucher remarks (optional)</label><textarea id="vt-${b.id}" rows="2" placeholder="e.g. Please arrive 30 minutes before tee time">${esc(vc.note||'')}</textarea>
-    <div style="margin-top:12px;"><button class="btn green" onclick="issueVoucher('${b.id}')">🎫 Issue voucher</button></div><div class="msg" id="m-${b.id}"></div>`;
+    <div style="margin-top:12px;"><button class="btn green" onclick="issueVoucher('${b.id}')">🎫 Payment received — issue voucher</button></div><div class="msg" id="m-${b.id}"></div>`;
   if (['voucher','done'].includes(b.status)) action = `<div class="box pay">🎫 Voucher ${esc(vc.no||'')} issued${vc.url ? ` · <a href="${esc(vc.url)}" target="_blank" rel="noopener">view</a>` : ''}. ${b.status === 'done' ? 'Delivered to the guest. Thank you!' : 'iCLARKGOLF will send it to the guest.'}</div>`;
   if (b.status === 'cancelled') action = `<div class="box" style="background:#fef2f2;color:#b91c1c;">This booking was cancelled by iCLARKGOLF.</div>`;
   return `<div class="card">
-    <div class="bk-head"><div><div class="bk-name">${esc(b.nameEn)}</div><div class="bk-meta">${esc(b.id)} · ${b.golfers || '-'} golfers · ${esc(b.arrDate||'')} → ${esc(b.depDate||'')}${b.hotelEn ? '<br>Hotel: ' + esc(b.hotelEn) : ''}</div></div>
+    <div class="bk-head"><div><div style="font-size:11px;font-weight:800;color:var(--purple);letter-spacing:.3px;">${PHASE[b.status] || ''}</div><div class="bk-name">${esc(b.passportName || b.nameEn)}</div><div class="bk-meta">${esc(b.id)} · ${b.golfers || '-'} golfers · ${esc(b.arrDate||'')} → ${esc(b.depDate||'')}${b.hotelEn ? '<br>Hotel: ' + esc(b.hotelEn) : ''}</div></div>
     <span class="badge b-${b.status}">${ST[b.status] || b.status}</span></div>
     ${steps}
-    <table class="rt"><thead><tr><th>Date</th><th>Course</th><th>Players</th><th>Preferred</th><th>Tee time</th><th>Conf. no.</th></tr></thead><tbody>${rows}</tbody></table>
+    <table class="rt"><thead><tr><th>Date</th><th>Course</th><th>Players</th><th>Preferred</th>${showTimes ? '<th>Tee time</th><th>Conf. no.</th>' : ''}</tr></thead><tbody>${rows}</tbody></table>
     ${b.noteEn ? `<div class="box note">✉️ From iCLARKGOLF: ${esc(b.noteEn)}</div>` : ''}
     ${action}
   </div>`;
@@ -196,6 +205,14 @@ async function notifyPJ(subject, fields){
       body: JSON.stringify({ access_key: d.web3formsKey, subject: '🤝 [iCLARKGOLF 파트너] ' + subject, from_name: 'iCLARKGOLF Partner', ...fields, '관리자 페이지':'https://iclarkgolf.com/admin.html' }) });
   } catch(e) {}
 }
+window.acceptHold = async id => {
+  const b = DOCS.find(x => x.id === id), m = $('m-' + id);
+  const note = $('hn-' + id).value.trim();
+  try {
+    await save(id, { status:'hold', partner: { ...(b.partner||{}), holdNote: note, holdAt: new Date().toISOString() } }, 'Waitlist hold accepted' + (note ? ' · ' + note : ''));
+    notifyPJ('예약대기 접수 ' + id, { '대표자': b.nameEn, '파트너 메모': note || '-' });
+  } catch(e) { flash(m, false, 'Save failed: ' + (e.code || e.message)); }
+};
 window.confirmBooking = async id => {
   const b = DOCS.find(x => x.id === id), m = $('m-' + id);
   const amt = Number(String($('amt-' + id).value).replace(/[^0-9.]/g, ''));
@@ -203,8 +220,8 @@ window.confirmBooking = async id => {
   const rounds = (b.rounds || []).map((r, i) => ({ teeTime: $('tt-' + id + '-' + i).value.trim(), confNo: $('cf-' + id + '-' + i).value.trim() }));
   if (rounds.some(r => !r.teeTime)) { flash(m, false, 'Please enter a tee time for every round.'); return; }
   try {
-    await save(id, { status:'booked', partner: { ...(b.partner||{}), rounds, amountPhp: amt, note: $('pn-' + id).value.trim(), bookedAt: new Date().toISOString() } }, 'Booking confirmed · PHP ' + amt.toLocaleString());
-    notifyPJ('부킹 완료 ' + id, { '고객': b.nameEn, '티타임': (b.rounds||[]).map((r,i) => r.date + ' ' + (r.courseEn||'') + ' ' + rounds[i].teeTime).join(' / '), '청구 금액': 'PHP ' + amt.toLocaleString() });
+    await save(id, { status:'booked', partner: { ...(b.partner||{}), rounds, amountPhp: amt, note: $('pn-' + id).value.trim(), bookedAt: new Date().toISOString() } }, 'Reservation confirmed · PHP ' + amt.toLocaleString());
+    notifyPJ('예약 완료·경비 고지 ' + id, { '고객': b.nameEn, '티타임': (b.rounds||[]).map((r,i) => r.date + ' ' + (r.courseEn||'') + ' ' + rounds[i].teeTime).join(' / '), '청구 금액': 'PHP ' + amt.toLocaleString() });
   } catch(e) { flash(m, false, 'Save failed: ' + (e.code || e.message)); }
 };
 window.issueVoucher = async id => {
@@ -213,8 +230,8 @@ window.issueVoucher = async id => {
   if (!no) { flash(m, false, 'Please enter the voucher / reference number.'); return; }
   if (url && !/^https?:\/\//i.test(url)) { flash(m, false, 'The voucher link must start with http:// or https://'); return; }
   try {
-    await save(id, { status:'voucher', partner: { ...(b.partner||{}), voucher: { no, url, note: $('vt-' + id).value.trim(), at: new Date().toISOString() } } }, 'Voucher issued · ' + no);
-    notifyPJ('바우처 발행 ' + id, { '고객': b.nameEn, '바우처 번호': no, '링크': url || '-' });
+    await save(id, { status:'voucher', partner: { ...(b.partner||{}), voucher: { no, url, note: $('vt-' + id).value.trim(), at: new Date().toISOString() } } }, 'Payment received · voucher issued · ' + no);
+    notifyPJ('입금 확인·바우처 발행 ' + id, { '고객': b.nameEn, '바우처 번호': no, '링크': url || '-' });
   } catch(e) { flash(m, false, 'Save failed: ' + (e.code || e.message)); }
 };
 </script>
