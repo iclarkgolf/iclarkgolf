@@ -5272,8 +5272,14 @@ function qfKakao(){ var link=document.getElementById('qfLinkUrl').value; var nam
       <button class="bk-btn sub" style="margin-top:6px;" onclick="bkAddRoundRow()">＋ 라운드 추가</button>
     </div>
     <div style="margin-top:12px;">
-      <label>파트너에게 전할 말 (영어로 — 파트너 화면에 그대로 보임)</label>
-      <textarea id="bkf-noteEn" rows="2" placeholder="e.g. Please book early tee times. Caddies requested."></textarea>
+      <label>파트너에게 전할 말 — <b style="color:#534AB7;">한국어로 쓰시면 영어로 자동 번역됩니다</b></label>
+      <textarea id="bkf-noteKo" rows="2" placeholder="예: 오전 일찍 티타임으로 잡아주세요. 캐디는 경험 많은 분으로 부탁드려요." onblur="bkTranslateNote()"></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin:6px 0 4px;gap:8px;">
+        <label style="margin:0;">🇬🇧 파트너가 보게 될 영어 (고쳐도 됩니다)</label>
+        <button type="button" class="bk-btn sub" style="padding:6px 10px;font-size:12px;" onclick="bkTranslateNote(true)">🌐 영어로 번역</button>
+      </div>
+      <textarea id="bkf-noteEn" rows="2" placeholder="한국어를 쓰고 칸 밖을 누르면 여기에 영어가 채워집니다"></textarea>
+      <div id="bkf-noteMsg" style="font-size:11.5px;color:#9ca3af;margin-top:3px;"></div>
     </div>
     <div style="margin-top:10px;">
       <label>내부 메모 (PJ님만 봄)</label>
@@ -5418,7 +5424,7 @@ function bkRenderList(){
       <div class="bk-meta">📅 ${bkEsc(b.arrDate || '-')} ~ ${bkEsc(b.depDate || '-')} · 골퍼 ${b.golfers || '-'}명 · 🏢 ${bkEsc(partner ? partner.name : '파트너 미지정')}${b.contact ? ' · ☎ ' + bkEsc(b.contact) : ''}</div>
       <div class="bk-steps">${steps}</div>
       ${bkRoundsTable(b, ['booked','paid','voucher','done'].includes(b.status))}
-      ${b.noteEn ? `<div class="bk-box">✉️ 파트너에게: ${bkEsc(b.noteEn)}</div>` : ''}
+      ${b.noteEn ? `<div class="bk-box">✉️ 파트너에게: ${bkEsc(b.noteEn)}${b.noteKo ? `<br><span style="color:#6b7280;font-size:12px;">(원문: ${bkEsc(b.noteKo)})</span>` : ''}</div>` : ''}
       ${b.memo ? `<div class="bk-box" style="background:#f9fafb;">🔒 내부 메모: ${bkEsc(b.memo)}</div>` : ''}
       ${pd.amountPhp ? `<div class="bk-box yellow">💰 파트너 청구 금액: <b>₱${Number(pd.amountPhp).toLocaleString()}</b>${pd.note ? '<br>파트너 메모: ' + bkEsc(pd.note) : ''}</div>` : ''}
       ${pay.amountPhp ? `<div class="bk-box green">✅ 송금: ₱${Number(pay.amountPhp).toLocaleString()} · ${bkEsc(pay.date || '')} · ${bkEsc(pay.method || '')} ${bkEsc(pay.ref || '')}</div>` : ''}
@@ -5429,6 +5435,31 @@ function bkRenderList(){
       </details>
     </div>`;
   }).join('');
+}
+
+/* ── 한국어 → 영어 자동 번역 (무료: Google 번역, 실패 시 MyMemory) ── */
+const bkHasKo = t => /[가-힣]/.test(t || '');
+let _bkNoteSrc = '';
+function bkGolfFix(t){
+  return String(t || '').replace(/\btea[ -]?times?\b/gi, m => /s$/i.test(m) ? 'tee times' : 'tee time')
+    .replace(/\btee[ -]?off\b/gi, 'tee-off').replace(/\bgreen fees?\b/gi, 'green fee').replace(/\bcaddie(s?)\b/gi, 'caddy$1').trim();
+}
+async function bkTranslate(text){
+  try {
+    const r = await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=ko&tl=en&dt=t&q=' + encodeURIComponent(text));
+    const j = await r.json(); const out = (j[0] || []).map(x => x[0]).join('');
+    if (out) return bkGolfFix(out);
+  } catch(e) {}
+  const r2 = await fetch('https://api.mymemory.translated.net/get?langpair=ko|en&q=' + encodeURIComponent(text));
+  const j2 = await r2.json(); return bkGolfFix(j2.responseData && j2.responseData.translatedText);
+}
+async function bkTranslateNote(force){
+  const ko = document.getElementById('bkf-noteKo').value.trim(), en = document.getElementById('bkf-noteEn'), msg = document.getElementById('bkf-noteMsg');
+  if (!ko) { if (force) msg.textContent = '먼저 위 칸에 한국어로 써 주세요.'; return; }
+  if (!force && ko === _bkNoteSrc && en.value.trim()) return;   // 이미 번역함
+  msg.textContent = '🌐 번역 중...';
+  try { en.value = await bkTranslate(ko); _bkNoteSrc = ko; msg.textContent = '✅ 번역 완료 — 영어 문장이 어색하면 직접 고치셔도 됩니다.'; }
+  catch(e) { msg.textContent = '⚠️ 번역에 실패했어요. 영어 칸에 직접 써 주세요.'; }
 }
 
 /* ── 만들기/수정 ── */
@@ -5474,7 +5505,8 @@ function bkFillFromInquiry(id){
 function bkOpenNew(){
   _bkEditId = null;
   document.getElementById('bk-modal-title').textContent = '새 부킹';
-  ['bkf-nameKo','bkf-nameEn','bkf-contact','bkf-arr','bkf-dep','bkf-hotel','bkf-noteEn','bkf-memo'].forEach(id => document.getElementById(id).value = '');
+  ['bkf-nameKo','bkf-nameEn','bkf-contact','bkf-arr','bkf-dep','bkf-hotel','bkf-noteKo','bkf-noteEn','bkf-memo'].forEach(id => document.getElementById(id).value = '');
+  _bkNoteSrc = ''; document.getElementById('bkf-noteMsg').textContent = '';
   document.getElementById('bkf-golfers').value = 2;
   document.getElementById('bkf-status').value = 'talking';
   document.getElementById('bkf-inq').parentElement.style.display = 'block';
@@ -5488,7 +5520,8 @@ function bkOpenEdit(id){
   document.getElementById('bk-modal-title').textContent = '부킹 수정 · ' + id;
   const set = (k, v) => { document.getElementById(k).value = v == null ? '' : v; };
   set('bkf-nameKo', b.nameKo); set('bkf-nameEn', b.nameEn); set('bkf-contact', b.contact); set('bkf-arr', b.arrDate); set('bkf-dep', b.depDate);
-  set('bkf-golfers', b.golfers); set('bkf-hotel', b.hotelEn); set('bkf-noteEn', b.noteEn); set('bkf-memo', b.memo);
+  set('bkf-golfers', b.golfers); set('bkf-hotel', b.hotelEn); set('bkf-noteKo', b.noteKo); set('bkf-noteEn', b.noteEn); set('bkf-memo', b.memo);
+  _bkNoteSrc = b.noteKo || ''; document.getElementById('bkf-noteMsg').textContent = '';
   const stSel = document.getElementById('bkf-status');
   stSel.value = ['inquiry','talking'].includes(b.status) ? b.status : 'talking';
   stSel.parentElement.style.display = ['inquiry','talking'].includes(b.status) ? 'block' : 'none';
@@ -5506,9 +5539,14 @@ function bkReadForm(){
     return { date: row.querySelector('.r-date').value, courseId: sel.value, courseKo: c ? c.name : '', courseEn: row.querySelector('.r-en').value.trim(), players: Number(row.querySelector('.r-players').value) || 1, time: row.querySelector('.r-time').value };
   }).filter(r => r.courseId || r.courseEn);
   return { nameKo: v('bkf-nameKo'), nameEn: v('bkf-nameEn').toUpperCase(), contact: v('bkf-contact'), arrDate: v('bkf-arr'), depDate: v('bkf-dep'),
-    golfers: Number(v('bkf-golfers')) || 1, hotelEn: v('bkf-hotel'), noteEn: v('bkf-noteEn'), memo: v('bkf-memo'), partnerUid: v('bkf-partner'), rounds };
+    golfers: Number(v('bkf-golfers')) || 1, hotelEn: v('bkf-hotel'), noteKo: v('bkf-noteKo'), noteEn: v('bkf-noteEn'), memo: v('bkf-memo'), partnerUid: v('bkf-partner'), rounds };
 }
 async function bkSaveBooking(){
+  // 저장 전 번역 보장: 한국어를 새로 썼거나, 영어 칸에 한국어가 들어가 있으면 자동 번역
+  const koEl = document.getElementById('bkf-noteKo'), enEl = document.getElementById('bkf-noteEn');
+  if (bkHasKo(enEl.value)) { koEl.value = (koEl.value.trim() ? koEl.value.trim() + '\n' : '') + enEl.value.trim(); enEl.value = ''; _bkNoteSrc = ''; }
+  if (koEl.value.trim() && (koEl.value.trim() !== _bkNoteSrc || !enEl.value.trim())) await bkTranslateNote(true);
+  if (bkHasKo(enEl.value)) { alert('영어 번역이 완료되지 않았어요. 영어 칸을 확인해 주세요.'); return; }
   const f = bkReadForm();
   if (!f.nameEn) { alert('고객 영문 이름을 넣어 주세요 (골프장 예약에 필요합니다).'); return; }
   if (!f.rounds.length) { alert('라운드를 하나 이상 넣어 주세요.'); return; }
