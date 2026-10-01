@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Partner Bookings — iCLARKGOLF</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+button,a,input,select{touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+:root{--purple:#534AB7;--deep:#26215C;--mint:#1D9E75;--mint-light:#E1F5EE;--border:#c8edd9;--bg:#f4faf7;--muted:#6b7280;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{overflow-x:hidden;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--deep);min-height:100vh;}
+nav{background:linear-gradient(135deg,#26215C,#534AB7);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#fff;letter-spacing:2px;}
+.logo .i{color:#ff4444;-webkit-text-fill-color:#ff4444;font-family:'Nunito',sans-serif;font-weight:800;font-size:22px;letter-spacing:0;}
+.logo small{font-family:'Nunito',sans-serif;font-size:12px;letter-spacing:0;color:#9FE1CB;margin-left:6px;font-weight:700;}
+.nav-r{color:#fff;font-size:12px;display:flex;gap:10px;align-items:center;}
+.nav-r button{background:rgba(255,255,255,.18);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-weight:800;cursor:pointer;font-family:inherit;}
+.wrap{max-width:820px;margin:0 auto;padding:18px 14px 60px;}
+.card{background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(83,74,183,.1);padding:16px;margin-bottom:14px;}
+h1{font-size:20px;margin-bottom:6px;}
+.muted{color:var(--muted);font-size:13px;line-height:1.7;}
+label{display:block;font-size:12px;font-weight:800;color:var(--muted);margin:10px 0 4px;}
+input,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:16px;font-family:inherit;color:var(--deep);background:#fff;}
+.btn{background:var(--purple);color:#fff;border:none;border-radius:10px;padding:11px 16px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;}
+.btn.green{background:var(--mint);}
+.btn.ghost{background:#fff;color:var(--purple);border:1.5px solid #AFA9EC;}
+.btn:disabled{opacity:.55;}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.tabs button{border:1.5px solid #AFA9EC;background:#fff;color:var(--purple);border-radius:20px;padding:7px 12px;font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit;}
+.tabs button.on{background:var(--purple);color:#fff;}
+.badge{display:inline-block;font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;}
+.b-sent{background:#fef3c7;color:#92400e;}.b-booked{background:#e0e7ff;color:#3730a3;}.b-paid{background:#d1fae5;color:#065f46;}
+.b-voucher{background:#cffafe;color:#155e75;}.b-done{background:#f3f4f6;color:#374151;}.b-cancelled{background:#fee2e2;color:#b91c1c;}
+.bk-head{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:flex-start;}
+.bk-name{font-size:17px;font-weight:800;}
+.bk-meta{font-size:13px;color:var(--muted);margin-top:3px;line-height:1.6;}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px;}
+th{background:var(--deep);color:#fff;text-align:left;padding:7px 8px;font-weight:700;}
+td{padding:7px 8px;border-bottom:1px solid var(--mint-light);vertical-align:middle;}
+td input{padding:7px 8px;font-size:14px;}
+.box{border-radius:10px;padding:10px 12px;margin-top:10px;font-size:13.5px;line-height:1.7;}
+.box.note{background:#f8f7ff;}.box.pay{background:#ecfdf5;}.box.warn{background:#fffbeb;}
+.steps{display:flex;gap:4px;flex-wrap:wrap;margin-top:10px;}
+.steps span{font-size:11px;font-weight:800;padding:4px 8px;border-radius:20px;background:#f3f4f6;color:#9ca3af;}
+.steps span.done{background:#d1fae5;color:#065f46;}.steps span.now{background:var(--purple);color:#fff;}
+.msg{display:none;margin-top:10px;border-radius:10px;padding:10px 12px;font-size:13.5px;font-weight:800;}
+@media(max-width:560px){#who{display:none;}.logo small{display:none;}}
+@media(max-width:560px){.rt thead{display:none;}.rt tr{display:block;border:1px solid var(--mint-light);border-radius:10px;margin-bottom:8px;padding:6px;}.rt td{display:flex;justify-content:space-between;gap:8px;border:none;padding:5px 4px;}.rt td::before{content:attr(data-l);font-weight:800;color:var(--muted);font-size:12px;}.rt td input{max-width:60%;}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo"><span class="i">i</span>CLARKGOLF<small>Partner</small></div>
+  <div class="nav-r" id="nav-r" style="display:none;"><span id="who"></span><button onclick="logout()">Log out</button></div>
+</nav>
+
+<div class="wrap">
+  <!-- Login -->
+  <div class="card" id="login-card" style="display:none;max-width:420px;margin:30px auto;">
+    <h1>Partner Login</h1>
+    <p class="muted">Golf booking requests from iCLARKGOLF.</p>
+    <label for="em">Email</label><input id="em" type="email" autocomplete="username">
+    <label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+      <button class="btn" onclick="login()">Log in</button>
+      <button class="btn ghost" onclick="resetPw()">Forgot password</button>
+    </div>
+    <div class="msg" id="login-msg"></div>
+  </div>
+
+  <!-- Not registered -->
+  <div class="card" id="noaccess-card" style="display:none;">
+    <h1>Account not activated</h1>
+    <p class="muted">Your login works, but this account is not linked to an active partner yet.<br>Please send the ID below to iCLARKGOLF (PJ).</p>
+    <div class="box note" style="font-family:monospace;font-size:14px;word-break:break-all;" id="uid-box"></div>
+  </div>
+
+  <!-- Bookings -->
+  <div id="main" style="display:none;">
+    <div class="card">
+      <h1 id="hello">Booking requests</h1>
+      <p class="muted">① New request → ② Enter tee times, confirmation numbers and total amount → <b>Confirm booking</b> → ③ We send payment → ④ <b>Issue voucher</b>.</p>
+    </div>
+    <div class="tabs" id="tabs"></div>
+    <div id="list"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp({ apiKey:'AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU', authDomain:'iclarkgolf.firebaseapp.com', projectId:'iclarkgolf' }, 'partner');
+const auth = getAuth(app), db = getFirestore(app);
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const VISIBLE = ['sent','booked','paid','voucher','done','cancelled'];
+const ST = { sent:'New request', booked:'Booked — awaiting payment', paid:'Payment sent', voucher:'Voucher issued', done:'Completed', cancelled:'Cancelled' };
+const STEPS = ['sent','booked','paid','voucher','done'];
+const TIME = { any:'Any time', am:'Morning', pm:'Afternoon' };
+let ME = null, PARTNER = null, DOCS = [], FILTER = 'open', unsub = null;
+
+function show(id){ ['login-card','noaccess-card','main'].forEach(x => $(x).style.display = x === id ? 'block' : 'none'); }
+function flash(el, ok, text){ el.style.display = 'block'; el.style.background = ok ? '#ecfdf5' : '#fef2f2'; el.style.color = ok ? '#065f46' : '#b91c1c'; el.textContent = text; }
+
+window.login = async () => {
+  try { await signInWithEmailAndPassword(auth, $('em').value.trim(), $('pw').value); }
+  catch(e) { flash($('login-msg'), false, 'Login failed. Please check your email and password.'); }
+};
+window.resetPw = async () => {
+  const em = $('em').value.trim();
+  if (!em) { flash($('login-msg'), false, 'Enter your email first.'); return; }
+  try { await sendPasswordResetEmail(auth, em); flash($('login-msg'), true, 'Password reset email sent. Please check your inbox.'); }
+  catch(e) { flash($('login-msg'), false, 'Could not send reset email: ' + (e.code || e.message)); }
+};
+window.logout = () => signOut(auth);
+
+onAuthStateChanged(auth, async user => {
+  if (unsub) { unsub(); unsub = null; }
+  if (!user) { $('nav-r').style.display = 'none'; show('login-card'); return; }
+  ME = user; $('who').textContent = user.email; $('nav-r').style.display = 'flex';
+  try {
+    const p = await getDoc(doc(db, 'partners', user.uid));
+    if (!p.exists() || p.data().active === false) throw new Error('inactive');
+    PARTNER = p.data();
+  } catch(e) { $('uid-box').textContent = 'Partner ID: ' + user.uid; show('noaccess-card'); return; }
+  $('hello').textContent = 'Booking requests — ' + (PARTNER.name || '');
+  show('main');
+  const q = query(collection(db, 'bookings'), where('partnerUid', '==', user.uid), where('status', 'in', VISIBLE));
+  unsub = onSnapshot(q, snap => {
+    DOCS = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => ((a.rounds||[])[0]||{}).date > ((b.rounds||[])[0]||{}).date ? 1 : -1);
+    render();
+  }, err => { $('list').innerHTML = '<div class="card" style="color:#b91c1c;">Could not load bookings (' + esc(err.code || err.message) + ').</div>'; });
+});
+
+function render(){
+  const cnt = { open:0, all:DOCS.length }; DOCS.forEach(d => { cnt[d.status] = (cnt[d.status]||0) + 1; if (!['done','cancelled'].includes(d.status)) cnt.open++; });
+  const tabs = [['open','Open'],['sent','New'],['booked','Awaiting payment'],['paid','Paid — issue voucher'],['voucher','Voucher issued'],['done','Completed'],['cancelled','Cancelled'],['all','All']];
+  $('tabs').innerHTML = tabs.map(([k,l]) => `<button class="${FILTER===k?'on':''}" onclick="setFilter('${k}')">${l} ${cnt[k]||0}</button>`).join('');
+  const list = DOCS.filter(d => FILTER === 'all' ? true : FILTER === 'open' ? !['done','cancelled'].includes(d.status) : d.status === FILTER);
+  $('list').innerHTML = list.length ? list.map(card).join('') : '<div class="card muted">No bookings here.</div>';
+}
+window.setFilter = k => { FILTER = k; render(); };
+
+function card(b){
+  const pd = b.partner || {}, pay = b.payment || {}, vc = pd.voucher || {};
+  const editRounds = b.status === 'sent';
+  const idx = STEPS.indexOf(b.status);
+  const steps = b.status === 'cancelled' ? '' : `<div class="steps">${STEPS.map((s,i) => `<span class="${i<idx?'done':i===idx?'now':''}">${ST[s]}</span>`).join('')}</div>`;
+  const rows = (b.rounds || []).map((r, i) => {
+    const pr = (pd.rounds || [])[i] || {};
+    return `<tr><td data-l="Date">${esc(r.date)}</td><td data-l="Course">${esc(r.courseEn || r.courseKo)}</td><td data-l="Players">${r.players || b.golfers}</td><td data-l="Preferred">${esc(TIME[r.time] || 'Any time')}</td>
+      <td data-l="Tee time">${editRounds ? `<input id="tt-${b.id}-${i}" placeholder="07:30" value="${esc(pr.teeTime||'')}">` : `<b>${esc(pr.teeTime || '-')}</b>`}</td>
+      <td data-l="Conf. no.">${editRounds ? `<input id="cf-${b.id}-${i}" placeholder="optional" value="${esc(pr.confNo||'')}">` : esc(pr.confNo || '-')}</td></tr>`;
+  }).join('');
+  let action = '';
+  if (b.status === 'sent') action = `
+    <label for="amt-${b.id}">Total amount due (PHP) *</label><input id="amt-${b.id}" inputmode="decimal" placeholder="e.g. 12400" value="${esc(pd.amountPhp||'')}">
+    <label for="pn-${b.id}">Note to iCLARKGOLF (optional)</label><textarea id="pn-${b.id}" rows="2" placeholder="e.g. Caddy fee paid on site">${esc(pd.note||'')}</textarea>
+    <div style="margin-top:12px;"><button class="btn green" onclick="confirmBooking('${b.id}')">✅ Confirm booking</button></div><div class="msg" id="m-${b.id}"></div>`;
+  if (b.status === 'booked') action = `<div class="box warn">⏳ Booking confirmed. Waiting for payment from iCLARKGOLF (PHP ${Number(pd.amountPhp||0).toLocaleString()}).</div>`;
+  if (b.status === 'paid') action = `
+    <div class="box pay">💸 <b>Payment sent</b>: PHP ${Number(pay.amountPhp||0).toLocaleString()} · ${esc(pay.date||'')} · ${esc(pay.method||'')} ${pay.ref ? '· Ref ' + esc(pay.ref) : ''}</div>
+    <label for="vn-${b.id}">Voucher / booking reference no. *</label><input id="vn-${b.id}" value="${esc(vc.no||'')}">
+    <label for="vu-${b.id}">Voucher link (optional — Google Drive, PDF, image link)</label><input id="vu-${b.id}" placeholder="https://..." value="${esc(vc.url||'')}">
+    <label for="vt-${b.id}">Voucher remarks (optional)</label><textarea id="vt-${b.id}" rows="2" placeholder="e.g. Please arrive 30 minutes before tee time">${esc(vc.note||'')}</textarea>
+    <div style="margin-top:12px;"><button class="btn green" onclick="issueVoucher('${b.id}')">🎫 Issue voucher</button></div><div class="msg" id="m-${b.id}"></div>`;
+  if (['voucher','done'].includes(b.status)) action = `<div class="box pay">🎫 Voucher ${esc(vc.no||'')} issued${vc.url ? ` · <a href="${esc(vc.url)}" target="_blank" rel="noopener">view</a>` : ''}. ${b.status === 'done' ? 'Delivered to the guest. Thank you!' : 'iCLARKGOLF will send it to the guest.'}</div>`;
+  if (b.status === 'cancelled') action = `<div class="box" style="background:#fef2f2;color:#b91c1c;">This booking was cancelled by iCLARKGOLF.</div>`;
+  return `<div class="card">
+    <div class="bk-head"><div><div class="bk-name">${esc(b.nameEn)}</div><div class="bk-meta">${esc(b.id)} · ${b.golfers || '-'} golfers · ${esc(b.arrDate||'')} → ${esc(b.depDate||'')}${b.hotelEn ? '<br>Hotel: ' + esc(b.hotelEn) : ''}</div></div>
+    <span class="badge b-${b.status}">${ST[b.status] || b.status}</span></div>
+    ${steps}
+    <table class="rt"><thead><tr><th>Date</th><th>Course</th><th>Players</th><th>Preferred</th><th>Tee time</th><th>Conf. no.</th></tr></thead><tbody>${rows}</tbody></table>
+    ${b.noteEn ? `<div class="box note">✉️ From iCLARKGOLF: ${esc(b.noteEn)}</div>` : ''}
+    ${action}
+  </div>`;
+}
+
+async function save(id, patch, histMsg){
+  const b = DOCS.find(x => x.id === id);
+  await updateDoc(doc(db, 'bookings', id), { ...patch, updatedAt: new Date().toISOString(), history: [...(b.history || []), { at: new Date().toISOString(), by: PARTNER.name || 'Partner', msg: histMsg }] });
+}
+async function notifyPJ(subject, fields){
+  // iCLARKGOLF 운영자에게 이메일 알림 (admin "새 문의 이메일 알림"의 Web3Forms 설정 재사용). 실패해도 무시
+  try {
+    const s = await getDoc(doc(db, 'settings', 'notify')); const d = s.exists() ? s.data() : {};
+    if (!d.web3formsKey || d.enabled === false) return;
+    await fetch('https://api.web3forms.com/submit', { method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body: JSON.stringify({ access_key: d.web3formsKey, subject: '🤝 [iCLARKGOLF 파트너] ' + subject, from_name: 'iCLARKGOLF Partner', ...fields, '관리자 페이지':'https://iclarkgolf.com/admin.html' }) });
+  } catch(e) {}
+}
+window.confirmBooking = async id => {
+  const b = DOCS.find(x => x.id === id), m = $('m-' + id);
+  const amt = Number(String($('amt-' + id).value).replace(/[^0-9.]/g, ''));
+  if (!amt) { flash(m, false, 'Please enter the total amount due (PHP).'); return; }
+  const rounds = (b.rounds || []).map((r, i) => ({ teeTime: $('tt-' + id + '-' + i).value.trim(), confNo: $('cf-' + id + '-' + i).value.trim() }));
+  if (rounds.some(r => !r.teeTime)) { flash(m, false, 'Please enter a tee time for every round.'); return; }
+  try {
+    await save(id, { status:'booked', partner: { ...(b.partner||{}), rounds, amountPhp: amt, note: $('pn-' + id).value.trim(), bookedAt: new Date().toISOString() } }, 'Booking confirmed · PHP ' + amt.toLocaleString());
+    notifyPJ('부킹 완료 ' + id, { '고객': b.nameEn, '티타임': (b.rounds||[]).map((r,i) => r.date + ' ' + (r.courseEn||'') + ' ' + rounds[i].teeTime).join(' / '), '청구 금액': 'PHP ' + amt.toLocaleString() });
+  } catch(e) { flash(m, false, 'Save failed: ' + (e.code || e.message)); }
+};
+window.issueVoucher = async id => {
+  const b = DOCS.find(x => x.id === id), m = $('m-' + id);
+  const no = $('vn-' + id).value.trim(), url = $('vu-' + id).value.trim();
+  if (!no) { flash(m, false, 'Please enter the voucher / reference number.'); return; }
+  if (url && !/^https?:\/\//i.test(url)) { flash(m, false, 'The voucher link must start with http:// or https://'); return; }
+  try {
+    await save(id, { status:'voucher', partner: { ...(b.partner||{}), voucher: { no, url, note: $('vt-' + id).value.trim(), at: new Date().toISOString() } } }, 'Voucher issued · ' + no);
+    notifyPJ('바우처 발행 ' + id, { '고객': b.nameEn, '바우처 번호': no, '링크': url || '-' });
+  } catch(e) { flash(m, false, 'Save failed: ' + (e.code || e.message)); }
+};
+</script>
+</body>
+</html>

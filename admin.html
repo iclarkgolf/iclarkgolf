@@ -813,6 +813,7 @@ window.adminLogout = function() {
   <button class="tab-btn" onclick="showTab('profile',this)">👤 프로필 관리</button>
   <button class="tab-btn" onclick="showTab('quotemake',this)">📋 견적서 작성</button>
   <button class="tab-btn" onclick="showTab('quoteitems',this)">🎯 맞춤견적 항목</button>
+  <button class="tab-btn" onclick="showTab('booking',this);loadBookings()">🤝 골프 부킹</button>
 </div>
 
 <!-- ========== 대시보드 ========== -->
@@ -5162,6 +5163,434 @@ function q2DeleteQuote(id){
 function qfPreview(){ var link=document.getElementById('qfLinkUrl').value; if(link) window.open(link,'_blank'); else alert('먼저 견적서를 저장해주세요.'); }
 function qfCopy(){ navigator.clipboard.writeText(document.getElementById('qfLinkUrl').value).then(function(){ if(typeof showToast==='function') showToast('📋 링크 복사됨!','success'); }); }
 function qfKakao(){ var link=document.getElementById('qfLinkUrl').value; var name=q2Val('q2Name')||'고객'; navigator.clipboard.writeText('[iCLARKGOLF 견적서] '+name+'님 견적서: '+link).then(function(){ if(typeof showToast==='function') showToast('💬 카톡 메시지 복사됨!','success'); }); }
+</script>
+
+
+<!-- ========== 🤝 부킹 파트너 (2026-09-29 신규) ==========
+     흐름: 1 문의 → 2 고객과 진행 → 3 확정(파트너에게 전달) → [파트너: 부킹 완료·금액 입력] → 4 송금 → 5 파트너 바우처 발행 → 6 고객에게 바우처 전달
+     · 파트너는 partner.html(영어)에서 자기 계정으로 로그인해 "3단계 이후" 자기에게 배정된 부킹만 봄
+     · 파트너는 계약에 따라 바뀔 수 있으므로 partners 컬렉션에 등록/해제만 하면 됨(부킹 데이터·고객은 항상 PJ 소유)
+     · Firestore: partners/{파트너 UID}, bookings/{id}, vouchers/{랜덤id} -->
+<style>
+#panel-booking .bk-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+#panel-booking .bk-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+@media(max-width:640px){#panel-booking .bk-grid2,#panel-booking .bk-grid3{grid-template-columns:1fr;}}
+#panel-booking label{display:block;font-size:12px;font-weight:700;color:#6b7280;margin-bottom:4px;}
+#panel-booking input,#panel-booking select,#panel-booking textarea{width:100%;padding:9px 11px;border:1.5px solid #c8edd9;border-radius:8px;font-size:14px;font-family:inherit;box-sizing:border-box;background:#fff;}
+#panel-booking .bk-btn{background:#1D9E75;color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;}
+#panel-booking .bk-btn.sub{background:#fff;color:#534AB7;border:1.5px solid #AFA9EC;}
+#panel-booking .bk-btn.warn{background:#fee2e2;color:#b91c1c;}
+#panel-booking .bk-btn.purple{background:#534AB7;}
+#panel-booking .bk-steps{display:flex;gap:4px;flex-wrap:wrap;margin:8px 0;}
+#panel-booking .bk-steps span{font-size:11px;font-weight:800;padding:4px 8px;border-radius:20px;background:#f3f4f6;color:#9ca3af;}
+#panel-booking .bk-steps span.done{background:#d1fae5;color:#065f46;}
+#panel-booking .bk-steps span.now{background:#534AB7;color:#fff;}
+#panel-booking .bk-card{border:1.5px solid #e5e7eb;border-radius:12px;padding:14px;margin-bottom:12px;background:#fff;}
+#panel-booking .bk-card h4{margin:0;font-size:15px;color:#26215C;}
+#panel-booking .bk-meta{font-size:12.5px;color:#6b7280;margin-top:3px;line-height:1.6;}
+#panel-booking .bk-box{background:#f8f7ff;border-radius:10px;padding:10px 12px;margin-top:10px;font-size:13px;line-height:1.7;}
+#panel-booking .bk-box.green{background:#ecfdf5;}
+#panel-booking .bk-box.yellow{background:#fffbeb;}
+#panel-booking .bk-rounds{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:8px;}
+#panel-booking .bk-rounds th{background:#26215C;color:#fff;padding:6px 8px;text-align:left;font-weight:700;}
+#panel-booking .bk-rounds td{padding:6px 8px;border-bottom:1px solid #E1F5EE;}
+#panel-booking .bk-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+#panel-booking .bk-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+#panel-booking .bk-filter button{border:1.5px solid #AFA9EC;background:#fff;color:#534AB7;border-radius:20px;padding:6px 12px;font-size:12px;font-weight:800;cursor:pointer;}
+#panel-booking .bk-filter button.on{background:#534AB7;color:#fff;}
+#bk-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px 12px;}
+#bk-modal .bk-modal-in{background:#fff;border-radius:16px;max-width:720px;width:100%;padding:20px;}
+#bk-modal label{display:block;font-size:12px;font-weight:700;color:#6b7280;margin-bottom:4px;}
+#bk-modal input,#bk-modal select,#bk-modal textarea{width:100%;padding:9px 11px;border:1.5px solid #c8edd9;border-radius:8px;font-size:14px;font-family:inherit;box-sizing:border-box;background:#fff;}
+</style>
+
+<div class="panel" id="panel-booking">
+
+  <div class="mgmt-card">
+    <div class="mgmt-title">🤝 골프 부킹 — 파트너와 함께 처리
+      <button class="bk-btn" onclick="bkOpenNew()">＋ 새 부킹 만들기</button>
+    </div>
+    <div style="font-size:12.5px;color:#6b7280;line-height:1.8;margin-bottom:10px;">
+      <b>①문의 → ②고객과 진행 → ③확정(파트너에게 전달) → ④송금 → ⑤파트너 바우처 → ⑥고객에게 바우처</b><br>
+      파트너는 <b>③부터</b> 자기에게 배정된 부킹만 영어 화면(<a href="partner.html" target="_blank">partner.html</a>)에서 봅니다. 고객 연락처는 파트너에게 보이지 않습니다.
+    </div>
+    <div class="bk-filter" id="bk-filter"></div>
+    <div id="bk-list"><div style="color:#9ca3af;font-size:13px;">불러오는 중...</div></div>
+  </div>
+
+  <div class="mgmt-card">
+    <div class="mgmt-title">🏢 부킹 파트너(에이전트) 관리
+      <button class="bk-btn sub" onclick="bkTogglePartnerForm()">＋ 파트너 등록</button>
+    </div>
+    <div style="font-size:12.5px;color:#6b7280;line-height:1.8;margin-bottom:10px;">
+      계약이 끝나면 <b>"해제"</b>만 누르세요. 즉시 그 파트너는 로그인해도 아무것도 볼 수 없고, 진행 중인 부킹은 새 파트너에게 다시 배정하면 됩니다.
+    </div>
+    <div id="bk-partner-form" style="display:none;background:#f8f7ff;border-radius:12px;padding:14px;margin-bottom:12px;">
+      <div style="font-size:12.5px;color:#374151;line-height:1.8;margin-bottom:10px;">
+        <b>등록 순서</b><br>
+        1) Firebase 콘솔 → Authentication → <b>사용자 추가</b>에서 파트너용 이메일·비밀번호를 만듭니다.<br>
+        2) 만든 사용자의 <b>사용자 UID</b>를 복사해 아래에 붙여넣습니다. (파트너가 partner.html에 로그인하면 화면에 UID가 나오니 그걸 받아도 됩니다)
+      </div>
+      <div class="bk-grid2">
+        <div><label>회사 이름 (예: BBK)</label><input id="bkp-name" placeholder="BBK Golf Booking"></div>
+        <div><label>담당자 이름</label><input id="bkp-contact" placeholder="Ms. Anna"></div>
+        <div><label>로그인 이메일</label><input id="bkp-email" type="email" placeholder="bbk@example.com"></div>
+        <div><label>사용자 UID</label><input id="bkp-uid" placeholder="Firebase 사용자 UID"></div>
+        <div><label>연락처 (Viber/WhatsApp 등)</label><input id="bkp-phone"></div>
+        <div><label>송금 정보 (은행·계좌 메모)</label><input id="bkp-bank" placeholder="예: BDO / GCash 등 메모"></div>
+      </div>
+      <div class="bk-actions"><button class="bk-btn" onclick="bkSavePartner()">💾 파트너 저장</button></div>
+    </div>
+    <div id="bk-partners"><div style="color:#9ca3af;font-size:13px;">불러오는 중...</div></div>
+  </div>
+</div>
+
+<!-- 부킹 만들기/수정 창 -->
+<div id="bk-modal" onclick="if(event.target===this)bkCloseModal()">
+  <div class="bk-modal-in">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div style="font-size:17px;font-weight:800;color:#26215C;" id="bk-modal-title">새 부킹</div>
+      <button class="bk-btn sub" onclick="bkCloseModal()">닫기</button>
+    </div>
+    <div style="margin-bottom:10px;">
+      <label>문의 내역에서 불러오기 (선택)</label>
+      <select id="bkf-inq" onchange="bkFillFromInquiry(this.value)"><option value="">— 직접 입력 —</option></select>
+    </div>
+    <div class="bk-grid2">
+      <div><label>고객 이름 (한글, PJ님만 봄)</label><input id="bkf-nameKo"></div>
+      <div><label>고객 영문 이름 * (파트너·골프장용)</label><input id="bkf-nameEn" placeholder="HONG GILDONG"></div>
+      <div><label>고객 연락처 (PJ님만 봄)</label><input id="bkf-contact"></div>
+      <div><label>담당 파트너 *</label><select id="bkf-partner"></select></div>
+      <div><label>도착일</label><input id="bkf-arr" type="date"></div>
+      <div><label>출발일</label><input id="bkf-dep" type="date"></div>
+      <div><label>골퍼 수</label><input id="bkf-golfers" type="number" min="1" value="2"></div>
+      <div><label>숙소 (영문, 픽업 참고용)</label><input id="bkf-hotel" placeholder="e.g. Clark Marriott Hotel"></div>
+    </div>
+    <div style="margin-top:12px;">
+      <label>라운드 (골프장·날짜) *</label>
+      <div id="bkf-rounds"></div>
+      <button class="bk-btn sub" style="margin-top:6px;" onclick="bkAddRoundRow()">＋ 라운드 추가</button>
+    </div>
+    <div style="margin-top:12px;">
+      <label>파트너에게 전할 말 (영어로 — 파트너 화면에 그대로 보임)</label>
+      <textarea id="bkf-noteEn" rows="2" placeholder="e.g. Please book early tee times. Caddies requested."></textarea>
+    </div>
+    <div style="margin-top:10px;">
+      <label>내부 메모 (PJ님만 봄)</label>
+      <textarea id="bkf-memo" rows="2"></textarea>
+    </div>
+    <div style="margin-top:10px;">
+      <label>진행 단계</label>
+      <select id="bkf-status">
+        <option value="inquiry">① 문의</option>
+        <option value="talking">② 고객과 진행 중</option>
+      </select>
+      <div style="font-size:11.5px;color:#9ca3af;margin-top:4px;">③ 확정(파트너에게 전달)은 저장 후 목록에서 버튼으로 진행합니다.</div>
+    </div>
+    <div class="bk-actions" style="margin-top:14px;">
+      <button class="bk-btn" onclick="bkSaveBooking()">💾 저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═════════ 🤝 부킹 파트너 (admin) ═════════ */
+const BK_STATUS = [
+  { id:'inquiry',   ko:'① 문의',           en:'Inquiry' },
+  { id:'talking',   ko:'② 고객과 진행',     en:'In discussion' },
+  { id:'sent',      ko:'③ 확정·파트너 전달', en:'New booking request' },
+  { id:'booked',    ko:'③ 파트너 부킹 완료', en:'Booked — awaiting payment' },
+  { id:'paid',      ko:'④ 송금 완료',       en:'Payment sent' },
+  { id:'voucher',   ko:'⑤ 바우처 받음',     en:'Voucher issued' },
+  { id:'done',      ko:'⑥ 고객 전달 완료',   en:'Completed' },
+  { id:'cancelled', ko:'취소',             en:'Cancelled' },
+];
+const BK_STEPS = ['inquiry','talking','sent','booked','paid','voucher','done'];
+// 골프장 영문 이름 (파트너 화면용) — 요금표 id 기준. 틀리면 부킹 만들 때 영문 칸에서 고치면 됨
+const BK_COURSE_EN = {
+  'pradera':'Pradera Verde Golf & Country Club', 'korea-cc':'Korea Country Club', 'luisita':'Luisita Golf & Country Club',
+  'dheights':"D'Heights Golf & Country Club", 'mimosa':'Mimosa Golf (Clark)', 'new-asia':'New Asia Golf',
+  'beverly':'Beverly Place Golf Club', 'royal':'Royal Central Golf', 'lakewood':'Lakewood Golf & Country Club',
+  'vista-am':'Vista Golf (AM)', 'vista-pm':'Vista Golf (PM)', 'hann':'Hann Reserve Golf', 'subic':'Subic International Golf', 'puning':'Puning Golf'
+};
+const BK_TIME_EN = { any:'Any time', am:'Morning', pm:'Afternoon' };
+let _bkDocs = [], _bkPartners = [], _bkFilter = 'active', _bkEditId = null, _bkUnsub = null, _bkInq = [];
+const bkEsc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const bkSt = id => BK_STATUS.find(s => s.id === id) || BK_STATUS[0];
+async function bkFs(){ const db = await initCardDB(); const fs = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"); return { db, fs }; }
+function bkNewId(){ const d = new Date(); const p = n => String(n).padStart(2,'0'); return 'ICG-' + d.getFullYear() + p(d.getMonth()+1) + p(d.getDate()) + '-' + Math.random().toString(36).slice(2,6).toUpperCase(); }
+function bkHist(msg, by){ return { at: new Date().toISOString(), by: by || 'iCLARKGOLF', msg }; }
+function bkCourses(){ try { const g = (typeof getGreenfee === 'function') ? getGreenfee() : []; return (g || []).filter(x => x && x.id && x.name); } catch(e) { return []; } }
+
+async function loadBookings(){
+  try {
+    const { db, fs } = await bkFs();
+    const ps = await fs.getDocs(fs.collection(db, 'partners'));
+    _bkPartners = ps.docs.map(d => ({ uid: d.id, ...d.data() }));
+    bkRenderPartners();
+    if (_bkUnsub) { _bkUnsub(); _bkUnsub = null; }
+    _bkUnsub = fs.onSnapshot(fs.query(fs.collection(db, 'bookings'), fs.orderBy('createdAt', 'desc')), snap => {
+      _bkDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      bkRenderList();
+    }, err => { document.getElementById('bk-list').innerHTML = bkRulesHint(err); });
+  } catch(e) {
+    document.getElementById('bk-list').innerHTML = bkRulesHint(e);
+    document.getElementById('bk-partners').innerHTML = '';
+  }
+}
+function bkRulesHint(e){
+  const denied = String(e && (e.code || e.message) || '').includes('permission');
+  return '<div style="color:#b91c1c;font-size:13px;line-height:1.8;">⚠️ 불러오기 실패' + (denied ? ' — <b>Firestore 보안 규칙에 bookings·partners·vouchers가 아직 없습니다.</b> 전달받은 규칙을 Firebase 콘솔에 붙여넣고 게시해 주세요.' : ': ' + bkEsc(e && e.message)) + '</div>';
+}
+
+/* ── 파트너 ── */
+function bkTogglePartnerForm(){ const f = document.getElementById('bk-partner-form'); f.style.display = f.style.display === 'none' ? 'block' : 'none'; }
+async function bkSavePartner(){
+  const v = id => document.getElementById(id).value.trim();
+  const uid = v('bkp-uid'), name = v('bkp-name'), email = v('bkp-email');
+  if (!uid || !name || !email) { alert('회사 이름, 로그인 이메일, 사용자 UID는 꼭 넣어 주세요.'); return; }
+  try {
+    const { db, fs } = await bkFs();
+    await fs.setDoc(fs.doc(db, 'partners', uid), { name, email, contact: v('bkp-contact'), phone: v('bkp-phone'), bank: v('bkp-bank'), active: true, updatedAt: new Date().toISOString() }, { merge: true });
+    ['bkp-uid','bkp-name','bkp-email','bkp-contact','bkp-phone','bkp-bank'].forEach(id => document.getElementById(id).value = '');
+    bkTogglePartnerForm(); showToast('🏢 파트너 저장 완료'); loadBookings();
+  } catch(e) { alert('저장 실패: ' + e.message); }
+}
+async function bkSetPartnerActive(uid, active){
+  if (!active && !confirm('이 파트너를 해제할까요? 해제하면 파트너 화면에서 아무것도 볼 수 없게 됩니다.')) return;
+  try { const { db, fs } = await bkFs(); await fs.updateDoc(fs.doc(db, 'partners', uid), { active, updatedAt: new Date().toISOString() }); showToast(active ? '✅ 다시 활성화' : '⏸ 파트너 해제'); loadBookings(); }
+  catch(e) { alert('실패: ' + e.message); }
+}
+function bkRenderPartners(){
+  const box = document.getElementById('bk-partners');
+  if (!_bkPartners.length) { box.innerHTML = '<div style="color:#9ca3af;font-size:13px;">등록된 파트너가 없습니다. 위의 "＋ 파트너 등록"을 눌러 주세요.</div>'; return; }
+  box.innerHTML = _bkPartners.map(p => `<div class="bk-card" style="${p.active === false ? 'opacity:.55;' : ''}">
+    <h4>${bkEsc(p.name)} ${p.active === false ? '<span style="font-size:11px;color:#b91c1c;">(해제됨)</span>' : '<span style="font-size:11px;color:#065f46;">(활성)</span>'}</h4>
+    <div class="bk-meta">담당: ${bkEsc(p.contact || '-')} · 로그인: ${bkEsc(p.email)} · 연락: ${bkEsc(p.phone || '-')}<br>송금 메모: ${bkEsc(p.bank || '-')}<br><span style="font-size:11px;color:#9ca3af;">UID ${bkEsc(p.uid)}</span></div>
+    <div class="bk-actions">
+      <button class="bk-btn sub" onclick="bkCopy(bkPartnerInvite('${bkEsc(p.uid)}'))">📋 파트너 안내 메시지 복사 (영어)</button>
+      ${p.active === false ? `<button class="bk-btn" onclick="bkSetPartnerActive('${bkEsc(p.uid)}',true)">다시 활성화</button>` : `<button class="bk-btn warn" onclick="bkSetPartnerActive('${bkEsc(p.uid)}',false)">해제 (계약 종료)</button>`}
+    </div></div>`).join('');
+}
+function bkPartnerInvite(uid){
+  const p = _bkPartners.find(x => x.uid === uid) || {};
+  return `Hello ${p.contact || p.name || ''},\n\nThis is PJ from iCLARKGOLF. Our golf booking requests will be shared with you on our partner page:\nhttps://iclarkgolf.com/partner.html\n\nPlease log in with: ${p.email || ''}\n(Your password will be sent separately.)\n\nOn the page you can:\n1) See new booking requests\n2) Enter tee times, confirmation numbers and the total amount due\n3) See our payment details\n4) Issue the voucher\n\nThank you!\nPJ / iCLARKGOLF`;
+}
+
+/* ── 부킹 목록 ── */
+function bkRenderFilter(){
+  const counts = { active:0, all:_bkDocs.length };
+  _bkDocs.forEach(d => { if (!['done','cancelled'].includes(d.status)) counts.active++; counts[d.status] = (counts[d.status] || 0) + 1; });
+  const tabs = [['active','진행 중'],['all','전체'],['sent','③ 파트너 전달'],['booked','부킹 완료'],['paid','④ 송금'],['voucher','⑤ 바우처'],['done','⑥ 완료'],['cancelled','취소']];
+  document.getElementById('bk-filter').innerHTML = tabs.map(([k,l]) => `<button class="${_bkFilter===k?'on':''}" onclick="_bkFilter='${k}';bkRenderList()">${l} ${counts[k]||0}</button>`).join('');
+}
+function bkRoundsTable(b, withPartner){
+  const rows = (b.rounds || []).map((r, i) => {
+    const pr = ((b.partner || {}).rounds || [])[i] || {};
+    return `<tr><td>${bkEsc(r.date || '-')}</td><td>${bkEsc(r.courseKo || r.courseEn || '-')}<br><span style="color:#9ca3af;font-size:11px;">${bkEsc(r.courseEn || '')}</span></td><td>${r.players || b.golfers || '-'}명</td><td>${bkEsc(BK_TIME_EN[r.time] || r.time || '-')}</td>${withPartner ? `<td><b>${bkEsc(pr.teeTime || '-')}</b></td><td>${bkEsc(pr.confNo || '-')}</td>` : ''}</tr>`;
+  }).join('');
+  return `<table class="bk-rounds"><tr><th>날짜</th><th>골프장</th><th>인원</th><th>희망</th>${withPartner ? '<th>티타임</th><th>확인번호</th>' : ''}</tr>${rows || '<tr><td colspan="6">라운드 없음</td></tr>'}</table>`;
+}
+function bkRenderList(){
+  bkRenderFilter();
+  const list = _bkDocs.filter(d => _bkFilter === 'all' ? true : _bkFilter === 'active' ? !['done','cancelled'].includes(d.status) : d.status === _bkFilter);
+  const box = document.getElementById('bk-list');
+  if (!list.length) { box.innerHTML = '<div style="color:#9ca3af;font-size:13px;padding:10px 0;">해당하는 부킹이 없습니다.</div>'; return; }
+  box.innerHTML = list.map(b => {
+    const st = bkSt(b.status), idx = BK_STEPS.indexOf(b.status);
+    const partner = _bkPartners.find(p => p.uid === b.partnerUid);
+    const pd = b.partner || {}, pay = b.payment || {}, vc = pd.voucher || {};
+    const steps = b.status === 'cancelled' ? '<span class="now" style="background:#b91c1c;">취소됨</span>'
+      : BK_STEPS.map((s, i) => `<span class="${i < idx ? 'done' : i === idx ? 'now' : ''}">${bkSt(s).ko}</span>`).join('');
+    let act = '';
+    if (['inquiry','talking'].includes(b.status)) act += `<button class="bk-btn purple" onclick="bkSend('${b.id}')">③ 확정 → 파트너에게 보내기</button>`;
+    if (b.status === 'sent') act += `<button class="bk-btn sub" onclick="bkCopy(bkPartnerMsg('${b.id}'))">📋 파트너 알림 메시지 복사</button>`;
+    if (b.status === 'booked') act += `<button class="bk-btn purple" onclick="bkPay('${b.id}')">④ 송금 완료 입력</button>`;
+    if (b.status === 'voucher') act += `<button class="bk-btn purple" onclick="bkDeliver('${b.id}')">⑥ 고객에게 바우처 보내기</button>`;
+    if (b.voucherId) act += `<button class="bk-btn sub" onclick="bkCopy(bkCustomerMsg('${b.id}'))">📋 고객용 메시지 복사</button><a class="bk-btn sub" style="text-decoration:none;" target="_blank" href="voucher.html?v=${encodeURIComponent(b.voucherId)}">🎫 바우처 보기</a>`;
+    act += `<button class="bk-btn sub" onclick="bkOpenEdit('${b.id}')">✏️ 수정</button>`;
+    if (!['done','cancelled'].includes(b.status)) act += `<button class="bk-btn warn" onclick="bkCancel('${b.id}')">취소</button>`;
+    return `<div class="bk-card">
+      <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+        <h4>${bkEsc(b.nameKo || b.nameEn)} <span style="font-weight:600;color:#6b7280;font-size:12px;">${bkEsc(b.nameEn || '')}</span></h4>
+        <span style="font-size:11px;color:#9ca3af;">${bkEsc(b.id)}</span>
+      </div>
+      <div class="bk-meta">📅 ${bkEsc(b.arrDate || '-')} ~ ${bkEsc(b.depDate || '-')} · 골퍼 ${b.golfers || '-'}명 · 🏢 ${bkEsc(partner ? partner.name : '파트너 미지정')}${b.contact ? ' · ☎ ' + bkEsc(b.contact) : ''}</div>
+      <div class="bk-steps">${steps}</div>
+      ${bkRoundsTable(b, ['booked','paid','voucher','done'].includes(b.status))}
+      ${b.noteEn ? `<div class="bk-box">✉️ 파트너에게: ${bkEsc(b.noteEn)}</div>` : ''}
+      ${b.memo ? `<div class="bk-box" style="background:#f9fafb;">🔒 내부 메모: ${bkEsc(b.memo)}</div>` : ''}
+      ${pd.amountPhp ? `<div class="bk-box yellow">💰 파트너 청구 금액: <b>₱${Number(pd.amountPhp).toLocaleString()}</b>${pd.note ? '<br>파트너 메모: ' + bkEsc(pd.note) : ''}</div>` : ''}
+      ${pay.amountPhp ? `<div class="bk-box green">✅ 송금: ₱${Number(pay.amountPhp).toLocaleString()} · ${bkEsc(pay.date || '')} · ${bkEsc(pay.method || '')} ${bkEsc(pay.ref || '')}</div>` : ''}
+      ${vc.no || vc.url ? `<div class="bk-box green">🎫 파트너 바우처: ${bkEsc(vc.no || '')} ${vc.url ? `<a href="${bkEsc(vc.url)}" target="_blank">원본 보기</a>` : ''}${vc.note ? '<br>' + bkEsc(vc.note) : ''}</div>` : ''}
+      <div class="bk-actions">${act}</div>
+      <details style="margin-top:8px;"><summary style="font-size:12px;color:#6b7280;cursor:pointer;">진행 기록</summary>
+        <div style="font-size:12px;color:#374151;line-height:1.8;margin-top:6px;">${(b.history || []).slice().reverse().map(h => `${bkEsc((h.at || '').replace('T',' ').slice(0,16))} · <b>${bkEsc(h.by)}</b> · ${bkEsc(h.msg)}`).join('<br>') || '-'}</div>
+      </details>
+    </div>`;
+  }).join('');
+}
+
+/* ── 만들기/수정 ── */
+function bkPartnerOptions(sel){
+  const act = _bkPartners.filter(p => p.active !== false);
+  document.getElementById('bkf-partner').innerHTML = (act.length ? '' : '<option value="">(먼저 파트너를 등록하세요)</option>') + act.map(p => `<option value="${bkEsc(p.uid)}" ${p.uid === sel ? 'selected' : ''}>${bkEsc(p.name)}</option>`).join('');
+}
+function bkCourseOptions(id){ return '<option value="">골프장 선택</option>' + bkCourses().map(c => `<option value="${bkEsc(c.id)}" ${c.id === id ? 'selected' : ''}>${bkEsc(c.name)}</option>`).join(''); }
+function bkAddRoundRow(r){
+  r = r || {};
+  const div = document.createElement('div');
+  div.className = 'bk-round-row';
+  div.style.cssText = 'display:grid;grid-template-columns:1.1fr 1.3fr 1.6fr .6fr .9fr auto;gap:6px;margin-bottom:6px;align-items:center;';
+  div.innerHTML = `<input type="date" class="r-date" value="${bkEsc(r.date || '')}">
+    <select class="r-course" onchange="var o=this.closest('.bk-round-row').querySelector('.r-en');o.value=BK_COURSE_EN[this.value]||o.value;">${bkCourseOptions(r.courseId)}</select>
+    <input class="r-en" placeholder="Course name (English)" value="${bkEsc(r.courseEn || BK_COURSE_EN[r.courseId] || '')}">
+    <input class="r-players" type="number" min="1" placeholder="명" value="${r.players || document.getElementById('bkf-golfers').value || 2}">
+    <select class="r-time"><option value="any" ${r.time==='any'?'selected':''}>아무때나</option><option value="am" ${r.time==='am'?'selected':''}>오전</option><option value="pm" ${r.time==='pm'?'selected':''}>오후</option></select>
+    <button class="bk-btn warn" style="padding:8px 10px;" onclick="this.parentElement.remove()">✕</button>`;
+  document.getElementById('bkf-rounds').appendChild(div);
+}
+async function bkLoadInquiryOptions(){
+  try {
+    const { db, fs } = await bkFs();
+    const snap = await fs.getDocs(fs.query(fs.collection(db, 'inquiries'), fs.orderBy('createdAt', 'desc'), fs.limit(40)));
+    _bkInq = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    document.getElementById('bkf-inq').innerHTML = '<option value="">— 직접 입력 —</option>' + _bkInq.map(q => {
+      const dt = q.createdAt && q.createdAt.toDate ? q.createdAt.toDate().toLocaleDateString('ko-KR') : '';
+      return `<option value="${q.id}">${bkEsc(dt)} · ${bkEsc(q.name || '-')} · ${bkEsc(q.arrDate || '')} · 골퍼 ${q.golfers || '-'}명</option>`;
+    }).join('');
+  } catch(e) { console.warn('문의 목록 불러오기 실패:', e); }
+}
+function bkFillFromInquiry(id){
+  const q = _bkInq.find(x => x.id === id); if (!q) return;
+  const set = (k, v) => { document.getElementById(k).value = v == null ? '' : v; };
+  set('bkf-nameKo', q.name); set('bkf-contact', q.contact); set('bkf-arr', q.arrDate); set('bkf-dep', q.depDate); set('bkf-golfers', q.golfers || 2);
+  if (q.hotel && q.hotel !== '미선택') set('bkf-hotel', q.hotel);
+  document.getElementById('bkf-rounds').innerHTML = '';
+  (q.golfCourses || []).forEach(g => { for (let i = 0; i < (Number(g.rounds) || 1); i++) bkAddRoundRow({ courseId: g.gfId, courseEn: BK_COURSE_EN[g.gfId] || '', players: q.golfers }); });
+  if (!(q.golfCourses || []).length) bkAddRoundRow();
+  set('bkf-memo', q.memo || '');
+}
+function bkOpenNew(){
+  _bkEditId = null;
+  document.getElementById('bk-modal-title').textContent = '새 부킹';
+  ['bkf-nameKo','bkf-nameEn','bkf-contact','bkf-arr','bkf-dep','bkf-hotel','bkf-noteEn','bkf-memo'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('bkf-golfers').value = 2;
+  document.getElementById('bkf-status').value = 'talking';
+  document.getElementById('bkf-inq').parentElement.style.display = 'block';
+  document.getElementById('bkf-rounds').innerHTML = ''; bkAddRoundRow();
+  bkPartnerOptions(); bkLoadInquiryOptions();
+  document.getElementById('bk-modal').style.display = 'flex';
+}
+function bkOpenEdit(id){
+  const b = _bkDocs.find(x => x.id === id); if (!b) return;
+  _bkEditId = id;
+  document.getElementById('bk-modal-title').textContent = '부킹 수정 · ' + id;
+  const set = (k, v) => { document.getElementById(k).value = v == null ? '' : v; };
+  set('bkf-nameKo', b.nameKo); set('bkf-nameEn', b.nameEn); set('bkf-contact', b.contact); set('bkf-arr', b.arrDate); set('bkf-dep', b.depDate);
+  set('bkf-golfers', b.golfers); set('bkf-hotel', b.hotelEn); set('bkf-noteEn', b.noteEn); set('bkf-memo', b.memo);
+  const stSel = document.getElementById('bkf-status');
+  stSel.value = ['inquiry','talking'].includes(b.status) ? b.status : 'talking';
+  stSel.parentElement.style.display = ['inquiry','talking'].includes(b.status) ? 'block' : 'none';
+  document.getElementById('bkf-inq').parentElement.style.display = 'none';
+  document.getElementById('bkf-rounds').innerHTML = ''; (b.rounds || []).forEach(r => bkAddRoundRow(r)); if (!(b.rounds || []).length) bkAddRoundRow();
+  bkPartnerOptions(b.partnerUid);
+  document.getElementById('bk-modal').style.display = 'flex';
+}
+function bkCloseModal(){ document.getElementById('bk-modal').style.display = 'none'; }
+function bkReadForm(){
+  const v = id => document.getElementById(id).value.trim();
+  const rounds = [...document.querySelectorAll('#bkf-rounds .bk-round-row')].map(row => {
+    const sel = row.querySelector('.r-course');
+    const c = bkCourses().find(x => x.id === sel.value);
+    return { date: row.querySelector('.r-date').value, courseId: sel.value, courseKo: c ? c.name : '', courseEn: row.querySelector('.r-en').value.trim(), players: Number(row.querySelector('.r-players').value) || 1, time: row.querySelector('.r-time').value };
+  }).filter(r => r.courseId || r.courseEn);
+  return { nameKo: v('bkf-nameKo'), nameEn: v('bkf-nameEn').toUpperCase(), contact: v('bkf-contact'), arrDate: v('bkf-arr'), depDate: v('bkf-dep'),
+    golfers: Number(v('bkf-golfers')) || 1, hotelEn: v('bkf-hotel'), noteEn: v('bkf-noteEn'), memo: v('bkf-memo'), partnerUid: v('bkf-partner'), rounds };
+}
+async function bkSaveBooking(){
+  const f = bkReadForm();
+  if (!f.nameEn) { alert('고객 영문 이름을 넣어 주세요 (골프장 예약에 필요합니다).'); return; }
+  if (!f.rounds.length) { alert('라운드를 하나 이상 넣어 주세요.'); return; }
+  try {
+    const { db, fs } = await bkFs();
+    const now = new Date().toISOString();
+    if (_bkEditId) {
+      const b = _bkDocs.find(x => x.id === _bkEditId) || {};
+      const upd = { ...f, updatedAt: now, history: [...(b.history || []), bkHist('예약 내용 수정')] };
+      if (['inquiry','talking'].includes(b.status)) upd.status = document.getElementById('bkf-status').value;
+      await fs.updateDoc(fs.doc(db, 'bookings', _bkEditId), upd);
+    } else {
+      const id = bkNewId();
+      const inqId = document.getElementById('bkf-inq').value;
+      await fs.setDoc(fs.doc(db, 'bookings', id), { ...f, status: document.getElementById('bkf-status').value, inquiryId: inqId || '', partner: {}, payment: {},
+        createdAt: fs.serverTimestamp(), updatedAt: now, history: [bkHist('부킹 생성' + (inqId ? ' (문의에서 불러옴)' : ''))] });
+    }
+    bkCloseModal(); showToast('💾 부킹 저장 완료');
+  } catch(e) { alert('저장 실패: ' + e.message); }
+}
+
+/* ── 단계 진행 ── */
+async function bkUpdate(id, data, msg){
+  const b = _bkDocs.find(x => x.id === id) || {};
+  const { db, fs } = await bkFs();
+  await fs.updateDoc(fs.doc(db, 'bookings', id), { ...data, updatedAt: new Date().toISOString(), history: [...(b.history || []), bkHist(msg)] });
+}
+async function bkSend(id){
+  const b = _bkDocs.find(x => x.id === id); if (!b) return;
+  if (!b.partnerUid || !_bkPartners.find(p => p.uid === b.partnerUid && p.active !== false)) { alert('활성 파트너를 먼저 지정해 주세요 (✏️ 수정).'); return; }
+  if (!b.nameEn || !(b.rounds || []).length || (b.rounds || []).some(r => !r.date)) { alert('영문 이름과 모든 라운드의 날짜를 넣어 주세요 (✏️ 수정).'); return; }
+  if (!confirm('고객이 확정했나요? 이 부킹을 파트너에게 보냅니다.')) return;
+  try { await bkUpdate(id, { status: 'sent', sentAt: new Date().toISOString() }, 'Booking request sent to partner'); bkCopy(bkPartnerMsg(id), '📋 파트너에게 보낼 메시지가 복사됐어요. 카톡/바이버/왓츠앱에 붙여넣으세요.'); }
+  catch(e) { alert('실패: ' + e.message); }
+}
+async function bkPay(id){
+  const b = _bkDocs.find(x => x.id === id); if (!b) return;
+  const due = (b.partner || {}).amountPhp || '';
+  const amt = prompt('송금한 금액 (₱)', due); if (amt === null) return;
+  const date = prompt('송금 날짜 (예: 2026-10-01)', new Date().toISOString().slice(0,10)); if (date === null) return;
+  const method = prompt('송금 방법 (예: BDO transfer, GCash)', ''); if (method === null) return;
+  const ref = prompt('송금 참조번호 (없으면 비워두세요)', '') || '';
+  try { await bkUpdate(id, { status: 'paid', payment: { amountPhp: Number(String(amt).replace(/[^0-9.]/g,'')) || 0, date, method, ref, at: new Date().toISOString() } }, 'Payment sent: PHP ' + amt + ' (' + method + ')'); showToast('✅ 송금 완료로 표시했어요'); }
+  catch(e) { alert('실패: ' + e.message); }
+}
+async function bkDeliver(id){
+  const b = _bkDocs.find(x => x.id === id); if (!b) return;
+  const pd = b.partner || {}, vc = pd.voucher || {};
+  const includeOriginal = vc.url ? confirm('파트너가 올린 원본 바우처 링크도 고객 바우처에 넣을까요?\n(확인 = 넣기 / 취소 = iCLARKGOLF 바우처만)') : false;
+  try {
+    const { db, fs } = await bkFs();
+    const vid = b.voucherId || (Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2, 8));
+    await fs.setDoc(fs.doc(db, 'vouchers', vid), {
+      bookingId: b.id, nameKo: b.nameKo || '', nameEn: b.nameEn || '', golfers: b.golfers || 0, arrDate: b.arrDate || '', depDate: b.depDate || '',
+      rounds: (b.rounds || []).map((r, i) => { const pr = (pd.rounds || [])[i] || {}; return { date: r.date || '', courseKo: r.courseKo || '', courseEn: r.courseEn || '', players: r.players || b.golfers || 0, teeTime: pr.teeTime || '', confNo: pr.confNo || '' }; }),
+      voucherNo: vc.no || '', originalUrl: includeOriginal ? (vc.url || '') : '', partnerNote: vc.note || '', issuedAt: new Date().toISOString()
+    });
+    await bkUpdate(id, { status: 'done', voucherId: vid, deliveredAt: new Date().toISOString() }, 'Voucher delivered to guest');
+    bkCopy(bkCustomerMsg(id, vid), '📋 고객에게 보낼 메시지(바우처 링크 포함)가 복사됐어요.');
+  } catch(e) { alert('실패: ' + e.message); }
+}
+async function bkCancel(id){
+  if (!confirm('이 부킹을 취소 처리할까요? (파트너 화면에도 "Cancelled"로 표시됩니다)')) return;
+  try { await bkUpdate(id, { status: 'cancelled' }, 'Booking cancelled'); } catch(e) { alert('실패: ' + e.message); }
+}
+
+/* ── 메시지 ── */
+function bkPartnerMsg(id){
+  const b = _bkDocs.find(x => x.id === id) || {};
+  const rounds = (b.rounds || []).map(r => `- ${r.date} | ${r.courseEn || r.courseKo} | ${r.players || b.golfers} pax | ${BK_TIME_EN[r.time] || 'Any time'}`).join('\n');
+  return `[iCLARKGOLF] New booking request ${b.id}\nGuest: ${b.nameEn} (${b.golfers} golfers)\n${rounds}${b.noteEn ? '\nNote: ' + b.noteEn : ''}\n\nPlease confirm tee times and the total amount on our partner page:\nhttps://iclarkgolf.com/partner.html`;
+}
+function bkCustomerMsg(id, vidArg){
+  const b = _bkDocs.find(x => x.id === id) || {};
+  const vid = vidArg || b.voucherId;
+  return `안녕하세요 ${b.nameKo || b.nameEn}님, iCLARKGOLF 투어장 프로입니다.\n골프장 부킹이 확정되어 바우처를 보내드립니다.\n\n🎫 바우처: https://iclarkgolf.com/voucher.html?v=${vid}\n\n라운드 당일 골프장 프런트에서 이 화면을 보여주세요.\n궁금한 점은 언제든 카톡(tourjang2)으로 연락 주세요!`;
+}
+function bkCopy(text, toast){
+  const done = () => showToast(toast || '📋 복사됐어요', 'info');
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done).catch(() => { prompt('아래 내용을 복사하세요', text); });
+  else prompt('아래 내용을 복사하세요', text);
+}
 </script>
 
 </body>
