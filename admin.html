@@ -1821,7 +1821,7 @@ function formatDateRange(start,end){if(!start||!end)return '';const s=new Date(s
 function getNights(start,end){if(!start||!end)return 0;return Math.round((new Date(end)-new Date(start))/(1000*60*60*24));}
 function formatPrice(num,currency='$'){if(!num&&num!==0)return '-';return currency+Number(num).toLocaleString();}
 function formatPHP(num){if(!num&&num!==0)return '-';return '₱'+Number(num).toLocaleString();}
-function showToast(msg,type='success'){const colors={success:'#1D9E75',error:'#e74c3c',info:'#534AB7'};const t=document.createElement('div');t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:'+colors[type]+';color:#fff;padding:12px 24px;border-radius:100px;font-family:Nunito,sans-serif;font-size:13px;font-weight:700;z-index:9999;white-space:nowrap;';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2800);}
+function showToast(msg,type='success'){const colors={success:'#1D9E75',error:'#e74c3c',info:'#534AB7'};const t=document.createElement('div');t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:'+colors[type]+';color:#fff;padding:12px 24px;border-radius:100px;font-family:Nunito,sans-serif;font-size:13px;font-weight:700;z-index:100000;white-space:nowrap;';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2800);}
 function showLoading(el,text='저장 중...'){if(!el)return;el._origText=el.textContent;el.textContent=text;el.disabled=true;el.style.opacity='.7';}
 function hideLoading(el){if(!el)return;el.textContent=el._origText||'완료';el.disabled=false;el.style.opacity='1';}
 function createQuoteData(data){return{id:Date.now().toString(),createdAt:new Date().toISOString(),status:'pending',purpose:data.purpose||'',purposeLabel:data.purposeLabel||'',accommodation:data.accommodation||'',accomLabel:data.accomLabel||'',checkIn:data.checkIn||'',checkOut:data.checkOut||'',nights:data.nights||0,golfers:data.golfers||1,nonGolfers:data.nonGolfers||0,golfCourses:data.golfCourses||[],totalUSD:data.totalUSD||0,memo:data.memo||'',contact:data.contact||''};}
@@ -5342,9 +5342,9 @@ function qfKakao(){ var link=document.getElementById('qfLinkUrl').value; var nam
     <textarea id="sms-msg" rows="11"></textarea>
     <div class="row">
       <a class="bk-btn big" id="sms-send" href="#" onclick="bkSmsLog('문자')">📱 문자 보내기</a>
-      <button class="bk-btn sub big" onclick="bkCopy(document.getElementById('sms-msg').value,'📋 복사됐어요. 카톡이나 문자에 붙여넣으세요.');bkSmsLog('복사')">📋 복사 (카톡용)</button>
+      <button class="bk-btn sub big" id="sms-copy" onclick="bkSmsCopy(this)">📋 복사 (카톡용)</button>
     </div>
-    <div style="font-size:11.5px;color:#9ca3af;margin-top:8px;line-height:1.6;">휴대폰에서는 "문자 보내기"를 누르면 문자앱이 내용까지 채워진 채로 열립니다. 전송만 누르세요. 컴퓨터에서는 문자 버튼이 숨겨지니 "복사" 후 카톡에 붙여넣으세요.</div>
+    <div style="font-size:11.5px;color:#9ca3af;margin-top:8px;line-height:1.6;">휴대폰에서는 "문자 보내기"를 누르면 문자앱이 내용까지 채워진 채로 열립니다. 전송만 누르세요. 컴퓨터에서는 "휴대폰과 연결" 앱이 열리고 내용이 채워집니다(처음 한 번 "항상 허용" 체크). 카톡으로 보낼 땐 "복사".</div>
   </div>
 </div>
 
@@ -5765,13 +5765,29 @@ function bkSmsOpen(id){
   document.getElementById('sms-bbk').value = ''; document.getElementById('sms-note').value = ''; document.getElementById('sms-amt').value = '';
   const map = { sent:'hold', hold:'hold', reserve:'hold', booked:'booked', paid:'pay', voucher:'pay', done:'voucher' };
   document.getElementById('sms-tpl').value = map[b.status] || 'free';
-  // 컴퓨터에서는 문자앱이 없어 "앱 선택" 창이 뜨므로 문자 버튼을 숨기고 복사만 보여줌
-  document.getElementById('sms-send').style.display = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ? '' : 'none';
   document.getElementById('bk-sms').style.display = 'flex';
   bkSmsBuild();
 }
 function bkSmsClose(){ document.getElementById('bk-sms').style.display = 'none'; }
 document.addEventListener('input', e => { if (e.target && (e.target.id === 'sms-msg' || e.target.id === 'sms-to')) bkSmsLink(); });
+// 고객 안내 복사: 클립보드가 막혀도 확실히 복사되도록 두 가지 방법 + 버튼에 "복사됨" 표시
+function bkSmsCopy(btn){
+  const ta = document.getElementById('sms-msg');
+  const text = ta.value;
+  const ok = () => {
+    btn.textContent = '✅ 복사됐어요 — 카톡에 붙여넣기(Ctrl+V)';
+    btn.style.background = '#E1F5EE'; btn.style.color = '#0f6e4f';
+    setTimeout(() => { btn.textContent = '📋 복사 (카톡용)'; btn.style.background = ''; btn.style.color = ''; }, 4000);
+    bkSmsLog('복사');
+  };
+  const legacy = () => {
+    ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);
+    let done = false; try { done = document.execCommand('copy'); } catch(e) {}
+    if (done) ok(); else alert('자동 복사가 안 됐어요. 문자 칸이 선택돼 있으니 Ctrl+C(휴대폰은 길게 눌러 복사)를 눌러 주세요.');
+  };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(ok).catch(legacy);
+  else legacy();
+}
 async function bkSmsLog(how){
   bkSmsLink();
   try { const t = document.getElementById('sms-tpl'); await bkUpdate(_bkSmsId, {}, '고객 안내 ' + how + ': ' + t.options[t.selectedIndex].text); } catch(e) {}
