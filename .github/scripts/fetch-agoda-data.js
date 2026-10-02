@@ -51,7 +51,12 @@ function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function fetchAgoda(siteId, apiKey, cityId, regionLabel) {
+// 아고다 서버가 가끔 늦거나 JSON이 아닌 오류 화면을 돌려줄 때가 있어(일시 장애)
+// 지역마다 최대 3번까지 다시 시도한다. 한 번 호출에 30초 이상 걸리면 끊고 재시도.
+const MAX_TRIES = 3;
+const TIMEOUT_MS = 30000;
+
+async function fetchAgodaOnce(siteId, apiKey, cityId) {
     const { checkIn, checkOut } = nextWeekDates();
     const body = {
           criteria: {
@@ -77,26 +82,46 @@ async function fetchAgoda(siteId, apiKey, cityId, regionLabel) {
                 'Accept-Encoding': 'gzip,deflate',
         },
         body: JSON.stringify(body),
+        signal: AbortSignal.timeout(TIMEOUT_MS),
   });
 
-  const data = await res.json();
-    if (data.error) {
-          console.warn(`Agoda API 오류 [${regionLabel} / cityId ${cityId}]:`, data.error.message || data.error);
-          return [];
+  const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); }
+    catch (e) { throw new Error(`HTTP ${res.status} — JSON 아님: ${text.slice(0, 120).replace(/\s+/g, ' ')}`); }
+    if (data.error) throw new Error('Agoda API 오류: ' + (data.error.message || JSON.stringify(data.error)));
+    return data.results || [];
+}
+
+// 성공하면 호텔 목록, 3번 다 실패하면 null (→ 이 지역은 지난번 데이터를 그대로 유지)
+async function fetchAgoda(siteId, apiKey, cityId, regionLabel) {
+    for (let t = 1; t <= MAX_TRIES; t++) {
+          try {
+                  const results = await fetchAgodaOnce(siteId, apiKey, cityId);
+                  return results.map((h) => ({
+                            hotelId: h.hotelId,
+                            name: h.hotelName,
+                            price: h.dailyRate,
+                            crossedOutPrice: h.crossedOutRate,
+                            currency: h.currency,
+                            image: h.imageURL,
+                            starRating: h.starRating,
+                            reviewScore: h.reviewScore,
+                            bookingUrl: h.landingURL,
+                            region: regionLabel,
+                            cityId,
+                  }));
+          } catch (err) {
+                  console.warn(`  ! ${regionLabel} (cityId ${cityId}) ${t}/${MAX_TRIES}번째 실패: ${err.message}`);
+                  if (t < MAX_TRIES) await sleep(3000 * t);
+          }
     }
-    return (data.results || []).map((h) => ({
-          hotelId: h.hotelId,
-          name: h.hotelName,
-          price: h.dailyRate,
-          crossedOutPrice: h.crossedOutRate,
-          currency: h.currency,
-          image: h.imageURL,
-          starRating: h.starRating,
-          reviewScore: h.reviewScore,
-          bookingUrl: h.landingURL,
-          region: regionLabel,
-          cityId,
-    }));
+    return null;
+}
+
+function loadPrevious() {
+    try { return JSON.parse(fs.readFileSync(OUTPUT_PATH, 'utf8')).hotels || []; }
+    catch (e) { return []; }
 }
 
 async function main() {
@@ -106,23 +131,41 @@ async function main() {
           throw new Error('AGODA_SITE_ID / AGODA_API_KEY 환경변수(GitHub Secret)가 없습니다.');
     }
 
+  const previous = loadPrevious();
   const seen = new Set();
     const hotels = [];
+    let okCities = 0;
+    let keptCities = 0;
 
   for (const { id: cityId, label } of CITY_IDS) {
-        const results = await fetchAgoda(siteId, apiKey, cityId, label);
+        let results = await fetchAgoda(siteId, apiKey, cityId, label);
+        if (results === null || results.length === 0) {
+                // 실패했거나 0개가 오면 사이트에서 호텔이 사라지지 않도록 지난번 목록을 그대로 씀
+                const old = previous.filter((h) => h.cityId === cityId);
+                console.log(`  - ${label} (cityId ${cityId}): ${results === null ? '조회 실패' : '0개'} → 지난 데이터 ${old.length}개 유지`);
+                results = old;
+                keptCities++;
+        } else {
+                okCities++;
+                console.log(`  - ${label} (cityId ${cityId}): ${results.length}개 조회`);
+        }
         for (const hotel of results) {
                 // 같은 호텔이 여러 지역 조회에 중복으로 잡히는 경우 방지
           if (seen.has(hotel.hotelId)) continue;
                 seen.add(hotel.hotelId);
                 hotels.push(hotel);
         }
-        console.log(`  - ${label} (cityId ${cityId}): ${results.length}개 조회`);
         await sleep(DELAY_BETWEEN_CALLS_MS);
   }
 
+  if (okCities === 0) {
+        // 아고다 전체 장애 — 파일을 건드리지 않고 정상 종료(실패 메일 안 보냄). 6시간 뒤 다시 시도됨.
+        console.log('아고다 서버 응답 없음 — 기존 agoda-hotels.json 그대로 유지하고 다음 실행 때 다시 시도합니다.');
+        return;
+  }
+
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify({ updatedAt: new Date().toISOString(), hotels }, null, 2));
-    console.log(`agoda-hotels.json 저장 완료 (총 ${hotels.length}개 호텔, ${CITY_IDS.length}개 지역)`);
+    console.log(`agoda-hotels.json 저장 완료 (총 ${hotels.length}개 호텔, 새로 받음 ${okCities}개 지역 / 지난 데이터 유지 ${keptCities}개 지역)`);
 }
 
 main().catch((err) => {
