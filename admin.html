@@ -5198,6 +5198,17 @@ function qfKakao(){ var link=document.getElementById('qfLinkUrl').value; var nam
 #panel-booking .bk-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
 #panel-booking .bk-filter button{border:1.5px solid #AFA9EC;background:#fff;color:#534AB7;border-radius:20px;padding:6px 12px;font-size:12px;font-weight:800;cursor:pointer;}
 #panel-booking .bk-filter button.on{background:#534AB7;color:#fff;}
+#bk-sms{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;align-items:flex-start;justify-content:center;overflow-y:auto;padding:12px 8px;}
+#bk-sms .in{background:#fff;border-radius:16px;max-width:560px;width:100%;padding:16px;}
+#bk-sms label{display:block;font-size:12px;font-weight:700;color:#6b7280;margin:10px 0 4px;}
+#bk-sms input,#bk-sms select,#bk-sms textarea{width:100%;padding:10px 11px;border:1.5px solid #c8edd9;border-radius:8px;font-size:16px;font-family:inherit;box-sizing:border-box;background:#fff;}
+#bk-sms .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+#bk-sms .row > *{flex:1;min-width:140px;text-align:center;text-decoration:none;}
+#bk-sms .big{padding:14px;font-size:15px;}
+#bk-sms .bk-btn,#bk-modal .bk-btn{background:#1D9E75;color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;font-family:inherit;display:inline-block;}
+#bk-sms .bk-btn.sub,#bk-modal .bk-btn.sub{background:#fff;color:#534AB7;border:1.5px solid #AFA9EC;}
+#bk-sms .bk-btn.warn,#bk-modal .bk-btn.warn{background:#fee2e2;color:#b91c1c;}
+#bk-sms .bk-btn.big{padding:14px;font-size:15px;}
 #bk-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px 12px;}
 #bk-modal .bk-modal-in{background:#fff;border-radius:16px;max-width:720px;width:100%;padding:20px;}
 #bk-modal label{display:block;font-size:12px;font-weight:700;color:#6b7280;margin-bottom:4px;}
@@ -5297,6 +5308,43 @@ function qfKakao(){ var link=document.getElementById('qfLinkUrl').value; var nam
     <div class="bk-actions" style="margin-top:14px;">
       <button class="bk-btn" onclick="bkSaveBooking()">💾 저장</button>
     </div>
+  </div>
+</div>
+
+<!-- 📱 고객 안내 문자 창 -->
+<div id="bk-sms" onclick="if(event.target===this)bkSmsClose()">
+  <div class="in">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-size:17px;font-weight:800;color:#26215C;">📱 고객에게 안내 보내기</div>
+      <button class="bk-btn sub" onclick="bkSmsClose()">닫기</button>
+    </div>
+    <div style="font-size:12.5px;color:#6b7280;margin-top:4px;" id="sms-who"></div>
+    <label>받는 사람 휴대폰</label>
+    <input id="sms-to" inputmode="tel">
+    <label>안내 종류</label>
+    <select id="sms-tpl" onchange="bkSmsBuild()">
+      <option value="hold">예약대기 접수 안내</option>
+      <option value="booked">예약 확정 안내 (티타임·결제)</option>
+      <option value="pay">입금 확인 감사 안내</option>
+      <option value="voucher">바우처 전달</option>
+      <option value="free">직접 쓰기</option>
+    </select>
+    <label>현지(BBK) 메시지 붙여넣기 <span style="font-weight:400;">— 카톡 내용을 그대로 붙이면 한국어로 정리됩니다 (선택)</span></label>
+    <textarea id="sms-bbk" rows="5" placeholder="Kim JiWon&#10;12/30 dheights 2pax&#10;12/31 mimosa 2pax&#10;around 8am&#10;..."></textarea>
+    <button class="bk-btn sub" style="margin-top:6px;width:100%;" onclick="bkSmsParse()">🌐 한국어로 정리해서 넣기</button>
+    <div id="sms-amt-wrap" style="display:none;">
+      <label>고객 결제 금액 (예: 350,000원 또는 ₱18,600)</label>
+      <input id="sms-amt" oninput="bkSmsBuild()">
+    </div>
+    <label>PJ님 추가 안내 (선택)</label>
+    <textarea id="sms-note" rows="2" placeholder="예: 카트·캐디비는 현장에서 따로 내시면 됩니다." oninput="bkSmsBuild()"></textarea>
+    <label>📨 보낼 문자 (마지막으로 고쳐도 됩니다)</label>
+    <textarea id="sms-msg" rows="11"></textarea>
+    <div class="row">
+      <a class="bk-btn big" id="sms-send" href="#" onclick="bkSmsLog('문자')">📱 문자 보내기</a>
+      <button class="bk-btn sub big" onclick="bkCopy(document.getElementById('sms-msg').value,'📋 복사됐어요. 카톡이나 문자에 붙여넣으세요.');bkSmsLog('복사')">📋 복사 (카톡용)</button>
+    </div>
+    <div style="font-size:11.5px;color:#9ca3af;margin-top:8px;line-height:1.6;">휴대폰에서는 "문자 보내기"를 누르면 문자앱이 내용까지 채워진 채로 열립니다. 전송만 누르세요. 컴퓨터에서는 "복사"를 쓰세요.</div>
   </div>
 </div>
 
@@ -5420,6 +5468,7 @@ function bkRenderList(){
     if (b.status === 'booked') act += `<button class="bk-btn purple" onclick="bkPay('${b.id}')">3️⃣ 송금 완료 입력</button>`;
     if (b.status === 'voucher') act += `<button class="bk-btn purple" onclick="bkDeliver('${b.id}')">⑥ 고객에게 바우처 보내기</button>`;
     if (b.voucherId) act += `<button class="bk-btn sub" onclick="bkCopy(bkCustomerMsg('${b.id}'))">📋 고객용 메시지 복사</button><a class="bk-btn sub" style="text-decoration:none;" target="_blank" href="voucher.html?v=${encodeURIComponent(b.voucherId)}">🎫 바우처 보기</a>`;
+    act += `<button class="bk-btn" style="background:#0ea5e9;" onclick="bkSmsOpen('${b.id}')">📱 고객에게 안내 보내기</button>`;
     act += `<button class="bk-btn sub" onclick="bkOpenEdit('${b.id}')">✏️ 수정</button>`;
     if (!['done','cancelled'].includes(b.status)) act += `<button class="bk-btn warn" onclick="bkCancel('${b.id}')">취소</button>`;
     return `<div class="bk-card">
@@ -5630,6 +5679,100 @@ async function bkDeliver(id){
 async function bkCancel(id){
   if (!confirm('이 부킹을 취소 처리할까요? (파트너 화면에도 "Cancelled"로 표시됩니다)')) return;
   try { await bkUpdate(id, { status: 'cancelled' }, 'Booking cancelled'); } catch(e) { alert('실패: ' + e.message); }
+}
+
+/* ── 📱 고객 안내 문자 (휴대폰 문자앱 열기 / 복사) ── */
+let _bkSmsId = null, _bkSmsParsed = null;
+const BK_COURSE_KO = [[/d'?\s*heights?|sun\s*valley/i,'디하이츠'],[/mimosa/i,'미모사'],[/vista/i,'비스타'],[/pradera/i,'프라데라'],[/luisita/i,'루이시타'],
+  [/korea/i,'코리아 CC'],[/beverly/i,'베벌리'],[/royal/i,'로얄 센트럴'],[/lake\s*wood/i,'레이크우드'],[/hann/i,'한 리저브'],[/subic/i,'수빅'],[/new\s*asia/i,'뉴 아시아'],[/puning/i,'푸닝']];
+const bkWk = d => '일월화수목금토'[d.getDay()];
+function bkSmsDate(m, d, b){
+  // 연도는 부킹 도착일 기준(없으면 오늘 이후 가장 가까운 날짜)
+  const base = b && b.arrDate ? new Date(b.arrDate + 'T00:00:00') : new Date();
+  let y = base.getFullYear(); let dt = new Date(y, m - 1, d);
+  if (b && b.arrDate && dt < new Date(base.getTime() - 40 * 86400000)) dt = new Date(y + 1, m - 1, d);
+  if (!(b && b.arrDate) && dt < new Date(Date.now() - 86400000)) dt = new Date(y + 1, m - 1, d);
+  return dt;
+}
+function bkSmsRoundsFromBooking(b){
+  const pr = ((b.partner || {}).rounds) || [];
+  return (b.rounds || []).map((r, i) => {
+    const d = r.date ? new Date(r.date + 'T00:00:00') : null;
+    return { label: d ? (d.getMonth()+1) + '/' + d.getDate() + '(' + bkWk(d) + ')' : '', course: r.courseKo || r.courseEn || '', pax: r.players || b.golfers || '', tee: pr[i] && pr[i].teeTime || '' };
+  });
+}
+async function bkSmsParse(){
+  const b = _bkDocs.find(x => x.id === _bkSmsId) || {};
+  const raw = document.getElementById('sms-bbk').value.trim();
+  if (!raw) { alert('BBK 메시지를 먼저 붙여넣어 주세요.'); return; }
+  const rounds = [], rest = []; let time = '';
+  raw.split(/\n+/).map(l => l.trim()).filter(Boolean).forEach((line, idx) => {
+    const m = line.match(/^(\d{1,2})\/(\d{1,2})\s+(.+?)(?:\s+(\d+)\s*(?:pax|pa?x|persons?|ppl|golfers?))?\s*$/i);
+    if (m) {
+      const dt = bkSmsDate(+m[1], +m[2], b);
+      const ko = (BK_COURSE_KO.find(c => c[0].test(m[3])) || [0, m[3]])[1];
+      const tee = (m[3].match(/(\d{1,2}[:.]\d{2}\s*(?:am|pm)?|\d{1,2}\s*(?:am|pm))/i) || [])[1] || '';
+      rounds.push({ label: (dt.getMonth()+1) + '/' + dt.getDate() + '(' + bkWk(dt) + ')', course: ko, pax: m[4] || b.golfers || '', tee });
+      return;
+    }
+    const t = line.match(/^(?:around|about|approx\.?|at)?\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/i);
+    if (t && line.length < 25) { const h = +t[1], ap = t[3].toLowerCase(); time = (ap === 'am' ? '오전 ' : '오후 ') + h + '시' + (t[2] && t[2] !== '00' ? ' ' + t[2] + '분' : '') + (/around|about|approx/i.test(line) ? '경' : ''); return; }
+    if (idx === 0 && /^[a-z .'-]+$/i.test(line) && line.split(/\s+/).length <= 4) return;   // 첫 줄 고객 이름은 생략
+    rest.push(line);
+  });
+  let restKo = '';
+  if (rest.length) { try { restKo = await (async () => {
+    const r = await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ko&dt=t&q=' + encodeURIComponent(rest.join('\n')));
+    const j = await r.json(); return (j[0] || []).map(x => x[0]).join('').trim();
+  })(); } catch(e) { restKo = rest.join(' '); } }
+  _bkSmsParsed = { rounds, time, restKo };
+  bkSmsBuild();
+  showToast('🌐 한국어로 정리했어요', 'info');
+}
+function bkSmsBuild(){
+  const b = _bkDocs.find(x => x.id === _bkSmsId); if (!b) return;
+  const tpl = document.getElementById('sms-tpl').value;
+  document.getElementById('sms-amt-wrap').style.display = tpl === 'booked' ? 'block' : 'none';
+  const name = (b.nameKo || b.nameEn || '고객') + '님';
+  const P = _bkSmsParsed;
+  const rounds = (P && P.rounds.length) ? P.rounds : bkSmsRoundsFromBooking(b);
+  const time = (P && P.time) || '';
+  const lines = rounds.map(r => `${r.label} ${r.course} ${r.pax}명${r.tee ? ' · 티타임 ' + r.tee : ''}`);
+  const note = document.getElementById('sms-note').value.trim();
+  const sign = '- 투어장 프로 (카톡 tourjang2)';
+  let head = '', tail = '';
+  if (tpl === 'hold') { head = `[iCLARKGOLF] ${name}, 골프장 예약대기 접수 안내드립니다.`; tail = '성수기 예약이 열리는 대로 현지에서 바로 부킹하고 다시 알려드리겠습니다.'; }
+  if (tpl === 'booked') { const amt = document.getElementById('sms-amt').value.trim(); head = `[iCLARKGOLF] ${name}, 골프장 예약이 확정되었습니다.`; tail = (amt ? '결제하실 금액: ' + amt + '\n' : '') + '입금 안내: https://iclarkgolf.com/payment.html\n입금 확인 후 바우처를 보내드리겠습니다.'; }
+  if (tpl === 'pay') { head = `[iCLARKGOLF] ${name}, 입금 확인되었습니다. 감사합니다.`; tail = '현지에서 바우처가 발행되는 대로 보내드리겠습니다.'; }
+  if (tpl === 'voucher') { head = `[iCLARKGOLF] ${name}, 골프장 부킹 바우처를 보내드립니다.`; tail = (b.voucherId ? '바우처: https://iclarkgolf.com/voucher.html?v=' + b.voucherId + '\n' : '') + '라운드 당일 티타임 30분 전까지 골프장 프런트에서 바우처를 보여주세요.'; }
+  if (tpl === 'free') { head = `[iCLARKGOLF] ${name}, 안내드립니다.`; tail = ''; }
+  if (tpl === 'hold' && P && P.restKo) tail = '';   // 현지 안내가 있으면 같은 뜻의 기본 문장은 생략
+  const msg = [head, tpl === 'free' ? '' : lines.join('\n'), (tpl !== 'free' && time) ? '희망 시간: ' + time : '', (P && P.restKo) ? '현지 안내: ' + P.restKo : '', tail, note, sign].filter(Boolean).join('\n');
+  document.getElementById('sms-msg').value = msg;
+  bkSmsLink();
+}
+function bkSmsLink(){
+  const to = document.getElementById('sms-to').value.replace(/[^0-9+]/g, '');
+  const body = document.getElementById('sms-msg').value;
+  // iPhone·안드로이드 모두 열리는 형식
+  document.getElementById('sms-send').href = 'sms:' + to + (/iPhone|iPad|Mac/i.test(navigator.userAgent) ? '&' : '?') + 'body=' + encodeURIComponent(body);
+}
+function bkSmsOpen(id){
+  const b = _bkDocs.find(x => x.id === id); if (!b) return;
+  _bkSmsId = id; _bkSmsParsed = null;
+  document.getElementById('sms-who').textContent = (b.nameKo || b.nameEn) + ' · ' + b.id;
+  document.getElementById('sms-to').value = b.contact || '';
+  document.getElementById('sms-bbk').value = ''; document.getElementById('sms-note').value = ''; document.getElementById('sms-amt').value = '';
+  const map = { sent:'hold', hold:'hold', reserve:'hold', booked:'booked', paid:'pay', voucher:'pay', done:'voucher' };
+  document.getElementById('sms-tpl').value = map[b.status] || 'free';
+  document.getElementById('bk-sms').style.display = 'flex';
+  bkSmsBuild();
+}
+function bkSmsClose(){ document.getElementById('bk-sms').style.display = 'none'; }
+document.addEventListener('input', e => { if (e.target && (e.target.id === 'sms-msg' || e.target.id === 'sms-to')) bkSmsLink(); });
+async function bkSmsLog(how){
+  bkSmsLink();
+  try { const t = document.getElementById('sms-tpl'); await bkUpdate(_bkSmsId, {}, '고객 안내 ' + how + ': ' + t.options[t.selectedIndex].text); } catch(e) {}
 }
 
 /* ── 메시지 ── */
