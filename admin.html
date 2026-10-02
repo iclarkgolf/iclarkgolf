@@ -5756,6 +5756,7 @@ function bkSmsLink(){
   const body = document.getElementById('sms-msg').value;
   // iPhone·안드로이드 모두 열리는 형식
   document.getElementById('sms-send').href = 'sms:' + to + (/iPhone|iPad|Mac/i.test(navigator.userAgent) ? '&' : '?') + 'body=' + encodeURIComponent(body);
+  if (typeof bkSmsSave === 'function') bkSmsSave();
 }
 function bkSmsOpen(id){
   const b = _bkDocs.find(x => x.id === id); if (!b) return;
@@ -5766,8 +5767,27 @@ function bkSmsOpen(id){
   const map = { sent:'hold', hold:'hold', reserve:'hold', booked:'booked', paid:'pay', voucher:'pay', done:'voucher' };
   document.getElementById('sms-tpl').value = map[b.status] || 'free';
   document.getElementById('bk-sms').style.display = 'flex';
+  // 이 손님에게 쓰던 내용이 있으면 그대로 되살림 (새로고침·파일 업로드 후에도 유지)
+  let d = null; try { d = JSON.parse(localStorage.getItem('iclark_sms_' + id) || 'null'); } catch(e) {}
   bkSmsBuild();
+  try {
+    if (d) {
+      ['bbk','note','amt'].forEach(k => { if (d[k] != null) document.getElementById('sms-' + k).value = d[k]; });
+      if (d.tpl) document.getElementById('sms-tpl').value = d.tpl;
+      if (d.msg) document.getElementById('sms-msg').value = d.msg;
+      bkSmsLink();
+      if (typeof showToast === 'function') showToast('💾 쓰던 내용을 불러왔어요', 'info');
+    }
+  } catch(e) {}
 }
+function bkSmsSave(){
+  if (!_bkSmsId) return;
+  const v = k => document.getElementById('sms-' + k).value;
+  try { localStorage.setItem('iclark_sms_' + _bkSmsId, JSON.stringify({ bbk: v('bbk'), note: v('note'), amt: v('amt'), tpl: v('tpl'), msg: v('msg'), at: Date.now() })); } catch(e) {}
+}
+['input','change'].forEach(ev => document.addEventListener(ev, e => {
+  if (e.target && /^sms-(msg|bbk|note|amt|tpl)$/.test(e.target.id)) setTimeout(bkSmsSave, 0);
+}));
 function bkSmsClose(){ document.getElementById('bk-sms').style.display = 'none'; }
 document.addEventListener('input', e => { if (e.target && (e.target.id === 'sms-msg' || e.target.id === 'sms-to')) bkSmsLink(); });
 // 고객 안내 복사: 팝업 없이 확실하게
