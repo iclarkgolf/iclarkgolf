@@ -5770,23 +5770,23 @@ function bkSmsOpen(id){
 }
 function bkSmsClose(){ document.getElementById('bk-sms').style.display = 'none'; }
 document.addEventListener('input', e => { if (e.target && (e.target.id === 'sms-msg' || e.target.id === 'sms-to')) bkSmsLink(); });
-// 고객 안내 복사: 클립보드가 막혀도 확실히 복사되도록 두 가지 방법 + 버튼에 "복사됨" 표시
+// 고객 안내 복사: 팝업 없이 확실하게
 function bkSmsCopy(btn){
   const ta = document.getElementById('sms-msg');
   const text = ta.value;
-  const ok = () => {
-    btn.textContent = '✅ 복사됐어요 — 카톡에 붙여넣기(Ctrl+V)';
-    btn.style.background = '#E1F5EE'; btn.style.color = '#0f6e4f';
-    setTimeout(() => { btn.textContent = '📋 복사 (카톡용)'; btn.style.background = ''; btn.style.color = ''; }, 4000);
-    bkSmsLog('복사');
+  const show = (msg, good) => {
+    btn.textContent = msg;
+    btn.style.background = good ? '#E1F5EE' : '#fff7ed'; btn.style.color = good ? '#0f6e4f' : '#b45309';
+    setTimeout(() => { btn.textContent = '📋 복사 (카톡용)'; btn.style.background = ''; btn.style.color = ''; }, 5000);
   };
-  const legacy = () => {
-    ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);
-    let done = false; try { done = document.execCommand('copy'); } catch(e) {}
-    if (done) ok(); else alert('자동 복사가 안 됐어요. 문자 칸이 선택돼 있으니 Ctrl+C(휴대폰은 길게 눌러 복사)를 눌러 주세요.');
-  };
-  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(ok).catch(legacy);
-  else legacy();
+  const ok = () => { show('✅ 복사됐어요 — 카톡 창에서 Ctrl+V', true); bkSmsLog('복사'); };
+  const manual = () => { ta.focus(); ta.select(); show('⚠️ 글이 선택됐어요 — Ctrl+C 누르세요', false); };
+  // 1) 클릭 순간 바로 복사 (가장 확실) → 2) 새 방식 → 3) 글을 선택해 두고 Ctrl+C 안내 (팝업 없음)
+  ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);
+  let done = false; try { done = document.execCommand('copy'); } catch(e) {}
+  if (done) { ok(); return; }
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(ok).catch(manual);
+  else manual();
 }
 async function bkSmsLog(how){
   bkSmsLink();
