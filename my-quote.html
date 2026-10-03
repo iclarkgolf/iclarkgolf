@@ -116,6 +116,11 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
 .pay-row .v{flex:1;font-weight:700;color:var(--dark);word-break:break-all;}
 .pay-row button{flex-shrink:0;background:#fff;border:1.5px solid var(--green-mid);color:var(--green);border-radius:6px;padding:3px 10px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
 .pay-foot{background:#fffbf5;padding:10px 18px;font-size:12px;color:#92400e;line-height:1.7;}
+.terms{margin:0 48px 28px;border:1px solid #e5e7eb;border-radius:10px;padding:16px 18px;background:#fafafa;}
+.terms h4{font-size:12px;font-weight:800;color:var(--dark);letter-spacing:1px;margin-bottom:10px;}
+.terms .art{margin-bottom:9px;font-size:12px;line-height:1.7;color:#444;}
+.terms .art b{display:block;color:var(--green);font-size:12px;}
+.terms .hl{color:#b91c1c;font-weight:700;}
 .copied-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:700;z-index:999;display:none;}
 @media print{.login-wrap,.btn-row,.pay-row button{display:none!important;}.page{display:block!important;box-shadow:none;margin:0;border-radius:0;}}
 @media(max-width:600px){
@@ -137,6 +142,7 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
   .total-section{flex-direction:column;align-items:flex-start;gap:8px;}
   .total-usd{font-size:22px;}
   .pay-section{margin:0 16px 24px;}
+  .terms{margin:0 16px 24px;}
   .pay-amount .krw{font-size:20px;}
   .pay-row .l{width:78px;}
   /* 포함사항: 1열 */
@@ -249,13 +255,13 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
     <h4>📋 안내사항</h4>
     <ul id="noticeList">
       <li>본 견적서는 발행일로부터 14일간 유효합니다.</li>
-      <li>예약 확정 시 총액의 30% 계약금이 필요합니다.</li>
-      <li>취소 규정: 출발 7일 전 전액 환불 / 3일 전 50% 환불 / 이후 환불 불가</li>
-      <li>그린피는 골프장 사정에 따라 변동될 수 있습니다.</li>
-      <li>예약 확정 후 입금 계좌·절차는 <a href="payment.html" style="color:var(--green-mid);font-weight:700;">입금 안내 페이지</a>에서 확인하세요.</li>
-      <li>문의: 카카오채널 @iClarkGolf</li>
+      <li>예약을 원하시면 말씀해 주세요. 확정서를 발행해 드리며, 확정서 발행 후 전액을 입금하시면 됩니다.</li>
+      <li>그린피는 확정서 발행 전까지 골프장 사정에 따라 변동될 수 있습니다.</li>
+      <li>입금 계좌·절차는 <a href="payment.html" style="color:var(--green-mid);font-weight:700;">입금 안내 페이지</a>에서 확인하세요.</li>
+      <li>문의: 카카오톡 tourjang2 · 카카오채널 @iClarkGolf</li>
     </ul>
   </div>
+  <div class="terms" id="termsBox"></div>
   <div class="footer">
     <div class="footer-logo">i<span>Clark</span> Golf</div>
     <div class="footer-contact">
@@ -344,12 +350,18 @@ function renderPay(data, totalPhp){
   box.style.display = 'block';
 }
 
+const TERMS = [["제1조 (견적서와 확정서)", "견적서는 예상 금액을 안내하는 문서이며 예약이 아닙니다. 견적서 금액은 확정서 발행 전까지 골프장·호텔 사정에 따라 바뀔 수 있습니다. 예약 내용과 금액은 확정서 발행으로 정해집니다."], ["제2조 (전액 입금)", "확정서가 발행되면 확정서에 적힌 입금 기한까지 전액을 입금하셔야 합니다. 기한 내 입금되지 않으면 예약은 자동 취소됩니다."], ["제3조 (바우처 발행)", "골프장·호텔 예약은 전액 입금이 확인된 후에 진행되며, 완불이 되어야 바우처가 발행됩니다."], ["제4조 (바우처 발행 후 취소·변경 불가)", "바우처가 발행된 골프장·호텔은 환불과 변경(날짜·시간·인원·이름)이 되지 않습니다. 이용이 어려운 경우 예약자께서 바우처에 적힌 이름 그대로 다른 분께 양도(재판매)하셔야 합니다."], ["제5조 (차량 환불)", "차량(픽업·드롭·전용차량)은 이용일 7일 전까지 취소하시면 환불해 드립니다. 이용일 7일 이내 취소는 환불되지 않습니다."], ["제6조 (현지 별도 지불)", "카트비·캐디피·캐디팁 등 \"현지 별도 지불\"로 표시된 항목은 골프장에서 직접 내시며 확정 금액에 포함되지 않습니다."], ["제7조 (송금)", "송금은 확정서의 원화 송금 금액 기준이며, 해외송금 수수료·환율 차이가 포함된 금액입니다. 송금 후 송금 확인증을 카카오톡(tourjang2)으로 보내주세요."]];
+/* 약관 — 견적서·확정서 공통. payment.html(입금 안내)의 약관과 같은 내용. 바꾸면 두 곳을 함께 고칠 것 */
+function renderTerms(){
+  document.getElementById('termsBox').innerHTML = '<h4>📜 예약·환불 약관</h4>' + TERMS.map(t => `<div class="art"><b>${t[0]}</b>${t[0].startsWith('제4조') ? '<span class="hl">' + t[1] + '</span>' : t[1]}</div>`).join('');
+}
 function renderNotice(data){
+  renderTerms();
   if (!isConfirm(data)) return;
   document.getElementById('noticeList').innerHTML = [
     '확정서 내용에 동의하시면 입금 기한 내 전액을 송금해 주세요.',
-    '입금 확인 후 골프장·숙소 예약을 진행하고 바우처를 보내드립니다.',
-    '취소 규정: 출발 7일 전 전액 환불 / 3일 전 50% 환불 / 이후 환불 불가',
+    '전액 입금이 확인되면 골프장·호텔 예약을 진행하고 바우처를 보내드립니다.',
+    '바우처 발행 후에는 골프장·호텔 환불·변경이 되지 않습니다. (아래 약관 제4조)',
     '카트·캐디피 등 현지 별도 지불 항목은 골프장에서 직접 내시면 됩니다.',
     '문의: 카카오톡 tourjang2 · 카카오채널 @iClarkGolf'
   ].map(t => `<li>${t}</li>`).join('');
