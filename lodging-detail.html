@@ -317,6 +317,11 @@ function updateCount() {
 /* ────────────────────────────────
    본문 렌더
 ──────────────────────────────── */
+/* 페소 옆 작은 원화 참고 — 생성 시점 환율(__KRW_PER_PHP__) 또는 관리자 저장 환율 */
+function appliedRate(){ if (window.__APPLIED_USD_PHP__) return window.__APPLIED_USD_PHP__; try { const x = JSON.parse(localStorage.getItem('iclark_exchange')||'{}'); if (x.appliedUsdPhp) return Number(x.appliedUsdPhp); } catch(e){} return 53.2; }
+function krwPerPhp(){ if (window.__KRW_PER_PHP__) return window.__KRW_PER_PHP__; try { const x = JSON.parse(localStorage.getItem('iclark_exchange')||'{}'); if (x.appliedUsdPhp) return (Number(x.usdKrw)||1380)/Number(x.appliedUsdPhp); } catch(e){} return 0; }
+function krwLine(php){ const k = krwPerPhp(); return (k && php) ? `<div style="font-size:11px;font-weight:600;color:#9ca3af;">약 ₩${(Math.ceil(php * k / 1000) * 1000).toLocaleString()}</div>` : ''; }
+function accomPhp(a){ return Number(a.pricePHP) || Math.round((Number(a.priceUSD) || 0) * appliedRate() / 100) * 100; }
 function renderBody() {
   if (!accom) {
     document.getElementById('body-wrap').innerHTML = `
@@ -335,9 +340,9 @@ function renderBody() {
   const descHTML = (accom.desc || '').replace(/\n/g, '<br>');
 
   const priceBlock = isLocal
-    ? `<div class="price-main">$${accom.priceUSD}<sub>/일</sub></div>
+    ? `<div class="price-main">₱${Number(accom.pricePHP || Math.round((Number(accom.priceUSD) || 0) * appliedRate() / 100) * 100).toLocaleString()}<sub>/일</sub></div>${krwLine(accomPhp(accom))}
        <div class="price-note">숙박·3식·픽업·세탁<br>ALL 포함</div>`
-    : `<div class="price-main">$${accom.priceUSD}<sub>/박~</sub></div>
+    : `<div class="price-main">₱${Number(accom.pricePHP || Math.round((Number(accom.priceUSD) || 0) * appliedRate() / 100) * 100).toLocaleString()}<sub>/박~</sub></div>${krwLine(accomPhp(accom))}
        <div class="price-note">1인 기준 참고 요금<br>실제 요금은 날짜별 상이</div>`;
 
   document.getElementById('body-wrap').innerHTML = `
@@ -363,8 +368,8 @@ function renderBody() {
 
   /* CTA */
   const ctaHTML = isLocal
-    ? `<strong>$${accom.priceUSD}</strong><span>ALL-IN / 일</span>`
-    : `<strong>$${accom.priceUSD}</strong><span>참고 / 박~</span>`;
+    ? `<strong>₱${Number(accom.pricePHP || Math.round((Number(accom.priceUSD) || 0) * appliedRate() / 100) * 100).toLocaleString()}</strong><span>ALL-IN / 일</span>`
+    : `<strong>₱${Number(accom.pricePHP || Math.round((Number(accom.priceUSD) || 0) * appliedRate() / 100) * 100).toLocaleString()}</strong><span>참고 / 박~</span>`;
   document.getElementById('cta-price').innerHTML = ctaHTML;
   document.getElementById('cta-bar').style.display = 'flex';
 }

@@ -509,6 +509,9 @@ window.render = function render(D) {
 
   // 스탯
   document.getElementById('statPrice').textContent   = D.price      || '';
+  // 페소 가격 옆 작은 원화 참고 (2026-10-03)
+  (function(){ const m = String(D.price||'').replace(/,/g,'').match(/₱\s*([\d.]+)/); const k = window.KRW_PER_PHP;
+    if (m && k) { const s = document.createElement('div'); s.style.cssText = 'font-size:11px;font-weight:600;color:#9ca3af;margin-top:2px;'; s.textContent = '약 ₩' + (Math.ceil(parseFloat(m[1]) * k / 1000) * 1000).toLocaleString(); document.getElementById('statPrice').appendChild(s); } })();
   document.getElementById('statMinDays').textContent = D.statMinDays|| '';
   document.getElementById('statPax').textContent     = D.statPax    || '';
 
@@ -666,17 +669,19 @@ const db  = getFirestore(app);
     const m = String(str).replace(/,/g,'').match(/[\d.]+/);
     return m ? parseFloat(m[0]) : null;
   }
+  let CUR = '₱';
   function computeEstimate(){
     if (!PKG) return null;
     const unit = parsePriceNum(PKG.price);
+    CUR = /\$/.test(String(PKG.price)) ? '$' : '₱';   // 2026-10-03: 패키지 가격은 페소(₱)로 입력 — 예전 "$" 값이면 그대로 $
     if (!unit || !sel.party) return null;
     const partyN = PARTY_COUNT[sel.party] || 1;
     if (PKG.packageType === 'fixed') {
-      return { amount: unit * partyN, basis: `$${unit} × ${sel.party}` };
+      return { amount: unit * partyN, basis: `${CUR}${unit.toLocaleString()} × ${sel.party}` };
     }
     const days = DURATION_DAYS[sel.duration];
     if (!days) return null;
-    return { amount: unit * days * partyN, basis: `$${unit} × ${days}일 × ${sel.party}` };
+    return { amount: unit * days * partyN, basis: `${CUR}${unit.toLocaleString()} × ${days}일 × ${sel.party}` };
   }
   const estBox    = document.getElementById('miEstimate');
   const estAmount = document.getElementById('miEstimateAmount');
@@ -685,7 +690,7 @@ const db  = getFirestore(app);
     const chipsDone = !!(curDuration() && sel.party && sel.timing);
     const est = chipsDone ? computeEstimate() : null;
     if (est) {
-      estAmount.textContent = `약 $${est.amount.toLocaleString()}`;
+      estAmount.textContent = `약 ${CUR}${est.amount.toLocaleString()}` + (CUR === '₱' && window.KRW_PER_PHP ? ` (약 ₩${(Math.ceil(est.amount * window.KRW_PER_PHP / 1000) * 1000).toLocaleString()})` : '');
       estBasis.textContent  = est.basis;
       estBox.style.display  = 'block';
       miBtn.setAttribute('data-i18n', 'mi.btn.soft');
@@ -779,6 +784,8 @@ const db  = getFirestore(app);
 })();
 
 try {
+  // 원화 참고용 환율 (견적서 원화 송금 금액과 같은 계산: 페소 ÷ 적용환율 × 원/달러)
+  try { const ex = await getDoc(doc(db, 'settings', 'exchange')); if (ex.exists()) { const x = ex.data(); window.KRW_PER_PHP = (Number(x.usdKrw) || 1380) / (Number(x.appliedUsdPhp) || 53.2); } } catch (e) {}
   const snap = await getDoc(doc(db, 'package_cards', cardId));
   if (snap.exists()) {
     render(snap.data());

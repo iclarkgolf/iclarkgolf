@@ -171,19 +171,19 @@ a{text-decoration:none;color:inherit;}
       <div class="lesson-card">
         <div class="lesson-icon">🏌️</div>
         <div class="lesson-name">연습장 레슨</div>
-        <div class="lesson-price">$50 / 1회</div>
+        <div class="lesson-price" data-php="3000">₱3,000 / 1회</div>
         <div class="lesson-desc">기초부터 체계적으로</div>
       </div>
       <div class="lesson-card">
         <div class="lesson-icon">⛳</div>
         <div class="lesson-name">필드 레슨</div>
-        <div class="lesson-price">$80 / 1회</div>
+        <div class="lesson-price" data-php="4800">₱4,800 / 1회</div>
         <div class="lesson-desc">실전 코스에서 직접</div>
       </div>
       <div class="lesson-card">
         <div class="lesson-icon">📦</div>
         <div class="lesson-name">레슨 3회 패키지</div>
-        <div class="lesson-price">$130</div>
+        <div class="lesson-price" data-php="7700">₱7,700</div>
         <div class="lesson-desc">연습장 3회 묶음 할인</div>
       </div>
       <div class="lesson-card">
@@ -233,5 +233,21 @@ a{text-decoration:none;color:inherit;}
   <a href="quote.html" class="quote-btn">🛒 견적 만들기</a>
 </div>
 
+<script type="module">
+// 페소 옆 작은 원화 참고 — 관리자 환율 설정(settings/exchange)으로 계산 (견적서 원화 송금 금액과 같은 계산)
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+try {
+  const app = getApps().length ? getApps()[0] : initializeApp({ apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" });
+  const ex = await getDoc(doc(getFirestore(app), 'settings', 'exchange'));
+  if (ex.exists()) {
+    const x = ex.data(), k = (Number(x.usdKrw) || 1380) / (Number(x.appliedUsdPhp) || 53.2);
+    document.querySelectorAll('[data-php]').forEach(el => {
+      const s = document.createElement('div'); s.style.cssText = 'font-size:11px;font-weight:600;color:#9ca3af;margin-top:2px;';
+      s.textContent = '약 ₩' + (Math.ceil(Number(el.dataset.php) * k / 1000) * 1000).toLocaleString(); el.appendChild(s);
+    });
+  }
+} catch (e) {}
+</script>
 </body>
 </html>

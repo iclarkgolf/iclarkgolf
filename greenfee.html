@@ -96,6 +96,7 @@ a{text-decoration:none;color:inherit;}
 .cc-sub{font-size:11px;color:var(--gray-400);}
 .cc-price-wrap{text-align:right;flex-shrink:0;}
 .cc-price-main{font-size:16px;font-weight:800;color:var(--green);}
+.cc-krw{font-size:11px;font-weight:600;color:#9ca3af;margin-top:1px;}
 .cc-price-label{font-size:10px;color:var(--gray-400);}
 .cc-arrow{font-size:14px;color:var(--gray-400);transition:transform .25s;flex-shrink:0;margin-left:6px;}
 .cc-arrow.open{transform:rotate(180deg);}
@@ -908,7 +909,7 @@ a{text-decoration:none;color:inherit;}
 /* ── 환율 ── */
 let currentUnit = 'php';
 let appliedRate = 53.2;
-let krwPerPhp = 24;   // 2026-10-03: 달러 표시 폐지 → 원화 참고 표시 (시장 환율 기준, 현지 카트·캐디비 참고용)
+let krwPerPhp = 24;   // 2026-10-03: 달러 표시 폐지 → 원화 참고 표시. 관리자 환율 설정(settings/exchange)의 적용환율로 계산 — 견적서·확정서 원화 금액과 같은 기준
 
 function getExchangeRate() {
   const saved = localStorage.getItem('iclark_exchange');
@@ -938,15 +939,24 @@ function initRateBanner() {
   const apply = r => {
     appliedRate = r.appliedUsdPhp || appliedRate;
     const mkt = Number(r.marketUsdPhp) || appliedRate, usdKrw = Number(r.usdKrw) || 1380;
-    krwPerPhp = usdKrw / mkt;
+    krwPerPhp = usdKrw / (Number(r.appliedUsdPhp) || mkt);
     safeSet('banner-rate', '₩' + (Math.round(1000 * krwPerPhp / 100) * 100).toLocaleString());
     safeSet('banner-time', r.updatedAt ? r.updatedAt + ' 기준' : '');
   };
   apply(getExchangeRate());
   // Firebase에서 최신 환율 불러와서 재적용
-  loadRateFromFirebase().then(fr => { apply(fr); if (currentUnit === 'krw') setUnit('krw'); });
+  loadRateFromFirebase().then(fr => { apply(fr); setUnit(currentUnit); });
 }
 
+/* 판매가 아래 작은 원화 참고 (PHP 보기일 때) */
+function gfKrwSmall() {
+  document.querySelectorAll('.cc-price-main').forEach(el => {
+    let s = el.nextElementSibling;
+    if (!s || !s.classList || !s.classList.contains('cc-krw')) { s = document.createElement('div'); s.className = 'cc-krw'; el.after(s); }
+    const php = parseFloat(el.dataset.php);
+    s.textContent = (currentUnit === 'php' && php && !isNaN(php)) ? '약 ₩' + (Math.ceil(php * krwPerPhp / 1000) * 1000).toLocaleString() : '';
+  });
+}
 function setUnit(unit) {
   currentUnit = unit;
   document.getElementById('btn-php').className = 'unit-btn ' + (unit==='php'?'on':'off');
@@ -969,7 +979,7 @@ function setUnit(unit) {
     const php = parseFloat(el.dataset.php);
     if (!php || isNaN(php)) return;
     el.textContent = unit === 'krw' ? '₩' + (Math.round(php * krwPerPhp / 100) * 100).toLocaleString() : php.toLocaleString();
-  });
+  });  gfKrwSmall();
 }
 
 function toggleCard(headEl) {
@@ -1074,8 +1084,8 @@ async function loadGreenfeeFromFirebase() {
       });
     });
     gfApplySeason();
-    // 원화 단위면 재변환
-    if (currentUnit === 'krw') setUnit('krw');
+    // 원화 참고 다시 계산
+    setUnit(currentUnit);
   } catch(e) {
     console.log('Firebase 요금 로드 실패, 기존값 유지');
   }
@@ -1108,7 +1118,7 @@ function gfApplySeason(){
       else { const v = i === 0 ? card.dataset.walkWd : card.dataset.walkWe; if (v) set(fv[i], v); }
     });
   });
-  if (typeof currentUnit !== 'undefined' && currentUnit === 'krw') setUnit('krw');
+  if (typeof currentUnit !== 'undefined') setUnit(currentUnit);
 }
 function setSeason(s){ GF_SEASON = s; gfApplySeason(); if (window.gtag) gtag('event', 'greenfee_season_' + s); }
 

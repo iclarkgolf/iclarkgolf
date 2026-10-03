@@ -889,7 +889,7 @@ window.adminLogout = function() {
 
   <div class="mgmt-card" id="exchange-card">
     <div class="mgmt-title">💱 환율 · 마진 설정
-      <span style="font-size:12px;font-weight:400;color:#6b7280;">고객에게 적용되는 달러 환율을 관리합니다</span>
+      <span style="font-size:12px;font-weight:400;color:#6b7280;">견적서·확정서·사이트 전체의 원화(약 ₩) 계산에 쓰이는 환율입니다</span>
     </div>
 
     <!-- 실시간 환율 -->
@@ -1004,7 +1004,7 @@ window.adminLogout = function() {
 
     <div class="tbl-wrap">
       <table class="tbl">
-        <thead><tr><th>아이콘</th><th>이름</th><th>설명</th><th>$</th><th>단위</th><th></th></tr></thead>
+        <thead><tr><th>아이콘</th><th>이름</th><th>설명</th><th>₱ 페소</th><th>단위</th><th></th></tr></thead>
         <tbody id="qi-body-transfers"></tbody>
       </table>
     </div>
@@ -1015,7 +1015,7 @@ window.adminLogout = function() {
     <div class="mgmt-title">🏌️ 레슨 <button class="btn-add" onclick="qiAddRow('lessons')">+ 항목 추가</button></div>
     <div class="tbl-wrap">
       <table class="tbl">
-        <thead><tr><th>아이콘</th><th>이름</th><th>설명</th><th>$</th><th>단위</th><th></th></tr></thead>
+        <thead><tr><th>아이콘</th><th>이름</th><th>설명</th><th>₱ 페소</th><th>단위</th><th></th></tr></thead>
         <tbody id="qi-body-lessons"></tbody>
       </table>
     </div>
@@ -1026,7 +1026,7 @@ window.adminLogout = function() {
     <div class="mgmt-title">🍽️ 기타(식사·통역 등) <button class="btn-add" onclick="qiAddRow('extras')">+ 항목 추가</button></div>
     <div class="tbl-wrap">
       <table class="tbl">
-        <thead><tr><th>아이콘</th><th>이름</th><th>설명</th><th>$</th><th>단위</th><th>인당</th><th></th></tr></thead>
+        <thead><tr><th>아이콘</th><th>이름</th><th>설명</th><th>₱ 페소</th><th>단위</th><th>인당</th><th></th></tr></thead>
         <tbody id="qi-body-extras"></tbody>
       </table>
     </div>
@@ -1076,6 +1076,7 @@ window.adminLogout = function() {
   <!-- ===== 카드 목록 ===== -->
   <div class="mgmt-card">
     <div class="mgmt-title">🃏 썸네일 카드 관리 <span style="font-size:12px;font-weight:400;color:#9ca3af;">클릭하면 수정</span></div>
+    <div id="usd-migrate-box" style="display:none;background:#fff7ed;border:1.5px solid #fdba74;border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:13px;line-height:1.6;color:#9a3412;"></div>
     <div id="card-list" style="display:grid;gap:12px;"></div>
     <button onclick="openCardEditor('new')" style="margin-top:16px;width:100%;padding:13px;background:#534AB7;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;">+ 새 카드 추가</button>
   </div>
@@ -1115,7 +1116,8 @@ window.adminLogout = function() {
           <div style="display:grid;grid-template-columns:1.2fr 0.8fr 1fr;gap:10px;">
             <div>
               <label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">가격 (큰 글씨)</label>
-              <input id="ce-price" type="text" placeholder="예: $99 · 가격 문의" style="width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box;">
+              <input id="ce-price" oninput="cePriceKrw()" type="text" placeholder="예: ₱5,900 · 가격 문의" style="width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box;">
+              <div id="ce-price-krw" style="font-size:11.5px;color:#6b7280;margin-top:4px;min-height:16px;"></div>
             </div>
             <div>
               <label style="font-size:11px;font-weight:700;color:#6b7280;display:block;margin-bottom:4px;">기준 단위 (작은 글씨)</label>
@@ -1969,6 +1971,16 @@ const QI_DEFAULTS = {
 };
 
 let qiState = null; // 현재 편집 중인 상태 (로드 후 채워짐)
+/* 2026-10-03: 맞춤견적 항목 가격을 페소(pricePhp)로 관리. 예전 달러(price) 값만 있으면 적용환율로 환산해 ₱100 단위로 채움.
+   저장할 때 price(달러)도 같이 맞춰 저장 — 아직 페소로 안 바뀐 화면이 있어도 같은 금액이 나오게 하기 위함 */
+function qiRate(){ try { return (typeof q2Rate === 'function') ? q2Rate() : (JSON.parse(localStorage.getItem('iclark_exchange')||'{}').appliedUsdPhp || 53.2); } catch(e) { return 53.2; } }
+function qiPhpOf(x){ return Number(x.pricePhp) || Math.round((Number(x.price)||0) * qiRate() / 100) * 100; }
+function qiMigrate(st){
+  const fix = arr => (arr||[]).forEach(x => { x.pricePhp = qiPhpOf(x); });
+  fix(st.transfers); fix(st.lessons); fix(st.extras); (st.customSections||[]).forEach(s => fix(s.items));
+  return st;
+}
+function qiSyncUsd(arr){ return (arr||[]).map(x => ({ ...x, pricePhp: Number(x.pricePhp)||0, price: Math.round((Number(x.pricePhp)||0) / qiRate() * 100) / 100 })); }
 
 async function loadQuoteItems() {
   const wrap = document.getElementById('panel-quoteitems');
@@ -1992,6 +2004,7 @@ async function loadQuoteItems() {
     console.error('맞춤견적 항목 불러오기 실패, 기본값 표시:', e);
     qiState = JSON.parse(JSON.stringify(QI_DEFAULTS));
   }
+  qiMigrate(qiState);
   qiRenderAll();
 }
 
@@ -2025,7 +2038,7 @@ function qiSectionField(sIdx, field, value) {
 function qiAddSectionItem(sIdx) {
   if (!qiState || !qiState.customSections) return;
   const newId = 'csx' + Date.now().toString(36);
-  qiState.customSections[sIdx].items.push({ id:newId, icon:'⭐', name:'', note:'', price:0, unit:'회', perPerson:false });
+  qiState.customSections[sIdx].items.push({ id:newId, icon:'⭐', name:'', note:'', price:0, pricePhp:0, unit:'회', perPerson:false });
   qiRenderCustomSections();
 }
 
@@ -2063,14 +2076,14 @@ function qiRenderCustomSections() {
       <div class="mgmt-title" style="font-size:12px;">항목 <button class="btn-add" onclick="qiAddSectionItem(${sIdx})">+ 항목 추가</button></div>
       <div class="tbl-wrap">
         <table class="tbl">
-          <thead><tr><th>아이콘</th><th>이름</th><th>설명</th><th>$</th><th>단위</th><th>인당</th><th></th></tr></thead>
+          <thead><tr><th>아이콘</th><th>이름</th><th>설명</th><th>₱ 페소</th><th>단위</th><th>인당</th><th></th></tr></thead>
           <tbody>
             ${s.items.map((x,i)=>`
               <tr>
                 <td><input type="text" value="${(x.icon||'').replace(/"/g,'&quot;')}" style="width:40px;border:1.5px solid #E1F5EE;border-radius:6px;padding:6px 8px;font-size:12px;" oninput="qiSectionItemField(${sIdx},${i},'icon',this.value)"></td>
                 <td><input type="text" value="${(x.name||'').replace(/"/g,'&quot;')}" style="width:150px;border:1.5px solid #E1F5EE;border-radius:6px;padding:6px 8px;font-size:12px;" oninput="qiSectionItemField(${sIdx},${i},'name',this.value)"></td>
                 <td><input type="text" value="${(x.note||'').replace(/"/g,'&quot;')}" style="width:220px;border:1.5px solid #E1F5EE;border-radius:6px;padding:6px 8px;font-size:12px;" oninput="qiSectionItemField(${sIdx},${i},'note',this.value)"></td>
-                <td><input type="number" value="${x.price||0}" style="width:70px;border:1.5px solid #E1F5EE;border-radius:6px;padding:6px 8px;font-size:12px;" oninput="qiSectionItemField(${sIdx},${i},'price',parseFloat(this.value)||0)"></td>
+                <td><input type="number" step="100" value="${x.pricePhp||0}" style="width:80px;border:1.5px solid #E1F5EE;border-radius:6px;padding:6px 8px;font-size:12px;" oninput="qiSectionItemField(${sIdx},${i},'pricePhp',parseFloat(this.value)||0)"></td>
                 <td><input type="text" value="${(x.unit||'').replace(/"/g,'&quot;')}" style="width:60px;border:1.5px solid #E1F5EE;border-radius:6px;padding:6px 8px;font-size:12px;" oninput="qiSectionItemField(${sIdx},${i},'unit',this.value)"></td>
                 <td style="text-align:center;"><input type="checkbox" ${x.perPerson?'checked':''} style="width:18px;height:18px;" onchange="qiSectionItemField(${sIdx},${i},'perPerson',this.checked)"></td>
                 <td><button class="btn-del" onclick="qiRemoveSectionItem(${sIdx},${i})">삭제</button></td>
@@ -2122,7 +2135,7 @@ function qiRenderSimple(cat) {
       <td>${qiInput(cat,i,'icon',x.icon,'text','40px')}</td>
       <td>${qiInput(cat,i,'name',x.name,'text','180px')}</td>
       <td>${qiInput(cat,i,'note',x.note,'text','260px')}</td>
-      <td>${qiNumInput(cat,i,'price',x.price)}</td>
+      <td>${qiNumInput(cat,i,'pricePhp',x.pricePhp,'80px')}</td>
       <td>${qiInput(cat,i,'unit',x.unit,'text','60px')}</td>
       <td><button class="btn-del" onclick="qiRemoveRow('${cat}',${i})">삭제</button></td>
     </tr>`).join('');
@@ -2136,7 +2149,7 @@ function qiRenderExtras() {
       <td>${qiInput('extras',i,'icon',x.icon,'text','40px')}</td>
       <td>${qiInput('extras',i,'name',x.name,'text','150px')}</td>
       <td>${qiInput('extras',i,'note',x.note,'text','220px')}</td>
-      <td>${qiNumInput('extras',i,'price',x.price)}</td>
+      <td>${qiNumInput('extras',i,'pricePhp',x.pricePhp,'80px')}</td>
       <td>${qiInput('extras',i,'unit',x.unit,'text','60px')}</td>
       <td style="text-align:center;">${qiCheck('extras',i,'perPerson',x.perPerson)}</td>
       <td><button class="btn-del" onclick="qiRemoveRow('extras',${i})">삭제</button></td>
@@ -2151,10 +2164,11 @@ async function saveQuoteItems() {
     const db = await initCardDB();
     const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     await setDoc(doc(db, 'settings', 'quote_config'), {
-      transfers: qiState.transfers,
-      lessons: qiState.lessons,
-      extras: qiState.extras,
-      customSections: qiState.customSections || [],
+      transfers: qiSyncUsd(qiState.transfers),
+      lessons: qiSyncUsd(qiState.lessons),
+      extras: qiSyncUsd(qiState.extras),
+      customSections: (qiState.customSections || []).map(s => ({ ...s, items: qiSyncUsd(s.items) })),
+      currency: 'PHP',
       updatedAt: new Date().toLocaleString('ko-KR'),
     }, { merge: true });
     if (msg) msg.textContent = '✅ 저장 완료 — 사이트에 반영되었습니다';
@@ -2216,6 +2230,40 @@ async function initCardDB() {
   } catch(e) { console.error('카드 DB 초기화 실패:', e); return null; }
 }
 
+/* 2026-10-03: 달러($)로 적힌 패키지 가격·맞춤견적 항목을 환율 설정(적용환율) 기준 페소(₱100 단위)로 한 번에 바꾸기 */
+function usdToPhp100(usd){ return Math.round((Number(usd)||0) * q2Rate() / 100) * 100; }
+function usdMigrateCheck(cards){
+  const box = document.getElementById('usd-migrate-box'); if (!box) return;
+  const left = (cards||[]).filter(c => /\$/.test(String(c.price||'')));
+  if (!left.length) { box.style.display = 'none'; return; }
+  box.innerHTML = '💱 아직 달러로 적힌 패키지 가격이 <b>' + left.length + '개</b> 있습니다: ' + left.map(c => q2Esc(c.price)).join(', ')
+    + '<br>환율 설정의 적용환율(₱' + q2Rate().toFixed(2) + '/$)로 페소(₱100 단위)로 바꿉니다. 맞춤견적 항목(차량·레슨·식사)도 함께 페소로 저장됩니다.'
+    + '<br><button onclick="usdMigrateRun()" style="margin-top:8px;background:#c2410c;color:#fff;border:none;border-radius:8px;padding:9px 14px;font-weight:800;cursor:pointer;">💱 페소로 한 번에 바꾸기</button>';
+  box.style.display = 'block';
+}
+async function usdMigrateRun(){
+  if (!confirm('달러로 적힌 패키지 가격과 맞춤견적 항목을 페소로 바꿉니다. 진행할까요?')) return;
+  try {
+    const db = await initCardDB();
+    const { collection, getDocs, doc, updateDoc, getDoc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDocs(collection(db, 'package_cards')); let n = 0;
+    for (const d of snap.docs) {
+      const p = String(d.data().price || '');
+      if (!/\$/.test(p)) continue;
+      const m = p.replace(/,/g,'').match(/[\d.]+/); if (!m) continue;
+      await updateDoc(doc(db, 'package_cards', d.id), { price: '₱' + usdToPhp100(parseFloat(m[0])).toLocaleString(), priceUsdOld: p });
+      n++;
+    }
+    const qs = await getDoc(doc(db, 'settings', 'quote_config'));
+    if (qs.exists()) {
+      const st = qiMigrate(JSON.parse(JSON.stringify(qs.data())));
+      await setDoc(doc(db, 'settings', 'quote_config'), { transfers: qiSyncUsd(st.transfers), lessons: qiSyncUsd(st.lessons), extras: qiSyncUsd(st.extras),
+        customSections: (st.customSections || []).map(s => ({ ...s, items: qiSyncUsd(s.items) })), currency: 'PHP', updatedAt: new Date().toLocaleString('ko-KR') }, { merge: true });
+    }
+    showToast('✅ 패키지 ' + n + '개 + 맞춤견적 항목을 페소로 바꿨습니다', 'success');
+    loadCards();
+  } catch(e) { alert('❌ 변환 실패: ' + e.message); }
+}
 async function loadCards() {
   const box = document.getElementById('card-list');
   box.innerHTML = '<div style="text-align:center;padding:20px;color:#9ca3af;">불러오는 중... ⏳</div>';
@@ -2234,6 +2282,7 @@ async function loadCards() {
     }
     cards.sort((a,b) => (a.order||0) - (b.order||0));
     renderCardList(cards);
+    usdMigrateCheck(cards);
   } catch(e) {
     // Firebase 실패시 기본 카드 표시
     renderCardList(DEFAULT_CARDS);
@@ -2344,6 +2393,7 @@ function openCardEditor(cardId) {
         document.getElementById('ce-sub2').value = c.sub2 || '';
         document.getElementById('ce-copy').value = c.copy || '';
         document.getElementById('ce-price').value = c.price || '';
+        cePriceKrw();
         document.getElementById('ce-price-unit').value = c.priceUnit || '';
         document.getElementById('ce-btn').value = c.btn || '';
         document.getElementById('ce-min-days').value = c.statMinDays || '';
@@ -3241,7 +3291,7 @@ function renderAccomList() {
     /* 가격 표시 — 골프장 요금표와 동일하게 PHP 원가 + 환산 달러 병기 */
     const priceStr = a.type==='local'
       ? `<span style="font-size:11px;font-weight:600;color:#6b7280;">ALL-IN </span>$${a.priceUSD}<span style="font-size:11px;">/일</span>`
-      : `₱${Number(a.pricePHP||0).toLocaleString()}<span style="font-size:11px;">/박</span> <span style="font-size:11px;color:#6b7280;">(≈$${a.priceUSD||0})</span>`;
+      : `₱${Number(a.pricePHP||0).toLocaleString()}<span style="font-size:11px;">/박</span>`;
 
     return `
     <div class="accom-item">
@@ -4724,8 +4774,18 @@ var _qfPackageMap={};
 function _qfGetR(){try{var s=localStorage.getItem('iclark_exchange');if(s){return JSON.parse(s);}}catch(e){}return {appliedUsdPhp:53.2,usdKrw:1380};}
 function q2Rate(){ var r=_qfGetR(); return Number(r.appliedUsdPhp)||53.2; }
 function q2P2U(php){ return Math.round((Number(php)||0)/q2Rate()*100)/100; }
-function q2U2P(usd){ return Math.round((Number(usd)||0)*q2Rate()/10)*10; }   // quote.html u2p()와 같은 ₱10 단위
+function q2U2P(usd){ return Math.round((Number(usd)||0)*q2Rate()/100)*100; }   // quote.html u2p()와 같은 ₱100 단위
+function q2ItemPhp(it){ return Number(it && it.pricePhp) || q2U2P(it && it.price); }   // 맞춤견적 항목 페소 단가 (pricePhp 우선)
 function q2Fmt$(v){ return '$'+Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+/* 패키지 카드 가격: 페소(₱)를 넣으면 사이트에 표시될 원화(약 ₩)를 바로 보여줌. ₱ 기호 없이 숫자만 넣어도 페소로 봄 */
+function cePriceKrw(){
+  var el=document.getElementById('ce-price'), out=document.getElementById('ce-price-krw'); if(!el||!out) return;
+  var v=String(el.value||''); if(/\$/.test(v)){ out.innerHTML='<span style="color:#b91c1c;">⚠️ 달러($) 대신 페소(₱)로 넣어주세요</span>'; return; }
+  var m=v.replace(/,/g,'').match(/[\d.]+/); var php=m?parseFloat(m[0]):0;
+  if(!php){ out.textContent=''; return; }
+  if(!/₱/.test(v)) { el.value='₱'+Math.round(php).toLocaleString()+v.replace(/[\d,.\s]+/,'').trim(); }
+  out.innerHTML='사이트 표시: <b>₱'+Math.round(php).toLocaleString()+'</b> · 원화 <b>약 ₩'+q2Krw(php).toLocaleString()+'</b> (자동 계산)';
+}
 function q2FmtP(v){ return '₱'+Math.round(Number(v)||0).toLocaleString(); }
 /* 원화 송금 금액 = 페소 ÷ 적용환율(환전마진 포함) × USD/KRW, 1,000원 단위 올림 — my-quote.html krwOf()와 같은 계산 */
 function q2Krw(php){ var r=_qfGetR(); return Math.ceil((Number(php)||0)/q2Rate()*(Number(r.usdKrw)||1380)/1000)*1000; }
@@ -4925,10 +4985,10 @@ function q2RenderSections(){
       var key=sec.key+'|'+it.id, on=!!Q2.items[key];
       return '<div class="q2-row'+(on?' on':'')+'" id="q2i-row-'+q2Esc(key)+'">'
         +'<input type="checkbox" id="q2i-on-'+q2Esc(key)+'" '+(on?'checked':'')+' onchange="q2ItemToggle(\''+sec.key+'\',\''+q2Esc(it.id)+'\')">'
-        +'<div><div class="q2-name">'+(it.icon||'')+' '+q2Esc(it.name)+' <span style="font-weight:400;color:#6b7280;font-size:11px;">'+q2FmtP(q2U2P(it.price))+'/'+q2Esc(it.unit||'회')+(it.perPerson?' · 인원수 배수':'')+'</span></div>'
+        +'<div><div class="q2-name">'+(it.icon||'')+' '+q2Esc(it.name)+' <span style="font-weight:400;color:#6b7280;font-size:11px;">'+q2FmtP(q2ItemPhp(it))+'/'+q2Esc(it.unit||'회')+(it.perPerson?' · 인원수 배수':'')+'</span></div>'
         +(it.note?'<div class="q2-note">'+q2Esc(it.note)+'</div>':'')
         +'<div class="q2-calc" id="q2i-calc-'+q2Esc(key)+'" style="display:'+(on?'grid':'none')+';">'
-        +'<div><label>단가 ₱/'+q2Esc(it.unit||'회')+'</label><input type="number" id="q2i-php-'+q2Esc(key)+'" value="'+(on?Q2.items[key].php:q2U2P(it.price))+'" min="0" oninput="q2Recalc()"></div>'
+        +'<div><label>단가 ₱/'+q2Esc(it.unit||'회')+'</label><input type="number" id="q2i-php-'+q2Esc(key)+'" value="'+(on?Q2.items[key].php:q2ItemPhp(it))+'" min="0" oninput="q2Recalc()"></div>'
         +'<div><label>수량</label><input type="number" id="q2i-q-'+q2Esc(key)+'" value="'+(on?Q2.items[key].qty:1)+'" min="1" oninput="q2Recalc()"></div>'
         +'<div><label>인원</label><input type="number" id="q2i-m-'+q2Esc(key)+'" value="'+(on?Q2.items[key].mult:(it.perPerson?(q2Golfers()+q2NonGolfers()):1))+'" min="1" oninput="this.dataset.manual=1;q2Recalc()"></div>'
         +'<div class="q2-amt" id="q2i-amt-'+q2Esc(key)+'">₱0</div>'
@@ -4950,7 +5010,7 @@ function q2RenderSections(){
 function q2ItemToggle(secKey,itemId){
   var key=secKey+'|'+itemId, on=document.getElementById('q2i-on-'+key).checked;
   var sec=q2SectionDefs().find(function(s){return s.key===secKey;}); var it=sec&&sec.items.find(function(x){return String(x.id)===String(itemId);});
-  if(on&&it){ Q2.items[key]={ sectionKey:secKey, sectionLabel:sec.label, id:it.id, name:it.name, icon:it.icon||'', unit:it.unit||'회', perPerson:!!it.perPerson, php:q2Num('q2i-php-'+key,q2U2P(it.price)), qty:Math.max(1,q2Num('q2i-q-'+key,1)), mult:Math.max(1,q2Num('q2i-m-'+key,it.perPerson?(q2Golfers()+q2NonGolfers()):1)) }; }
+  if(on&&it){ Q2.items[key]={ sectionKey:secKey, sectionLabel:sec.label, id:it.id, name:it.name, icon:it.icon||'', unit:it.unit||'회', perPerson:!!it.perPerson, php:q2Num('q2i-php-'+key,q2ItemPhp(it)), qty:Math.max(1,q2Num('q2i-q-'+key,1)), mult:Math.max(1,q2Num('q2i-m-'+key,it.perPerson?(q2Golfers()+q2NonGolfers()):1)) }; }
   else delete Q2.items[key];
   document.getElementById('q2i-row-'+key).classList.toggle('on',on);
   document.getElementById('q2i-calc-'+key).style.display=on?'grid':'none';
