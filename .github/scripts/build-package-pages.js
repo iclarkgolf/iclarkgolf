@@ -90,7 +90,7 @@ function buildDetailHtml(card, allCardsForRelated) {
     ...(card.price ? {
       offers: {
         '@type': 'Offer',
-        priceCurrency: 'USD',
+        priceCurrency: /\$/.test(String(card.price)) ? 'USD' : 'PHP',   // 2026-10-03: 패키지 가격은 페소(₱)로 입력
         price: String(card.price).replace(/[^0-9.]/g, '') || undefined,
         availability: 'https://schema.org/InStock',
         url,
