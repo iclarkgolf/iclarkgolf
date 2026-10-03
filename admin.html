@@ -5029,7 +5029,18 @@ function q2BuildDoc(){
     createdAt:new Date().toISOString(), status:'active'
   };
 }
+// "직접 추가" 칸에 이름을 써놓고 ＋를 안 누른 항목이 있으면 저장 전에 자동으로 추가 (적어둔 차량 등이 빠지지 않도록)
+function q2FlushPendingCustom(){
+  var added=[];
+  q2SectionDefs().forEach(function(sec){
+    var el=document.getElementById('q2add-name-'+sec.key);
+    if(el && el.value.trim()){ var nm=el.value.trim(); q2AddCustom(sec.key); added.push(nm); }
+  });
+  return added;
+}
 function qfSave(){
+  var pending=q2FlushPendingCustom();
+  if(pending.length && typeof showToast==='function') showToast('＋ 안 누른 항목 자동 추가: '+pending.join(', '),'info');
   var data=q2BuildDoc();
   if(!data.hotel && !data.golf.length && !data.items.length){ if(!confirm('선택한 항목이 하나도 없습니다. 그래도 저장할까요?')) return; }
   var docId=data.quoteNo.replace(/[^a-zA-Z0-9-]/g,'_');
