@@ -122,7 +122,23 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
 .terms .art b{display:block;color:var(--green);font-size:12px;}
 .terms .hl{color:#b91c1c;font-weight:700;}
 .copied-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:700;z-index:999;display:none;}
-@media print{.login-wrap,.btn-row,.pay-row button{display:none!important;}.page{display:block!important;box-shadow:none;margin:0;border-radius:0;}}
+/* 인쇄·PDF 저장: 색 그대로, 섹션이 페이지 중간에서 잘리지 않게 (2026-10-03) */
+@page{size:A4;margin:10mm 8mm;}
+@media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+  html,body{background:#fff!important;}
+  .login-wrap,.btn-row,.pay-row button,.copied-toast,.loading{display:none!important;}
+  .page{display:block!important;box-shadow:none;margin:0;border-radius:0;max-width:none;width:100%;}
+  .header,.client-section,.schedule-banner,.total-section,.include-section,.inc-box,.notice,.pay-section,.pay-amount,.pay-steps,.terms .art,.footer,
+  #out-remarks-section,.itin-section,tr,thead{break-inside:avoid;page-break-inside:avoid;}
+  .section-title{break-after:avoid;page-break-after:avoid;}
+  table{break-inside:auto;}
+  .cost-section table{margin-bottom:14px;}
+  .total-section{break-before:auto;}
+  .terms{break-before:page;page-break-before:always;}
+  .pay-section{break-before:page;page-break-before:always;}
+  .pay-section + .notice{break-before:avoid;}
+}
 @media(max-width:600px){
   /* 전체 패딩 축소 */
   .header,.client-section,.schedule-banner,.cost-section,.include-section,.notice,.footer{padding-left:16px;padding-right:16px;}
