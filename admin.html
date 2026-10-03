@@ -922,7 +922,7 @@ window.adminLogout = function() {
         <span style="font-size:16px;font-weight:800;color:#f97316;min-width:40px;text-align:right;" id="margin-pct">5%</span>
       </div>
       <div style="font-size:11px;color:#6b7280;line-height:1.7;">
-        마진이란? 시장 환율보다 낮게 고객에게 적용해 환전 수수료·변동 위험을 커버합니다.<br>
+        마진이란? 손님 원화 송금 금액에 미리 얹어 해외송금 수수료·환율 차이를 커버합니다. (견적서·확정서는 페소 표시, 원화 송금 금액에 이 마진이 들어감)<br>
         예) 시장 56 PHP/$ × (1 - 5%) = <b>고객 적용 <span id="margin-example">53.2</span> PHP/$</b>
       </div>
     </div>
@@ -937,9 +937,9 @@ window.adminLogout = function() {
           <div style="font-size:10px;color:#AFA9EC;">(마진 적용)</div>
         </div>
         <div style="text-align:center;">
-          <div style="font-size:10px;color:#AFA9EC;margin-bottom:4px;">PHP 1,000 = $</div>
+          <div style="font-size:10px;color:#AFA9EC;margin-bottom:4px;">₱1,000 송금 = ₩</div>
           <div style="font-size:24px;font-weight:800;color:#fff;" id="applied-usd">—</div>
-          <div style="font-size:10px;color:#AFA9EC;">(고객이 낼 달러)</div>
+          <div style="font-size:10px;color:#AFA9EC;">(손님 원화 송금액)</div>
         </div>
       </div>
     </div>
@@ -954,7 +954,7 @@ window.adminLogout = function() {
         </div>
         <div class="form-group">
           <label>USD → KRW (참고)</label>
-          <input type="number" id="usd-krw" value="1380" step="1">
+          <input type="number" id="usd-krw" value="1380" step="1" oninput="updateMarginDisplay()">
         </div>
       </div>
     </div>
@@ -3793,7 +3793,8 @@ function updateMarginDisplay() {
     const applied = marketRate * (1 - margin / 100);
     document.getElementById('margin-example').textContent = applied.toFixed(2);
     document.getElementById('applied-php').textContent = applied.toFixed(2);
-    document.getElementById('applied-usd').textContent = (1000 / applied).toFixed(2);
+    const krwMkt = parseFloat(document.getElementById('usd-krw').value) || 1380;
+    document.getElementById('applied-usd').textContent = (Math.ceil(1000 / applied * krwMkt / 10) * 10).toLocaleString();
   } else {
     document.getElementById('applied-php').textContent = '—';
     document.getElementById('applied-usd').textContent = '—';
@@ -4177,7 +4178,7 @@ async function loadInquiries(filter = 'all') {
           <td>${q.hotel||'-'}</td>
           <td>${q.nights||0}박</td>
           <td>${q.golfers||0}명${q.nonGolfers>0?'+'+q.nonGolfers:''}</td>
-          <td style="font-weight:700;color:#534AB7;">$${q.totalUSD||0}</td>
+          <td style="font-weight:700;color:#534AB7;">${q.totalPHP ? '₱'+Number(q.totalPHP).toLocaleString() : '$'+(q.totalUSD||0)}</td>
           <td>${badgeHtml(q.status)}</td>
           <td>
             <button onclick="inqToQuote('${q.id}')" title="이 신청 내용으로 견적서 작성" style="display:block;margin-bottom:4px;background:#1b4332;color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">📋 견적서</button>
@@ -4201,7 +4202,7 @@ async function loadInquiries(filter = 'all') {
             <td>${q.name||'-'}</td>
             <td>${q.hotel||'-'}</td>
             <td>${q.nights||0}박 / ${q.golfers||0}명</td>
-            <td style="font-weight:700;color:#534AB7;">$${q.totalUSD||0}</td>
+            <td style="font-weight:700;color:#534AB7;">${q.totalPHP ? '₱'+Number(q.totalPHP).toLocaleString() : '$'+(q.totalUSD||0)}</td>
             <td>${badgeHtml(q.status)}</td>
           </tr>`).join('') :
           '<tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:20px;">문의 내역이 없습니다</td></tr>';
@@ -4500,7 +4501,7 @@ function inqToQuote(docId) {
     bannerHtml:
       `<div style="font-weight:800;color:#1b4332;margin-bottom:4px;">🎯 맞춤견적 신청 내용으로 자동 채웠습니다</div>` +
       `<div style="font-size:12.5px;color:#374151;line-height:1.6;"><b>${q.name || '-'}</b> · ${q.contact || '-'} · ${q.createdAtStr || ''}<br>` +
-      `손님이 본 예상 총액 <b>$${q.totalUSD || 0}</b> · ${q.nights || 0}박 · 골퍼 ${q.golfers || 0}명${q.nonGolfers ? ' + 동반 ' + q.nonGolfers + '명' : ''} · 숙소: ${q.hotel || '미선택'}</div>` +
+      `손님이 본 예상 총액 <b>${q.totalPHP ? '₱' + Number(q.totalPHP).toLocaleString() : '$' + (q.totalUSD || 0)}</b> · ${q.nights || 0}박 · 골퍼 ${q.golfers || 0}명${q.nonGolfers ? ' + 동반 ' + q.nonGolfers + '명' : ''} · 숙소: ${q.hotel || '미선택'}</div>` +
       (q.memo ? `<div style="font-size:12px;color:#374151;margin-top:4px;">💬 ${q.memo}</div>` : '') +
       `<div style="font-size:11.5px;color:#6b7280;margin-top:6px;">손님이 고른 항목이 체크된 상태입니다. 가격(₱)·수량을 확인해 고치고 "견적서 저장"을 누르면 손님이 "나의 견적"에서 보게 됩니다.</div>`
   }).then(function(){ if (typeof showToast === 'function') showToast('📋 ' + (q.name || '신청') + ' 내용으로 견적서 폼을 채웠습니다', 'info'); });
@@ -4630,7 +4631,7 @@ async function loadVisitorStats() {
 </style>
 
   <div class="q2-card">
-    <div class="q2-title">📋 견적서 작성 &amp; 고객 링크 공유 <small>맞춤견적(quote.html)과 같은 항목·같은 가격 · 페소 입력 → 달러 표시</small></div>
+    <div class="q2-title">📋 견적서 작성 &amp; 고객 링크 공유 <small>맞춤견적(quote.html)과 같은 항목·같은 가격 · 모든 금액 페소(₱) + 원화 송금 금액</small></div>
     <div id="qfFromInquiry" style="display:none;position:relative;background:#FEF9C3;border:1.5px solid #fde68a;border-radius:10px;padding:12px 36px 12px 16px;margin-bottom:12px;"></div>
     <div id="q2RateInfo" style="background:#eaf3ee;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12.5px;color:#1b4332;font-weight:600;"></div>
     <div class="q2-grid">
@@ -4638,6 +4639,7 @@ async function loadVisitorStats() {
       <div><label class="q2-lbl">연락처</label><input class="q2-inp" type="text" id="q2Contact" placeholder="010-0000-0000"></div>
       <div><label class="q2-lbl">견적 번호</label><input class="q2-inp" type="text" id="q2No"></div>
       <div><label class="q2-lbl">문서 종류</label><select class="q2-inp" id="q2Doctype"><option>견적서</option><option>확정서</option></select></div>
+      <div><label class="q2-lbl">입금 기한 <span style="font-weight:400;color:#9ca3af;">(확정서에 표시)</span></label><input class="q2-inp" type="date" id="q2PayDue"></div>
       <div><label class="q2-lbl">도착일</label><input class="q2-inp" type="date" id="q2Checkin" onchange="q2DatesChanged()"></div>
       <div><label class="q2-lbl">출발일</label><input class="q2-inp" type="date" id="q2Checkout" onchange="q2DatesChanged()"></div>
       <div><label class="q2-lbl">박수 <span style="font-weight:400;color:#9ca3af;">(날짜 넣으면 자동)</span></label><input class="q2-inp" type="number" id="q2Nights" min="1" value="4" oninput="q2NightsChanged()"></div>
@@ -4668,7 +4670,7 @@ async function loadVisitorStats() {
   <div class="q2-total">
     <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.75);">견적 합계<br><span id="q2TotalMeta" style="font-size:11px;font-weight:400;opacity:0.6;"></span></div>
     <div style="text-align:right;">
-      <div id="q2TotalUsd" style="font-size:26px;font-weight:900;color:#f4a261;">$0</div>
+      <div id="q2TotalUsd" style="font-size:26px;font-weight:900;color:#f4a261;">₱0</div>
       <div id="q2TotalSub" style="font-size:11.5px;color:rgba(255,255,255,0.5);"></div>
     </div>
   </div>
@@ -4722,9 +4724,11 @@ var _qfPackageMap={};
 function _qfGetR(){try{var s=localStorage.getItem('iclark_exchange');if(s){return JSON.parse(s);}}catch(e){}return {appliedUsdPhp:53.2,usdKrw:1380};}
 function q2Rate(){ var r=_qfGetR(); return Number(r.appliedUsdPhp)||53.2; }
 function q2P2U(php){ return Math.round((Number(php)||0)/q2Rate()*100)/100; }
-function q2U2P(usd){ return Math.round((Number(usd)||0)*q2Rate()); }
+function q2U2P(usd){ return Math.round((Number(usd)||0)*q2Rate()/10)*10; }   // quote.html u2p()와 같은 ₱10 단위
 function q2Fmt$(v){ return '$'+Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 function q2FmtP(v){ return '₱'+Math.round(Number(v)||0).toLocaleString(); }
+/* 원화 송금 금액 = 페소 ÷ 적용환율(환전마진 포함) × USD/KRW, 1,000원 단위 올림 — my-quote.html krwOf()와 같은 계산 */
+function q2Krw(php){ var r=_qfGetR(); return Math.ceil((Number(php)||0)/q2Rate()*(Number(r.usdKrw)||1380)/1000)*1000; }
 function q2Num(id,def){ var e=document.getElementById(id); var v=e?parseFloat(e.value):NaN; return isNaN(v)?(def||0):v; }
 function q2Val(id){ var e=document.getElementById(id); return e?String(e.value||'').trim():''; }
 function q2Esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
@@ -4734,7 +4738,7 @@ function qfInit(){
   if(_qfDone) return; _qfDone=true;
   var r=_qfGetR();
   var ri=document.getElementById('q2RateInfo');
-  if(ri) ri.innerHTML='💱 적용 환율 <b>$1 = ₱'+q2Rate().toFixed(2)+'</b> · <b>$1 = ₩'+Number(r.usdKrw||1380).toLocaleString()+'</b>'+(r.updatedAt?' <span style="font-weight:400;color:#6b7280;">('+r.updatedAt+')</span>':'')+' <span style="font-weight:400;color:#6b7280;">— 요금표 탭에서 갱신</span>';
+  if(ri) ri.innerHTML='💱 원화 송금 환율 <b>₱1,000 → 약 ₩'+(Math.round(1000/q2Rate()*(Number(r.usdKrw)||1380)/10)*10).toLocaleString()+'</b> <span style="font-weight:400;color:#6b7280;">(환전 마진 포함)</span>'+(r.updatedAt?' <span style="font-weight:400;color:#6b7280;">('+r.updatedAt+')</span>':'')+' <span style="font-weight:400;color:#6b7280;">— 요금표 탭에서 갱신</span>';
   var t=new Date(), el=document.getElementById('q2No');
   if(el&&!el.value) el.value='QT-'+t.getFullYear()+('0'+(t.getMonth()+1)).slice(-2)+('0'+t.getDate()).slice(-2)+'-001';
   var ci=document.getElementById('q2Checkin');
@@ -4875,7 +4879,7 @@ function q2HotelChanged(){
     +'<div><label>단가 ₱/'+(h.type==='local'?'일·1인':'박')+'</label><input type="number" id="q2h-php" value="'+h.php+'" min="0" oninput="q2Recalc()"></div>'
     +'<div><label>박수</label><input type="number" id="q2h-nights" value="'+q2Nights()+'" min="1" oninput="this.dataset.manual=1;q2Recalc()"></div>'
     +'<div><label>'+multLabel+'</label><input type="number" id="q2h-mult" value="'+mult+'" min="1" oninput="this.dataset.manual=1;q2Recalc()"></div>'
-    +'<div class="q2-amt" id="q2h-amt">$0</div>'
+    +'<div class="q2-amt" id="q2h-amt">₱0</div>'
     +'</div></div>';
   q2Recalc();
 }
@@ -4894,7 +4898,7 @@ function q2RenderGolf(){
       +'<div class="q2-calc" id="q2g-calc-'+g.id+'" style="display:'+(on?'grid':'none')+';grid-template-columns:1fr 1fr 1fr;">'
       +'<div><label>그린피 ₱/인·라운드</label><input type="number" id="q2g-php-'+g.id+'" value="'+(on?Q2.golf[g.id].php:q2SeasonFee(g))+'" min="0" oninput="this.dataset.manual=1;q2Recalc()"></div>'
       +'<div><label>라운드</label><input type="number" id="q2g-r-'+g.id+'" value="'+(on?Q2.golf[g.id].rounds:1)+'" min="1" oninput="q2Recalc()"></div>'
-      +'<div class="q2-amt" id="q2g-amt-'+g.id+'">$0<small>× 골퍼 '+q2Golfers()+'명</small></div>'
+      +'<div class="q2-amt" id="q2g-amt-'+g.id+'">₱0<small>× 골퍼 '+q2Golfers()+'명</small></div>'
       +'</div></div></div>';
   }).join('') || '<div style="font-size:12px;color:#9ca3af;">요금표에 골프장이 없습니다</div>';
 }
@@ -4921,13 +4925,13 @@ function q2RenderSections(){
       var key=sec.key+'|'+it.id, on=!!Q2.items[key];
       return '<div class="q2-row'+(on?' on':'')+'" id="q2i-row-'+q2Esc(key)+'">'
         +'<input type="checkbox" id="q2i-on-'+q2Esc(key)+'" '+(on?'checked':'')+' onchange="q2ItemToggle(\''+sec.key+'\',\''+q2Esc(it.id)+'\')">'
-        +'<div><div class="q2-name">'+(it.icon||'')+' '+q2Esc(it.name)+' <span style="font-weight:400;color:#6b7280;font-size:11px;">$'+(it.price||0)+'/'+q2Esc(it.unit||'회')+(it.perPerson?' · 인원수 배수':'')+'</span></div>'
+        +'<div><div class="q2-name">'+(it.icon||'')+' '+q2Esc(it.name)+' <span style="font-weight:400;color:#6b7280;font-size:11px;">'+q2FmtP(q2U2P(it.price))+'/'+q2Esc(it.unit||'회')+(it.perPerson?' · 인원수 배수':'')+'</span></div>'
         +(it.note?'<div class="q2-note">'+q2Esc(it.note)+'</div>':'')
         +'<div class="q2-calc" id="q2i-calc-'+q2Esc(key)+'" style="display:'+(on?'grid':'none')+';">'
         +'<div><label>단가 ₱/'+q2Esc(it.unit||'회')+'</label><input type="number" id="q2i-php-'+q2Esc(key)+'" value="'+(on?Q2.items[key].php:q2U2P(it.price))+'" min="0" oninput="q2Recalc()"></div>'
         +'<div><label>수량</label><input type="number" id="q2i-q-'+q2Esc(key)+'" value="'+(on?Q2.items[key].qty:1)+'" min="1" oninput="q2Recalc()"></div>'
         +'<div><label>인원</label><input type="number" id="q2i-m-'+q2Esc(key)+'" value="'+(on?Q2.items[key].mult:(it.perPerson?(q2Golfers()+q2NonGolfers()):1))+'" min="1" oninput="this.dataset.manual=1;q2Recalc()"></div>'
-        +'<div class="q2-amt" id="q2i-amt-'+q2Esc(key)+'">$0</div>'
+        +'<div class="q2-amt" id="q2i-amt-'+q2Esc(key)+'">₱0</div>'
         +'</div></div></div>';
     }).join('');
     var customs=Q2.custom.map(function(c,i){ if(c.section!==sec.key) return '';
@@ -4935,7 +4939,7 @@ function q2RenderSections(){
         +'<div class="q2-calc"><div><label>단가 ₱</label><input type="number" value="'+c.php+'" min="0" oninput="Q2.custom['+i+'].php=parseFloat(this.value)||0;q2Recalc()"></div>'
         +'<div><label>수량</label><input type="number" value="'+c.qty+'" min="1" oninput="Q2.custom['+i+'].qty=Math.max(1,parseFloat(this.value)||1);q2Recalc()"></div>'
         +'<div><label>인원</label><input type="number" value="'+(c.mult||1)+'" min="1" oninput="Q2.custom['+i+'].mult=Math.max(1,parseFloat(this.value)||1);q2Recalc()"></div>'
-        +'<div class="q2-amt" id="q2c-amt-'+i+'">$0</div></div></div>'
+        +'<div class="q2-amt" id="q2c-amt-'+i+'">₱0</div></div></div>'
         +'<button class="q2-del" onclick="Q2.custom.splice('+i+',1);q2RenderSections();q2Recalc()" title="삭제">✕</button></div>';
     }).join('');
     return '<div class="q2-card"><div class="q2-title">'+sec.label+' <small>맞춤견적 항목 탭과 동일</small></div>'+rows+customs
@@ -4963,7 +4967,7 @@ function q2AddCustom(secKey){
 /* ── 계산 ── */
 function q2Recalc(){
   var g=q2Golfers(), n=q2NonGolfers(), pax=g+n, nights=q2Nights();
-  var total=0;
+  var total=0, totalPhp=0;
   // 숙박
   if(Q2.hotel){
     Q2.hotel.php=q2Num('q2h-php',0); Q2.hotel.nights=Math.max(1,q2Num('q2h-nights',nights));
@@ -4971,14 +4975,14 @@ function q2Recalc(){
     if(multEl&&!multEl.dataset.manual){ multEl.value=(Q2.hotel.type==='local'?g:(Q2.hotel.type==='custom'?pax:1)); }
     Q2.hotel.mult=Math.max(1,q2Num('q2h-mult',1));
     if(Q2.hotel.type==='custom') Q2.hotel.name=q2Val('q2h-name')||'직접 입력 숙소';
-    var hAmt=q2P2U(Q2.hotel.php*Q2.hotel.nights*Q2.hotel.mult); Q2.hotel.amountUsd=hAmt; total+=hAmt;
-    var ha=document.getElementById('q2h-amt'); if(ha) ha.innerHTML=q2Fmt$(hAmt)+'<small>'+q2FmtP(Q2.hotel.php*Q2.hotel.nights*Q2.hotel.mult)+'</small>';
+    var hPhp=Q2.hotel.php*Q2.hotel.nights*Q2.hotel.mult, hAmt=q2P2U(hPhp); Q2.hotel.amountUsd=hAmt; total+=hAmt; totalPhp+=hPhp;
+    var ha=document.getElementById('q2h-amt'); if(ha) ha.innerHTML=q2FmtP(hPhp)+'<small>'+Q2.hotel.nights+'박 × '+Q2.hotel.mult+'</small>';
   }
   // 골프
   Object.keys(Q2.golf).forEach(function(id){
     var s=Q2.golf[id]; s.php=q2Num('q2g-php-'+id,s.php); s.rounds=Math.max(1,q2Num('q2g-r-'+id,1));
-    var amt=q2P2U(s.php*s.rounds*g); s.amountUsd=amt; total+=amt;
-    var a=document.getElementById('q2g-amt-'+id); if(a) a.innerHTML=q2Fmt$(amt)+'<small>'+s.rounds+'R × 골퍼 '+g+'명 · '+q2FmtP(s.php*s.rounds*g)+'</small>';
+    var gPhp=s.php*s.rounds*g, amt=q2P2U(gPhp); s.amountUsd=amt; total+=amt; totalPhp+=gPhp;
+    var a=document.getElementById('q2g-amt-'+id); if(a) a.innerHTML=q2FmtP(gPhp)+'<small>'+s.rounds+'R × 골퍼 '+g+'명</small>';
   });
   // 항목
   Object.keys(Q2.items).forEach(function(key){
@@ -4986,17 +4990,17 @@ function q2Recalc(){
     var mEl=document.getElementById('q2i-m-'+key);
     if(mEl&&it.perPerson&&!mEl.dataset.manual) mEl.value=pax; // 인원수 배수 항목은 골퍼/비골퍼 바꾸면 따라감(손으로 고치기 전까지)
     var m=Math.max(1,q2Num('q2i-m-'+key,it.perPerson?pax:1)); it.mult=m;
-    var amt=q2P2U(it.php*it.qty*m); it.amountUsd=amt; total+=amt;
-    var a=document.getElementById('q2i-amt-'+key); if(a) a.innerHTML=q2Fmt$(amt)+'<small>'+it.qty+' × '+m+'명 · '+q2FmtP(it.php*it.qty*m)+'</small>';
+    var iPhp=it.php*it.qty*m, amt=q2P2U(iPhp); it.amountUsd=amt; total+=amt; totalPhp+=iPhp;
+    var a=document.getElementById('q2i-amt-'+key); if(a) a.innerHTML=q2FmtP(iPhp)+'<small>'+it.qty+' × '+m+'명</small>';
   });
-  Q2.custom.forEach(function(c,i){ var m=Math.max(1,Number(c.mult)||1); var amt=q2P2U(c.php*c.qty*m); c.amountUsd=amt; total+=amt; var a=document.getElementById('q2c-amt-'+i); if(a) a.innerHTML=q2Fmt$(amt)+'<small>'+c.qty+' × '+m+'명 · '+q2FmtP(c.php*c.qty*m)+'</small>'; });
+  Q2.custom.forEach(function(c,i){ var m=Math.max(1,Number(c.mult)||1); var cPhp=c.php*c.qty*m, amt=q2P2U(cPhp); c.amountUsd=amt; total+=amt; totalPhp+=cPhp; var a=document.getElementById('q2c-amt-'+i); if(a) a.innerHTML=q2FmtP(cPhp)+'<small>'+c.qty+' × '+m+'명</small>'; });
   // 합계
   var r=_qfGetR();
   total=Math.round(total*100)/100;
-  var tu=document.getElementById('q2TotalUsd'); if(tu) tu.textContent=q2Fmt$(total);
-  var ts=document.getElementById('q2TotalSub'); if(ts) ts.textContent='≈ '+q2FmtP(total*q2Rate())+' · 약 ₩'+Math.round(total*(Number(r.usdKrw)||1380)).toLocaleString()+(pax>0?' · 1인 약 '+q2Fmt$(total/pax):'');
+  var tu=document.getElementById('q2TotalUsd'); if(tu) tu.textContent=q2FmtP(totalPhp);
+  var ts=document.getElementById('q2TotalSub'); if(ts) ts.textContent='송금 금액 약 ₩'+q2Krw(totalPhp).toLocaleString()+' (수수료·환율 포함)'+(pax>0?' · 1인 '+q2FmtP(totalPhp/pax):'');
   var tm=document.getElementById('q2TotalMeta'); if(tm) tm.textContent=nights+'박 '+(nights+1)+'일 · 골퍼 '+g+'명'+(n?' + 동반 '+n+'명':'');
-  Q2.totalUSD=total;
+  Q2.totalUSD=total; Q2.totalPHP=Math.round(totalPhp);
   return total;
 }
 
@@ -5021,7 +5025,7 @@ function q2BuildDoc(){
     golfers:g, nonGolfers:n, persons:String(pax),
     season:qfGetSeason(), seasonLabel:qfGetSeason()==='peak'?'성수기':'비수기', peakMonths:getPeakMonths(),
     rate:_qfGetR(), hotel:hotel, golf:golf, items:items,
-    totalUSD:Q2.totalUSD||0, totalPHP:Math.round((Q2.totalUSD||0)*q2Rate()),
+    totalUSD:Q2.totalUSD||0, totalPHP:Q2.totalPHP||0, totalKRW:q2Krw(Q2.totalPHP||0), payDeadline:q2Val('q2PayDue'),
     golfCourse:golf.map(function(x){return x.name;}).join(', '), accommodation:hotel?hotel.name:'',
     remarks:q2Val('q2Remarks'), clientPin:'',
     itineraryPackageId:pkgId||'', itineraryTitle:pkg?pkg.title:'', itineraryHtml:pkg?pkg.trainingSchedule:'',
@@ -5057,7 +5061,7 @@ function qfSave(){
 /* ── 폼에 문서/상태 적용 ── */
 function q2Reset(){
   Q2={ hotel:null, golf:{}, items:{}, custom:[] };
-  ['q2Name','q2Contact','q2Checkin','q2Checkout','q2Remarks'].forEach(function(id){ var e=document.getElementById(id); if(e) e.value=''; });
+  ['q2Name','q2Contact','q2Checkin','q2Checkout','q2Remarks','q2PayDue'].forEach(function(id){ var e=document.getElementById(id); if(e) e.value=''; });
   document.getElementById('q2Nights').value=4; document.getElementById('q2Golfers').value=1; document.getElementById('q2NonGolfers').value=0;
   document.getElementById('q2Hotel').value=''; document.getElementById('q2HotelBox').innerHTML='';
   var ps=document.getElementById('qfPackage'); if(ps){ ps.value=''; ps.removeAttribute('data-pending'); } qfPackageHint();
@@ -5133,7 +5137,7 @@ function qfLoad(){
         golf:(d.golf||[]).map(function(x){return {id:x.id,name:x.name,rounds:x.rounds,php:x.php};}),
         items:(d.items||[]).filter(function(x){return !x.custom;}).map(function(x){return {id:x.id,name:x.name,qty:x.qty,php:x.php,pax:x.pax};}),
         custom:(d.items||[]).filter(function(x){return x.custom;}).map(function(x){return {section:x.section,sectionLabel:x.sectionLabel,name:x.name,php:x.php,qty:x.qty,pax:x.pax};})
-      }).then(function(){ document.getElementById('q2No').value=d.quoteNo||''; document.getElementById('q2Doctype').value=d.docType||'견적서'; if(typeof showToast==='function') showToast('✅ '+d.clientName+' 견적서 불러오기 완료'); });
+      }).then(function(){ document.getElementById('q2No').value=d.quoteNo||''; document.getElementById('q2Doctype').value=d.docType||'견적서'; document.getElementById('q2PayDue').value=d.payDeadline||''; if(typeof showToast==='function') showToast('✅ '+d.clientName+' 견적서 불러오기 완료'); });
     }
     // 구버전(v1) 견적서 — 기본 정보만 가져오고 항목은 새 형식으로 다시 고름
     return q2Prefill({ clientName:d.clientName, remarks:d.remarks, golfers:parseInt(d.persons)||1, packageId:d.itineraryPackageId, season:d.season,
@@ -5154,7 +5158,7 @@ function q2ListQuotes(){
     if(!list.length){ box.innerHTML='<span style="color:#9ca3af;">저장된 견적서가 없습니다</span>'; return; }
     box.innerHTML='<div class="tbl-wrap"><table class="tbl" style="font-size:12.5px;"><thead><tr><th>견적번호</th><th>고객명</th><th>저장일</th><th>합계</th><th>형식</th><th>보기</th><th>삭제</th></tr></thead><tbody>'
       +list.map(function(x){ var d=x.data; var dt=d.createdAt?new Date(d.createdAt).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'-';
-        var total=(d.version===2)?('$'+Number(d.totalUSD||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})):'-';
+        var total=(d.version===2)?('₱'+Math.round(Number(d.totalPHP)||0).toLocaleString()+(/확정/.test(d.docType||'')?' <span style="color:#065f46;font-size:11px;font-weight:700;">확정서</span>':'')):'-';
         return '<tr><td style="white-space:nowrap;font-weight:700;">'+q2Esc(d.quoteNo||x.id)+'</td><td style="white-space:nowrap;">'+q2Esc(d.clientName||'-')+'</td><td style="white-space:nowrap;">'+dt+'</td><td style="white-space:nowrap;">'+total+'</td>'
           +'<td>'+(d.version===2?'<span style="background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;">새 형식</span>':'<span style="background:#f3f4f6;color:#6b7280;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;">구버전</span>')+'</td>'
           +'<td><a href="https://iclarkgolf.com/my-quote.html?id='+encodeURIComponent(x.id)+'" target="_blank" style="color:#534AB7;font-weight:700;text-decoration:none;white-space:nowrap;">👁 보기</a></td>'

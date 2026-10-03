@@ -99,7 +99,25 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
 .print-btn{flex:1;padding:14px;background:var(--green);color:#fff;border:none;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
 .kakao-btn{flex:1;padding:14px;background:#FEE500;color:#000;border:none;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
 .loading{text-align:center;padding:60px;font-size:16px;color:var(--gray);}
-@media print{.login-wrap,.btn-row{display:none!important;}.page{display:block!important;box-shadow:none;margin:0;border-radius:0;}}
+/* 송금 안내 (확정서 전용) */
+.pay-section{margin:0 48px 28px;border:2px solid var(--green);border-radius:12px;overflow:hidden;}
+.pay-head{background:var(--green);color:#fff;padding:12px 18px;font-size:14px;font-weight:800;letter-spacing:1px;}
+.pay-amount{background:#f0f7f3;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid #d8ece2;}
+.pay-amount .k{font-size:12px;font-weight:700;color:var(--gray);}
+.pay-amount .krw{font-size:24px;font-weight:900;color:var(--green);}
+.pay-amount .php{font-size:12px;color:var(--gray);margin-top:2px;}
+.pay-amount .due{font-size:13px;font-weight:800;color:#b91c1c;}
+.pay-steps{padding:14px 18px;border-bottom:1px solid #eee;font-size:13px;line-height:1.9;color:#333;}
+.pay-steps b{color:var(--green);}
+.pay-rows{padding:6px 18px 12px;}
+.pay-label{font-size:11px;font-weight:800;color:var(--green-mid);letter-spacing:1px;margin:12px 0 4px;}
+.pay-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px dashed #eee;font-size:13px;}
+.pay-row .l{width:96px;flex-shrink:0;color:var(--gray);font-size:12px;}
+.pay-row .v{flex:1;font-weight:700;color:var(--dark);word-break:break-all;}
+.pay-row button{flex-shrink:0;background:#fff;border:1.5px solid var(--green-mid);color:var(--green);border-radius:6px;padding:3px 10px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.pay-foot{background:#fffbf5;padding:10px 18px;font-size:12px;color:#92400e;line-height:1.7;}
+.copied-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:700;z-index:999;display:none;}
+@media print{.login-wrap,.btn-row,.pay-row button{display:none!important;}.page{display:block!important;box-shadow:none;margin:0;border-radius:0;}}
 @media(max-width:600px){
   /* 전체 패딩 축소 */
   .header,.client-section,.schedule-banner,.cost-section,.include-section,.notice,.footer{padding-left:16px;padding-right:16px;}
@@ -118,6 +136,9 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
   /* 합계 박스: 세로 배열 */
   .total-section{flex-direction:column;align-items:flex-start;gap:8px;}
   .total-usd{font-size:22px;}
+  .pay-section{margin:0 16px 24px;}
+  .pay-amount .krw{font-size:20px;}
+  .pay-row .l{width:78px;}
   /* 포함사항: 1열 */
   .include-section{grid-template-columns:1fr;padding:0 16px 20px;}
   /* 버튼: 세로 배열 */
@@ -174,7 +195,7 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
       <div id="out-docType" style="font-family:'Noto Sans KR',sans-serif;font-size:22px;font-weight:900;color:var(--gold);letter-spacing:4px;margin-top:6px;"></div>
     </div>
     <div class="header-right">
-      <div class="label">QUOTATION NO.</div>
+      <div class="label" id="out-noLabel">QUOTATION NO.</div>
       <div class="quote-no" id="out-quoteNo"></div>
       <div class="quote-date" id="out-date"></div>
     </div>
@@ -209,7 +230,7 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
     <tbody id="out-stay"></tbody></table>
   </div>
   <div class="total-section">
-    <div class="total-label">견적 합계<br><span id="out-total-note" style="font-size:11px;font-weight:400;opacity:0.6;">※ 캐디피·카트비·보험료·컨슘어블은 현지 별도 지불</span></div>
+    <div class="total-label"><span id="out-total-label">견적 합계</span><br><span id="out-total-note" style="font-size:11px;font-weight:400;opacity:0.6;">※ 캐디피·카트비·보험료·컨슘어블은 현지 별도 지불</span></div>
     <div>
       <div class="total-usd" id="out-total-usd"></div>
       <div class="total-krw" id="out-total-krw"></div>
@@ -223,9 +244,10 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
     <div style="font-size:11px;font-weight:800;color:var(--green-mid);letter-spacing:1px;margin-bottom:8px;">📝 REMARKS</div>
     <div id="out-remarks" style="font-size:13px;color:#333;line-height:1.8;white-space:pre-line;"></div>
   </div>
+  <div class="pay-section" id="paySection" style="display:none;"></div>
   <div class="notice">
     <h4>📋 안내사항</h4>
-    <ul>
+    <ul id="noticeList">
       <li>본 견적서는 발행일로부터 14일간 유효합니다.</li>
       <li>예약 확정 시 총액의 30% 계약금이 필요합니다.</li>
       <li>취소 규정: 출발 7일 전 전액 환불 / 3일 전 50% 환불 / 이후 환불 불가</li>
@@ -243,6 +265,7 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
     </div>
   </div>
 </div>
+<div class="copied-toast" id="copiedToast">복사되었습니다</div>
 
 <script type="module">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -254,11 +277,86 @@ const db  = getFirestore(app);
 
 let quoteData = null;
 
-function phpToUsd(php, rate) { return Math.round((php/rate)*100)/100; }
+/* ── 2026-10-03: 달러 표시 폐지 → 모든 금액 페소(₱) + 원화 송금 금액 ──
+   원가가 전부 페소라 페소로 고정. 원화 송금 금액 = 페소 ÷ 저장 시점 적용환율(USD/PHP, 환전마진 포함) × USD/KRW
+   → 해외송금 수수료·환율 차이를 감안해 1,000원 단위 올림. 예전에 저장된 견적서도 저장된 페소 값으로 그대로 계산됨. */
+function fmtPhp(v){ return '₱' + Math.round(Number(v)||0).toLocaleString(); }
+function esc(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+function krwOf(php, data){
+  const r = data.rate || {};
+  const applied = Number(r.appliedUsdPhp) || 53.2, usdKrw = Number(r.usdKrw) || 1380;
+  return Math.ceil((Number(php)||0) / applied * usdKrw / 1000) * 1000;
+}
+function fmtKrw(v){ return '₩' + Math.round(Number(v)||0).toLocaleString(); }
+const isConfirm = d => /확정/.test(d.docType || '');
+
+/* 송금 정보 — payment.html(입금 안내)과 같은 계좌. 바뀌면 두 곳을 함께 고칠 것 */
+const PAY = {
+  bank:'BDO Unibank, Inc.', account:'001311251888', swift:'BNORPHMM', holder:'SHUNAM JHANG', currency:'PHP (필리핀 페소)', purpose:'Travel Expenses',
+  phone:'639083633792', addr:'248 SM CITY PAMPANGA B', street:'FRIENDSHIP HIGHWAY', city:'ANGELES', country:'Philippines', email:'tourjang@gmail.com'
+};
+window.copyPay = function(t){
+  const done = () => { const el = document.getElementById('copiedToast'); el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 1800); };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(done).catch(() => legacyCopy(t, done)); else legacyCopy(t, done);
+};
+function legacyCopy(t, done){ const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); } catch(e){} document.body.removeChild(a); done(); }
+
+function renderTotal(data, totalPhp, pax){
+  const krw = krwOf(totalPhp, data);
+  document.getElementById('out-total-usd').textContent = fmtPhp(totalPhp);
+  document.getElementById('out-total-krw').innerHTML = '송금하실 금액 약 <b style="color:#fff;">' + fmtKrw(krw) + '</b> (해외송금 수수료·환율 포함)' + (pax > 0 ? ' · 1인 ' + fmtPhp(totalPhp / pax) : '');
+  return krw;
+}
+
+function renderPay(data, totalPhp){
+  const box = document.getElementById('paySection');
+  if (!isConfirm(data)) { box.style.display = 'none'; return; }
+  const krw = krwOf(totalPhp, data);
+  const row = (l, v, copy) => `<div class="pay-row"><span class="l">${l}</span><span class="v">${esc(v)}</span>${copy ? `<button type="button" onclick="copyPay('${esc(v)}')">복사</button>` : ''}</div>`;
+  box.innerHTML = `
+    <div class="pay-head">💳 송금 안내</div>
+    <div class="pay-amount">
+      <div><div class="k">송금하실 금액 (원화)</div><div class="krw">${fmtKrw(krw)}</div><div class="php">확정 금액 ${fmtPhp(totalPhp)} · 해외송금 수수료·환율 포함</div></div>
+      ${data.payDeadline ? `<div style="text-align:right;"><div class="k">입금 기한</div><div class="due">${esc(data.payDeadline)} 까지</div></div>` : ''}
+    </div>
+    <div class="pay-steps">
+      <b>1.</b> 은행 앱에서 <b>해외송금</b> 메뉴를 엽니다.<br>
+      <b>2.</b> 아래 정보를 입력하고 받는 통화는 <b>PHP(필리핀 페소)</b>로 선택합니다.<br>
+      <b>3.</b> 위 원화 금액을 송금한 뒤 <b>송금 확인증을 캡처해 카톡(tourjang2)</b>으로 보내주세요.
+    </div>
+    <div class="pay-rows">
+      <div class="pay-label">계좌 정보</div>
+      ${row('수취 은행', PAY.bank)}
+      ${row('계좌번호', PAY.account, true)}
+      ${row('SWIFT Code', PAY.swift, true)}
+      ${row('예금주', PAY.holder, true)}
+      ${row('받는 통화', PAY.currency)}
+      ${row('송금 목적', PAY.purpose)}
+      <div class="pay-label">받는 분 주소 · 연락처</div>
+      ${row('연락처', PAY.phone, true)}
+      ${row('상세주소', PAY.addr, true)}
+      ${row('거리명', PAY.street, true)}
+      ${row('도시명', PAY.city, true)}
+      ${row('국가', PAY.country)}
+      ${row('이메일', PAY.email, true)}
+    </div>
+    <div class="pay-foot">⚠️ 입금 기한 내 미입금 시 예약이 자동 취소될 수 있습니다. 입금이 확인되면 예약을 진행하고 바우처를 보내드립니다.</div>`;
+  box.style.display = 'block';
+}
+
+function renderNotice(data){
+  if (!isConfirm(data)) return;
+  document.getElementById('noticeList').innerHTML = [
+    '확정서 내용에 동의하시면 입금 기한 내 전액을 송금해 주세요.',
+    '입금 확인 후 골프장·숙소 예약을 진행하고 바우처를 보내드립니다.',
+    '취소 규정: 출발 7일 전 전액 환불 / 3일 전 50% 환불 / 이후 환불 불가',
+    '카트·캐디피 등 현지 별도 지불 항목은 골프장에서 직접 내시면 됩니다.',
+    '문의: 카카오톡 tourjang2 · 카카오채널 @iClarkGolf'
+  ].map(t => `<li>${t}</li>`).join('');
+}
 
 function renderTable(items, data, tbodyId) {
   const tbody = document.getElementById(tbodyId);
-  const rate  = data.rate?.appliedUsdPhp || 53.2;
   tbody.innerHTML = '';
   let subtotal = 0;
   const included = items.filter(i=>i.included);
@@ -267,12 +365,12 @@ function renderTable(items, data, tbodyId) {
   included.forEach(item => {
     const d = data.items?.[item.key] || {php:0,qty:0};
     if (!d.php||!d.qty) return;
-    const usd = phpToUsd(d.php*d.qty, rate);
-    subtotal += usd;
-    tbody.innerHTML += `<tr><td>${item.name}</td><td>$${phpToUsd(d.php,rate).toFixed(2)} <span class="unit">(₱${Number(d.php).toLocaleString()})</span></td><td>${d.qty}${item.unit}</td><td>$${usd.toFixed(2)}</td></tr>`;
+    const amt = d.php*d.qty;
+    subtotal += amt;
+    tbody.innerHTML += `<tr><td>${item.name}</td><td>${fmtPhp(d.php)}</td><td>${d.qty}${item.unit}</td><td>${fmtPhp(amt)}</td></tr>`;
   });
   if (included.some(i=>(data.items?.[i.key]?.qty||0)>0))
-    tbody.innerHTML += `<tr class="subtotal"><td colspan="3">소계</td><td>$${subtotal.toFixed(2)}</td></tr>`;
+    tbody.innerHTML += `<tr class="subtotal"><td colspan="3">소계</td><td>${fmtPhp(subtotal)}</td></tr>`;
 
   const hasExcluded = excluded.some(i=>(data.items?.[i.key]?.qty||0)>0);
   if (hasExcluded) {
@@ -280,8 +378,7 @@ function renderTable(items, data, tbodyId) {
     excluded.forEach(item => {
       const d = data.items?.[item.key] || {php:0,qty:0};
       if (!d.php||!d.qty) return;
-      const usd = phpToUsd(d.php*d.qty, rate);
-      tbody.innerHTML += `<tr class="ref-row"><td>${item.name} <span style="font-size:11px;color:#aaa;">(현지 지불)</span></td><td>$${phpToUsd(d.php,rate).toFixed(2)} <span class="unit">(₱${Number(d.php).toLocaleString()})</span></td><td>${d.qty}${item.unit}</td><td style="color:#bbb;">$${usd.toFixed(2)}</td></tr>`;
+      tbody.innerHTML += `<tr class="ref-row"><td>${item.name} <span style="font-size:11px;color:#aaa;">(현지 지불)</span></td><td>${fmtPhp(d.php)}</td><td>${d.qty}${item.unit}</td><td style="color:#bbb;">${fmtPhp(d.php*d.qty)}</td></tr>`;
     });
   }
   return subtotal;
@@ -291,12 +388,8 @@ const GOLF_ITEMS   = [{key:'greenfee',name:'그린피',unit:'라운드',included
 const LESSON_ITEMS = [{key:'fieldLesson',name:'필드 레슨비',unit:'회',included:true},{key:'rangeLesson',name:'연습장 레슨비',unit:'회',included:true},{key:'rangeFee',name:'연습장 이용료',unit:'일',included:true}];
 const STAY_ITEMS   = [{key:'accom',name:'HOTEL & 숙소',unit:'박',included:true},{key:'drop',name:'숙소 ↔ 골프장 드롭 픽업',unit:'일',included:true},{key:'pickup',name:'공항 픽업',unit:'회',included:true},{key:'sendoff',name:'공항 샌딩',unit:'회',included:true}];
 
-/* ── v2 견적서 (admin 견적서 작성 v2 = 맞춤견적 quote.html과 같은 항목 구조) ──
-   PJ가 페소로 입력한 값을 저장 시점 환율로 달러 표시. 표 단가 옆에 ₱ 참고 병기. */
-function fmtUsd(v){ return '$' + Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2}); }
-function fmtPhp(v){ return '₱' + Math.round(Number(v)||0).toLocaleString(); }
-function esc(t){ return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
-function renderQuoteV2(data, krwRate) {
+/* ── v2 견적서 (admin 견적서 작성 v2 = 맞춤견적 quote.html과 같은 항목 구조) — 저장된 페소 단가로 직접 계산 ── */
+function renderQuoteV2(data) {
   const g = Number(data.golfers)||1, n = Number(data.nonGolfers)||0, pax = g + n;
   document.getElementById('out-persons').textContent = '골퍼 ' + g + '명' + (n ? ' + 동반 ' + n + '명' : '');
   document.getElementById('out-course').textContent  = (data.golf||[]).map(x=>x.name).join(', ') || '-';
@@ -309,27 +402,27 @@ function renderQuoteV2(data, krwRate) {
   let html = '', total = 0;
 
   if (data.hotel) {
-    const h = data.hotel; total += Number(h.amountUsd)||0;
+    const h = data.hotel, mult = Math.max(1, Number(h.mult)||1), nights = Number(h.nights)||0;
+    const amt = (Number(h.php)||0) * nights * mult; total += amt;
     const unit = h.type === 'local' ? '일·1인' : '박';
-    const qty = h.nights + '박' + (h.mult > 1 || h.type==='local' ? ' × ' + h.mult + (h.type==='local' ? '명' : (h.type==='custom' ? '명' : '객실')) : '');
-    html += table('🏨 숙박', [`<tr><td>${esc(h.name)}${h.type==='local' ? ' <span style="font-size:11px;color:#888;">올인클루시브</span>' : ''}</td><td>${fmtUsd(h.usd)} <span class="unit">(${fmtPhp(h.php)}/${unit})</span></td><td>${qty}</td><td>${fmtUsd(h.amountUsd)}</td></tr>`]);
+    const qty = nights + '박' + (mult > 1 || h.type==='local' ? ' × ' + mult + (h.type==='local' ? '명' : (h.type==='custom' ? '명' : '객실')) : '');
+    html += table('🏨 숙박', [`<tr><td>${esc(h.name)}${h.type==='local' ? ' <span style="font-size:11px;color:#888;">올인클루시브</span>' : ''}</td><td>${fmtPhp(h.php)} <span class="unit">/${unit}</span></td><td>${qty}</td><td>${fmtPhp(amt)}</td></tr>`]);
   }
-  const golfRows = (data.golf||[]).map(x => { total += Number(x.amountUsd)||0;
+  const golfRows = (data.golf||[]).map(x => {
+    const amt = (Number(x.php)||0) * (Number(x.rounds)||0) * (Number(x.golfers)||g); total += amt;
     const extra = [x.cart ? '카트 ' + fmtPhp(x.cart) : '', x.caddy ? '캐디 ' + fmtPhp(x.caddy) : ''].filter(Boolean).join(' · ');
-    return `<tr><td>${esc(x.name)} 그린피${extra ? '<br><span style="font-size:11px;color:#b45309;">현지 별도: ' + extra + '</span>' : ''}</td><td>${fmtUsd(x.usd)} <span class="unit">(${fmtPhp(x.php)}/인)</span></td><td>${x.rounds}R × ${x.golfers}명</td><td>${fmtUsd(x.amountUsd)}</td></tr>`; });
+    return `<tr><td>${esc(x.name)} 그린피${extra ? '<br><span style="font-size:11px;color:#b45309;">현지 별도: ' + extra + '</span>' : ''}</td><td>${fmtPhp(x.php)} <span class="unit">/인</span></td><td>${x.rounds}R × ${x.golfers || g}명</td><td>${fmtPhp(amt)}</td></tr>`; });
   html += table('⛳ 골프장' + (data.seasonLabel ? ' <span style="font-size:11px;color:#888;font-weight:400;">' + esc(data.seasonLabel) + ' 그린피</span>' : ''), golfRows);
   // 이동·레슨·식사·기타·커스텀 — 저장된 섹션 순서대로 묶기
   const groups = [];
   (data.items||[]).forEach(it => { let grp = groups.find(x => x.key === it.section); if (!grp) { grp = { key: it.section, label: it.sectionLabel || '추가 항목', rows: [] }; groups.push(grp); }
-    total += Number(it.amountUsd)||0;
-    grp.rows.push(`<tr><td>${it.icon ? it.icon + ' ' : ''}${esc(it.name)}</td><td>${fmtUsd(it.usd)} <span class="unit">(${fmtPhp(it.php)}${it.unit ? '/' + esc(it.unit) : ''})</span></td><td>${it.qty}${it.unit && !it.custom ? esc(it.unit) : ''}${(Number(it.pax)||1) > 1 ? ' × ' + it.pax + '명' : ''}</td><td>${fmtUsd(it.amountUsd)}</td></tr>`); });
+    const p = Math.max(1, Number(it.pax)||1), amt = (Number(it.php)||0) * (Number(it.qty)||1) * p; total += amt;
+    grp.rows.push(`<tr><td>${it.icon ? it.icon + ' ' : ''}${esc(it.name)}</td><td>${fmtPhp(it.php)}${it.unit ? ' <span class="unit">/' + esc(it.unit) + '</span>' : ''}</td><td>${it.qty}${it.unit && !it.custom ? esc(it.unit) : ''}${p > 1 ? ' × ' + p + '명' : ''}</td><td>${fmtPhp(amt)}</td></tr>`); });
   groups.forEach(grp => { html += table(esc(grp.label), grp.rows); });
   if (!html) html = '<div style="font-size:13px;color:#999;padding:12px 0;">선택된 항목이 없습니다.</div>';
   box.innerHTML = html;
 
-  total = Number(data.totalUSD) || Math.round(total*100)/100;
-  document.getElementById('out-total-usd').textContent = fmtUsd(total);
-  document.getElementById('out-total-krw').textContent = '약 ₩' + Math.round(total*krwRate).toLocaleString() + ' (환율 ' + Number(krwRate).toLocaleString() + '원 기준)' + (pax > 0 ? ' · 1인 약 ' + fmtUsd(total/pax) : '');
+  renderTotal(data, total, pax);
   const hasExtra = (data.golf||[]).some(x => x.cart || x.caddy);
   document.getElementById('out-total-note').textContent = hasExtra ? '※ 카트·캐디피는 골프장에서 현지 별도 지불' : (data.nights ? data.nights + '박 ' + (data.nights+1) + '일 기준' : '');
 
@@ -355,14 +448,16 @@ function renderQuoteV2(data, krwRate) {
     document.getElementById('itin-title').textContent = data.itineraryTitle ? data.itineraryTitle + ' 여행 일정' : '여행 일정';
     document.getElementById('itinSection').style.display = 'block';
   }
+  return total;
 }
 
 function renderQuote(data) {
-  const rate = data.rate?.appliedUsdPhp || 53.2;
-  const krwRate = data.rate?.usdKrw || 1380;
   const createdDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'}) : '-';
 
   document.getElementById('out-docType').textContent  = data.docType || '견적서';
+  document.getElementById('out-noLabel').textContent  = isConfirm(data) ? 'CONFIRMATION NO.' : 'QUOTATION NO.';
+  document.getElementById('out-total-label').textContent = isConfirm(data) ? '확정 금액' : '견적 합계';
+  document.title = 'iCLARKGOLF 내 ' + (data.docType || '견적서') + ' 확인';
   document.getElementById('out-quoteNo').textContent  = data.quoteNo;
   document.getElementById('out-date').textContent     = createdDate;
   document.getElementById('out-name').textContent     = data.clientName + ' 님';
@@ -373,15 +468,14 @@ function renderQuote(data) {
   document.getElementById('out-course').textContent   = data.golfCourse;
   document.getElementById('out-accom').textContent    = data.accommodation;
 
-  if (data.version === 2) { renderQuoteV2(data, krwRate); return; }
+  if (data.version === 2) { const t = renderQuoteV2(data); renderPay(data, t); renderNotice(data); return; }
 
   const g = renderTable(GOLF_ITEMS,   data, 'out-golf');
   const l = renderTable(LESSON_ITEMS, data, 'out-lesson');
   const s = renderTable(STAY_ITEMS,   data, 'out-stay');
   const total = g + l + s;
-
-  document.getElementById('out-total-usd').textContent = '$' + Number(total.toFixed(2)).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-  document.getElementById('out-total-krw').textContent = '약 ₩' + Math.round(total*krwRate).toLocaleString() + ' (환율 ' + Number(krwRate).toLocaleString() + '원 기준)';
+  renderTotal(data, total, Number(data.persons)||0);
+  renderPay(data, total); renderNotice(data);
 
   // 포함/불포함 — admin에서 패키지를 연결해 저장했으면 그 패키지 카드의 포함/불포함 목록을 그대로 사용
   const pkgYes = Array.isArray(data.packageInclYes) ? data.packageInclYes.filter(Boolean) : [];
@@ -485,7 +579,8 @@ window.sendKakao = function() {
     : window.location.href.split('?')[0];
   var name = (d && d.clientName) ? d.clientName + '님, ' : '';
   var itinLine = (d && d.itineraryHtml && d.itineraryHtml.trim()) ? '\n(견적 내용 + 여행 일정표가 함께 들어있습니다)' : '';
-  var msg = '[iCLARKGOLF 견적서]\n' + name + '요청하신 견적서를 보내드립니다.\n' + link + itinLine;
+  var dt = (d && d.docType) || '견적서';
+  var msg = '[iCLARKGOLF ' + dt + ']\n' + name + (/확정/.test(dt) ? '예약 확정서를 보내드립니다. 아래 링크에서 송금 금액과 송금 정보를 확인해 주세요.\n' : '요청하신 견적서를 보내드립니다.\n') + link + itinLine;
 
   var openChat = function(){ window.open('http://pf.kakao.com/_nbHKX/chat', '_blank'); };
 

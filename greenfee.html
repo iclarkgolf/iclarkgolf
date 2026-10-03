@@ -191,13 +191,11 @@ a{text-decoration:none;color:inherit;}
 
 <!-- 환율 배너 -->
 <div class="rate-banner" id="rate-banner">
-  <div class="rate-item">💱 적용 환율: <span class="rate-val" id="banner-rate">로딩중...</span></div>
-  <div class="rate-item">PHP 1,000 → <span class="rate-val" id="banner-usd">—</span></div>
-  <span class="rate-margin" id="banner-margin">마진 —%</span>
+  <div class="rate-item">💱 원화 참고: ₱1,000 ≈ <span class="rate-val" id="banner-rate">로딩중...</span></div>
   <span class="rate-time" id="banner-time"></span>
   <div class="unit-toggle">
     <button class="unit-btn on" onclick="setUnit('php')" id="btn-php">PHP</button>
-    <button class="unit-btn off" onclick="setUnit('usd')" id="btn-usd">USD</button>
+    <button class="unit-btn off" onclick="setUnit('krw')" id="btn-usd">원화</button>
   </div>
 </div>
 
@@ -910,6 +908,7 @@ a{text-decoration:none;color:inherit;}
 /* ── 환율 ── */
 let currentUnit = 'php';
 let appliedRate = 53.2;
+let krwPerPhp = 24;   // 2026-10-03: 달러 표시 폐지 → 원화 참고 표시 (시장 환율 기준, 현지 카트·캐디비 참고용)
 
 function getExchangeRate() {
   const saved = localStorage.getItem('iclark_exchange');
@@ -935,45 +934,41 @@ async function loadRateFromFirebase() {
 }
 
 function initRateBanner() {
-  const r = getExchangeRate();
-  appliedRate = r.appliedUsdPhp || 53.2;
   const safeSet = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-  safeSet('banner-rate', '$1 = ' + appliedRate.toFixed(2) + ' PHP');
-  safeSet('banner-usd', '$' + (1000 / appliedRate).toFixed(2));
-  safeSet('banner-margin', '마진 ' + (r.marginPct || 5) + '% 적용');
-  safeSet('banner-time', r.updatedAt ? r.updatedAt + ' 기준' : '관리자 설정 필요');
+  const apply = r => {
+    appliedRate = r.appliedUsdPhp || appliedRate;
+    const mkt = Number(r.marketUsdPhp) || appliedRate, usdKrw = Number(r.usdKrw) || 1380;
+    krwPerPhp = usdKrw / mkt;
+    safeSet('banner-rate', '₩' + (Math.round(1000 * krwPerPhp / 100) * 100).toLocaleString());
+    safeSet('banner-time', r.updatedAt ? r.updatedAt + ' 기준' : '');
+  };
+  apply(getExchangeRate());
   // Firebase에서 최신 환율 불러와서 재적용
-  loadRateFromFirebase().then(fr => {
-    appliedRate = fr.appliedUsdPhp || appliedRate;
-    safeSet('banner-rate', '$1 = ' + appliedRate.toFixed(2) + ' PHP');
-    safeSet('banner-usd', '$' + (1000 / appliedRate).toFixed(2));
-    safeSet('banner-margin', '마진 ' + (fr.marginPct || 5) + '% 적용');
-    safeSet('banner-time', fr.updatedAt ? fr.updatedAt + ' 기준' : '관리자 설정 필요');
-  });
+  loadRateFromFirebase().then(fr => { apply(fr); if (currentUnit === 'krw') setUnit('krw'); });
 }
 
 function setUnit(unit) {
   currentUnit = unit;
   document.getElementById('btn-php').className = 'unit-btn ' + (unit==='php'?'on':'off');
-  document.getElementById('btn-usd').className = 'unit-btn ' + (unit==='usd'?'on':'off');
+  document.getElementById('btn-usd').className = 'unit-btn ' + (unit==='krw'?'on':'off');
   // 모든 요금 값 변환
   document.querySelectorAll('.fee-val').forEach(el => {
     const php = parseFloat(el.dataset.php);
     if (!php || isNaN(php)) return;
-    if (unit === 'usd') {
-      el.textContent = '$' + (php / appliedRate).toFixed(1);
+    if (unit === 'krw') {
+      el.textContent = '₩' + (Math.round(php * krwPerPhp / 100) * 100).toLocaleString();
     } else {
       el.textContent = php.toLocaleString();
     }
   });
   document.querySelectorAll('.fee-unit').forEach(el => {
-    if (el.dataset.isUnit) el.textContent = unit === 'usd' ? 'USD' : 'PHP';
+    if (el.dataset.isUnit) el.textContent = unit === 'krw' ? '' : 'PHP';
   });
   // 카드 헤더 주요 금액도 변환
   document.querySelectorAll('.cc-price-main').forEach(el => {
     const php = parseFloat(el.dataset.php);
     if (!php || isNaN(php)) return;
-    el.textContent = unit === 'usd' ? '$' + (php / appliedRate).toFixed(1) : php.toLocaleString();
+    el.textContent = unit === 'krw' ? '₩' + (Math.round(php * krwPerPhp / 100) * 100).toLocaleString() : php.toLocaleString();
   });
 }
 
@@ -1079,8 +1074,8 @@ async function loadGreenfeeFromFirebase() {
       });
     });
     gfApplySeason();
-    // USD 단위면 재변환
-    if (currentUnit === 'usd') setUnit('usd');
+    // 원화 단위면 재변환
+    if (currentUnit === 'krw') setUnit('krw');
   } catch(e) {
     console.log('Firebase 요금 로드 실패, 기존값 유지');
   }
@@ -1113,7 +1108,7 @@ function gfApplySeason(){
       else { const v = i === 0 ? card.dataset.walkWd : card.dataset.walkWe; if (v) set(fv[i], v); }
     });
   });
-  if (typeof currentUnit !== 'undefined' && currentUnit === 'usd') setUnit('usd');
+  if (typeof currentUnit !== 'undefined' && currentUnit === 'krw') setUnit('krw');
 }
 function setSeason(s){ GF_SEASON = s; gfApplySeason(); if (window.gtag) gtag('event', 'greenfee_season_' + s); }
 
