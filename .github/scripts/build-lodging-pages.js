@@ -85,9 +85,9 @@ function renderBodyHtml(accom) {
   const descHTML = escapeHtml(accom.desc || '').replace(/\n/g, '<br>');
 
   const priceBlock = isLocal
-    ? `<div class="price-main">$${escapeHtml(accom.priceUSD)}<sub>/일</sub></div>
+    ? `<div class="price-main">₱${Number(accom.pricePHP || Math.round((Number(accom.priceUSD) || 0) * APPLIED / 100) * 100).toLocaleString()}<sub>/일</sub></div>${krwLine(accomPhp(accom))}
        <div class="price-note">숙박·3식·픽업·세탁<br>ALL 포함</div>`
-    : `<div class="price-main">$${escapeHtml(accom.priceUSD)}<sub>/박~</sub></div>
+    : `<div class="price-main">₱${Number(accom.pricePHP || Math.round((Number(accom.priceUSD) || 0) * APPLIED / 100) * 100).toLocaleString()}<sub>/박~</sub></div>${krwLine(accomPhp(accom))}
        <div class="price-note">1인 기준 참고 요금<br>실제 요금은 날짜별 상이</div>`;
 
   return `
@@ -125,7 +125,7 @@ function buildDetailHtml(accom, photos) {
   //    자바스크립트에게 알려준다 — package-detail.html의 __FIXED_PACKAGE_ID__와 같은 패턴.
   html = html.replace(
     '<meta charset="UTF-8">',
-    `<meta charset="UTF-8">\n<script>window.__FIXED_ACCOM_ID__=${JSON.stringify(accom.id)};window.__FIXED_ACCOM_DATA__=${JSON.stringify({ ...accom, photos })};</script>`
+    `<meta charset="UTF-8">\n<script>window.__KRW_PER_PHP__=${KRW_PER_PHP || 0};window.__APPLIED_USD_PHP__=${APPLIED};window.__FIXED_ACCOM_ID__=${JSON.stringify(accom.id)};window.__FIXED_ACCOM_DATA__=${JSON.stringify({ ...accom, photos })};</script>`
   );
 
   // 2) <title> 및 검색엔진·SNS 공유용 메타 태그를 실제 내용으로 교체
@@ -137,8 +137,8 @@ function buildDetailHtml(accom, photos) {
     image: [image],
     url,
     address: { '@type': 'PostalAddress', addressLocality: accom.location || 'Angeles City, Clark', addressCountry: 'PH' },
-    ...(accom.priceUSD ? {
-      priceRange: `$${accom.priceUSD}${isLocal ? '/일' : '/박~'}`,
+    ...((accom.pricePHP || accom.priceUSD) ? {
+      priceRange: `₱${Number(accom.pricePHP || Math.round((Number(accom.priceUSD) || 0) * APPLIED / 100) * 100).toLocaleString()}${isLocal ? '/일' : '/박~'}`,
     } : {}),
   };
 
@@ -175,8 +175,8 @@ function buildDetailHtml(accom, photos) {
   );
   const isLocalBadge = accom.type === 'local';
   const ctaHTML = isLocalBadge
-    ? `<strong>$${escapeHtml(accom.priceUSD)}</strong><span>ALL-IN / 일</span>`
-    : `<strong>$${escapeHtml(accom.priceUSD)}</strong><span>참고 / 박~</span>`;
+    ? `<strong>₱${Number(accom.pricePHP || Math.round((Number(accom.priceUSD) || 0) * APPLIED / 100) * 100).toLocaleString()}</strong><span>ALL-IN / 일</span>`
+    : `<strong>₱${Number(accom.pricePHP || Math.round((Number(accom.priceUSD) || 0) * APPLIED / 100) * 100).toLocaleString()}</strong><span>참고 / 박~</span>`;
   html = html.replace(
     '<div class="cta-bar" id="cta-bar" style="display:none;">',
     '<div class="cta-bar" id="cta-bar" style="display:flex;">'
@@ -189,12 +189,19 @@ function buildDetailHtml(accom, photos) {
   return html;
 }
 
+let KRW_PER_PHP = 0;
+let APPLIED = 53.2;   // 관리자 환율 설정(settings/exchange)의 적용환율 — 모든 환산은 여기서
+function krwLine(php) { return (KRW_PER_PHP && php) ? `<div style="font-size:11px;font-weight:600;color:#9ca3af;">약 ₩${(Math.ceil(php * KRW_PER_PHP / 1000) * 1000).toLocaleString()}</div>` : ''; }
+function accomPhp(a) { return Number(a.pricePHP) || Math.round((Number(a.priceUSD) || 0) * APPLIED / 100) * 100; }
+
 async function main() {
   const db = initFirebase();
 
   const rateSnap = await db.collection('settings').doc('exchange').get();
   const appliedRate = (rateSnap.exists && rateSnap.data().appliedUsdPhp) || 53.2;
 
+  // 페소 옆 작은 원화 참고용 환율 (견적서 원화 송금 금액과 같은 계산)
+  try { const ex = await db.collection('settings').doc('exchange').get(); const x = ex.exists ? ex.data() : {}; APPLIED = Number(x.appliedUsdPhp) || 53.2; KRW_PER_PHP = (Number(x.usdKrw) || 1380) / APPLIED; } catch (e) {}
   const snap = await db.collection('accommodations').get();
   let accoms = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   accoms = accoms
