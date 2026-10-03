@@ -41,6 +41,26 @@ function slugifyId(id) {
 
 // ---------- 패키지 카드 ----------
 
+// 2026-10-03: 페소 가격 옆에 작은 글씨 원화 참고("약 ₩") — 견적서·확정서의 원화 송금 금액과 같은 계산
+let KRW_PER_PHP = 0;
+async function loadKrwRate(db) {
+  try {
+    const s = await db.collection('settings').doc('exchange').get();
+    const d = s.exists ? s.data() : {};
+    KRW_PER_PHP = (Number(d.usdKrw) || 1380) / (Number(d.appliedUsdPhp) || 53.2);
+  } catch (e) { KRW_PER_PHP = 0; }
+}
+function krwSpan(php) {
+  if (!KRW_PER_PHP || !php) return '';
+  return `<span style="display:block;font-family:'Nunito',sans-serif;font-size:11px;font-weight:600;color:#9ca3af;margin-top:2px;">약 ₩${(Math.ceil(php * KRW_PER_PHP / 1000) * 1000).toLocaleString()}</span>`;
+}
+function phpFromPriceStr(s) {
+  const str = String(s || '');
+  if (!/₱/.test(str)) return 0;   // 페소로 적힌 가격만 원화 표시
+  const m = str.replace(/,/g, '').match(/[\d.]+/);
+  return m ? parseFloat(m[0]) : 0;
+}
+
 function renderPackageCard(c) {
   const bg = c.heroImg
     ? `<img src="${escapeHtml(c.heroImg)}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center ${c.heroImgPosY !== undefined ? c.heroImgPosY : 50}%;display:block;" loading="lazy" alt="${escapeHtml(c.titleEn || '')}">`
@@ -64,7 +84,7 @@ function renderPackageCard(c) {
        <div style="background:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
          <div>
            <div style="font-size:11px;color:#9ca3af;margin-bottom:1px;">1인 기준</div>
-           <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#18181b;line-height:1;">${escapeHtml(c.price)}<span style="font-size:12px;font-weight:400;color:#9ca3af;"> ${escapeHtml(c.priceUnit)}</span></div>
+           <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#18181b;line-height:1;">${escapeHtml(c.price)}<span style="font-size:12px;font-weight:400;color:#9ca3af;"> ${escapeHtml(c.priceUnit)}</span>${krwSpan(phpFromPriceStr(c.price))}</div>
          </div>
          <div style="background:#1b4332;color:#fff;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;white-space:nowrap;">${escapeHtml(c.btn || '보기')} →</div>
        </div>
@@ -95,9 +115,10 @@ function renderLodgingCard(a) {
     ? `<img src="${escapeHtml(photo)}" alt="${escapeHtml(a.name)}" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'thumb-emoji\\'>${a.type === 'local' ? '🏠' : '🏨'}</span>'">`
     : `<span class="thumb-emoji">${a.type === 'local' ? '🏠' : '🏨'}</span>`;
 
+  // 2026-10-03: 달러 표시 폐지 → 페소
   const priceStr = a.type === 'local'
-    ? `<span style="font-size:11px;color:#6b7280;">ALL-IN </span>${a.priceUSD}<span style="font-size:11px;">/일</span>`
-    : `${a.priceUSD}<span style="font-size:11px;">/박</span>`;
+    ? `<span style="font-size:11px;color:#6b7280;">ALL-IN </span>₱${Number(a.pricePhpView || 0).toLocaleString()}<span style="font-size:11px;">/일</span>`
+    : `₱${Number(a.pricePhpView || 0).toLocaleString()}<span style="font-size:11px;">/박</span>`;
 
   return `    <a href="lodging-${escapeHtml(slugifyId(a.id))}.html" class="lodging-card" style="text-decoration:none;display:flex;flex-direction:column;cursor:pointer;">
        <div class="lodging-thumb">
@@ -107,7 +128,7 @@ function renderLodgingCard(a) {
        <div class="lodging-body">
          ${stars ? `<div class="lodging-stars">${stars}</div>` : ''}
          <div class="lodging-name">${escapeHtml(a.name)}</div>
-         <div class="lodging-price">${priceStr}</div>
+         <div class="lodging-price">${priceStr}${krwSpan(a.pricePhpView)}</div>
          <div class="lodging-location">📍 ${escapeHtml(a.location)}</div>
          ${tags ? `<div class="lodging-tags">${tags}</div>` : ''}
          <div class="lodging-btn">자세히 보기 →</div>
@@ -128,6 +149,7 @@ async function buildLodgingHtml(db) {
       priceUSD: a.type === 'local'
         ? Number(a.priceUSD) || 0
         : Math.ceil((Number(a.pricePHP) || 0) / appliedRate),
+      pricePhpView: Number(a.pricePHP) || Math.round((Number(a.priceUSD) || 0) * appliedRate / 100) * 100,
     }));
   if (accoms.length === 0) return '';
   return accoms.map(renderLodgingCard).join('\n');
@@ -151,6 +173,7 @@ function spliceSection(html, sectionName, newInner) {
 
 async function main() {
   const db = initFirebase();
+  await loadKrwRate(db);
 
   const [pkgHtml, lodgingHtml] = await Promise.all([
     buildPackagesHtml(db),
