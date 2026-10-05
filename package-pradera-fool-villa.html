@@ -68,6 +68,26 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 .section{background:#fff;margin:10px 12px;border-radius:14px;overflow:hidden;border:1px solid #e5e7eb;}
 .section-header{background:#1b4332;color:#fff;padding:11px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;}
 .section-body{padding:16px;}
+/* 아고다 호텔 고르기 (2026-10-05) */
+.ag-rec{display:inline-block;background:#fef3c7;color:#92400e;font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;margin-bottom:6px;}
+.ag-wrap{margin-top:18px;padding-top:16px;border-top:1px dashed #d1d5db;}
+.ag-title{font-size:15px;font-weight:800;color:#18181b;margin-bottom:2px;}
+.ag-sub{font-size:12px;color:#6b7280;margin-bottom:10px;line-height:1.6;}
+.ag-gift{background:#fff8e8;border-left:3px solid #f4a261;border-radius:0 8px 8px 0;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#92400e;line-height:1.7;}
+.ag-gift a{display:inline-block;margin-left:4px;background:#FEE500;color:#3c1e1e;font-weight:800;padding:2px 9px;border-radius:12px;text-decoration:none;white-space:nowrap;}
+.ag-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;}
+.ag-item{display:flex;gap:10px;border:1px solid #e5e7eb;border-radius:12px;padding:8px;text-decoration:none;color:inherit;background:#fff;transition:border-color .15s;}
+.ag-item:hover{border-color:#e8453c;}
+.ag-img{width:96px;height:80px;border-radius:8px;object-fit:cover;background:#f3f4f6;flex-shrink:0;}
+.ag-info{flex:1;min-width:0;display:flex;flex-direction:column;}
+.ag-name{font-size:13px;font-weight:800;color:#18181b;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.ag-meta{font-size:11px;color:#6b7280;margin-top:2px;}
+.ag-price{margin-top:auto;display:flex;align-items:flex-end;justify-content:space-between;gap:6px;}
+.ag-php{font-size:14px;font-weight:800;color:#1b4332;line-height:1.2;}
+.ag-php small{display:block;font-size:10px;font-weight:600;color:#9ca3af;}
+.ag-btn{background:#e8453c;color:#fff;font-size:11px;font-weight:800;padding:6px 9px;border-radius:7px;white-space:nowrap;}
+.ag-more{display:block;width:100%;margin-top:12px;padding:11px;border:1.5px solid #1b4332;background:#fff;color:#1b4332;font-size:13px;font-weight:800;border-radius:10px;cursor:pointer;font-family:inherit;}
+.ag-all{display:block;text-align:center;margin-top:8px;font-size:12px;color:#e8453c;font-weight:700;text-decoration:none;}
 
 /* 일정 */
 .day-row{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;}
@@ -259,12 +279,48 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 
 <!-- ⑤ 숙소 안내 -->
 <div class="section" id="accomSection" style="display:block;">
-  <div class="section-header" data-i18n="sec.accom">🏠 숙소 안내</div>
+  <div class="section-header" data-i18n="sec.accom">🏨 호텔 선택</div>
   <div class="section-body">
     <div class="photo-grid" id="accomGrid"></div>
     <div style="font-size:15px;font-weight:700;color:#18181b;margin-bottom:4px;" id="accomName">로컬 전용 숙소</div>
     <div style="font-size:12px;color:#6b7280;line-height:1.7;" id="accomDesc">프라데라 골프장 클럽하우스까지 5분 거리</div>
     <a id="accomLinkBtn" href="#" target="_blank" style="display:none;align-items:center;gap:4px;margin-top:10px;padding:7px 14px;background:#1b4332;color:#fff;font-size:12px;font-weight:700;border-radius:20px;text-decoration:none;"></a>
+    <!-- 아고다 호텔 고르기 — admin "아고다 호텔 목록 함께 보여주기"가 켜진 카드에만 표시 -->
+    <div id="agodaPick" class="ag-wrap" style="display:none;">
+      <div class="ag-title">🏨 iClark에서 아고다 호텔 예약하기</div>
+      <div class="ag-sub">클락·앙헬레스 인근 호텔입니다. <b style="color:#18181b;">아고다 공식 가격 그대로</b>, 결제도 아고다에서 안전하게 진행됩니다. <span style="color:#9ca3af;">(1박 요금 · 날짜에 따라 변동)</span></div>
+      <div class="ag-gift">🎁 <b>이 페이지에서 예약하신 분께는</b> 클락 현지 정보와 골프 부킹을 챙겨드립니다. 예약 후 <b>예약번호를 카톡으로</b> 보내주세요. <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" rel="noopener" onclick="agTrack('카톡 예약번호')">카톡 보내기 →</a></div>
+<!-- 아고다 시즌 세일 배너 (2026-10-05) — 세일 기간에만 자동 표시, 기간 끝나면 자동 숨김. 새 세일은 PROMOS에 한 줄 추가 -->
+<div id="agPromo" style="display:none;margin:0 0 14px;"></div>
+<script>
+(function(){
+  var PROMOS = [
+    { name:'아고다 10.10 세일', emoji:'🔟', off:'최대 15% 할인', start:'2026-10-01', end:'2026-10-14', path:'DoubleDaySale', img:'images/agoda-1010-sale-kr.jpg' },
+    { name:'아고다 할로윈 세일', emoji:'🎃', off:'최대 15% 할인', start:'2026-10-24', end:'2026-11-06', path:'HalloweenSale', img:'images/agoda-halloween-sale-kr.jpg' }
+  ];
+  var now = new Date(), p = null;
+  for (var i = 0; i < PROMOS.length; i++) {
+    var s = new Date(PROMOS[i].start + 'T00:00:00+09:00'), e = new Date(PROMOS[i].end + 'T23:59:59+09:00');
+    if (now >= s && now <= e) { p = PROMOS[i]; p._end = e; break; }
+  }
+  if (!p) return;
+  var left = Math.floor((p._end - now) / 86400000), md = parseInt(p.end.slice(5,7),10) + '월 ' + parseInt(p.end.slice(8,10),10) + '일';
+  var url = 'https://www.agoda.com/ko-kr/' + p.path + '?cid=1969951';
+  var el = document.getElementById('agPromo');
+  el.innerHTML = '<a href="' + url + '" target="_blank" rel="noopener sponsored" onclick="if(window.gtag)gtag(\'event\',\'agoda_promo_click\',{promo:\'' + p.path + '\',page:location.pathname})" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:linear-gradient(120deg,#3b0764,#7c3aed 55%,#f97316);color:#fff;border-radius:14px;padding:12px;text-decoration:none;box-shadow:0 4px 14px rgba(124,58,237,.25);">'
+    + (p.img ? '<img src="' + p.img + '" alt="' + p.name + ' 공식 배너" loading="lazy" onerror="this.remove()" style="flex:1 1 300px;max-width:380px;width:100%;aspect-ratio:688/320;object-fit:cover;border-radius:10px;display:block;">' : '')
+    + '<span style="flex:1 1 220px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><span style="font-size:28px;line-height:1;">' + p.emoji + '</span>'
+    + '<span style="flex:1;min-width:180px;"><b style="display:block;font-size:15px;">' + p.name + ' 진행 중 · ' + p.off + '</b>'
+    + '<span style="font-size:12px;opacity:.9;">' + md + '까지' + (left <= 0 ? ' · <b style="color:#fde68a;">오늘 마감!</b>' : ' · <b style="color:#fde68a;">D-' + left + '</b>') + ' · 겨울 시즌 호텔 미리 잡으세요</span>'
+    + '<span style="display:block;font-size:10px;opacity:.75;margin-top:4px;">🤝 iCLARKGOLF는 아고다 공식 제휴 파트너입니다</span></span>'
+    + '<span style="background:#fff;color:#6d28d9;font-size:12px;font-weight:800;padding:8px 14px;border-radius:20px;white-space:nowrap;">세일 호텔 보기 →</span></span></a>';
+  el.style.display = 'block';
+})();
+</script>
+      <div class="ag-list" id="agodaList"></div>
+      <button type="button" class="ag-more" id="agodaMore" style="display:none;"></button>
+      <a class="ag-all" id="agodaAll" href="#" target="_blank" rel="noopener sponsored">아고다에서 클락 호텔 전체 검색하기 →</a>
+    </div>
   </div>
 </div>
 
@@ -394,7 +450,7 @@ const TRANS = {
   kr: {
     'nav.back':'← 홈으로','stat.price':'시작 가격','stat.mindays':'최소 기간','stat.pax':'인원',
     'sec.schedule':'📅 주요 일정','sec.incl':'✅ 포함 · 불포함','incl.yes':'✅ 포함','incl.no':'❌ 불포함',
-    'sec.accom':'🏠 숙소 안내','sec.training':'⛳ 전지훈련',
+    'sec.accom':'🏨 호텔 선택','sec.accomLocal':'🏠 숙소 안내','sec.training':'⛳ 전지훈련',
     'sec.price':'💰 기간별 가격','sec.detail':'📝 상세 안내','btn.kakao':'💬 카카오 문의','btn.quote':'📋 맞춤 견적',
     'mi.title':'⛳ 30초 간편 문의','mi.sub':'버튼만 선택하면, 호텔·골프 견적으로 바로 이어집니다',
     'mi.q1':'기간이 어떻게 되세요?','mi.d1':'3일','mi.d2':'4일','mi.d3':'5일','mi.d4':'7일','mi.d5':'14일',
@@ -413,7 +469,7 @@ const TRANS = {
   en: {
     'nav.back':'← Home','stat.price':'Starting Price','stat.mindays':'Min. Stay','stat.pax':'Guests',
     'sec.schedule':'📅 Key Schedule','sec.incl':'✅ Included · Excluded','incl.yes':'✅ Included','incl.no':'❌ Not Included',
-    'sec.accom':'🏠 Accommodation','sec.training':'⛳ Training Photos',
+    'sec.accom':'🏨 Hotel Selection','sec.accomLocal':'🏠 Accommodation','sec.training':'⛳ Training Photos',
     'sec.price':'💰 Pricing','sec.detail':'📝 Details','btn.kakao':'💬 KakaoTalk','btn.quote':'📋 Get a Quote',
     'mi.title':'⛳ 30-Second Inquiry','mi.sub':'Just pick your options and continue to your hotel & golf quote',
     'mi.q1':'How long will you stay?','mi.d1':'3 days','mi.d2':'4 days','mi.d3':'5 days','mi.d4':'7 days','mi.d5':'14 days',
@@ -540,6 +596,17 @@ window.render = function render(D) {
   } else {
     accomBtn.style.display = 'none';
   }
+  // 아고다 호텔 고르기 (agodaPickOff가 true인 카드만 숨김 — 필드 없는 기존 카드는 표시)
+  // 로컬숙소 카드(card1·card3)는 필드가 없으면 기본 꺼짐 — 나머지·앞으로 만들 카드는 기본 켜짐
+  window.AGODA_PICK_ON = (D.agodaPickOff === undefined) ? !['card1','card3'].includes(cardId) : !D.agodaPickOff;
+  // 아고다 목록이 꺼진 카드(로컬숙소)는 제목을 "숙소 안내"로 유지
+  document.querySelector('#accomSection .section-header').setAttribute('data-i18n', window.AGODA_PICK_ON ? 'sec.accom' : 'sec.accomLocal');
+  const recBadge = document.getElementById('accomRecBadge'); if (recBadge) recBadge.remove();
+  if (window.AGODA_PICK_ON && D.accomName) {
+    const b = document.createElement('div'); b.id = 'accomRecBadge'; b.className = 'ag-rec'; b.textContent = '⭐ 프로 추천 호텔';
+    document.getElementById('accomName').before(b);
+  }
+  if (window.AGODA_PICK_ON) loadAgodaPick(); else document.getElementById('agodaPick').style.display = 'none';
 
   // 전지훈련 사진
   renderPhotoGrid('trainingGrid', D.trainingImgs || []);
@@ -575,11 +642,77 @@ window.render = function render(D) {
     document.getElementById(id).style.display = 'block';
   });
   // 사진 없는 섹션은 숨기기
-  if (!D.accomImgs || D.accomImgs.length === 0) document.getElementById('accomSection').style.display = (D.accomName || D.accomLinkUrl) ? 'block' : 'none';
+  if (!D.accomImgs || D.accomImgs.length === 0) document.getElementById('accomSection').style.display = (D.accomName || D.accomLinkUrl || window.AGODA_PICK_ON) ? 'block' : 'none';
   if (!D.trainingImgs || D.trainingImgs.length === 0) document.getElementById('trainingSection').style.display = (D.trainingName || D.trainingDesc || D.trainingSchedule) ? 'block' : 'none';
 
   applyTranslations();
 }
+
+/* ── 아고다 호텔 고르기 (2026-10-05) — agoda-hotels.json(6시간 자동 갱신) 사용, quote.html과 같은 커미션 링크 ── */
+const AG_CID = '1969951', AG_CITY = '18875', AG_REGIONS = ['앙헬레스/클락', '마발라캇(팜팡가)'], AG_FIRST = 6;
+let agHotels = null, agExpanded = false;
+function agUrl(hid) {
+  const p = new URLSearchParams({ cid: AG_CID, currency: 'PHP', NumberofAdults: '2', NumberofChildren: '0', Rooms: '1' });
+  if (hid) { p.set('hid', hid); p.set('pcs', '6'); } else { p.set('city', AG_CITY); p.set('pcs', '1'); }
+  return 'https://www.agoda.com/ko-kr/partners/partnersearch.aspx?' + p.toString();
+}
+function agEsc(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+window.agTrack = function(name) { if (window.gtag) gtag('event', 'package_agoda_click', { hotel: name, card: (typeof cardId !== 'undefined' ? cardId : '') }); };
+async function loadAgodaPick() {
+  const wrap = document.getElementById('agodaPick');
+  document.getElementById('agodaAll').href = agUrl('');
+  document.getElementById('agodaAll').onclick = () => agTrack('전체 검색');
+  if (!agHotels) {
+    try {
+      const j = await (await fetch('agoda-hotels.json?t=' + Date.now())).json();
+      const seen = new Set();
+      agHotels = (j.hotels || [])
+        .filter(h => Number(h.price) > 0 && AG_REGIONS.includes(h.region))
+        .filter(h => !seen.has(h.hotelId) && seen.add(h.hotelId))
+        .sort((a, b) => Number(b.price) - Number(a.price));
+    } catch (e) { console.warn('아고다 호텔 목록 불러오기 실패', e); agHotels = []; }
+  }
+  if (!window.AGODA_PICK_ON) return;
+  wrap.style.display = 'block';
+  renderAgodaPick();
+}
+function renderAgodaPick() {
+  const list = document.getElementById('agodaList'), more = document.getElementById('agodaMore');
+  if (!agHotels.length) { list.innerHTML = ''; more.style.display = 'none'; return; }
+  const k = window.KRW_PER_PHP;
+  // 처음 보여줄 개수를 한 줄 칸 수의 배수로 맞춰 빈칸이 생기지 않게 함 (모바일 1칸=6개, PC 5칸=10개, 4칸=8개)
+  const cols = Math.max(1, getComputedStyle(list).gridTemplateColumns.split(' ').filter(Boolean).length);
+  const first = Math.min(agHotels.length, Math.ceil(AG_FIRST / cols) * cols);
+  const shown = agExpanded ? agHotels : agHotels.slice(0, first);
+  list.innerHTML = shown.map(h => {
+    const php = Math.round(Number(h.price));
+    const krw = k ? '<small>약 ₩' + (Math.ceil(php * k / 1000) * 1000).toLocaleString() + '</small>' : '';
+    const star = Number(h.starRating) > 0 ? '★' + Number(h.starRating) : '';
+    const rv = Number(h.reviewScore) > 0 ? '평점 ' + Number(h.reviewScore).toFixed(1) : '';
+    const img = String(h.image || '').replace(/^http:\/\//, 'https://');
+    return `<a class="ag-item" href="${agEsc(agUrl(h.hotelId))}" target="_blank" rel="noopener sponsored" data-n="${agEsc(h.name)}" onclick="agTrack(this.dataset.n)">
+      <img class="ag-img" src="${agEsc(img)}" alt="${agEsc(h.name)}" loading="lazy" onerror="this.style.visibility='hidden'">
+      <div class="ag-info">
+        <div class="ag-name">${agEsc(h.name)}</div>
+        <div class="ag-meta">${[star, rv].filter(Boolean).join(' · ')}</div>
+        <div class="ag-price"><div class="ag-php">₱${php.toLocaleString()}${krw}</div><span class="ag-btn">최저가 확인·예약 →</span></div>
+      </div></a>`;
+  }).join('');
+  if (agHotels.length > first) {
+    more.style.display = 'block';
+    more.textContent = agExpanded ? '접기 ▲' : `호텔 모두 보기 (전체 ${agHotels.length}개) ▼`;
+    more.onclick = () => { agExpanded = !agExpanded; renderAgodaPick(); if (!agExpanded) document.getElementById('agodaPick').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+  } else more.style.display = 'none';
+}
+
+// 화면 폭이 바뀌어 한 줄 칸 수가 달라지면 다시 맞춤
+let agCols = 0;
+window.addEventListener('resize', () => {
+  const list = document.getElementById('agodaList');
+  if (!agHotels || !agHotels.length || agExpanded || !list.offsetParent) return;
+  const c = getComputedStyle(list).gridTemplateColumns.split(' ').filter(Boolean).length;
+  if (c !== agCols) { agCols = c; renderAgodaPick(); }
+});
 
 function renderPhotoGrid(containerId, urls) {
   const grid = document.getElementById(containerId);
