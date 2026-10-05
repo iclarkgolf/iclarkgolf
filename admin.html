@@ -1207,9 +1207,9 @@ window.adminLogout = function() {
         </div>
       </div>
 
-      <!-- 숙소 안내 (호텔 등 — package-detail.html "숙소 안내" 섹션에 표시됨) -->
+      <!-- 호텔 선택 (호텔 등 — package-detail.html "호텔 선택" 섹션에 표시됨) -->
       <div style="background:#f0f7f4;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #c8edd9;">
-        <div style="font-size:13px;font-weight:800;color:#085041;margin-bottom:10px;">🏠 숙소 안내</div>
+        <div style="font-size:13px;font-weight:800;color:#085041;margin-bottom:10px;">🏨 호텔 선택</div>
         <div style="display:grid;gap:10px;">
           <input id="ce-accom-name" type="text" placeholder="숙소 이름 (예: 망고 스위트 호텔)"
             style="width:100%;padding:10px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;box-sizing:border-box;font-family:'Nunito',sans-serif;">
@@ -1222,6 +1222,10 @@ window.adminLogout = function() {
             <input id="ce-accom-link-text" type="text" placeholder="버튼 문구 (예: 📍 아고다에서 상세 정보·후기 보기)"
               style="width:100%;padding:9px 12px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;box-sizing:border-box;font-family:'Nunito',sans-serif;">
           </div>
+          <label style="display:flex;align-items:flex-start;gap:8px;border-top:1px dashed #c8edd9;padding-top:10px;cursor:pointer;">
+            <input id="ce-agoda-pick" type="checkbox" checked style="width:18px;height:18px;margin-top:1px;accent-color:#1D9E75;">
+            <span style="font-size:12px;color:#085041;line-height:1.5;"><b>🏨 아고다 호텔 목록 함께 보여주기</b><br><span style="color:#6b7280;">켜두면 위 추천 호텔 아래에 "다른 호텔 고르기" 목록이 자동으로 나옵니다 (아고다 커미션 링크). 로컬숙소 패키지(card1·card3)는 기본으로 꺼져 있습니다.</span></span>
+          </label>
         </div>
       </div>
 
@@ -2376,6 +2380,7 @@ function openCardEditor(cardId) {
     ceRenderIncl('no',  []);
     ceRenderPrices([]);
     ['ce-accom-name','ce-accom-desc','ce-accom-link-url','ce-accom-link-text','ce-local-name','ce-local-desc','ce-training-name','ce-training-desc'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('ce-agoda-pick').checked = true;
     updateCePreview();
     return;
   }
@@ -2423,6 +2428,7 @@ function openCardEditor(cardId) {
         document.getElementById('ce-accom-desc').value     = c.accomDesc    || '';
         document.getElementById('ce-accom-link-url').value  = c.accomLinkUrl  || '';
         document.getElementById('ce-accom-link-text').value = c.accomLinkText || '';
+        document.getElementById('ce-agoda-pick').checked = (c.agodaPickOff === undefined) ? !['card1','card3'].includes(cardId) : !c.agodaPickOff; // 필드 없음: 로컬숙소 card1·card3만 꺼짐, 나머지·새 카드는 켜짐
         document.getElementById('ce-local-name').value    = c.localName    || '';
         document.getElementById('ce-local-desc').value    = c.localDesc    || '';
         document.getElementById('ce-training-name').value = c.trainingName || '';
@@ -2523,6 +2529,7 @@ async function saveCard() {
     accomDesc:    accomDescVal,
     accomLinkUrl:  accomLinkUrlVal,
     accomLinkText: accomLinkTextVal,
+    agodaPickOff: !document.getElementById('ce-agoda-pick').checked,
     localName:    localNameVal,
     localDesc:    localDescVal,
     trainingName: trainingNameVal,
