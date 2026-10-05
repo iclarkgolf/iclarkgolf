@@ -5572,6 +5572,7 @@ function bkRenderList(){
     if (b.status === 'booked') act += `<button class="bk-btn purple" onclick="bkPay('${b.id}')">5️⃣ 송금 완료 입력</button>`;
     if (b.status === 'voucher') act += `<button class="bk-btn purple" onclick="bkDeliver('${b.id}')">6️⃣ 고객에게 바우처 보내기</button>`;
     if (b.voucherId) act += `<button class="bk-btn sub" onclick="bkCopy(bkCustomerMsg('${b.id}'))">📋 고객용 메시지 복사</button><a class="bk-btn sub" style="text-decoration:none;" target="_blank" href="voucher.html?v=${encodeURIComponent(b.voucherId)}">🎫 바우처 보기</a>`;
+    if (!['booked','paid','voucher','done','cancelled'].includes(b.status)) act += `<button class="bk-btn" style="background:#1e3a8a;" onclick="bkPreConfirm('${b.id}')">📄 ${b.custConfirm ? '고객 확정서 다시 열기' : '고객 확정서 먼저 보내기 (현지 확정 전)'}</button>`;
     act += `<button class="bk-btn" style="background:#0ea5e9;" onclick="bkSmsOpen('${b.id}')">📱 고객에게 안내 보내기</button>`;
     act += `<button class="bk-btn sub" onclick="bkOpenEdit('${b.id}')">✏️ 수정</button>`;
     if (!['done','cancelled'].includes(b.status)) act += `<button class="bk-btn warn" onclick="bkCancel('${b.id}')">취소</button>`;
@@ -5586,6 +5587,7 @@ function bkRenderList(){
       ${bkRoundsTable(b, ['booked','paid','voucher','done'].includes(b.status))}
       ${b.noteEn ? `<div class="bk-box">✉️ 파트너에게: ${bkEsc(b.noteEn)}${b.noteKo ? `<br><span style="color:#6b7280;font-size:12px;">(원문: ${bkEsc(b.noteKo)})</span>` : ''}</div>` : ''}
       ${b.memo ? `<div class="bk-box" style="background:#f9fafb;">🔒 내부 메모: ${bkEsc(b.memo)}</div>` : ''}
+      ${b.custConfirm ? `<div class="bk-box" style="background:#eef2ff;border-left:4px solid #1e3a8a;">📄 <b>고객 확정서 발행됨</b> (현지 확정 전) · ${bkEsc((b.custConfirm.at || '').slice(0,10))}${b.custConfirm.link ? ` · <a href="${bkEsc(b.custConfirm.link)}" target="_blank">확정서 보기</a>` : ''}<br><span style="font-size:12px;color:#6b7280;">고객 입금은 먼저 받고, 현지 골프장이 예약을 열면 파트너 확정 → 송금 → 바우처 순서로 그대로 진행하세요.</span></div>` : ''}
       ${pd.holdNote ? `<div class="bk-box">🕒 예약대기 접수 메모(파트너): ${bkEsc(pd.holdNote)}</div>` : ''}
       ${pd.amountPhp ? `<div class="bk-box yellow">💰 파트너 청구 금액: <b>₱${Number(pd.amountPhp).toLocaleString()}</b>${pd.note ? '<br>파트너 메모: ' + bkEsc(pd.note) : ''}</div>` : ''}
       ${pay.amountPhp ? `<div class="bk-box green">✅ 송금: ₱${Number(pay.amountPhp).toLocaleString()} · ${bkEsc(pay.date || '')} · ${bkEsc(pay.method || '')} ${bkEsc(pay.ref || '')}</div>` : ''}
@@ -5792,6 +5794,73 @@ async function bkCancel(id){
   if (!confirm('이 부킹을 취소 처리할까요? (파트너 화면에도 "Cancelled"로 표시됩니다)')) return;
   try { await bkUpdate(id, { status: 'cancelled' }, 'Booking cancelled'); } catch(e) { alert('실패: ' + e.message); }
 }
+
+/* ── 📄 고객 확정서 먼저 보내기 (2026-10-05) ──
+   성수기 골프장은 예약을 늦게 엶 → 파트너 확정(booked) 전이라도 PJ가 고객에게 확정서를 먼저 발행해 입금을 받을 수 있게 함.
+   기존 견적서가 있으면 그대로 불러와 "확정서"로 바꾸고, 없으면 부킹 정보로 새로 채움. 실제 저장은 견적서 탭의 기존 "저장 & 링크 만들기" 버튼 그대로 사용.
+   저장이 끝나면(링크 생성) 이 부킹에 custConfirm 기록 → 부킹 카드에 "고객 확정서 발행됨" 표시. 파트너 화면·단계(status)는 건드리지 않음. */
+const BK_PRECONFIRM_NOTE = '※ 성수기 골프장 예약(티타임)은 골프장 예약이 열리는 대로 순서대로 진행됩니다. 원하시는 시간이 어려울 경우 가장 가까운 시간으로 배정해 드리며, 진행 상황은 카카오톡으로 바로 알려드립니다. 만약 해당 골프장 예약 자체가 불가능할 경우, 그 라운드 금액은 전액 환불하거나 고객님과 상의해 다른 골프장으로 변경해 드립니다.';
+let _bkPreFor = null, _bkPreWatch = null;
+async function bkPreConfirm(id){
+  const b = _bkDocs.find(x => x.id === id); if (!b) return;
+  const name = (b.nameKo || '').trim();
+  if (!name) { alert('고객 이름(한글)이 비어 있습니다. ✏️ 수정에서 고객 이름을 먼저 넣어 주세요.'); return; }
+  if (!b.custConfirm && !confirm(name + '님에게 현지 확정 전에 확정서를 먼저 보냅니다.\n\n견적서 작성 화면으로 이동해 "확정서"로 바꿔 드립니다.\n입금 기한·금액을 확인한 뒤 맨 아래 "견적서 저장 & 링크 만들기"를 누르면 발행됩니다.')) return;
+  let q = null;
+  try {
+    const o = await q2Fb();
+    const snap = await o.fs.getDocs(o.fs.query(o.fs.collection(o.db, 'quotes'), o.fs.where('clientName', '==', name)));
+    if (!snap.empty) q = snap.docs.map(d => d.data()).sort((x, y) => String(y.createdAt || '').localeCompare(String(x.createdAt || '')))[0];
+  } catch(e) { console.warn('견적서 찾기 실패:', e); }
+  const banner = '<div style="font-weight:800;color:#1e3a8a;">📄 ' + bkEsc(name) + '님 확정서 먼저 발행 (현지 확정 전)</div><div style="font-size:12px;color:#374151;margin-top:4px;line-height:1.7;">'
+    + (q && q.version === 2 ? '기존 견적서(' + bkEsc(q.quoteNo || '') + ')를 그대로 불러와 <b>확정서</b>로 바꿨습니다. 금액은 견적서와 같습니다.' : '저장된 견적서가 없어 부킹 정보(이름·날짜·인원·골프장)로 채웠습니다. 숙소·차량 등은 직접 확인해 주세요.')
+    + '<br>① <b>입금 기한</b>을 넣고 ② Remarks의 티타임 안내 문구를 확인한 뒤 ③ 맨 아래 <b>"견적서 저장 &amp; 링크 만들기"</b>를 누르세요. 링크가 만들어지면 부킹 카드에 자동으로 기록됩니다.</div>';
+  let p;
+  if (q && q.version === 2) {
+    p = { clientName: q.clientName, contact: q.contact, checkIn: q.checkIn !== '-' ? q.checkIn : '', checkOut: q.checkOut !== '-' ? q.checkOut : '', nights: q.nights, golfers: q.golfers, nonGolfers: q.nonGolfers, season: q.season, packageId: q.itineraryPackageId, remarks: q.remarks,
+      hotelId: q.hotel ? q.hotel.id : '', hotelName: q.hotel ? q.hotel.name : '', hotelPhp: q.hotel ? q.hotel.php : 0, hotelNights: q.hotel ? q.hotel.nights : 0,
+      golf: (q.golf || []).map(x => ({ id: x.id, name: x.name, rounds: x.rounds, php: x.php })),
+      items: (q.items || []).filter(x => !x.custom).map(x => ({ id: x.id, name: x.name, qty: x.qty, php: x.php, pax: x.pax })),
+      custom: (q.items || []).filter(x => x.custom).map(x => ({ section: x.section, sectionLabel: x.sectionLabel, name: x.name, php: x.php, qty: x.qty, pax: x.pax })) };
+  } else {
+    const cnt = {};
+    (b.rounds || []).forEach(r => { if (r.courseId) cnt[r.courseId] = (cnt[r.courseId] || 0) + 1; });
+    p = { clientName: name, contact: b.contact || '', checkIn: b.arrDate || '', checkOut: b.depDate || '', golfers: b.golfers || 1,
+      golf: Object.keys(cnt).map(k => ({ id: k, rounds: cnt[k] })) };
+  }
+  p.bannerHtml = banner;
+  await q2Prefill(p);
+  document.getElementById('q2No').value = (q && q.quoteNo) ? q.quoteNo : 'CF-' + String(b.id).replace(/^ICG-/, '');
+  document.getElementById('q2Doctype').value = '확정서';
+  if (q && q.payDeadline) document.getElementById('q2PayDue').value = q.payDeadline;
+  const rm = document.getElementById('q2Remarks');
+  if (rm.value.indexOf('성수기 골프장 예약(티타임)') < 0) rm.value = (rm.value.trim() ? rm.value.trim() + '\n\n' : '') + BK_PRECONFIRM_NOTE;
+  _bkPreFor = id;
+  if (typeof showToast === 'function') showToast('📄 확정서로 바꿨어요 — 입금 기한 확인 후 저장하세요', 'info');
+}
+// 견적서 탭의 기존 저장 버튼(qfSave)은 그대로 두고, 저장 후 링크가 만들어지면 부킹에 기록만 남김
+(function(){
+  if (typeof qfSave !== 'function' || qfSave._bkWrapped) return;
+  const orig = qfSave;
+  const wrapped = function(){
+    const forId = _bkPreFor, isConfirm = /확정/.test((document.getElementById('q2Doctype') || {}).value || '');
+    orig.apply(this, arguments);
+    if (!forId || !isConfirm) return;
+    if (_bkPreWatch) clearInterval(_bkPreWatch);
+    let n = 0;
+    _bkPreWatch = setInterval(async () => {
+      n++;
+      const box = document.getElementById('qfLinkBox'), url = (document.getElementById('qfLinkUrl') || {}).value || '';
+      if (box && box.style.display === 'block' && url) {
+        clearInterval(_bkPreWatch); _bkPreWatch = null; _bkPreFor = null;
+        try { await bkUpdate(forId, { custConfirm: { at: new Date().toISOString(), link: url, quoteNo: document.getElementById('q2No').value } }, '고객 확정서 먼저 발행 (현지 예약 오픈 전)'); if (typeof showToast === 'function') showToast('✅ 부킹 카드에 "고객 확정서 발행됨" 기록'); }
+        catch(e) { console.warn('부킹 기록 실패:', e); }
+      } else if (n > 60) { clearInterval(_bkPreWatch); _bkPreWatch = null; }
+    }, 500);
+  };
+  wrapped._bkWrapped = true;
+  window.qfSave = wrapped;
+})();
 
 /* ── 📱 고객 안내 문자 (휴대폰 문자앱 열기 / 복사) ── */
 let _bkSmsId = null, _bkSmsParsed = null;
