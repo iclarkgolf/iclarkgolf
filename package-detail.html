@@ -60,7 +60,9 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 .ag-rec{display:inline-block;background:#fef3c7;color:#92400e;font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;margin-bottom:6px;}
 .ag-wrap{margin-top:18px;padding-top:16px;border-top:1px dashed #d1d5db;}
 .ag-title{font-size:15px;font-weight:800;color:#18181b;margin-bottom:2px;}
-.ag-sub{font-size:12px;color:#6b7280;margin-bottom:12px;line-height:1.6;}
+.ag-sub{font-size:12px;color:#6b7280;margin-bottom:10px;line-height:1.6;}
+.ag-gift{background:#fff8e8;border-left:3px solid #f4a261;border-radius:0 8px 8px 0;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#92400e;line-height:1.7;}
+.ag-gift a{display:inline-block;margin-left:4px;background:#FEE500;color:#3c1e1e;font-weight:800;padding:2px 9px;border-radius:12px;text-decoration:none;white-space:nowrap;}
 .ag-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;}
 .ag-item{display:flex;gap:10px;border:1px solid #e5e7eb;border-radius:12px;padding:8px;text-decoration:none;color:inherit;background:#fff;transition:border-color .15s;}
 .ag-item:hover{border-color:#e8453c;}
@@ -273,8 +275,34 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
     <a id="accomLinkBtn" href="#" target="_blank" style="display:none;align-items:center;gap:4px;margin-top:10px;padding:7px 14px;background:#1b4332;color:#fff;font-size:12px;font-weight:700;border-radius:20px;text-decoration:none;"></a>
     <!-- 아고다 호텔 고르기 — admin "아고다 호텔 목록 함께 보여주기"가 켜진 카드에만 표시 -->
     <div id="agodaPick" class="ag-wrap" style="display:none;">
-      <div class="ag-title">🔍 다른 호텔도 직접 고르실 수 있어요</div>
-      <div class="ag-sub">클락·앙헬레스 인근 호텔입니다. 아고다에서 원하는 호텔을 예약하시고, 골프·차량·레슨은 맞춤견적으로 문의해 주세요. <span style="color:#9ca3af;">(1박 요금 · 날짜에 따라 변동)</span></div>
+      <div class="ag-title">🏨 iClark에서 아고다 호텔 예약하기</div>
+      <div class="ag-sub">클락·앙헬레스 인근 호텔입니다. <b style="color:#18181b;">아고다 공식 가격 그대로</b>, 결제도 아고다에서 안전하게 진행됩니다. <span style="color:#9ca3af;">(1박 요금 · 날짜에 따라 변동)</span></div>
+      <div class="ag-gift">🎁 <b>이 페이지에서 예약하신 분께는</b> 클락 현지 정보와 골프 부킹을 챙겨드립니다. 예약 후 <b>예약번호를 카톡으로</b> 보내주세요. <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" rel="noopener" onclick="agTrack('카톡 예약번호')">카톡 보내기 →</a></div>
+<!-- 아고다 시즌 세일 배너 (2026-10-05) — 세일 기간에만 자동 표시, 기간 끝나면 자동 숨김. 새 세일은 PROMOS에 한 줄 추가 -->
+<div id="agPromo" style="display:none;margin:0 0 14px;"></div>
+<script>
+(function(){
+  var PROMOS = [
+    { name:'아고다 10.10 세일', emoji:'🔟', off:'최대 15% 할인', start:'2026-10-01', end:'2026-10-14', path:'DoubleDaySale' },
+    { name:'아고다 할로윈 세일', emoji:'🎃', off:'최대 15% 할인', start:'2026-10-24', end:'2026-11-06', path:'HalloweenSale' }
+  ];
+  var now = new Date(), p = null;
+  for (var i = 0; i < PROMOS.length; i++) {
+    var s = new Date(PROMOS[i].start + 'T00:00:00+09:00'), e = new Date(PROMOS[i].end + 'T23:59:59+09:00');
+    if (now >= s && now <= e) { p = PROMOS[i]; p._end = e; break; }
+  }
+  if (!p) return;
+  var left = Math.floor((p._end - now) / 86400000), md = parseInt(p.end.slice(5,7),10) + '월 ' + parseInt(p.end.slice(8,10),10) + '일';
+  var url = 'https://www.agoda.com/ko-kr/' + p.path + '?cid=1969951';
+  var el = document.getElementById('agPromo');
+  el.innerHTML = '<a href="' + url + '" target="_blank" rel="noopener sponsored" onclick="if(window.gtag)gtag(\'event\',\'agoda_promo_click\',{promo:\'' + p.path + '\',page:location.pathname})" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:linear-gradient(120deg,#3b0764,#7c3aed 55%,#f97316);color:#fff;border-radius:14px;padding:14px 16px;text-decoration:none;box-shadow:0 4px 14px rgba(124,58,237,.25);">'
+    + '<span style="font-size:28px;line-height:1;">' + p.emoji + '</span>'
+    + '<span style="flex:1;min-width:180px;"><b style="display:block;font-size:15px;">' + p.name + ' 진행 중 · ' + p.off + '</b>'
+    + '<span style="font-size:12px;opacity:.9;">' + md + '까지' + (left <= 0 ? ' · <b style="color:#fde68a;">오늘 마감!</b>' : ' · <b style="color:#fde68a;">D-' + left + '</b>') + ' · 겨울 시즌 호텔 미리 잡으세요</span></span>'
+    + '<span style="background:#fff;color:#6d28d9;font-size:12px;font-weight:800;padding:8px 14px;border-radius:20px;white-space:nowrap;">세일 호텔 보기 →</span></a>';
+  el.style.display = 'block';
+})();
+</script>
       <div class="ag-list" id="agodaList"></div>
       <button type="button" class="ag-more" id="agodaMore" style="display:none;"></button>
       <a class="ag-all" id="agodaAll" href="#" target="_blank" rel="noopener sponsored">아고다에서 클락 호텔 전체 검색하기 →</a>
@@ -653,7 +681,7 @@ function renderAgodaPick() {
       <div class="ag-info">
         <div class="ag-name">${agEsc(h.name)}</div>
         <div class="ag-meta">${[star, rv].filter(Boolean).join(' · ')}</div>
-        <div class="ag-price"><div class="ag-php">₱${php.toLocaleString()}${krw}</div><span class="ag-btn">아고다 예약 →</span></div>
+        <div class="ag-price"><div class="ag-php">₱${php.toLocaleString()}${krw}</div><span class="ag-btn">최저가 확인·예약 →</span></div>
       </div></a>`;
   }).join('');
   if (agHotels.length > first) {

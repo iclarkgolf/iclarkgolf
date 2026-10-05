@@ -1421,6 +1421,31 @@ try {
     <h2 class="sec-title">🏨 추천 숙소</h2>
     <span style="background:linear-gradient(135deg,#f59e0b,#ea580c);color:#fff;font-size:11px;font-weight:800;padding:5px 12px;border-radius:100px;white-space:nowrap;">아고다 실시간 연동</span>
   </div>
+<!-- 아고다 시즌 세일 배너 (2026-10-05) — 세일 기간에만 자동 표시, 기간 끝나면 자동 숨김. 새 세일은 PROMOS에 한 줄 추가 -->
+<div id="agPromo" style="display:none;margin:0 0 14px;"></div>
+<script>
+(function(){
+  var PROMOS = [
+    { name:'아고다 10.10 세일', emoji:'🔟', off:'최대 15% 할인', start:'2026-10-01', end:'2026-10-14', path:'DoubleDaySale' },
+    { name:'아고다 할로윈 세일', emoji:'🎃', off:'최대 15% 할인', start:'2026-10-24', end:'2026-11-06', path:'HalloweenSale' }
+  ];
+  var now = new Date(), p = null;
+  for (var i = 0; i < PROMOS.length; i++) {
+    var s = new Date(PROMOS[i].start + 'T00:00:00+09:00'), e = new Date(PROMOS[i].end + 'T23:59:59+09:00');
+    if (now >= s && now <= e) { p = PROMOS[i]; p._end = e; break; }
+  }
+  if (!p) return;
+  var left = Math.floor((p._end - now) / 86400000), md = parseInt(p.end.slice(5,7),10) + '월 ' + parseInt(p.end.slice(8,10),10) + '일';
+  var url = 'https://www.agoda.com/ko-kr/' + p.path + '?cid=1969951';
+  var el = document.getElementById('agPromo');
+  el.innerHTML = '<a href="' + url + '" target="_blank" rel="noopener sponsored" onclick="if(window.gtag)gtag(\'event\',\'agoda_promo_click\',{promo:\'' + p.path + '\',page:location.pathname})" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:linear-gradient(120deg,#3b0764,#7c3aed 55%,#f97316);color:#fff;border-radius:14px;padding:14px 16px;text-decoration:none;box-shadow:0 4px 14px rgba(124,58,237,.25);">'
+    + '<span style="font-size:28px;line-height:1;">' + p.emoji + '</span>'
+    + '<span style="flex:1;min-width:180px;"><b style="display:block;font-size:15px;">' + p.name + ' 진행 중 · ' + p.off + '</b>'
+    + '<span style="font-size:12px;opacity:.9;">' + md + '까지' + (left <= 0 ? ' · <b style="color:#fde68a;">오늘 마감!</b>' : ' · <b style="color:#fde68a;">D-' + left + '</b>') + ' · 겨울 시즌 호텔 미리 잡으세요</span></span>'
+    + '<span style="background:#fff;color:#6d28d9;font-size:12px;font-weight:800;padding:8px 14px;border-radius:20px;white-space:nowrap;">세일 호텔 보기 →</span></a>';
+  el.style.display = 'block';
+})();
+</script>
   <div class="lodging-search-wrap">
     <input type="text" id="lodging-search" class="lodging-search-input" placeholder="🔍 예) 수빅이라고 쳐보세요 (클락·팜팡가·타를락·바타안도 검색 가능)" autocomplete="off">
   </div>
