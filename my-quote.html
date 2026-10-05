@@ -99,6 +99,14 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
 .print-btn{flex:1;padding:14px;background:var(--green);color:#fff;border:none;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
 .kakao-btn{flex:1;padding:14px;background:#FEE500;color:#000;border:none;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
 .loading{text-align:center;padding:60px;font-size:16px;color:var(--gray);}
+/* 확정서 전용 색상 (2026-10-05) — 견적서(초록)와 한눈에 구분되도록 남색 계열로 전체 색을 바꿈 */
+#quotePage.is-confirm{--green:#1e3a8a;--green-mid:#1d4ed8;--dark:#0b1736;}
+#quotePage.is-confirm tbody tr.subtotal td,#quotePage.is-confirm .pay-amount{background:#eef2ff;}
+#quotePage.is-confirm .inc-box.yes{background:#eef2ff;}
+#quotePage.is-confirm .itin-table td,#quotePage.is-confirm .pay-amount{border-color:#c7d2fe;}
+.confirm-stamp{display:none;margin-top:10px;padding:5px 12px;border:2px solid #fbbf24;color:#fbbf24;border-radius:6px;font-size:12px;font-weight:900;letter-spacing:2px;transform:rotate(-3deg);width:max-content;}
+#quotePage.is-confirm .confirm-stamp{display:block;}
+#quotePage{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 /* 송금 안내 (확정서 전용) */
 .pay-section{margin:0 48px 28px;border:2px solid var(--green);border-radius:12px;overflow:hidden;}
 .pay-head{background:var(--green);color:#fff;padding:12px 18px;font-size:14px;font-weight:800;letter-spacing:1px;}
@@ -215,6 +223,7 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
     <div>
       <div class="logo">i<span>Clark</span> Golf</div>
       <div id="out-docType" style="font-family:'Noto Sans KR',sans-serif;font-size:22px;font-weight:900;color:var(--gold);letter-spacing:4px;margin-top:6px;"></div>
+      <div class="confirm-stamp">✔ CONFIRMED · 예약 확정</div>
     </div>
     <div class="header-right">
       <div class="label" id="out-noLabel">QUOTATION NO.</div>
@@ -483,6 +492,7 @@ function renderQuote(data) {
   const createdDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'}) : '-';
 
   document.getElementById('out-docType').textContent  = data.docType || '견적서';
+  document.getElementById('quotePage').classList.toggle('is-confirm', isConfirm(data)); // 확정서면 남색 계열로
   document.getElementById('out-noLabel').textContent  = isConfirm(data) ? 'CONFIRMATION NO.' : 'QUOTATION NO.';
   document.getElementById('out-total-label').textContent = isConfirm(data) ? '확정 금액' : '견적 합계';
   document.title = 'iCLARKGOLF 내 ' + (data.docType || '견적서') + ' 확인';
