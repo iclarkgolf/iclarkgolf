@@ -159,7 +159,7 @@ function card(b){
   const rows = (b.rounds || []).map((r, i) => {
     const pr = (pd.rounds || [])[i] || {};
     return `<tr><td data-l="Date">${esc(r.date)}</td><td data-l="Course">${esc(r.courseEn || r.courseKo)}</td><td data-l="Players">${r.players || b.golfers}</td><td data-l="Preferred">${esc(TIME[r.time] || 'Any time')}</td>
-      ${showTimes ? `<td data-l="Tee time">${editRounds ? `<input id="tt-${b.id}-${i}" placeholder="07:30" value="${esc(pr.teeTime||'')}">` : `<b>${esc(pr.teeTime || '-')}</b>`}</td>
+      ${showTimes ? `<td data-l="Tee time">${editRounds ? `<input id="tt-${b.id}-${i}" placeholder="07:30 or 10:00–11:00" value="${esc(pr.teeTime||'')}">` : `<b>${esc(pr.teeTime || '-')}</b>`}</td>
       <td data-l="Conf. no.">${editRounds ? `<input id="cf-${b.id}-${i}" placeholder="optional" value="${esc(pr.confNo||'')}">` : esc(pr.confNo || '-')}</td>` : ''}</tr>`;
   }).join('');
   let action = '';
@@ -169,7 +169,8 @@ function card(b){
     <div style="margin-top:12px;"><button class="btn green" onclick="acceptHold('${b.id}')">✅ Accept hold (waitlist)</button></div><div class="msg" id="m-${b.id}"></div>`;
   if (b.status === 'hold') action = `<div class="box note">🕒 On hold. iCLARKGOLF will send the reservation details (passport name and time preference) when the guest confirms.${pd.holdNote ? '<br>Your note: ' + esc(pd.holdNote) : ''}</div>`;
   if (b.status === 'reserve') action = `
-    <div class="box warn">📝 <b>Reservation request</b> — lead guest passport name: <b>${esc(b.passportName || b.nameEn)}</b>. Please arrange the tee times and tell us the total cost.</div>
+    <div class="box warn">📝 <b>Reservation request</b> — lead guest passport name: <b>${esc(b.passportName || b.nameEn)}</b>. Please arrange the tee times and tell us the total cost.
+      <div style="margin-top:8px;padding:8px 10px;background:#fff;border:2px solid #f59e0b;border-radius:8px;color:#92400e;font-weight:700;line-height:1.6;">⏰ <b>Important:</b> If you cannot confirm the exact tee time, please enter the <u>available time</u> instead (e.g. "around 10:30" or "11:00–12:00").</div></div>
     <label for="amt-${b.id}">Total amount due (PHP) *</label><input id="amt-${b.id}" inputmode="decimal" placeholder="e.g. 12400" value="${esc(pd.amountPhp||'')}">
     <label for="pn-${b.id}">Note to iCLARKGOLF (optional)</label><textarea id="pn-${b.id}" rows="2" placeholder="e.g. Caddy fee paid on site">${esc(pd.note||'')}</textarea>
     <div style="margin-top:12px;"><button class="btn green" onclick="confirmBooking('${b.id}')">✅ Confirm reservation</button></div><div class="msg" id="m-${b.id}"></div>`;
@@ -218,7 +219,7 @@ window.confirmBooking = async id => {
   const amt = Number(String($('amt-' + id).value).replace(/[^0-9.]/g, ''));
   if (!amt) { flash(m, false, 'Please enter the total amount due (PHP).'); return; }
   const rounds = (b.rounds || []).map((r, i) => ({ teeTime: $('tt-' + id + '-' + i).value.trim(), confNo: $('cf-' + id + '-' + i).value.trim() }));
-  if (rounds.some(r => !r.teeTime)) { flash(m, false, 'Please enter a tee time for every round.'); return; }
+  if (rounds.some(r => !r.teeTime)) { flash(m, false, 'Please enter a tee time (or the available time) for every round.'); return; }
   try {
     await save(id, { status:'booked', partner: { ...(b.partner||{}), rounds, amountPhp: amt, note: $('pn-' + id).value.trim(), bookedAt: new Date().toISOString() } }, 'Reservation confirmed · PHP ' + amt.toLocaleString());
     notifyPJ('예약 완료·경비 고지 ' + id, { '고객': b.nameEn, '티타임': (b.rounds||[]).map((r,i) => r.date + ' ' + (r.courseEn||'') + ' ' + rounds[i].teeTime).join(' / '), '청구 금액': 'PHP ' + amt.toLocaleString() });
