@@ -638,7 +638,10 @@ function renderAgodaPick() {
   const list = document.getElementById('agodaList'), more = document.getElementById('agodaMore');
   if (!agHotels.length) { list.innerHTML = ''; more.style.display = 'none'; return; }
   const k = window.KRW_PER_PHP;
-  const shown = agExpanded ? agHotels : agHotels.slice(0, AG_FIRST);
+  // 처음 보여줄 개수를 한 줄 칸 수의 배수로 맞춰 빈칸이 생기지 않게 함 (모바일 1칸=6개, PC 5칸=10개, 4칸=8개)
+  const cols = Math.max(1, getComputedStyle(list).gridTemplateColumns.split(' ').filter(Boolean).length);
+  const first = Math.min(agHotels.length, Math.ceil(AG_FIRST / cols) * cols);
+  const shown = agExpanded ? agHotels : agHotels.slice(0, first);
   list.innerHTML = shown.map(h => {
     const php = Math.round(Number(h.price));
     const krw = k ? '<small>약 ₩' + (Math.ceil(php * k / 1000) * 1000).toLocaleString() + '</small>' : '';
@@ -653,12 +656,21 @@ function renderAgodaPick() {
         <div class="ag-price"><div class="ag-php">₱${php.toLocaleString()}${krw}</div><span class="ag-btn">아고다 예약 →</span></div>
       </div></a>`;
   }).join('');
-  if (agHotels.length > AG_FIRST) {
+  if (agHotels.length > first) {
     more.style.display = 'block';
     more.textContent = agExpanded ? '접기 ▲' : `호텔 모두 보기 (전체 ${agHotels.length}개) ▼`;
     more.onclick = () => { agExpanded = !agExpanded; renderAgodaPick(); if (!agExpanded) document.getElementById('agodaPick').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
   } else more.style.display = 'none';
 }
+
+// 화면 폭이 바뀌어 한 줄 칸 수가 달라지면 다시 맞춤
+let agCols = 0;
+window.addEventListener('resize', () => {
+  const list = document.getElementById('agodaList');
+  if (!agHotels || !agHotels.length || agExpanded || !list.offsetParent) return;
+  const c = getComputedStyle(list).gridTemplateColumns.split(' ').filter(Boolean).length;
+  if (c !== agCols) { agCols = c; renderAgodaPick(); }
+});
 
 function renderPhotoGrid(containerId, urls) {
   const grid = document.getElementById(containerId);
