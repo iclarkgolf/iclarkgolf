@@ -975,8 +975,8 @@ window.adminLogout = function() {
         </div>
         <div style="font-size:18px;color:#534AB7;font-weight:800;padding-top:16px;">⇄</div>
         <div>
-          <div style="font-size:10px;color:#6b7280;margin-bottom:3px;">고객 USD</div>
-          <input type="number" id="calc-usd" placeholder="예: 44.6" oninput="calcConvert('usd')"
+          <div style="font-size:10px;color:#6b7280;margin-bottom:3px;">손님 원화 송금액 (₩)</div>
+          <input type="number" id="calc-krw" placeholder="예: 56500" oninput="calcConvert('krw')"
             style="width:100%;border:1.5px solid #c8edd9;border-radius:8px;padding:8px 10px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:#534AB7;outline:none;">
         </div>
       </div>
@@ -3854,14 +3854,17 @@ function updateMarginDisplay() {
 function calcConvert(from) {
   const rate = getAppliedRate();
   if (!rate.appliedUsdPhp) return;
+  const krwPerPhp = (Number(rate.usdKrw) || 1380) / rate.appliedUsdPhp;
   if (from === 'php') {
     const php = parseFloat(document.getElementById('calc-php').value) || 0;
-    document.getElementById('calc-usd').value = php > 0 ? (php / rate.appliedUsdPhp).toFixed(2) : '';
-    document.getElementById('calc-note').textContent = 'PHP ' + php.toLocaleString() + ' ÷ ' + rate.appliedUsdPhp.toFixed(2) + ' = $' + (php / rate.appliedUsdPhp).toFixed(2);
+    const krw = Math.ceil(php * krwPerPhp / 10) * 10;
+    document.getElementById('calc-krw').value = php > 0 ? krw : '';
+    document.getElementById('calc-note').textContent = php > 0 ? '₱' + php.toLocaleString() + ' → 약 ₩' + krw.toLocaleString() + ' (마진 포함 송금액)' : '위에서 환율을 저장하면 자동 계산됩니다';
   } else {
-    const usd = parseFloat(document.getElementById('calc-usd').value) || 0;
-    document.getElementById('calc-php').value = usd > 0 ? (usd * rate.appliedUsdPhp).toFixed(0) : '';
-    document.getElementById('calc-note').textContent = '$' + usd + ' × ' + rate.appliedUsdPhp.toFixed(2) + ' = PHP ' + (usd * rate.appliedUsdPhp).toLocaleString();
+    const krw = parseFloat(document.getElementById('calc-krw').value) || 0;
+    const php = Math.floor(krw / krwPerPhp);
+    document.getElementById('calc-php').value = krw > 0 ? php : '';
+    document.getElementById('calc-note').textContent = krw > 0 ? '₩' + krw.toLocaleString() + ' → 약 ₱' + php.toLocaleString() : '위에서 환율을 저장하면 자동 계산됩니다';
   }
 }
 
