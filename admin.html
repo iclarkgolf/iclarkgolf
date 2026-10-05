@@ -5307,8 +5307,8 @@ function qfKakao(){ var link=document.getElementById('qfLinkUrl').value; var nam
       <button class="bk-btn" onclick="bkOpenNew()">＋ 새 부킹 만들기</button>
     </div>
     <div style="font-size:12.5px;color:#6b7280;line-height:1.8;margin-bottom:10px;">
-      <b>①문의 → ②고객과 진행 → ③확정(파트너에게 전달) → ④송금 → ⑤파트너 바우처 → ⑥고객에게 바우처</b><br>
-      파트너는 <b>③부터</b> 자기에게 배정된 부킹만 영어 화면(<a href="partner.html" target="_blank">partner.html</a>)에서 봅니다. 고객 연락처는 파트너에게 보이지 않습니다.
+      <b>1 예약 → 2 예약변경(1) → 3 예약변경(2) → 4 확정 → 5 송금 → 6 바우처 발급</b><br>
+      일정을 고쳐 저장하면 예약변경 단계로 저절로 넘어갑니다. 파트너는 자기 부킹만 영어 화면(<a href="partner.html" target="_blank">partner.html</a>)에서 보고, 고객 연락처는 보이지 않습니다.
     </div>
     <div class="bk-filter" id="bk-filter"></div>
     <div id="bk-list"><div style="color:#9ca3af;font-size:13px;">불러오는 중...</div></div>
@@ -5390,6 +5390,11 @@ function qfKakao(){ var link=document.getElementById('qfLinkUrl').value; var nam
       </select>
       <div style="font-size:11.5px;color:#9ca3af;margin-top:4px;">파트너에게 보내기(예약대기 → 예약 → 확정)는 저장 후 목록의 버튼으로 진행합니다.</div>
     </div>
+    <div style="margin-top:10px;" id="bkf-change-wrap">
+      <label>예약 변경 차수</label>
+      <select id="bkf-change"><option value="0">변경 없음 (1 예약)</option><option value="1">1차 변경 (2 예약변경(1))</option><option value="2">2차 변경 (3 예약변경(2))</option></select>
+      <div style="font-size:11.5px;color:#9ca3af;margin-top:4px;">날짜·골프장·인원·시간을 고쳐 저장하면 저절로 한 단계 올라갑니다. 직접 고쳐도 됩니다.</div>
+    </div>
     <div class="bk-actions" style="margin-top:14px;">
       <button class="bk-btn" onclick="bkSaveBooking()">💾 저장</button>
     </div>
@@ -5461,6 +5466,19 @@ const BK_TIME_EN = { any:'Any time', am:'Morning', pm:'Afternoon' };
 let _bkDocs = [], _bkPartners = [], _bkFilter = 'active', _bkEditId = null, _bkUnsub = null, _bkInq = [];
 const bkEsc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const bkSt = id => BK_STATUS.find(s => s.id === id) || BK_STATUS[0];
+/* ── 간단 6단계 (2026-10-05) — 화면 표시만 단순화. 저장되는 status와 파트너 화면(partner.html)은 그대로 ──
+   1 예약: 문의~파트너 예약 요청까지 / 2·3 예약변경: 일정(날짜·골프장·인원·시간)을 고쳐 저장한 횟수(changeCount)
+   4 확정: 파트너가 예약 완료·경비 알림(booked) / 5 송금: paid / 6 바우처 발급: voucher·done */
+const BK_SIMPLE = ['1 예약','2 예약변경(1)','3 예약변경(2)','4 확정','5 송금','6 바우처 발급'];
+function bkSimple(b){
+  if (b.status === 'cancelled') return -1;
+  if (['voucher','done'].includes(b.status)) return 5;
+  if (b.status === 'paid') return 4;
+  if (b.status === 'booked') return 3;
+  const c = Number(b.changeCount) || 0;
+  return c >= 2 ? 2 : c;
+}
+const BK_PARTNER_NOTE = { sent:'파트너에게 예약대기 요청함', hold:'파트너가 예약대기 접수함', reserve:'파트너에게 예약 요청함(여권·시간)', voucher:'파트너 바우처 도착 — 고객에게 보내기 대기' };
 async function bkFs(){ const db = await initCardDB(); const fs = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"); return { db, fs }; }
 function bkNewId(){ const d = new Date(); const p = n => String(n).padStart(2,'0'); return 'ICG-' + d.getFullYear() + p(d.getMonth()+1) + p(d.getDate()) + '-' + Math.random().toString(36).slice(2,6).toUpperCase(); }
 function bkHist(msg, by){ return { at: new Date().toISOString(), by: by || 'iCLARKGOLF', msg }; }
@@ -5523,9 +5541,9 @@ function bkPartnerInvite(uid){
 
 /* ── 부킹 목록 ── */
 function bkRenderFilter(){
-  const counts = { active:0, all:_bkDocs.length };
-  _bkDocs.forEach(d => { if (!['done','cancelled'].includes(d.status)) counts.active++; counts[d.status] = (counts[d.status] || 0) + 1; });
-  const tabs = [['active','진행 중'],['all','전체'],['sent','예약대기 요청'],['hold','예약대기 접수'],['reserve','예약 요청'],['booked','경비 고지'],['paid','④ 송금'],['voucher','⑤ 바우처'],['done','⑥ 완료'],['cancelled','취소']];
+  const counts = { active:0, all:_bkDocs.length, cancelled:0 };
+  _bkDocs.forEach(d => { if (!['done','cancelled'].includes(d.status)) counts.active++; const k = bkSimple(d); if (k < 0) counts.cancelled++; else counts['s' + k] = (counts['s' + k] || 0) + 1; });
+  const tabs = [['active','진행 중'],['all','전체']].concat(BK_SIMPLE.map((l, i) => ['s' + i, l]), [['cancelled','취소']]);
   document.getElementById('bk-filter').innerHTML = tabs.map(([k,l]) => `<button class="${_bkFilter===k?'on':''}" onclick="_bkFilter='${k}';bkRenderList()">${l} ${counts[k]||0}</button>`).join('');
 }
 function bkRoundsTable(b, withPartner){
@@ -5537,21 +5555,22 @@ function bkRoundsTable(b, withPartner){
 }
 function bkRenderList(){
   bkRenderFilter();
-  const list = _bkDocs.filter(d => _bkFilter === 'all' ? true : _bkFilter === 'active' ? !['done','cancelled'].includes(d.status) : d.status === _bkFilter);
+  const list = _bkDocs.filter(d => _bkFilter === 'all' ? true : _bkFilter === 'active' ? !['done','cancelled'].includes(d.status)
+    : _bkFilter === 'cancelled' ? d.status === 'cancelled' : /^s\d$/.test(_bkFilter) ? 's' + bkSimple(d) === _bkFilter : d.status === _bkFilter);
   const box = document.getElementById('bk-list');
   if (!list.length) { box.innerHTML = '<div style="color:#9ca3af;font-size:13px;padding:10px 0;">해당하는 부킹이 없습니다.</div>'; return; }
   box.innerHTML = list.map(b => {
-    const st = bkSt(b.status), idx = BK_STEPS.indexOf(b.status);
+    const st = bkSt(b.status), idx = bkSimple(b);
     const partner = _bkPartners.find(p => p.uid === b.partnerUid);
     const pd = b.partner || {}, pay = b.payment || {}, vc = pd.voucher || {};
     const steps = b.status === 'cancelled' ? '<span class="now" style="background:#b91c1c;">취소됨</span>'
-      : BK_STEPS.map((s, i) => `<span class="${i < idx ? 'done' : i === idx ? 'now' : ''}">${bkSt(s).ko}</span>`).join('');
+      : BK_SIMPLE.map((l, i) => `<span class="${i < idx ? 'done' : i === idx ? 'now' : ''}">${l}</span>`).join('');
     let act = '';
-    if (['inquiry','talking'].includes(b.status)) act += `<button class="bk-btn purple" onclick="bkSend('${b.id}')">1️⃣ 예약대기 요청 보내기</button><button class="bk-btn sub" onclick="bkReserve('${b.id}')">바로 예약 요청</button>`;
-    if (b.status === 'hold') act += `<button class="bk-btn purple" onclick="bkReserve('${b.id}')">2️⃣ 예약 요청 (여권 이름·시간대)</button>`;
-    if (['sent','reserve'].includes(b.status)) act += `<button class="bk-btn sub" onclick="bkCopy(bkPartnerMsg('${b.id}'))">📋 파트너 알림 메시지 복사</button>`;
-    if (b.status === 'booked') act += `<button class="bk-btn purple" onclick="bkPay('${b.id}')">3️⃣ 송금 완료 입력</button>`;
-    if (b.status === 'voucher') act += `<button class="bk-btn purple" onclick="bkDeliver('${b.id}')">⑥ 고객에게 바우처 보내기</button>`;
+    if (['inquiry','talking'].includes(b.status)) act += `<button class="bk-btn purple" onclick="bkSend('${b.id}')">📤 파트너에게 예약 보내기 (이름만·대기)</button><button class="bk-btn sub" onclick="bkReserve('${b.id}')">📤 여권·시간까지 한 번에 보내기</button>`;
+    if (b.status === 'hold') act += `<button class="bk-btn purple" onclick="bkReserve('${b.id}')">📤 여권 이름·시간 보내기</button>`;
+    if (['sent','reserve'].includes(b.status) || (['hold','booked'].includes(b.status) && Number(b.changeCount) > 0)) act += `<button class="bk-btn sub" onclick="bkCopy(bkPartnerMsg('${b.id}'))">📋 파트너 알림 메시지 복사</button>`;
+    if (b.status === 'booked') act += `<button class="bk-btn purple" onclick="bkPay('${b.id}')">5️⃣ 송금 완료 입력</button>`;
+    if (b.status === 'voucher') act += `<button class="bk-btn purple" onclick="bkDeliver('${b.id}')">6️⃣ 고객에게 바우처 보내기</button>`;
     if (b.voucherId) act += `<button class="bk-btn sub" onclick="bkCopy(bkCustomerMsg('${b.id}'))">📋 고객용 메시지 복사</button><a class="bk-btn sub" style="text-decoration:none;" target="_blank" href="voucher.html?v=${encodeURIComponent(b.voucherId)}">🎫 바우처 보기</a>`;
     act += `<button class="bk-btn" style="background:#0ea5e9;" onclick="bkSmsOpen('${b.id}')">📱 고객에게 안내 보내기</button>`;
     act += `<button class="bk-btn sub" onclick="bkOpenEdit('${b.id}')">✏️ 수정</button>`;
@@ -5563,7 +5582,7 @@ function bkRenderList(){
       </div>
       <div class="bk-meta">📅 ${bkEsc(b.arrDate || '-')} ~ ${bkEsc(b.depDate || '-')} · 골퍼 ${b.golfers || '-'}명 · 🏢 ${bkEsc(partner ? partner.name : '파트너 미지정')}${b.contact ? ' · ☎ ' + bkEsc(b.contact) : ''}</div>
       <div class="bk-steps">${steps}</div>
-      ${BK_PHASE[b.status] ? `<div style="font-size:12px;font-weight:800;color:#534AB7;">현재: ${BK_PHASE[b.status]} 단계</div>` : ''}
+      ${idx >= 0 ? `<div style="font-size:12px;font-weight:800;color:#534AB7;">현재: ${BK_SIMPLE[idx]}${BK_PARTNER_NOTE[b.status] ? ` <span style="font-weight:600;color:#9ca3af;">· ${BK_PARTNER_NOTE[b.status]}</span>` : ''}</div>` : ''}
       ${bkRoundsTable(b, ['booked','paid','voucher','done'].includes(b.status))}
       ${b.noteEn ? `<div class="bk-box">✉️ 파트너에게: ${bkEsc(b.noteEn)}${b.noteKo ? `<br><span style="color:#6b7280;font-size:12px;">(원문: ${bkEsc(b.noteKo)})</span>` : ''}</div>` : ''}
       ${b.memo ? `<div class="bk-box" style="background:#f9fafb;">🔒 내부 메모: ${bkEsc(b.memo)}</div>` : ''}
@@ -5651,6 +5670,7 @@ function bkOpenNew(){
   _bkNoteSrc = ''; document.getElementById('bkf-noteMsg').textContent = '';
   document.getElementById('bkf-golfers').value = 2;
   document.getElementById('bkf-status').value = 'talking';
+  document.getElementById('bkf-change').value = '0'; document.getElementById('bkf-change-wrap').style.display = 'none';
   document.getElementById('bkf-inq').parentElement.style.display = 'block';
   document.getElementById('bkf-rounds').innerHTML = ''; bkAddRoundRow();
   bkPartnerOptions(); bkLoadInquiryOptions();
@@ -5667,6 +5687,8 @@ function bkOpenEdit(id){
   const stSel = document.getElementById('bkf-status');
   stSel.value = ['inquiry','talking'].includes(b.status) ? b.status : 'talking';
   stSel.parentElement.style.display = ['inquiry','talking'].includes(b.status) ? 'block' : 'none';
+  document.getElementById('bkf-change').value = String(Math.min(2, Number(b.changeCount) || 0));
+  document.getElementById('bkf-change-wrap').style.display = 'block';
   document.getElementById('bkf-inq').parentElement.style.display = 'none';
   document.getElementById('bkf-rounds').innerHTML = ''; (b.rounds || []).forEach(r => bkAddRoundRow(r)); if (!(b.rounds || []).length) bkAddRoundRow();
   bkPartnerOptions(b.partnerUid);
@@ -5697,7 +5719,12 @@ async function bkSaveBooking(){
     const now = new Date().toISOString();
     if (_bkEditId) {
       const b = _bkDocs.find(x => x.id === _bkEditId) || {};
-      const upd = { ...f, updatedAt: now, history: [...(b.history || []), bkHist('예약 내용 수정')] };
+      // 일정(날짜·골프장·인원·시간·도착/출발일)이 바뀌었으면 예약변경 차수를 한 단계 올림 (PJ님이 칸에서 직접 바꿨으면 그 값 우선)
+      const schedKey = x => JSON.stringify({ a: x.arrDate || '', d: x.depDate || '', g: Number(x.golfers) || 0, r: (x.rounds || []).map(r => [r.date || '', r.courseId || '', r.courseEn || '', Number(r.players) || 0, r.time || '']) });
+      const oldCc = Number(b.changeCount) || 0, pickedCc = Number(document.getElementById('bkf-change').value) || 0;
+      const schedChanged = schedKey(b) !== schedKey(f);
+      const cc = pickedCc !== Math.min(2, oldCc) ? pickedCc : (schedChanged ? oldCc + 1 : oldCc);
+      const upd = { ...f, changeCount: cc, updatedAt: now, history: [...(b.history || []), bkHist(schedChanged ? '일정 변경' + (cc ? ' (' + cc + '차)' : '') : '예약 내용 수정')] };
       if (['inquiry','talking'].includes(b.status)) upd.status = document.getElementById('bkf-status').value;
       await fs.updateDoc(fs.doc(db, 'bookings', _bkEditId), upd);
     } else {
