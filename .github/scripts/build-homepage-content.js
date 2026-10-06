@@ -1,6 +1,8 @@
 /**
- * index.html의 "⛳ 골프 패키지" / "🏨 추천 숙소" 정적 콘텐츠를
- * Firestore(package_cards, accommodations) 최신 데이터로 자동 재생성한다.
+ * index.html의 "⛳ 골프 패키지" / "🏨 추천 숙소" 정적 콘텐츠를 자동 재생성한다.
+ *  - 패키지: Firestore(package_cards)
+ *  - 숙소: agoda-hotels.json (2026-10-06 — 옛 로컬 숙소 4곳·lodging-*.html 페이지 폐지,
+ *          화면의 아고다 호텔 목록과 똑같은 카드를 검색엔진용 정적 HTML로 넣음)
  */
 
 const fs = require('fs');
@@ -27,16 +29,6 @@ function escapeHtml(str) {
   return String(str ?? '').replace(/[&<>"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
   }[c]));
-}
-
-// build-lodging-pages.js가 만드는 lodging-<슬러그>.html 파일명 규칙과 반드시 일치해야 한다.
-function slugifyId(id) {
-  const base = String(id || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 60);
-  return base || 'lodging';
 }
 
 // ---------- 패키지 카드 ----------
@@ -100,59 +92,44 @@ async function buildPackagesHtml(db) {
   return cards.map(renderPackageCard).join('\n');
 }
 
-// ---------- 숙소 카드 ----------
+// ---------- 숙소 카드 (아고다) ----------
+// index.html 안의 cardHtml()과 같은 모양 — 자바스크립트가 돌면 실시간 목록으로 다시 채워짐
+const AGODA_PATH = path.join(__dirname, '..', '..', 'agoda-hotels.json');
+const LODGING_STATIC_COUNT = 8;
 
-function renderLodgingCard(a) {
-  const stars = a.stars > 0 ? '★'.repeat(a.stars) + '☆'.repeat(5 - a.stars) : '';
-  const amenList = a.amenities ? String(a.amenities).split(',').map((s) => s.trim()).filter(Boolean) : [];
-  const SPECIAL = ['3식포함', '픽업드롭', '올인클루시브', '조식'];
-  const tags = amenList.slice(0, 4).map((t) =>
-    `<span class="lodging-tag${SPECIAL.includes(t) ? ' special' : ''}">${escapeHtml(t)}</span>`
-  ).join('') + (amenList.length > 4 ? `<span class="lodging-tag">+${amenList.length - 4}</span>` : '');
-
-  const photo = (a.photos && a.photos[0]) || a._thumb || '';
-  const thumbHTML = photo
-    ? `<img src="${escapeHtml(photo)}" alt="${escapeHtml(a.name)}" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'thumb-emoji\\'>${a.type === 'local' ? '🏠' : '🏨'}</span>'">`
-    : `<span class="thumb-emoji">${a.type === 'local' ? '🏠' : '🏨'}</span>`;
-
-  // 2026-10-03: 달러 표시 폐지 → 페소
-  const priceStr = a.type === 'local'
-    ? `<span style="font-size:11px;color:#6b7280;">ALL-IN </span>₱${Number(a.pricePhpView || 0).toLocaleString()}<span style="font-size:11px;">/일</span>`
-    : `₱${Number(a.pricePhpView || 0).toLocaleString()}<span style="font-size:11px;">/박</span>`;
-
-  return `    <a href="lodging-${escapeHtml(slugifyId(a.id))}.html" class="lodging-card" style="text-decoration:none;display:flex;flex-direction:column;cursor:pointer;">
+function renderAgodaCard(h) {
+  const n = Math.round(Number(h.starRating) || 0);
+  const stars = n > 0 ? '★'.repeat(Math.min(n, 5)) + '☆'.repeat(Math.max(5 - n, 0)) : '';
+  const priceNum = Math.round(Number(h.price) || 0);
+  const thumbHTML = h.image
+    ? `<img src="${escapeHtml(h.image)}" alt="${escapeHtml(h.name)}" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'thumb-emoji\\'>🏨</span>'">`
+    : `<span class="thumb-emoji">🏨</span>`;
+  const reviewTag = h.reviewScore ? `<span class="lodging-tag special">후기 ${escapeHtml(h.reviewScore)}점</span>` : '';
+  return `    <a href="${escapeHtml(h.bookingUrl)}" target="_blank" rel="noopener" class="lodging-card" style="text-decoration:none;display:flex;flex-direction:column;cursor:pointer;">
        <div class="lodging-thumb">
          ${thumbHTML}
-         <span class="lodging-type-badge ${a.type === 'local' ? 'local' : 'hotel'}">${a.type === 'local' ? '전지훈련 전용' : '호텔'}</span>
+         <span class="lodging-type-badge hotel">아고다</span>
        </div>
        <div class="lodging-body">
          ${stars ? `<div class="lodging-stars">${stars}</div>` : ''}
-         <div class="lodging-name">${escapeHtml(a.name)}</div>
-         <div class="lodging-price">${priceStr}${krwSpan(a.pricePhpView)}</div>
-         <div class="lodging-location">📍 ${escapeHtml(a.location)}</div>
-         ${tags ? `<div class="lodging-tags">${tags}</div>` : ''}
-         <div class="lodging-btn">자세히 보기 →</div>
+         <div class="lodging-name">${escapeHtml(h.name)}</div>
+         <div class="lodging-price">₱${priceNum.toLocaleString()}<span style="font-size:11px;">/박</span>${krwSpan(priceNum)}</div>
+         <div class="lodging-location">📍 ${escapeHtml(h.region || '앙헬레스 / 클락')}</div>
+         ${reviewTag ? `<div class="lodging-tags">${reviewTag}</div>` : ''}
+         <div class="lodging-btn">아고다에서 예약 →</div>
        </div>
      </a>`;
 }
 
-async function buildLodgingHtml(db) {
-  const rateSnap = await db.collection('settings').doc('exchange').get();
-  const appliedRate = (rateSnap.exists && rateSnap.data().appliedUsdPhp) || 53.2;
-
-  const snap = await db.collection('accommodations').get();
-  let accoms = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-  accoms = accoms
-    .filter((a) => a.active)
-    .map((a) => ({
-      ...a,
-      priceUSD: a.type === 'local'
-        ? Number(a.priceUSD) || 0
-        : Math.ceil((Number(a.pricePHP) || 0) / appliedRate),
-      pricePhpView: Number(a.pricePHP) || Math.round((Number(a.priceUSD) || 0) * appliedRate / 100) * 100,
-    }));
-  if (accoms.length === 0) return '';
-  return accoms.map(renderLodgingCard).join('\n');
+function buildLodgingHtml() {
+  if (!fs.existsSync(AGODA_PATH)) return '';
+  let data;
+  try { data = JSON.parse(fs.readFileSync(AGODA_PATH, 'utf-8')); } catch (e) { return ''; }
+  const hotels = Array.isArray(data.hotels) ? data.hotels : [];
+  if (hotels.length === 0) return '';
+  // 화면과 같은 순서(비싼 호텔부터) — 처음 보이는 8개만 정적으로
+  return hotels.slice().sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0))
+    .slice(0, LODGING_STATIC_COUNT).map(renderAgodaCard).join('\n');
 }
 
 // ---------- index.html 스플라이스 ----------
@@ -177,7 +154,7 @@ async function main() {
 
   const [pkgHtml, lodgingHtml] = await Promise.all([
     buildPackagesHtml(db),
-    buildLodgingHtml(db),
+    buildLodgingHtml(),
   ]);
 
   let html = fs.readFileSync(INDEX_PATH, 'utf-8');
