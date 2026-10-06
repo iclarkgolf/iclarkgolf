@@ -1707,6 +1707,7 @@ window.adminLogout = function() {
         <select id="m-type">
           <option value="hotel">호텔</option>
           <option value="local">전용숙소</option>
+          <option value="villa">풀빌라</option>
         </select>
       </div>
       <div class="form-group">
@@ -3290,22 +3291,22 @@ function renderAccomList() {
 
     /* 썸네일 — 저장된 이미지 > fallback > 이모지 */
     const thumbSrc = (a.photos && a.photos.length > 0) ? a.photos[0] : (ACCOM_FALLBACK_IMGS[a.id] || '');
-    const emoji = a.type==='local' ? '🏠' : '🏨';
+    const emoji = a.type==='local' ? '🏠' : (a.type==='villa' ? '🏡' : '🏨');
     const thumbHTML = thumbSrc
       ? `<img src="${thumbSrc}" alt="${a.name}" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'thumb-emoji\\'>${emoji}</span>'">`
       : `<span class="thumb-emoji">${emoji}</span>`;
 
     /* 가격 표시 — 골프장 요금표와 동일하게 PHP 원가 + 환산 달러 병기 */
     const priceStr = a.type==='local'
-      ? `<span style="font-size:11px;font-weight:600;color:#6b7280;">ALL-IN </span>$${a.priceUSD}<span style="font-size:11px;">/일</span>`
-      : `₱${Number(a.pricePHP||0).toLocaleString()}<span style="font-size:11px;">/박</span>`;
+      ? `<span style="font-size:11px;font-weight:600;color:#6b7280;">ALL-IN </span>₱${Number(a.pricePHP||0).toLocaleString()}<span style="font-size:11px;">/1인·1일</span>`
+      : `₱${Number(a.pricePHP||0).toLocaleString()}<span style="font-size:11px;">/박${a.type==='villa'?'·1채':''}</span>`;
 
     return `
     <div class="accom-item">
       <div class="accom-item-thumb">
         ${thumbHTML}
         <div class="accom-thumb-badges">
-          <span class="accom-type-badge ${a.type==='local'?'local':'hotel'}">${a.type==='local'?'전지훈련 전용':'호텔'}</span>
+          <span class="accom-type-badge ${a.type==='local'?'local':'hotel'}">${a.type==='local'?'전지훈련 전용':(a.type==='villa'?'풀빌라':'호텔')}</span>
           <span class="accom-status-dot ${a.active?'on':'off'}" title="${a.active?'활성':'비활성'}"></span>
         </div>
       </div>
@@ -4233,7 +4234,7 @@ async function loadInquiries(filter = 'all') {
       body.innerHTML = filtered.length ? filtered.map(q => `
         <tr>
           <td>${q.createdAtStr}</td>
-          <td style="font-weight:700;">${q.name||'-'}</td>
+          <td style="font-weight:700;">${q.name||'-'}${q.purpose ? `<div style="font-size:10.5px;font-weight:800;margin-top:2px;color:${q.purpose==='training'?'#065f46':'#534AB7'};">${q.purpose==='training'?'🏌️ 전지훈련':'⛳ 관광골프'}</div>` : ''}</td>
           <td>${q.contact||'-'}</td>
           <td>${q.hotel||'-'}</td>
           <td>${q.nights||0}박</td>
