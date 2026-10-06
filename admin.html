@@ -1704,7 +1704,7 @@ window.adminLogout = function() {
     <div class="form-row">
       <div class="form-group">
         <label>유형</label>
-        <select id="m-type">
+        <select id="m-type" onchange="accomTypeChanged()">
           <option value="hotel">호텔</option>
           <option value="local">전용숙소</option>
           <option value="villa">풀빌라</option>
@@ -1722,12 +1722,24 @@ window.adminLogout = function() {
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label>1박 판매가 (PHP)</label>
+        <label id="m-price-label">1박 판매가 (PHP)</label>
         <input type="number" id="m-price-php" placeholder="2100" oninput="updateAccomUsdPreview()">
       </div>
       <div class="form-group">
         <label>달러 환산 (자동계산)</label>
         <input type="text" id="m-price-usd-preview" disabled style="background:#f4f4f5;color:#6b7280;">
+      </div>
+    </div>
+    <!-- 2026-10-06: 전용숙소 선택 옵션 — 맞춤견적에서 손님이 체크해서 고름 (비우면 기본값) -->
+    <div id="m-local-opts" style="display:none;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:12px;margin-bottom:12px;">
+      <div style="font-size:12px;font-weight:800;color:#065f46;margin-bottom:8px;">🏠 전용숙소 선택 옵션 <span style="font-weight:600;color:#6b7280;">— 맞춤견적에서 손님이 골라 담습니다 (비우면 기본값)</span></div>
+      <div class="form-row">
+        <div class="form-group"><label>조식 (₱ / 1인·1일)</label><input type="number" id="m-opt-bf" placeholder="400"></div>
+        <div class="form-group"><label>석식 (₱ / 1인·1일)</label><input type="number" id="m-opt-dn" placeholder="500"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>공항 픽업·드롭 왕복 (₱ / 팀)</label><input type="number" id="m-opt-air" placeholder="2000"></div>
+        <div class="form-group"><label>골프장 픽업·드롭 왕복 (₱ / 라운드·팀)</label><input type="number" id="m-opt-golf" placeholder="1000"></div>
       </div>
     </div>
     <div class="form-group" style="margin-bottom:12px;">
@@ -3298,7 +3310,7 @@ function renderAccomList() {
 
     /* 가격 표시 — 골프장 요금표와 동일하게 PHP 원가 + 환산 달러 병기 */
     const priceStr = a.type==='local'
-      ? `<span style="font-size:11px;font-weight:600;color:#6b7280;">ALL-IN </span>₱${Number(a.pricePHP||0).toLocaleString()}<span style="font-size:11px;">/1인·1일</span>`
+      ? `₱${Number(a.pricePHP||0).toLocaleString()}<span style="font-size:11px;">/1인·1일 (객실)</span>`
       : `₱${Number(a.pricePHP||0).toLocaleString()}<span style="font-size:11px;">/박${a.type==='villa'?'·1채':''}</span>`;
 
     return `
@@ -3343,6 +3355,11 @@ function openAccomModal(id) {
       document.getElementById('m-desc').value = a.desc;
       document.getElementById('m-amenities').value = a.amenities;
       document.getElementById('m-active').checked = a.active;
+      const o = a.options || {};
+      document.getElementById('m-opt-bf').value = o.breakfast ?? '';
+      document.getElementById('m-opt-dn').value = o.dinner ?? '';
+      document.getElementById('m-opt-air').value = o.airport ?? '';
+      document.getElementById('m-opt-golf').value = o.golfTransfer ?? '';
       const photos = a.photos && a.photos.length ? a.photos.join('\n') : '';
       document.getElementById('m-photos').value = photos;
       previewPhotoUrls(photos);
@@ -3360,8 +3377,16 @@ function openAccomModal(id) {
     document.getElementById('m-active').checked = true;
     document.getElementById('m-photos').value = '';
     document.getElementById('m-photo-preview').innerHTML = '';
+    ['m-opt-bf','m-opt-dn','m-opt-air','m-opt-golf'].forEach(k => document.getElementById(k).value = '');
   }
+  accomTypeChanged();
   document.getElementById('accom-modal').classList.add('on');
+}
+// 유형에 따라 가격 칸 이름·전용숙소 옵션 칸 보이기
+function accomTypeChanged() {
+  const t = document.getElementById('m-type').value;
+  document.getElementById('m-local-opts').style.display = t === 'local' ? 'block' : 'none';
+  document.getElementById('m-price-label').textContent = t === 'local' ? '객실료 (PHP / 1인·1일)' : (t === 'villa' ? '1박 판매가 (PHP / 1채)' : '1박 판매가 (PHP)');
 }
 
 function editAccom(id) { openAccomModal(id); }
@@ -3391,6 +3416,10 @@ async function saveAccom() {
     photos:    photoUrls,
     active:    document.getElementById('m-active').checked
   };
+  if (data.type === 'local') {
+    const num = (k, def) => { const v = document.getElementById(k).value; return v === '' ? def : (Number(v) || 0); };
+    data.options = { breakfast: num('m-opt-bf', 400), dinner: num('m-opt-dn', 500), airport: num('m-opt-air', 2000), golfTransfer: num('m-opt-golf', 1000) };
+  }
   const idx = accoms.findIndex(x => x.id === id);
   if (idx >= 0) accoms[idx] = data; else accoms.push(data);
   saveAccomsCache(accoms);
