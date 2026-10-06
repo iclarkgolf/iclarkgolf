@@ -3385,8 +3385,8 @@ function openAccomModal(id) {
 // 유형에 따라 가격 칸 이름·전용숙소 옵션 칸 보이기
 function accomTypeChanged() {
   const t = document.getElementById('m-type').value;
-  document.getElementById('m-local-opts').style.display = t === 'local' ? 'block' : 'none';
-  document.getElementById('m-price-label').textContent = t === 'local' ? '객실료 (PHP / 1인·1일)' : (t === 'villa' ? '1박 판매가 (PHP / 1채)' : '1박 판매가 (PHP)');
+  document.getElementById('m-local-opts').style.display = 'none';   // 식사·픽업은 맞춤견적 항목 탭에서 공통 관리
+  document.getElementById('m-price-label').textContent = t === 'local' ? '숙박비 (PHP / 1인·1일 · 청소·세탁·와이파이 포함)' : (t === 'villa' ? '1박 판매가 (PHP / 1채)' : '1박 판매가 (PHP)');
 }
 
 function editAccom(id) { openAccomModal(id); }
@@ -3416,10 +3416,6 @@ async function saveAccom() {
     photos:    photoUrls,
     active:    document.getElementById('m-active').checked
   };
-  if (data.type === 'local') {
-    const num = (k, def) => { const v = document.getElementById(k).value; return v === '' ? def : (Number(v) || 0); };
-    data.options = { breakfast: num('m-opt-bf', 400), dinner: num('m-opt-dn', 500), airport: num('m-opt-air', 2000), golfTransfer: num('m-opt-golf', 1000) };
-  }
   const idx = accoms.findIndex(x => x.id === id);
   if (idx >= 0) accoms[idx] = data; else accoms.push(data);
   saveAccomsCache(accoms);

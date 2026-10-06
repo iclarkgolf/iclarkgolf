@@ -150,7 +150,6 @@ input.inp:focus,textarea.inp:focus{border-color:var(--purple);}
 .golf-fee b{color:var(--purple);}
 .golf-extra{font-size:11.5px;color:#c2410c;margin-top:2px;}
 .golf-total{font-size:12.5px;font-weight:800;color:var(--purple-deep);margin-top:4px;}
-.incl-badge{flex-shrink:0;padding:8px 10px;border-radius:10px;background:#ecfdf5;color:#065f46;font-size:11.5px;font-weight:800;text-align:center;line-height:1.35;}
 .golf .stepper{width:130px;margin-left:auto;flex-shrink:0;}
 .golf .stepper button{width:36px;height:38px;}
 
@@ -532,7 +531,7 @@ function agodaUrl(hid){
 function trackAgoda(what){ if (window.gtag) gtag('event', 'quote_agoda_click', { hotel: what }); }
 
 /* ── 호텔 ── */
-const LOCAL_TIER = { id:'local', name:'🏠 iClark 전용', desc:'전지훈련 전용 숙소 — 프라데라 골프장 정문 앞. 1인 1실(청소·세탁·와이파이 포함) 요금이며, 식사와 픽업·드롭은 담은 뒤 아래에서 골라 넣습니다' };
+const LOCAL_TIER = { id:'local', name:'🏠 iClark 전용', desc:'전지훈련 전용 숙소 — 프라데라 골프장 정문 앞. 1인 1실 숙박비(청소·세탁·와이파이 포함)이며, 식사와 픽업·드롭은 아래 항목에서 함께 골라 담습니다' };
 const VILLA_TIER = { id:'villa', name:'🏡 풀빌라', desc:'단체 골프·가족 여행에 알맞은 풀빌라 — 한 채를 통째로 쓰는 요금(1박·1채)' };
 function tierList(id){ return id === 'local' ? LOCALS : id === 'villa' ? VILLAS : HOTELS.filter(TIERS.find(t => t.id === id).test); }
 // 목적에 따라 보이는 숙소 탭: 관광골프 = 풀빌라·호텔 / 전지훈련 = 전용숙소·호텔 / 미선택 = 전부
@@ -600,11 +599,10 @@ function renderHotels(){
   }).join('') + (list.length > PAGE ? `<button type="button" class="more-btn" onclick="expanded=!expanded;renderHotels()">${expanded ? '접기 ▲' : '모두 보기 (전체 ' + list.length + '개) ▼'}</button>` : '')
     || '<div style="text-align:center;color:var(--muted);padding:16px;font-size:13px;">이 등급의 호텔 정보가 잠시 없습니다. 아래 검색 버튼을 이용해 주세요.</div>';
   const h = findHotel(selHotel);
-  if (h && h.kind === 'local') $('hotel-list').innerHTML = localOptsBox(h) + $('hotel-list').innerHTML;
   $('hotel-sum').textContent = h ? h.name : '선택 안 함';
 }
 function findHotel(key){ return key ? (HOTELS.find(x => x.key === key) || LOCALS.find(x => x.key === key) || VILLAS.find(x => x.key === key) || null) : null; }
-function pickHotel(key){ selHotel = selHotel === key ? null : key; allItems().forEach(it => { if (isIncluded(it)) delete selItems[it.id]; }); renderHotels(); renderItems(); renderSum(); }
+function pickHotel(key){ selHotel = selHotel === key ? null : key; renderHotels(); renderSum(); }
 
 /* ── 골프 ── */
 function fee(g){
@@ -634,54 +632,12 @@ function renderGolf(){
 function chgGolf(id, d){
   selGolf[id] = Math.max(0, Math.min(30, (selGolf[id] || 0) + d));
   if (!selGolf[id]) delete selGolf[id];
-  renderGolf(); if (localSelected()) renderHotels(); renderSum();
+  renderGolf(); renderSum();
 }
 
 /* ── 차량·레슨·식사·추가 섹션 (admin 맞춤견적 항목) ── */
 function allItems(){ return [...TRANSFERS, ...LESSONS, ...EXTRAS, ...CUSTOM_SECTIONS.flatMap(s => s.items || [])]; }
 function itemAmount(it, qty){ return itemPhp(it) * qty * (it.perPerson ? (pax.g + pax.n) : 1); }   // 페소
-/* 전용숙소 선택 옵션 (2026-10-06) — 객실료(1인 1실·청소·세탁·와이파이)와 따로, 손님이 골라 담음
-   가격은 admin 숙소 관리 → 전용숙소 → "전용숙소 선택 옵션"에서 (비우면 아래 기본값)
-   전용숙소를 담으면 일반 항목의 공항 픽업·조식·석식 등은 중복되지 않도록 "전용숙소 옵션에서 선택"으로 바뀜 */
-const LOCAL_INCLUDED = /픽업|드롭|샌딩|공항|조식|석식/;
-const LOCAL_OPT_DEF = [
-  { k:'breakfast',    name:'🍳 조식',                 unit:'1인·1일',     def:400 },
-  { k:'dinner',       name:'🍽️ 석식',                 unit:'1인·1일',     def:500 },
-  { k:'airport',      name:'✈️ 공항 픽업·드롭 (왕복)', unit:'팀',          def:2000 },
-  { k:'golfTransfer', name:'⛳ 숙소↔골프장 픽업·드롭 (왕복)', unit:'라운드·팀', def:1000 },
-];
-let localOpts = { breakfast:false, dinner:false, airport:false, golfTransfer:false };   // 손님이 직접 🛒 담기로 고름
-function localSelected(){ const h = findHotel(selHotel); return !!(h && h.kind === 'local'); }
-function golfRounds(){ return Object.values(selGolf).reduce((s,v) => s + v, 0); }
-function localOptLines(h, n){
-  if (!h || h.kind !== 'local') return [];
-  const o = h.options || {};
-  return LOCAL_OPT_DEF.map(d => {
-    const price = (o[d.k] != null && o[d.k] !== '') ? Number(o[d.k]) || 0 : d.def;
-    const qty = d.k === 'breakfast' || d.k === 'dinner' ? n * pax.g : d.k === 'airport' ? 1 : golfRounds();
-    const detail = d.k === 'breakfast' || d.k === 'dinner' ? `${fmtPhp(price)} × ${n}일 × ${pax.g}명` : d.k === 'airport' ? `${fmtPhp(price)} × 왕복 1회` : `${fmtPhp(price)} × ${qty}라운드`;
-    return { ...d, price, qty, on: !!localOpts[d.k], amt: localOpts[d.k] ? price * qty : 0, detail };
-  });
-}
-function toggleLocalOpt(k){ localOpts[k] = !localOpts[k]; renderHotels(); renderSum(); }
-function localOptsBox(h){
-  const n = nights();
-  const ICON = { breakfast:'🍳', dinner:'🍽️', airport:'✈️', golfTransfer:'⛳' };
-  return `<div style="margin:2px 0 14px;padding:12px;border-radius:14px;background:#f0fdf4;border:1.5px solid #bbf7d0;">
-    <div style="font-size:13.5px;font-weight:800;color:#065f46;margin-bottom:4px;">🏠 전용숙소 옵션 — 필요한 것을 🛒 담아 주세요</div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">객실료(1인 1실·청소·세탁·와이파이)와 따로, 식사와 픽업·드롭을 골라 담을 수 있습니다.</div>
-    ${localOptLines(h, n).map(o => `<div class="item${o.on ? ' on' : ''}" style="background:#fff;">
-      <div class="item-icon">${ICON[o.k]}</div>
-      <div class="item-info">
-        <div class="item-name">${o.name.replace(/^\S+\s/, '')}</div>
-        <div class="item-price">${fmtPhp(o.price)}${krwTag(o.price)} <small>/ ${o.unit}</small></div>
-        ${o.on ? `<div class="item-note" style="color:var(--purple-deep);font-weight:700;">${o.qty ? o.detail + ' = ' + fmtPhp(o.amt) : (o.k === 'golfTransfer' ? '골프장 라운드를 담으면 계산됩니다' : '날짜를 넣으면 계산됩니다')}</div>` : ''}
-      </div>
-      <button type="button" class="add${o.on ? ' on' : ''}" onclick="toggleLocalOpt('${o.k}')">${o.on ? '✓ 담김' : '🛒 담기'}</button>
-    </div>`).join('')}
-  </div>`;
-}
-function isIncluded(it){ return localSelected() && LOCAL_INCLUDED.test(String(it && it.name || '')) && !/전용\s*차량|마닐라|NAIA/i.test(String(it && it.name || '')); }   // 마닐라 공항 픽업·전용 차량은 별도 상품
 function itemRows(items){
   return items.map(it => {
     const q = selItems[it.id] || 0;
@@ -692,8 +648,7 @@ function itemRows(items){
         ${it.note ? `<div class="item-note">${esc(it.note)}</div>` : ''}
         <div class="item-price">${fmtPhp(itemPhp(it))}${krwTag(itemPhp(it))} <small>/ ${esc(it.unit || '회')}</small></div>
       </div>
-      ${isIncluded(it) ? `<div class="incl-badge">🏠 전용숙소<br>옵션에서 선택</div>`
-          : q ? `<div class="qty"><button type="button" onclick="chgItem('${esc(it.id)}',-1)">−</button><span>${q}</span><button type="button" onclick="chgItem('${esc(it.id)}',1)">+</button></div>`
+      ${q ? `<div class="qty"><button type="button" onclick="chgItem('${esc(it.id)}',-1)">−</button><span>${q}</span><button type="button" onclick="chgItem('${esc(it.id)}',1)">+</button></div>`
           : `<button type="button" class="add" onclick="chgItem('${esc(it.id)}',1)">🛒 담기</button>`}
     </div>`;
   }).join('') || '<div class="cart-empty">준비 중입니다.</div>';
@@ -729,20 +684,17 @@ function calc(){
   const hotelPhp = h && n ? (h.kind === 'local' ? (h.pricePhp || u2p(h.priceUsd)) * n * pax.g : h.kind === 'villa' ? (h.pricePhp || u2p(h.priceUsd)) * n : h.price * n * pax.r) : 0;
   const golf = GREENFEE.filter(g => selGolf[g.id]).map(g => ({ g, rounds: selGolf[g.id], php: fee(g) * selGolf[g.id] * pax.g }));
   const golfPhp = golf.reduce((s,x) => s + x.php, 0);
-  const items = allItems().filter(it => selItems[it.id] && !isIncluded(it)).map(it => ({ it, qty: selItems[it.id], amt: itemAmount(it, selItems[it.id]) }));
+  const items = allItems().filter(it => selItems[it.id]).map(it => ({ it, qty: selItems[it.id], amt: itemAmount(it, selItems[it.id]) }));
   const itemsPhp = items.reduce((s,x) => s + x.amt, 0);
-  const lopts = localOptLines(h, n).filter(o => o.on && o.amt > 0);
-  const loptsPhp = lopts.reduce((s,o) => s + o.amt, 0);
-  const count = (h ? 1 : 0) + lopts.length + golf.length + items.length;
-  const totalPhp = hotelPhp + loptsPhp + golfPhp + itemsPhp;
-  return { n, h, hotelPhp, lopts, loptsPhp, golf, golfPhp, items, itemsPhp, count, totalPhp, totalUsd: usd(totalPhp) };
+  const count = (h ? 1 : 0) + golf.length + items.length;
+  const totalPhp = hotelPhp + golfPhp + itemsPhp;
+  return { n, h, hotelPhp, golf, golfPhp, items, itemsPhp, count, totalPhp, totalUsd: usd(totalPhp) };
 }
 function renderSum(){
   const c = calc();
   const x = (kind, id) => `<button type="button" class="x" title="빼기" onclick="removeFromCart('${kind}','${esc(id)}')">✕</button>`;
   let rows = '';
-  if (c.h) rows += `<div class="cart-group">🏨 숙소</div><div class="cart-row"><span class="k">${esc(c.h.name)}<br><small>${c.n ? (c.h.kind === 'local' ? '객실 ' + c.n + '일 × ' + pax.g + '명' : c.h.kind === 'villa' ? c.n + '박 × 1채' : c.n + '박 × 객실 ' + pax.r + '개 (참고가)') : '날짜를 넣으면 계산됩니다'}</small></span><span class="v">${c.n ? fmtPhp(c.hotelPhp) + '<br>' + krwTag(c.hotelPhp) : '-'}</span>${x('hotel','')}</div>`
-    + c.lopts.map(o => `<div class="cart-row"><span class="k">${o.name}<br><small>${o.detail}</small></span><span class="v">${fmtPhp(o.amt)}<br>${krwTag(o.amt)}</span><button type="button" class="x" title="빼기" onclick="toggleLocalOpt('${o.k}')">✕</button></div>`).join('');
+  if (c.h) rows += `<div class="cart-group">🏨 숙소</div><div class="cart-row"><span class="k">${esc(c.h.name)}<br><small>${c.n ? (c.h.kind === 'local' ? '객실 ' + c.n + '일 × ' + pax.g + '명' : c.h.kind === 'villa' ? c.n + '박 × 1채' : c.n + '박 × 객실 ' + pax.r + '개 (참고가)') : '날짜를 넣으면 계산됩니다'}</small></span><span class="v">${c.n ? fmtPhp(c.hotelPhp) + '<br>' + krwTag(c.hotelPhp) : '-'}</span>${x('hotel','')}</div>`;
   if (c.golf.length) rows += '<div class="cart-group">⛳ 골프</div>' + c.golf.map(g => `<div class="cart-row"><span class="k">${esc(g.g.name)}<br><small>${g.rounds}라운드 × 골퍼 ${pax.g}명</small></span><span class="v">${fmtPhp(g.php)}<br>${krwTag(g.php)}</span>${x('golf', g.g.id)}</div>`).join('');
   if (c.items.length) rows += '<div class="cart-group">🚗 차량 · 레슨 · 식사 등</div>' + c.items.map(i => `<div class="cart-row"><span class="k">${esc(i.it.icon || '')} ${esc(i.it.name)}<br><small>${fmtPhp(itemPhp(i.it))} × ${i.qty}${i.it.perPerson ? ' × ' + (pax.g + pax.n) + '명' : ''}</small></span><span class="v">${fmtPhp(i.amt)}<br>${krwTag(i.amt)}</span>${x('item', i.it.id)}</div>`).join('');
   $('sum-rows').innerHTML = rows || '<div class="cart-empty">장바구니가 비어 있어요.<br>위에서 필요한 것을 🛒 담아 주세요.</div>';
@@ -778,8 +730,7 @@ async function submitApply(){
     customHotelPriceUSD: 0,
     arrDate: $('arr').value || '', depDate: $('dep').value || '',
     golfCourses: c.golf.map(x => ({ name: x.g.name, rounds: x.rounds, gfId: x.g.id, priceUSD: Math.round(usd(fee(x.g)) * 100) / 100, pricePHP: fee(x.g) })),
-    extras: c.lopts.map(o => ({ name: '전용숙소 ' + o.name.replace(/^\S+\s/, ''), qty: o.qty, id: 'local-' + o.k, priceUSD: 0, pricePHP: o.price, perPerson: false }))
-      .concat(c.items.map(i => ({ name: i.it.name, qty: i.qty, id: String(i.it.id || ''), priceUSD: Number(i.it.price) || 0, pricePHP: itemPhp(i.it), perPerson: !!i.it.perPerson }))),
+    extras: c.items.map(i => ({ name: i.it.name, qty: i.qty, id: String(i.it.id || ''), priceUSD: Number(i.it.price) || 0, pricePHP: itemPhp(i.it), perPerson: !!i.it.perPerson })),
     status: 'pending',
     source: 'quote.html',
     packageType: 'cart',
@@ -804,7 +755,7 @@ async function submitApply(){
       '인원': '골퍼 ' + pax.g + ' / 비골퍼 ' + pax.n + ' / 객실 ' + pax.r,
       '호텔': data.hotel, '아고다 예약번호': booking || '미입력',
       '골프장': c.golf.map(x => x.g.name + ' ' + x.rounds + 'R').join(', ') || '-',
-      '추가항목': c.lopts.map(o => o.name + ' ' + fmtPhp(o.amt)).concat(c.items.map(i => i.it.name + ' x' + i.qty)).join(', ') || '-',
+      '추가항목': c.items.map(i => i.it.name + ' x' + i.qty).join(', ') || '-',
       '시즌': isPeak() ? '성수기' : '비수기', '예상총액': '₱' + data.totalPHP.toLocaleString() + ' (약 ₩' + data.totalKRW.toLocaleString() + ')', '요청사항': memoIn || ''
     });
     if (window.gtag) gtag('event', 'quote_inquiry_submit', { value: data.totalPHP, currency: 'PHP', hotel_booked: booking ? 'yes' : 'no' });
