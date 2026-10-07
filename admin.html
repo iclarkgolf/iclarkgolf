@@ -541,6 +541,39 @@ footer {
 .gap-8  { gap: 8px; }
 .gap-12 { gap: 12px; }
 
+
+/* ── 📱 휴대폰 보기 정리 (2026-10-07) — PC 화면에는 영향 없음 ── */
+@media (max-width:600px){
+  .admin-header{padding:12px 14px;gap:8px;}
+  .admin-header .admin-user{display:none;}
+  .admin-header .admin-logout,.admin-header a{white-space:nowrap;}
+  .admin-logo{font-size:19px;letter-spacing:1px;}
+  /* 표 머리글이 한 글자씩 꺾이지 않게 → 옆으로 밀어서 봄 */
+  .tbl th{white-space:nowrap;}
+  .tbl-wrap{-webkit-overflow-scrolling:touch;}
+  /* 입력칸이 화면 밖으로 삐져나가지 않게 */
+  .panel [style*="grid"] > *{min-width:0;}
+  .form-row > *{min-width:0;}
+  /* 카드 제목 옆 긴 설명은 다음 줄로 */
+  .mgmt-title{flex-wrap:wrap;gap:4px 8px;}
+  .mgmt-title > button{float:none !important;}
+  .panel input,.panel select,.panel textarea{max-width:100%;}
+  /* 문의 내역 → 카드 모양 (관리·삭제 버튼이 바로 보이게) */
+  #panel-inquiry .tbl-wrap{border:none;overflow:visible;}
+  #panel-inquiry .tbl thead{display:none;}
+  #panel-inquiry .tbl,#panel-inquiry .tbl tbody{display:block;width:100%;}
+  #inquiry-body tr{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;background:#fff;border:1.5px solid #c8edd9;border-radius:12px;padding:12px;margin-bottom:10px;}
+  #inquiry-body td{display:block;padding:0;border:none;font-size:13px;white-space:normal;}
+  #inquiry-body td[colspan]{grid-column:1/-1;}
+  #inquiry-body td:nth-child(1){font-size:11.5px;color:#6b7280;}
+  #inquiry-body td:nth-child(2){grid-column:1/-1;grid-row:1;font-size:15px;}
+  #inquiry-body td:nth-child(4){grid-column:1/-1;}
+  #inquiry-body td:nth-child(5)::before{content:'기간 ';color:#9ca3af;font-size:11px;}
+  #inquiry-body td:nth-child(6)::before{content:'인원 ';color:#9ca3af;font-size:11px;}
+  #inquiry-body td:nth-child(7){font-size:15px;}
+  #inquiry-body td:nth-child(9){grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px;padding-top:8px;border-top:1px dashed #e5e7eb;}
+  #inquiry-body td:nth-child(9) > *{margin:0 !important;display:inline-block !important;}
+}
 </style>
 <style>
 body { background:#f4faf7; padding-bottom:40px; }
@@ -1515,7 +1548,7 @@ window.adminLogout = function() {
     </div>
     <div class="tbl-wrap">
       <table class="tbl">
-        <thead><tr><th>날짜</th><th>이름</th><th>연락처</th><th>숙소</th><th>기간</th><th>인원</th><th>총액</th><th>상태</th><th>관리</th><th>삭제</th></tr></thead>
+        <thead><tr><th>날짜</th><th>이름</th><th>연락처</th><th>숙소</th><th>기간</th><th>인원</th><th>총액</th><th>상태</th><th>관리</th></tr></thead>
         <tbody id="inquiry-body">
           <tr><td colspan="10" style="text-align:center;color:#9ca3af;padding:20px;">문의 내역이 없습니다</td></tr>
         </tbody>
@@ -4274,10 +4307,10 @@ async function loadInquiries(filter = 'all') {
               <option value="confirmed">확정</option>
               <option value="done">완료</option>
             </select>
+            <button onclick="deleteInquiry('${q.id}')" title="이 문의 삭제" style="display:block;margin-top:4px;background:#fff;color:#dc2626;border:1px solid #fecaca;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">🗑️ 삭제</button>
           </td>
-          <td><button onclick="deleteInquiry('${q.id}')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:16px;">🗑️</button></td>
         </tr>
-      `).join('') : '<tr><td colspan="10" style="text-align:center;color:#9ca3af;padding:20px;">문의 내역이 없습니다</td></tr>';
+      `).join('') : '<tr><td colspan="9" style="text-align:center;color:#9ca3af;padding:20px;">문의 내역이 없습니다</td></tr>';
 
       // 대시보드 최근 5건
       const recentBody = document.getElementById('recent-inquiry-body');
