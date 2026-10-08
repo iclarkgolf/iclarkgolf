@@ -74,9 +74,12 @@ async function fetchAgodaOnce(siteId, apiKey, cityId, hotelIds) {
                   additional: {
                             currency: 'PHP',
                             language: 'ko-kr',
-                            maxResult: MAX_RESULTS_PER_CITY,
-                            sortBy: 'AllGuestsReviewScore', // 후기·평점이 좋은 순서로 정렬
-                            ...(hotelIds ? {} : { minimumStarRating: 3 }),
+                            // 호텔 번호로 조회할 때는 개수·정렬·별점 조건을 넣으면 아고다가 거부함
+                            ...(hotelIds ? {} : {
+                                      maxResult: MAX_RESULTS_PER_CITY,
+                                      sortBy: 'AllGuestsReviewScore', // 후기·평점이 좋은 순서로 정렬
+                                      minimumStarRating: 3,
+                            }),
                             occupancy: { numberOfAdult: 2, numberOfChildren: 0 },
                   },
           },
