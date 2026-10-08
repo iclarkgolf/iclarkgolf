@@ -1,6 +1,34 @@
 {
-  "updatedAt": "2026-10-08T01:03:14.268Z",
+  "updatedAt": "2026-10-08T01:08:59.100Z",
   "hotels": [
+    {
+      "hotelId": 83260113,
+      "name": "망고 스위트 - 앙헬레스",
+      "price": 1446.64,
+      "crossedOutPrice": 0,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/83260113/1293392666/d21d050cebe1583905e99dffe22e3a70.jpg?ce=3&s=800x600",
+      "starRating": 5,
+      "reviewScore": 8.7,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=83260113&currency=PHP&checkin=2026-10-22&checkout=2026-10-23&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
+      "region": "앙헬레스/클락",
+      "cityId": 18875,
+      "pinned": true
+    },
+    {
+      "hotelId": 47937777,
+      "name": "엠마우스 콘도텔",
+      "price": 1395.62,
+      "crossedOutPrice": 0,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/47937777/-1/11ea32c38f6cf0659a40ce87091d1c5b.jpg?ce=0&s=800x600",
+      "starRating": 4,
+      "reviewScore": 9,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=47937777&currency=PHP&checkin=2026-10-22&checkout=2026-10-23&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
+      "region": "앙헬레스/클락",
+      "cityId": 18875,
+      "pinned": true
+    },
     {
       "hotelId": 90091,
       "name": "ABC 호텔",
