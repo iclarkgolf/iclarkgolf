@@ -29,6 +29,14 @@ const CITY_IDS = [
   { id: 18868, label: '바타안(발랑가/마리벨레스/모롱)' },
   ];
 
+// 꼭 보여야 하는 단골 호텔 (평점순 상위 목록에 안 잡혀도 항상 포함) — 2026-10-08
+// 번호는 agoda.com 검색에서 확인한 아고다 호텔 번호. 추가하려면 한 줄씩 늘리면 됨.
+const PINNED_HOTELS = [
+  { id: 83260113, name: '망고 스위트 (Mango Suites - Angeles)' },
+  { id: 47937777, name: '엠마우스 콘도텔 (Emmaus Condotel)' },
+];
+const PINNED_REGION = { id: 18875, label: '앙헬레스/클락' };
+
 // 지역 하나당 몇 개 호텔을 가져올지 (지역 수가 늘어난 만큼 지역당 개수는 줄여
 // 전체 API 호출 부담과 최종 목록 크기를 적정 수준으로 유지)
 const MAX_RESULTS_PER_CITY = 40;
@@ -56,19 +64,19 @@ function sleep(ms) {
 const MAX_TRIES = 3;
 const TIMEOUT_MS = 30000;
 
-async function fetchAgodaOnce(siteId, apiKey, cityId) {
+async function fetchAgodaOnce(siteId, apiKey, cityId, hotelIds) {
     const { checkIn, checkOut } = nextWeekDates();
     const body = {
           criteria: {
                   checkInDate: checkIn,
                   checkOutDate: checkOut,
-                  cityId,
+                  ...(hotelIds ? { hotelId: hotelIds } : { cityId }),
                   additional: {
                             currency: 'PHP',
                             language: 'ko-kr',
                             maxResult: MAX_RESULTS_PER_CITY,
                             sortBy: 'AllGuestsReviewScore', // 후기·평점이 좋은 순서로 정렬
-                            minimumStarRating: 3,
+                            ...(hotelIds ? {} : { minimumStarRating: 3 }),
                             occupancy: { numberOfAdult: 2, numberOfChildren: 0 },
                   },
           },
@@ -94,10 +102,10 @@ async function fetchAgodaOnce(siteId, apiKey, cityId) {
 }
 
 // 성공하면 호텔 목록, 3번 다 실패하면 null (→ 이 지역은 지난번 데이터를 그대로 유지)
-async function fetchAgoda(siteId, apiKey, cityId, regionLabel) {
+async function fetchAgoda(siteId, apiKey, cityId, regionLabel, hotelIds) {
     for (let t = 1; t <= MAX_TRIES; t++) {
           try {
-                  const results = await fetchAgodaOnce(siteId, apiKey, cityId);
+                  const results = await fetchAgodaOnce(siteId, apiKey, cityId, hotelIds);
                   return results.map((h) => ({
                             hotelId: h.hotelId,
                             name: h.hotelName,
@@ -110,6 +118,7 @@ async function fetchAgoda(siteId, apiKey, cityId, regionLabel) {
                             bookingUrl: h.landingURL,
                             region: regionLabel,
                             cityId,
+                            ...(hotelIds ? { pinned: true } : {}),
                   }));
           } catch (err) {
                   console.warn(`  ! ${regionLabel} (cityId ${cityId}) ${t}/${MAX_TRIES}번째 실패: ${err.message}`);
@@ -137,6 +146,21 @@ async function main() {
     let okCities = 0;
     let keptCities = 0;
 
+  // ① 단골 호텔 먼저 (실패하면 지난번 데이터 유지)
+  {
+        const ids = PINNED_HOTELS.map((h) => h.id);
+        let pinned = await fetchAgoda(siteId, apiKey, PINNED_REGION.id, PINNED_REGION.label, ids);
+        if (!pinned || !pinned.length) {
+                pinned = previous.filter((h) => ids.includes(h.hotelId));
+                console.log(`  - 단골 호텔: 조회 실패/0개 → 지난 데이터 ${pinned.length}개 유지`);
+        } else {
+                console.log(`  - 단골 호텔: ${pinned.length}/${ids.length}개 조회 (${pinned.map((h) => h.name).join(', ')})`);
+        }
+        for (const hotel of pinned) { if (!seen.has(hotel.hotelId)) { seen.add(hotel.hotelId); hotels.push(hotel); } }
+        await sleep(DELAY_BETWEEN_CALLS_MS);
+  }
+
+  // ② 지역별 평점순 목록
   for (const { id: cityId, label } of CITY_IDS) {
         let results = await fetchAgoda(siteId, apiKey, cityId, label);
         if (results === null || results.length === 0) {
