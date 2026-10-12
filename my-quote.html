@@ -183,6 +183,27 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
   .itin-img{max-width:120px;}
 }
 </style>
+<script>
+// 2026-10-12: Remarks가 편집기(HTML)로 쓰였으면 서식대로, 예전 글(일반 글자)은 예전처럼 표시
+function renderRemarks(v){
+  var el = document.getElementById('out-remarks'); if (!el) return;
+  var s = String(v || '');
+  if (/<\/?(p|div|br|h[1-6]|b|strong|i|em|u|ul|ol|li|table|tr|td|span|font|hr|a|img)\b/i.test(s)) {
+    var doc = new DOMParser().parseFromString('<div>' + s + '</div>', 'text/html');
+    doc.querySelectorAll('script,style,iframe,object,embed,form,input,button').forEach(function(n){ n.remove(); });
+    doc.querySelectorAll('*').forEach(function(n){
+      Array.prototype.slice.call(n.attributes).forEach(function(a){
+        if (/^on/i.test(a.name) || (/^(href|src)$/i.test(a.name) && /^\s*javascript:/i.test(a.value))) n.removeAttribute(a.name);
+      });
+    });
+    el.style.whiteSpace = 'normal';
+    el.innerHTML = doc.body.firstChild.innerHTML;
+  } else {
+    el.style.whiteSpace = 'pre-line';
+    el.textContent = s;
+  }
+}
+</script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6049416941276065"
      crossorigin="anonymous"></script>
 </head>
@@ -479,7 +500,7 @@ function renderQuoteV2(data) {
   document.getElementById('out-includes').innerHTML = inc.map(i=>`<li>${esc(i)}</li>`).join('');
   document.getElementById('out-excludes').innerHTML = exc.map(i=>`<li>${esc(i)}</li>`).join('');
 
-  if (data.remarks) { document.getElementById('out-remarks').textContent = data.remarks; document.getElementById('out-remarks-section').style.display = 'block'; }
+  if (data.remarks) { renderRemarks(data.remarks); document.getElementById('out-remarks-section').style.display = 'block'; }
   if (data.itineraryHtml && data.itineraryHtml.trim()) {
     document.getElementById('out-itinerary').innerHTML = data.itineraryHtml;
     document.getElementById('itin-title').textContent = data.itineraryTitle ? data.itineraryTitle + ' 여행 일정' : '여행 일정';
@@ -542,7 +563,7 @@ function renderQuote(data) {
   }
 
   if (data.remarks) {
-    document.getElementById('out-remarks').textContent = data.remarks;
+    renderRemarks(data.remarks);
     document.getElementById('out-remarks-section').style.display = 'block';
   }
 

@@ -4795,8 +4795,37 @@ async function loadVisitorStats() {
   </div>
 
   <div class="q2-card">
-    <div class="q2-title">📝 Remarks <small>손님 견적서 하단에 그대로 표시</small></div>
-    <textarea class="q2-inp" id="q2Remarks" placeholder="특이사항 보충 설명" style="min-height:90px;resize:vertical;"></textarea>
+    <div class="q2-title">📝 Remarks · 일정 안내 <small>손님 견적서 하단에 그대로 표시</small></div>
+    <!-- 2026-10-12: Remarks를 글 편집기로 바꿈. 아래 textarea는 숨겨서 저장값 보관용으로만 쓰고(기존 저장·불러오기 코드 그대로 동작), 실제 입력은 편집기에서 -->
+    <textarea class="q2-inp" id="q2Remarks" style="display:none;"></textarea>
+    <div id="q2RmToolbar" style="display:flex;flex-wrap:wrap;gap:6px;padding:10px;background:#fafafa;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:8px;">
+      <button type="button" onmousedown="event.preventDefault()" onclick="q2RmCmd('h2')" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;"><b>H2</b></button>
+      <button type="button" onmousedown="event.preventDefault()" onclick="q2RmCmd('h3')" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;"><b>H3</b></button>
+      <button type="button" onmousedown="event.preventDefault()" onclick="q2RmCmd('p')" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;">본문</button>
+      <button type="button" onmousedown="event.preventDefault()" onclick="q2RmCmd('bold')" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;"><b>B</b></button>
+      <button type="button" onmousedown="event.preventDefault()" onclick="q2RmCmd('italic')" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;"><i>I</i></button>
+      <button type="button" onmousedown="event.preventDefault()" onclick="q2RmCmd('underline')" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;"><u>U</u></button>
+      <button type="button" onmousedown="event.preventDefault()" onclick="q2RmCmd('insertUnorderedList')" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;">• 목록</button>
+      <button type="button" onmousedown="event.preventDefault()" onclick="q2RmCmd('insertOrderedList')" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;">1. 목록</button>
+      <button type="button" onmousedown="event.preventDefault()" onclick="q2RmCmd('hr')" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;">— 구분선</button>
+      <select onchange="q2RmColor('foreColor',this.value);this.value=''" style="padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;background:#f4f4f5;">
+        <option value="">글자 색상</option><option value="#18181b">⬛ 검정</option><option value="#1b4332">🟢 진초록</option><option value="#1D9E75">🟢 초록</option><option value="#2563EB">🔵 파랑</option><option value="#EF4444">🔴 빨강</option><option value="#F97316">🟠 오렌지</option><option value="#534AB7">🟣 보라</option>
+      </select>
+      <select onchange="q2RmColor('hiliteColor',this.value);this.value=''" style="padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;background:#f4f4f5;">
+        <option value="">형광펜</option><option value="#FEF9C3">🟡 노랑</option><option value="#D1FAE5">🟢 연초록</option><option value="#DBEAFE">🔵 연파랑</option><option value="#FCE7F3">🩷 연핑크</option><option value="transparent">지우기</option>
+      </select>
+      <button type="button" onclick="q2RmHtmlToggle()" style="padding:6px 10px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;cursor:pointer;">🧩 HTML 소스</button>
+      <button type="button" onclick="q2RmCleanup()" style="padding:6px 10px;background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">🧹 서식 정리</button>
+    </div>
+    <div id="q2RemarksEditor" contenteditable="true" style="min-height:400px;border:1.5px solid #e5e7eb;border-radius:8px;padding:16px;font-size:14px;line-height:1.9;font-family:'Noto Sans KR',sans-serif;outline:none;background:#fff;"></div>
+    <div id="q2RmHtmlBox" style="display:none;margin-top:8px;">
+      <div style="font-size:12px;color:#6b7280;margin-bottom:6px;">HTML 코드를 붙여넣고 "적용"을 누르면 위 내용이 바뀝니다.</div>
+      <textarea id="q2RmHtmlSrc" rows="10" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:12px;font-family:monospace;box-sizing:border-box;"></textarea>
+      <div style="display:flex;gap:8px;margin-top:6px;">
+        <button type="button" onclick="q2RmHtmlApply()" style="flex:1;padding:10px;background:#1b4332;color:#fff;border:none;border-radius:8px;font-weight:800;cursor:pointer;">적용</button>
+        <button type="button" onclick="q2RmHtmlToggle()" style="padding:10px 16px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:8px;cursor:pointer;">닫기</button>
+      </div>
+    </div>
   </div>
 
   <div class="q2-card">
@@ -6072,5 +6101,65 @@ function bkCopy(text, toast){
 }
 </script>
 
+<script>
+// ── 2026-10-12: 견적서 Remarks 글 편집기 ──
+// 숨긴 textarea(#q2Remarks)가 저장값을 그대로 들고 있어서, 기존 저장·불러오기·확정서 안내문 추가 코드는 손대지 않아도 됨.
+// textarea에 값이 들어오면(불러오기 등) 편집기에 그려 주고, 편집기에서 쓰면 textarea에 HTML로 넣어 둔다.
+(function(){
+  var ta = document.getElementById('q2Remarks'), ed = document.getElementById('q2RemarksEditor');
+  if (!ta || !ed) return;
+  var desc = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value');
+  var TAG = /<\/?(p|div|br|h[1-6]|b|strong|i|em|u|ul|ol|li|table|tbody|tr|td|th|span|font|hr|a|img)\b/i;
+  function toHtml(v){
+    var s = String(v == null ? '' : v);
+    if (!s.trim()) return '';
+    if (TAG.test(s)) return s.replace(/([^>\n])\n/g, '$1<br>');
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  }
+  function sync(){
+    var h = ed.innerHTML;
+    if (!ed.textContent.trim() && !/<(img|hr|table)/i.test(h)) h = '';
+    desc.set.call(ta, h);
+  }
+  Object.defineProperty(ta, 'value', {
+    configurable: true,
+    get: function(){ return desc.get.call(ta); },
+    set: function(v){ var h = toHtml(v); desc.set.call(ta, h); if (ed.innerHTML !== h) ed.innerHTML = h; }
+  });
+  ed.addEventListener('input', sync);
+  ed.addEventListener('blur', sync);
+  if (typeof ceAttachSanitizedPaste === 'function') ceAttachSanitizedPaste('q2RemarksEditor');
+  ed.innerHTML = toHtml(desc.get.call(ta));
+  var range = null;
+  function save(){ var sel = window.getSelection(); if (sel && sel.rangeCount && ed.contains(sel.anchorNode)) range = sel.getRangeAt(0).cloneRange(); }
+  ed.addEventListener('mouseup', save); ed.addEventListener('keyup', save);
+  function restore(){ ed.focus(); if (range) { var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range); } }
+  window.q2RmCmd = function(t){
+    restore();
+    if (t === 'h2' || t === 'h3' || t === 'p') document.execCommand('formatBlock', false, t);
+    else if (t === 'hr') document.execCommand('insertHTML', false, '<hr style="border:none;border-top:1.5px solid #e5e7eb;margin:12px 0;">');
+    else document.execCommand(t);
+    sync(); save();
+  };
+  window.q2RmColor = function(cmd, c){ if (!c) return; restore(); document.execCommand(cmd, false, c); sync(); };
+  window.q2RmHtmlToggle = function(){
+    var box = document.getElementById('q2RmHtmlBox');
+    var open = box.style.display === 'none';
+    box.style.display = open ? 'block' : 'none';
+    if (open) document.getElementById('q2RmHtmlSrc').value = ed.innerHTML;
+  };
+  window.q2RmHtmlApply = function(){
+    ed.innerHTML = document.getElementById('q2RmHtmlSrc').value;
+    sync();
+    document.getElementById('q2RmHtmlBox').style.display = 'none';
+  };
+  window.q2RmCleanup = function(){
+    if (typeof ceSanitizePastedHTML !== 'function') return;
+    if (!confirm('섞여 있는 폰트·크기·색상을 지우고 통일된 모양으로 정리할까요?\n(제목·굵게·목록은 그대로 유지됩니다)')) return;
+    ed.innerHTML = ceSanitizePastedHTML(ed.innerHTML);
+    sync();
+  };
+})();
+</script>
 </body>
 </html>
