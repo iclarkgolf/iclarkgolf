@@ -142,6 +142,7 @@ onAuthStateChanged(auth, async user => {
     DOCS = snap.docs.map(d => ({ id: d.id, ...d.data() }))
       .sort((a, b) => ((a.rounds||[])[0]||{}).date > ((b.rounds||[])[0]||{}).date ? 1 : -1);
     render();
+    markSeen();
   }, err => { $('list').innerHTML = '<div class="card" style="color:#b91c1c;">Could not load bookings (' + esc(err.code || err.message) + ').</div>'; });
 });
 
@@ -202,6 +203,16 @@ function card(b){
   </div>`;
 }
 
+// 2026-10-13: 파트너가 화면에서 본 부킹은 "확인함" 표시를 남김 (단계가 바뀔 때마다 한 번씩만 기록)
+const seenKey = b => `${b.status}|${b.confirmedAt ? 1 : 0}|${Number(b.changeCount) || 0}`;
+async function markSeen(){
+  for (const b of DOCS) {
+    if (!['reserve','booked','paid'].includes(b.status)) continue;
+    if ((b.partner || {}).seenKey === seenKey(b)) continue;
+    try { await updateDoc(doc(db, 'bookings', b.id), { 'partner.seenKey': seenKey(b), 'partner.seenAt': new Date().toISOString(), 'partner.seenBy': (ME && ME.email) || '' }); }
+    catch(e) { console.warn('seen mark failed', e); }
+  }
+}
 async function save(id, patch, histMsg){
   const b = DOCS.find(x => x.id === id);
   await updateDoc(doc(db, 'bookings', id), { ...patch, updatedAt: new Date().toISOString(), history: [...(b.history || []), { at: new Date().toISOString(), by: PARTNER.name || 'Partner', msg: histMsg }] });
