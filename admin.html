@@ -6190,5 +6190,162 @@ function bkCopy(text, toast){
   };
 })();
 </script>
+<script>
+/* ── 📒 노션 예약 장부 자동 연동 (2026-10-13) ──────────────────────────────
+   기존 코드는 건드리지 않고 덧붙이기만 함.
+   · 견적서/확정서 저장(qfSave) 성공 → 그 문서 번호를 연동 웹 앱(Google Apps Script)에 전송
+   · 부킹 목록이 바뀔 때마다(내가 누른 것 + BBK가 파트너 화면에서 한 것) 바뀐 부킹만 전송
+   · 웹 앱이 사이트 DB에서 원본을 직접 읽어 노션 「📅 예약 장부」를 채움 (손으로 타이핑 없음)
+   · 연동 웹 앱 주소는 Firestore settings/notion.bridgeUrl 에 저장 (처음 한 번 버튼으로 입력) */
+(function(){
+  const FB = 'https://www.gstatic.com/firebasejs/10.12.0/';
+  let _url = null, _urlLoaded = false, _timer = null, _busy = false;
+  const LS = 'ntnSig_v1';
+  const ls = { get(){ try { return JSON.parse(localStorage.getItem(LS) || '{}'); } catch(e) { return {}; } },
+               set(o){ try { localStorage.setItem(LS, JSON.stringify(o)); } catch(e) {} } };
+
+  async function idToken(){
+    const { getApps } = await import(FB + 'firebase-app.js');
+    const { getAuth } = await import(FB + 'firebase-auth.js');
+    const app = getApps().find(a => a.name === 'admin-auth');
+    const u = app && getAuth(app).currentUser;
+    return u ? u.getIdToken() : '';
+  }
+  async function getUrl(){
+    if (_urlLoaded) return _url;
+    try { const { db, fs } = await bkFs(); const s = await fs.getDoc(fs.doc(db, 'settings', 'notion')); _url = s.exists() ? (s.data().bridgeUrl || null) : null; }
+    catch(e) { console.warn('노션 설정 읽기 실패', e); }
+    _urlLoaded = true; return _url;
+  }
+  async function setUrl(u){
+    const { db, fs } = await bkFs();
+    await fs.setDoc(fs.doc(db, 'settings', 'notion'), { bridgeUrl: u, updatedAt: new Date().toISOString() }, { merge: true });
+    _url = u; _urlLoaded = true;
+  }
+  function status(msg, color){
+    const el = document.getElementById('ntn-status'); if (!el) return;
+    el.textContent = msg; el.style.color = color || '#6b7280';
+  }
+  async function send(payload, quiet){
+    const url = await getUrl(); if (!url) { status('📒 노션 연동 주소가 아직 없어요 — 오른쪽 버튼을 눌러 넣어 주세요', '#b45309'); return null; }
+    const tok = await idToken(); if (!tok) return null;
+    payload.idToken = tok;
+    const n = (payload.quotes || []).length + (payload.bookings || []).length;
+    status('📒 노션 장부에 반영 중… (' + n + '건)', '#534AB7');
+    try {
+      const r = await fetch(url, { method: 'POST', body: JSON.stringify(payload) });   // text/plain → 구글 웹 앱 CORS OK
+      const j = await r.json();
+      const fails = (j.out || []).filter(o => !o.ok);
+      const done = (j.out || []).filter(o => o.ok && !o.skipped).length;
+      if (!j.ok || fails.length) {
+        const why = j.error || fails.map(f => f.label + ': ' + f.error).join(' / ');
+        status('⚠️ 노션 반영 실패: ' + why, '#b91c1c'); console.warn('노션 연동', j);
+        if (!quiet && typeof showToast === 'function') showToast('⚠️ 노션 장부 반영 실패', 'error');
+        return j;
+      }
+      const t = new Date(); const p2 = x => String(x).padStart(2, '0');
+      status('📒 노션 장부 반영 완료 ' + done + '건 · ' + p2(t.getHours()) + ':' + p2(t.getMinutes()), '#065f46');
+      if (!quiet && done && typeof showToast === 'function') showToast('📒 노션 장부에 반영됐어요');
+      return j;
+    } catch(e) {
+      status('⚠️ 노션 연동 웹 앱에 연결 실패: ' + e.message, '#b91c1c'); return null;
+    }
+  }
+
+  /* 부킹 서명 — 노션에 보내는 내용이 바뀌었을 때만 다시 전송 */
+  function sig(b){
+    const pd = b.partner || {};
+    return JSON.stringify([b.status, b.confirmedAt || '', pd.finalAt || '', (pd.rounds || []).map(r => r.teeTime || ''),
+      (b.rounds || []).map(r => [r.date, r.courseKo || r.courseEn, r.players, r.time]), b.arrDate, b.depDate, b.golfers,
+      b.nameKo, b.hotel || '', b.contact || '', (b.custConfirm || {}).quoteNo || '']);
+  }
+  function relevant(b){
+    if (b.status !== 'done' && b.status !== 'cancelled') return true;
+    const d = b.depDate || b.arrDate || ''; if (!d) return false;
+    return (Date.now() - new Date(d).getTime()) < 30 * 864e5;   // 끝난 지 30일 안 된 것만
+  }
+  async function autoBookings(){
+    if (_busy || typeof _bkDocs === 'undefined' || !_bkDocs.length) return;
+    if (!(await getUrl())) { status('📒 노션 연동 주소가 아직 없어요 — 오른쪽 버튼을 눌러 넣어 주세요', '#b45309'); return; }
+    const old = ls.get(), changed = [], next = {};
+    _bkDocs.forEach(b => { const s = sig(b); next[b.id] = s; if (relevant(b) && old[b.id] !== s) changed.push(b.id); });
+    if (!changed.length) { status('📒 노션 장부와 같음 (바뀐 것 없음)'); return; }
+    _busy = true;
+    const j = await send({ bookings: changed }, true);
+    _busy = false;
+    if (j && j.out) {
+      const okIds = j.out.filter(o => o.ok).map(o => String(o.label).replace(/^booking /, ''));
+      const saved = ls.get(); okIds.forEach(id => { saved[id] = next[id]; }); ls.set(saved);
+    }
+  }
+
+  /* 전체 동기화 버튼 — 앞으로 올 확정서 + 진행 중 부킹 전부 */
+  window.ntnSyncAll = async function(){
+    let url = await getUrl();
+    if (!url || confirm('지금 연동 주소:\n' + url + '\n\n주소를 바꿀까요? (아니면 [취소] → 바로 동기화)')) {
+      const u = prompt('노션 연동 웹 앱 주소를 붙여넣으세요\n(https://script.google.com/macros/s/…/exec)', url || '');
+      if (u === null) { if (!url) return; }
+      else {
+        if (!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(u.trim())) { alert('주소 모양이 달라요. …/exec 로 끝나는 웹 앱 주소를 넣어 주세요.'); return; }
+        await setUrl(u.trim()); url = u.trim();
+      }
+    }
+    const today = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+    let quotes = [];
+    try {
+      const { db, fs } = await bkFs();
+      const snap = await fs.getDocs(fs.collection(db, 'quotes'));
+      quotes = snap.docs.filter(d => { const q = d.data(); return q.version === 2 && /확정/.test(q.docType || '') && String(q.checkIn || '') >= today; }).map(d => d.id);
+    } catch(e) { console.warn(e); }
+    const bookings = (typeof _bkDocs !== 'undefined' ? _bkDocs : []).filter(relevant).map(b => b.id);
+    if (!quotes.length && !bookings.length) { alert('보낼 확정서·부킹이 없습니다.'); return; }
+    _busy = true;
+    const j = await send({ quotes, bookings });
+    _busy = false;
+    if (j && j.out) { const saved = ls.get(); (typeof _bkDocs !== 'undefined' ? _bkDocs : []).forEach(b => { if (bookings.includes(b.id)) saved[b.id] = sig(b); }); ls.set(saved); }
+    if (j && j.ok) alert('✅ 노션 예약 장부에 반영했습니다.\n확정서 ' + quotes.length + '건 · 부킹 ' + bookings.length + '건');
+  };
+
+  /* 부킹 화면에 버튼 + 상태 줄 달기 */
+  function mountBar(){
+    const f = document.getElementById('bk-filter');
+    if (!f || document.getElementById('ntn-bar')) return;
+    const bar = document.createElement('div');
+    bar.id = 'ntn-bar';
+    bar.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 10px;padding:8px 12px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;';
+    bar.innerHTML = '<span id="ntn-status" style="flex:1;min-width:180px;font-size:12.5px;font-weight:700;color:#6b7280;">📒 노션 장부 연동 대기</span>'
+      + '<button type="button" onclick="ntnSyncAll()" style="padding:7px 14px;border:none;border-radius:20px;background:#111827;color:#fff;font-size:12.5px;font-weight:800;cursor:pointer;">📒 노션 장부 전체 동기화</button>';
+    f.parentNode.insertBefore(bar, f);
+  }
+
+  /* 부킹 목록이 그려질 때마다 → 바뀐 부킹 자동 전송 (1.5초 모아서) */
+  if (typeof bkRenderList === 'function' && !bkRenderList._ntn) {
+    const orig = bkRenderList;
+    const w = function(){ const r = orig.apply(this, arguments); mountBar(); clearTimeout(_timer); _timer = setTimeout(autoBookings, 1500); return r; };
+    w._ntn = true; window.bkRenderList = w;
+  }
+
+  /* 견적서/확정서 저장 성공 → 그 문서 전송 */
+  if (typeof qfSave === 'function' && !qfSave._ntn) {
+    const origSave = qfSave;
+    const ws = function(){
+      const no = ((document.getElementById('q2No') || {}).value || 'QT-001');
+      const docId = no.replace(/[^a-zA-Z0-9-]/g, '_');
+      const want = 'https://iclarkgolf.com/my-quote.html?id=' + docId;
+      const linkEl = document.getElementById('qfLinkUrl'); if (linkEl) linkEl.value = '';
+      const r = origSave.apply(this, arguments);
+      let n = 0;
+      const iv = setInterval(() => {
+        n++;
+        if (linkEl && linkEl.value === want) { clearInterval(iv); send({ quotes: [docId] }); }
+        else if (n > 120) clearInterval(iv);
+      }, 500);
+      return r;
+    };
+    ws._ntn = true; ws._bkWrapped = true; window.qfSave = ws;
+  }
+})();
+</script>
+
 </body>
 </html>
