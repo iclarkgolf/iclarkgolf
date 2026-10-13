@@ -6279,31 +6279,80 @@ function bkCopy(text, toast){
     }
   }
 
-  /* 전체 동기화 버튼 — 앞으로 올 확정서 + 진행 중 부킹 전부 */
+  /* 문의·견적서 수집 — 노션은 PJ 창고: 전부 넣음 */
+  async function collectDocs(){
+    const { db, fs } = await bkFs();
+    const out = { quotes: [], inquiries: [], webInquiries: [] }, sigs = {};
+    const grab = async (col, key, sigOf) => {
+      try { const snap = await fs.getDocs(fs.collection(db, col));
+        snap.docs.forEach(d => { const x = d.data() || {}; out[key].push(d.id); sigs[key + ':' + d.id] = sigOf(x); }); }
+      catch(e) { console.warn('노션 연동: ' + col + ' 읽기 실패', e); }
+    };
+    const ts = v => v && v.toDate ? v.toDate().toISOString() : String(v || '');
+    await grab('quotes', 'quotes', x => [x.createdAt, x.docType, x.totalPHP, x.clientName].join('|'));
+    await grab('inquiries', 'inquiries', x => [ts(x.createdAt), x.status, x.totalPHP, x.name].join('|'));
+    await grab('web_inquiries', 'webInquiries', x => [ts(x.created), x['상태'], x['연락처'], x['이름']].join('|'));
+    return { out, sigs };
+  }
+  /* 큰 묶음은 20건씩 나눠 보냄 (구글 웹 앱 실행시간 제한 대비) */
+  async function sendChunks(lists, quiet){
+    const items = [];
+    Object.keys(lists).forEach(k => (lists[k] || []).forEach(id => items.push([k, id])));
+    let done = 0, fail = 0, last = null;
+    for (let i = 0; i < items.length; i += 20) {
+      const part = {}; items.slice(i, i + 20).forEach(([k, id]) => { (part[k] = part[k] || []).push(id); });
+      status('📒 노션 장부에 반영 중… ' + Math.min(i + 20, items.length) + ' / ' + items.length, '#534AB7');
+      const j = await send(part, true);
+      if (!j) { fail += 20; continue; }
+      last = j; (j.out || []).forEach(o => { if (o.ok) done++; else fail++; });
+    }
+    if (last) {
+      const t = new Date(); const p2 = x => String(x).padStart(2, '0');
+      status((fail ? '⚠️ 일부 실패 ' + fail + '건 · ' : '📒 ') + '노션 장부 반영 ' + done + '건 · ' + p2(t.getHours()) + ':' + p2(t.getMinutes()), fail ? '#b45309' : '#065f46');
+    }
+    return { done, fail };
+  }
+  /* 관리자 페이지 열 때 — 새로 들어온 문의·견적서만 자동 전송 */
+  const LS2 = 'ntnSig2_v1';
+  async function autoDocs(){
+    if (!(await getUrl())) return;
+    const { out, sigs } = await collectDocs();
+    let old = {}; try { old = JSON.parse(localStorage.getItem(LS2) || '{}'); } catch(e) {}
+    const first = !Object.keys(old).length;
+    const changed = { quotes: [], inquiries: [], webInquiries: [] };
+    Object.keys(out).forEach(k => out[k].forEach(id => { if (old[k + ':' + id] !== sigs[k + ':' + id]) changed[k].push(id); }));
+    const n = changed.quotes.length + changed.inquiries.length + changed.webInquiries.length;
+    if (first) { try { localStorage.setItem(LS2, JSON.stringify(sigs)); } catch(e) {} return; } // 처음엔 전체 동기화 버튼으로
+    if (!n) return;
+    _busy = true; const r = await sendChunks(changed, true); _busy = false;
+    if (!r.fail) { try { localStorage.setItem(LS2, JSON.stringify(sigs)); } catch(e) {} }
+  }
+
+  /* 전체 동기화 버튼 — 문의·견적서·확정서·부킹 전부 */
   window.ntnSyncAll = async function(){
     let url = await getUrl();
     if (!url || confirm('지금 연동 주소:\n' + url + '\n\n주소를 바꿀까요? (아니면 [취소] → 바로 동기화)')) {
       const u = prompt('노션 연동 웹 앱 주소를 붙여넣으세요\n(https://script.google.com/macros/s/…/exec)', url || '');
       if (u === null) { if (!url) return; }
       else {
-        if (!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(u.trim())) { alert('주소 모양이 달라요. …/exec 로 끝나는 웹 앱 주소를 넣어 주세요.'); return; }
+        if (!/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]{20,}\/exec$/.test(u.trim())) { alert('주소 모양이 달라요. 웹 앱 주소 전체(…/exec)를 그대로 붙여넣어 주세요.'); return; }
         await setUrl(u.trim()); url = u.trim();
       }
     }
-    const today = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
-    let quotes = [];
-    try {
-      const { db, fs } = await bkFs();
-      const snap = await fs.getDocs(fs.collection(db, 'quotes'));
-      quotes = snap.docs.filter(d => { const q = d.data(); return q.version === 2 && /확정/.test(q.docType || '') && String(q.checkIn || '') >= today; }).map(d => d.id);
-    } catch(e) { console.warn(e); }
-    const bookings = (typeof _bkDocs !== 'undefined' ? _bkDocs : []).filter(relevant).map(b => b.id);
-    if (!quotes.length && !bookings.length) { alert('보낼 확정서·부킹이 없습니다.'); return; }
+    status('📒 사이트 자료 모으는 중…', '#534AB7');
+    const { out, sigs } = await collectDocs();
+    const bookings = (typeof _bkDocs !== 'undefined' ? _bkDocs : []).map(b => b.id);
+    // 순서: 문의 → 견적서·확정서 → 부킹 (뒤 단계가 앞 단계 줄을 이어받도록)
+    const lists = { webInquiries: out.webInquiries, inquiries: out.inquiries, quotes: out.quotes, bookings };
+    const total = out.webInquiries.length + out.inquiries.length + out.quotes.length + bookings.length;
+    if (!total) { alert('보낼 자료가 없습니다.'); return; }
+    if (!confirm('노션 장부에 전부 넣습니다.\n30초 문의 ' + out.webInquiries.length + ' · 맞춤 견적 문의 ' + out.inquiries.length + ' · 견적서/확정서 ' + out.quotes.length + ' · 부킹 ' + bookings.length + '\n\n건수가 많으면 몇 분 걸립니다. 진행할까요?')) return;
     _busy = true;
-    const j = await send({ quotes, bookings });
+    const r = await sendChunks(lists, false);
     _busy = false;
-    if (j && j.out) { const saved = ls.get(); (typeof _bkDocs !== 'undefined' ? _bkDocs : []).forEach(b => { if (bookings.includes(b.id)) saved[b.id] = sig(b); }); ls.set(saved); }
-    if (j && j.ok) alert('✅ 노션 예약 장부에 반영했습니다.\n확정서 ' + quotes.length + '건 · 부킹 ' + bookings.length + '건');
+    try { localStorage.setItem(LS2, JSON.stringify(sigs)); } catch(e) {}
+    const saved = ls.get(); (typeof _bkDocs !== 'undefined' ? _bkDocs : []).forEach(b => { if (bookings.includes(b.id)) saved[b.id] = sig(b); }); ls.set(saved);
+    alert((r.fail ? '⚠️ 일부 실패 ' + r.fail + '건 (화면의 상태 줄 확인)\n' : '✅ ') + '노션 예약 장부에 반영했습니다. ' + r.done + '건');
   };
 
   /* 부킹 화면에 버튼 + 상태 줄 달기 */
@@ -6317,6 +6366,14 @@ function bkCopy(text, toast){
       + '<button type="button" onclick="ntnSyncAll()" style="padding:7px 14px;border:none;border-radius:20px;background:#111827;color:#fff;font-size:12.5px;font-weight:800;cursor:pointer;">📒 노션 장부 전체 동기화</button>';
     f.parentNode.insertBefore(bar, f);
   }
+
+  /* 관리자 로그인 확인되면(어느 화면이든) 새 문의·견적서 자동 전송 — 한 번 */
+  let _autoTry = 0;
+  const _autoIv = setInterval(async () => {
+    _autoTry++;
+    if (_autoTry > 60) { clearInterval(_autoIv); return; }
+    try { if (await idToken()) { clearInterval(_autoIv); setTimeout(() => { if (!_busy) autoDocs(); }, 3000); } } catch(e) {}
+  }, 3000);
 
   /* 부킹 목록이 그려질 때마다 → 바뀐 부킹 자동 전송 (1.5초 모아서) */
   if (typeof bkRenderList === 'function' && !bkRenderList._ntn) {
