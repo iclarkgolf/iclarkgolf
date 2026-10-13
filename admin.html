@@ -5657,7 +5657,7 @@ function bkRenderList(){
       : BK_SIMPLE.map((l, i) => `<span class="${i < idx ? 'done' : i === idx ? 'now' : ''}">${l}</span>`).join('');
     let act = '';
     if (['inquiry','talking'].includes(b.status)) act += `<button class="bk-btn purple" onclick="bkSend('${b.id}')">📤 파트너에게 예약 보내기 (이름만·대기)</button><button class="bk-btn sub" onclick="bkReserve('${b.id}')">📤 여권·시간까지 한 번에 보내기</button>`;
-    if (b.status === 'hold') act += `<button class="bk-btn purple" onclick="bkReserve('${b.id}')">📤 여권 이름·시간 보내기</button>`;
+    if (['sent','hold'].includes(b.status)) act += `<button class="bk-btn purple" onclick="bkReserve('${b.id}')">📤 확정 예약 보내기 (여권 이름·시간)</button>`;
     if (['sent','reserve'].includes(b.status) || (['hold','booked'].includes(b.status) && Number(b.changeCount) > 0)) act += `<button class="bk-btn sub" onclick="bkCopy(bkPartnerMsg('${b.id}'))">📋 파트너 알림 메시지 복사</button>`;
     if (b.status === 'booked') act += `<button class="bk-btn purple" onclick="bkPay('${b.id}')">5️⃣ 송금 완료 입력</button>`;
     if (b.status === 'voucher') act += `<button class="bk-btn purple" onclick="bkDeliver('${b.id}')">6️⃣ 고객에게 바우처 보내기</button>`;
