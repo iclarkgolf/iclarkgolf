@@ -284,6 +284,14 @@ img { max-width: 100%; }
   font-weight: 700; margin-bottom: 20px;
   text-shadow: 0 2px 8px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.5);
 }
+.hero-sub2 {
+  display: inline-block; margin-top: 8px;
+  padding: 4px 14px; border-radius: 999px;
+  font-size: 0.88em; font-weight: 700; letter-spacing: 0.2px;
+  background: rgba(6,10,16,0.34);
+  border: 1px solid rgba(255,255,255,0.35);
+  -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+}
 .hero-searchbar {
   display: flex; align-items: center; gap: 0;
   background: var(--white);
@@ -1024,9 +1032,9 @@ footer {
 <main>
 <!-- 히어로 -->
 <div class="hero">
-  <div class="hero-badge" data-i18n="hero.badge">📍 필리핀 팜팡가 · 앙헬레스 · 클락</div>
-  <h1><span data-i18n="hero.title1">여행사 패키지 말고,</span><br><em data-i18n="hero.title2">클락 현지 정보 그대로</em></h1>
-  <p class="hero-sub" data-i18n="hero.sub">나 홀로, 삼삼오오 — 이미 클락을 아는 사람들의 골프 정보통</p>
+  <div class="hero-badge" data-i18n="hero.badge">📍 클락 · 앙헬레스 · 팜팡가 &nbsp;|&nbsp; 현지 25년</div>
+  <h1><span data-i18n="hero.title1">필리핀 클락 현지 랜드사</span><br><em data-i18n="hero.title2">아이클락골프</em></h1>
+  <p class="hero-sub" data-i18n="hero.sub">골프장 부킹 · 숙소 · 차량, 현지에서 직접 수배합니다<br><span class="hero-sub2">여행사 단체부터 개인 골퍼까지</span></p>
   <div class="hero-search-wrap">
     <form class="hero-searchbar" id="heroSearchForm" autocomplete="off">
       <input id="heroSearchInput" data-i18n-ph="hero.search" placeholder="어떤 여행을 계획하고 계세요?" autocomplete="off">
@@ -2183,10 +2191,10 @@ document.querySelectorAll('.lang-btn').forEach(btn => {
 // iCLARKGOLF i18n — 한국어 / English
 const TRANSLATIONS = {
   kr: {
-    'hero.badge': '📍 필리핀 팜팡가 · 앙헬레스 · 클락',
-    'hero.title1': '여행사 패키지 말고,',
-    'hero.title2': '클락 현지 정보 그대로',
-    'hero.sub': '나 홀로, 삼삼오오 — 이미 클락을 아는 사람들의 골프 정보통',
+    'hero.badge': '📍 클락 · 앙헬레스 · 팜팡가 &nbsp;|&nbsp; 현지 25년',
+    'hero.title1': '필리핀 클락 현지 랜드사',
+    'hero.title2': '아이클락골프',
+    'hero.sub': '골프장 부킹 · 숙소 · 차량, 현지에서 직접 수배합니다<br><span class="hero-sub2">여행사 단체부터 개인 골퍼까지</span>',
     'intro.p1': 'iCLARKGOLF는 필리핀 클락(팜팡가·앙헬레스)에서 <b>25년째</b> 현지에 머물며 골프를 가르치고 안내해온 <b>전문가가 직접 운영하는</b>, 나 홀로·삼삼오오 골퍼를 위한 클락 정보 플랫폼입니다.',
     'intro.p2': '클락에 지인이 있어도 매번 물어보기 애매한 것들 — <b>실제 그린피 시세</b>, <b>믿을 수 있는 캐디</b>, <b>숙소별 진짜 가격</b>, 요즘 날씨까지 — 25년 현지 경험으로 정리해 알려드립니다. <b>PRADERA C.C</b>와 <b>BEVERLY C.C</b>를 중심으로, 골프장·연습장·숙소·경비 네 가지를 꼼꼼히 살펴 안내해 드립니다.',
     'hero.search': '어떤 여행을 계획하고 계세요?',
@@ -2292,10 +2300,10 @@ const TRANSLATIONS = {
     'fixed.quote': '견적',
   },
   en: {
-    'hero.badge': '📍 Pampanga · Angeles · Clark, Philippines',
-    'hero.title1': 'Not a travel agency package —',
-    'hero.title2': 'Real Clark local know-how',
-    'hero.sub': 'Solo or a few friends — insider info for people who already know Clark',
+    'hero.badge': '📍 Clark · Angeles · Pampanga &nbsp;|&nbsp; 25 years local',
+    'hero.title1': 'Local Golf Land Operator in Clark',
+    'hero.title2': 'iCLARKGOLF',
+    'hero.sub': 'Tee times · Hotels · Transfers — arranged directly on the ground<br><span class="hero-sub2">For travel agencies, groups &amp; individual golfers</span>',
     'intro.p1': 'iCLARKGOLF is a Clark info platform run directly by <b>a golf professional</b> who has lived and taught in Clark, Pampanga (Angeles City), Philippines for <b>25 years</b> — built for solo golfers and small groups of friends.',
     'intro.p2': 'Even if you already have a local contact in Clark, some things are still hard to ask — <b>real green fee prices</b>, <b>caddies you can trust</b>, <b>actual lodging rates</b>, and current weather. 25 years of local experience, organized for you. Centered on <b>PRADERA C.C</b> and <b>BEVERLY C.C</b>, we look closely at four things for you: the course, the practice range, lodging, and cost.',
     'hero.search': 'What kind of trip are you planning?',
