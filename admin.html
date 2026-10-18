@@ -4378,8 +4378,10 @@ async function loadWebInquiries() {
     try {
       const cardSnap = await getDocs(collection(db, 'package_cards'));
       const map = {}, accomMap = {};
-      cardSnap.docs.forEach(cd => { const c = cd.data() || {}; map[cd.id] = [c.titleEn, c.sub1, c.sub2].filter(Boolean).join(' '); if (c.accomName) accomMap[cd.id] = c.accomName; });
+      const titleMap = {};
+      cardSnap.docs.forEach(cd => { const c = cd.data() || {}; map[cd.id] = [c.titleEn, c.sub1, c.sub2].filter(Boolean).join(' '); if (c.titleEn) titleMap[cd.id] = c.titleEn; if (c.accomName) accomMap[cd.id] = c.accomName; });
       window._webInquiryCardNames = map;
+      window._webInquiryCardTitles = titleMap; // 문의 목록에 패키지 이름 표시용
       window._webInquiryCardAccom = accomMap; // 견적서 자동 채움용(숙소명)
     } catch(e) { console.warn('패키지 카드 이름 매핑 실패(무시):', e); }
 
@@ -4410,7 +4412,7 @@ async function loadWebInquiries() {
           <td>${d.기간||'-'}</td>
           <td>${d.인원||'-'}</td>
           <td>${d.시기||'-'}</td>
-          <td>${d.페이지||'-'}${cardName}</td>
+          <td>${d.페이지 && (window._webInquiryCardTitles || {})[d.페이지] ? `<b style="font-size:12.5px;">${window._webInquiryCardTitles[d.페이지]}</b>${cardName}` : (d.페이지||'-') + cardName}</td>
           <td>${d.연락처||'-'}</td>
           <td><div class="wi-act">${contactBtns}${quoteBtn}</div></td>
           <td><span style="${statusStyle}padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;">${status}</span></td>
