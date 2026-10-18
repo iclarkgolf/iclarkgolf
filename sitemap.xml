@@ -17,12 +17,6 @@
 
   <!-- 주요 서비스 페이지 -->
   <url>
-    <loc>https://iclarkgolf.com/pool-villa.html</loc>
-    <lastmod>2026-10-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://iclarkgolf.com/quote.html</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>monthly</changefreq>
