@@ -108,6 +108,14 @@ input.inp:focus,textarea.inp:focus{border-color:var(--purple);}
 .stepper{display:flex;align-items:center;border:1.5px solid var(--mint-border);border-radius:10px;overflow:hidden;background:#fff;}
 .stepper button{width:40px;height:44px;border:none;background:var(--mint-light);color:var(--mint);font-size:20px;font-weight:800;cursor:pointer;}
 .stepper span{flex:1;text-align:center;font-size:16px;font-weight:800;}
+/* 2026-10-18: 풀빌라를 담으면 카드 안에 인원·박수·합계 */
+.vp{margin-top:10px;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:10px;padding:10px;}
+.vp-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;font-size:13px;font-weight:800;color:#3730a3;}
+.vp .stepper{flex:0 0 auto;}
+.vp .stepper button{width:34px;height:34px;font-size:18px;}
+.vp .stepper span{min-width:58px;font-size:14px;padding:0 4px;}
+.vp-total{font-size:13px;font-weight:700;color:#374151;border-top:1px dashed #c4b5fd;padding-top:8px;}
+.vp-total b{color:#534AB7;font-size:15px;}
 .season-note{margin-top:12px;font-size:13px;font-weight:800;border-radius:10px;padding:9px 12px;display:none;}
 .season-note.peak{display:block;background:var(--gold-light);color:var(--gold);border:1.5px solid var(--gold-border);}
 .season-note.off{display:block;background:var(--mint-light);color:#085041;border:1.5px solid var(--mint-border);}
@@ -580,6 +588,7 @@ function renderHotels(){
         <div class="hotel-meta">${esc(h.note || '')}</div>
         <div class="hotel-price">${h.kind === 'villa' ? fmtPhp(villaPrice(h)) + krwTag(villaPrice(h)) : fmtPhp(h.pricePhp || u2p(h.priceUsd)) + krwTag(h.pricePhp || u2p(h.priceUsd))} <small>${h.kind === 'villa' ? '/ 1박·1채' + (h.tiers ? ' · ' + villaTierNote(h) : '') : '/ 1인·1일 · 1인 1실 (청소·세탁·와이파이 포함)'}</small></div>
         <div class="hotel-btns"><button type="button" class="add${selHotel===h.key?' on':''}" onclick="pickHotel('${h.key}')">${selHotel===h.key ? '✓ 담김' : '🛒 담기'}</button></div>
+        ${h.kind === 'villa' && selHotel === h.key ? villaPanel(h) : ''}
       </div>
     </div>`;
     const stars = h.starRating > 0 ? '⭐'.repeat(Math.round(h.starRating)) : '';
@@ -617,6 +626,22 @@ function villaPrice(h){
 function villaTierNote(h){   // 실제로 적용된 인원 요금을 알려줌 (2명이면 '3명 요금', 6명이면 '5명 요금 · 인원 추가는 문의')
   const k = villaTierKey(h); if (!k) return '';
   return k + '명 요금' + (villaPeople() > k ? ' · 인원 추가는 문의' : '');
+}
+function villaPanel(h){
+  const n = nights(), p = villaPeople(), price = villaPrice(h);
+  return `<div class="vp">
+    <div class="vp-row"><span>👥 인원</span><div class="stepper"><button type="button" onclick="chg('g',-1)">−</button><span>${p}명</span><button type="button" onclick="chg('g',1)">+</button></div></div>
+    <div class="vp-row"><span>🌙 박수</span><div class="stepper"><button type="button" onclick="villaN(-1)">−</button><span>${n ? n + '박' : '-'}</span><button type="button" onclick="villaN(1)">+</button></div></div>
+    <div class="vp-total">${n ? fmtPhp(price) + ' × ' + n + '박 = <b>' + fmtPhp(price * n) + '</b>' + krwTag(price * n) : '📅 도착일을 넣으면 박수와 합계가 나옵니다'}</div>
+  </div>`;
+}
+function villaN(d){   // 풀빌라 카드에서 박수 조절 → 출발일을 도착일 + 박수로 맞춤
+  const a = $('arr').value;
+  if (!a) { $('arr').scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => { try { $('arr').showPicker(); } catch (e) { $('arr').focus(); } }, 450); return; }
+  const n = Math.max(1, Math.min(60, (nights() || 0) + d));
+  const dt = new Date(a); dt.setDate(dt.getDate() + n);
+  $('dep').value = dt.toISOString().slice(0, 10);
+  onDates();
 }
 function findHotel(key){ return key ? (HOTELS.find(x => x.key === key) || LOCALS.find(x => x.key === key) || VILLAS.find(x => x.key === key) || null) : null; }
 function pickHotel(key){ selHotel = selHotel === key ? null : key; renderHotels(); renderSum(); }
