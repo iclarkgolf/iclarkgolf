@@ -177,7 +177,11 @@ a{text-decoration:none;color:inherit;}
 
   <div class="card">
     <div class="card-title">📍 위치</div>
-    <p><b id="vLoc2">앙헬레스</b> (필리핀 팜팡가주). 클락 지역 골프장과 앙헬레스 시내 식당가로 다니기 편한 곳에 있습니다. 정확한 위치는 예약 확정 후 안내해 드립니다.</p>
+    <p><b id="vLoc2">앙헬레스</b> (필리핀 팜팡가주). 클락 지역 골프장과 앙헬레스 시내 식당가로 다니기 편한 곳에 있습니다.</p>
+    <div id="vMap" style="margin-top:12px;">
+      <iframe src="https://www.google.com/maps?q=15.1333875,120.5691851&z=15&output=embed" title="풀빌라 위치 지도" loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="width:100%;height:260px;border:0;border-radius:12px;display:block;"></iframe>
+      <a href="https://www.google.com/maps/place/%EC%84%A0%EC%85%8B+K+POOL+VILLA+5/@15.1333875,120.5691851,17z" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;background:#E1F5EE;color:#065f46;font-size:13px;font-weight:800;padding:9px 14px;border-radius:20px;">🗺️ 구글 지도에서 크게 보기 →</a>
+    </div>
   </div>
 
   <div class="card" id="vOthersCard" style="display:none;">
@@ -255,6 +259,13 @@ let imgs = [];
     document.getElementById('vFacts').innerHTML = amen.slice(0, 4).map(t => `<div class="fact"><b>${icon(t)}</b><span>${esc(t)}</span></div>`).join('');
   }
   document.getElementById('vQuote').href = 'quote.html?hotel=' + encodeURIComponent(v.id);
+  // 지도: 관리자 「구글 지도 링크」 — 링크 안의 좌표로 지도를 그리고, 좌표가 없는 짧은 링크면 버튼만
+  const mapBox = document.getElementById('vMap');
+  if (v.mapUrl) {
+    const ll = String(v.mapUrl).match(/(-?\d{1,2}\.\d{3,}),\s*(-?\d{1,3}\.\d{3,})/);
+    mapBox.innerHTML = (ll ? `<iframe src="https://www.google.com/maps?q=${ll[1]},${ll[2]}&z=15&output=embed" title="숙소 위치 지도" loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="width:100%;height:260px;border:0;border-radius:12px;display:block;"></iframe>` : '')
+      + `<a href="${esc(v.mapUrl)}" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;background:#E1F5EE;color:#065f46;font-size:13px;font-weight:800;padding:9px 14px;border-radius:20px;">🗺️ 구글 지도에서 ${ll ? '크게 ' : ''}보기 →</a>`;
+  } else mapBox.innerHTML = '<p style="font-size:13px;color:#6b7280;">정확한 위치는 예약 확정 후 안내해 드립니다.</p>';
   const others = villas.filter(x => x !== v);
   if (others.length) {
     document.getElementById('vOthersCard').style.display = 'block';
