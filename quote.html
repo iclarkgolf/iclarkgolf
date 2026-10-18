@@ -204,6 +204,12 @@ footer{text-align:center;font-size:12px;color:var(--muted);padding:20px 16px 10p
 .add{flex-shrink:0;background:#fff;color:#346aff;border:1.5px solid #346aff;border-radius:8px;padding:8px 12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;}
 .add.on{background:#346aff;color:#fff;}
 .item{display:flex;align-items:center;gap:10px;border:1.5px solid #e5e7eb;border-radius:12px;padding:12px;margin-bottom:8px;background:#fff;}
+/* 2026-10-18: 레슨 받는 인원 */
+.lp{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12.5px;font-weight:800;color:#3730a3;flex-wrap:wrap;}
+.qty.sm button{width:30px;height:30px;font-size:16px;}
+.qty.sm span{min-width:40px;font-size:13px;}
+.lp-sum{margin-top:6px;font-size:12.5px;color:#374151;font-weight:700;}
+.lp-sum b{color:#534AB7;}
 .item.on{border-color:#346aff;background:#f5f8ff;}
 .item-icon{font-size:24px;width:32px;text-align:center;flex-shrink:0;}
 .item-info{flex:1;min-width:0;}
@@ -469,6 +475,7 @@ const DEFAULT_EXTRAS = [
 ];
 let TRANSFERS = DEFAULT_TRANSFERS, LESSONS = DEFAULT_LESSONS, EXTRAS = DEFAULT_EXTRAS, CUSTOM_SECTIONS = [];
 let selItems = {};                   // 차량·레슨·식사 등 id → 수량
+let selPpl = {};                     // 2026-10-18: 레슨 id → 받는 인원 (안 정하면 골퍼 수)
 let pax = { g:2, n:0, r:1 };
 let selGolf = {};                    // id → rounds
 
@@ -679,7 +686,10 @@ function chgGolf(id, d){
 
 /* ── 차량·레슨·식사·추가 섹션 (admin 맞춤견적 항목) ── */
 function allItems(){ return [...TRANSFERS, ...LESSONS, ...EXTRAS, ...CUSTOM_SECTIONS.flatMap(s => s.items || [])]; }
-function itemAmount(it, qty){ return itemPhp(it) * qty * (it.perPerson ? (pax.g + pax.n) : 1); }   // 페소
+const isLesson = it => LESSONS.includes(it);
+function lessonPpl(it){ const max = pax.g + pax.n; const v = selPpl[it.id] || pax.g; return Math.max(1, Math.min(max, v)); }   // 레슨 받는 인원
+function chgPpl(id, d){ const it = LESSONS.find(x => String(x.id) === String(id)); if (!it) return; selPpl[id] = Math.max(1, Math.min(pax.g + pax.n, lessonPpl(it) + d)); renderItems(); renderSum(); }
+function itemAmount(it, qty){ return itemPhp(it) * qty * (isLesson(it) ? lessonPpl(it) : (it.perPerson ? (pax.g + pax.n) : 1)); }   // 페소 (레슨은 횟수 × 받는 인원)
 function itemRows(items){
   return items.map(it => {
     const q = selItems[it.id] || 0;
@@ -688,9 +698,11 @@ function itemRows(items){
       <div class="item-info">
         <div class="item-name">${esc(it.name)}</div>
         ${it.note ? `<div class="item-note">${esc(it.note)}</div>` : ''}
-        <div class="item-price">${fmtPhp(itemPhp(it))}${krwTag(itemPhp(it))} <small>/ ${esc(it.unit || '회')}</small></div>
+        <div class="item-price">${fmtPhp(itemPhp(it))}${krwTag(itemPhp(it))} <small>/ ${isLesson(it) ? '1인·1회' : esc(it.unit || '회')}</small></div>
+        ${q && isLesson(it) ? `<div class="lp"><span>👥 받는 인원</span><div class="qty sm"><button type="button" onclick="chgPpl('${esc(it.id)}',-1)">−</button><span>${lessonPpl(it)}명</span><button type="button" onclick="chgPpl('${esc(it.id)}',1)">+</button></div></div>
+          <div class="lp-sum">${fmtPhp(itemPhp(it))} × ${q}회 × ${lessonPpl(it)}명 = <b>${fmtPhp(itemAmount(it, q))}</b></div>` : ''}
       </div>
-      ${q ? `<div class="qty"><button type="button" onclick="chgItem('${esc(it.id)}',-1)">−</button><span>${q}</span><button type="button" onclick="chgItem('${esc(it.id)}',1)">+</button></div>`
+      ${q ? `<div class="qty"><button type="button" onclick="chgItem('${esc(it.id)}',-1)">−</button><span>${q}${isLesson(it) ? '회' : ''}</span><button type="button" onclick="chgItem('${esc(it.id)}',1)">+</button></div>`
           : `<button type="button" class="add" onclick="chgItem('${esc(it.id)}',1)">🛒 담기</button>`}
     </div>`;
   }).join('') || '<div class="cart-empty">준비 중입니다.</div>';
@@ -738,7 +750,7 @@ function renderSum(){
   let rows = '';
   if (c.h) rows += `<div class="cart-group">🏨 숙소</div><div class="cart-row"><span class="k">${esc(c.h.name)}<br><small>${c.n ? (c.h.kind === 'local' ? '객실 ' + c.n + '일 × ' + pax.g + '명' : c.h.kind === 'villa' ? c.n + '박 × 1채' + (c.h.tiers ? ' (' + villaTierNote(c.h) + ')' : '') : c.n + '박 × 객실 ' + pax.r + '개 (참고가)') : '날짜를 넣으면 계산됩니다'}</small></span><span class="v">${c.n ? fmtPhp(c.hotelPhp) + '<br>' + krwTag(c.hotelPhp) : '-'}</span>${x('hotel','')}</div>`;
   if (c.golf.length) rows += '<div class="cart-group">⛳ 골프</div>' + c.golf.map(g => `<div class="cart-row"><span class="k">${esc(g.g.name)}<br><small>${g.rounds}라운드 × 골퍼 ${pax.g}명</small></span><span class="v">${fmtPhp(g.php)}<br>${krwTag(g.php)}</span>${x('golf', g.g.id)}</div>`).join('');
-  if (c.items.length) rows += '<div class="cart-group">🚗 차량 · 레슨 · 식사 등</div>' + c.items.map(i => `<div class="cart-row"><span class="k">${esc(i.it.icon || '')} ${esc(i.it.name)}<br><small>${fmtPhp(itemPhp(i.it))} × ${i.qty}${i.it.perPerson ? ' × ' + (pax.g + pax.n) + '명' : ''}</small></span><span class="v">${fmtPhp(i.amt)}<br>${krwTag(i.amt)}</span>${x('item', i.it.id)}</div>`).join('');
+  if (c.items.length) rows += '<div class="cart-group">🚗 차량 · 레슨 · 식사 등</div>' + c.items.map(i => `<div class="cart-row"><span class="k">${esc(i.it.icon || '')} ${esc(i.it.name)}<br><small>${fmtPhp(itemPhp(i.it))} × ${i.qty}${isLesson(i.it) ? '회 × ' + lessonPpl(i.it) + '명' : (i.it.perPerson ? ' × ' + (pax.g + pax.n) + '명' : '')}</small></span><span class="v">${fmtPhp(i.amt)}<br>${krwTag(i.amt)}</span>${x('item', i.it.id)}</div>`).join('');
   $('sum-rows').innerHTML = rows || '<div class="cart-empty">장바구니가 비어 있어요.<br>위에서 필요한 것을 🛒 담아 주세요.</div>';
   $('sum-total').textContent = fmtPhp(c.totalPhp);
   $('bar-total').textContent = fmtPhp(c.totalPhp);
@@ -772,7 +784,9 @@ async function submitApply(){
     customHotelPriceUSD: 0,
     arrDate: $('arr').value || '', depDate: $('dep').value || '',
     golfCourses: c.golf.map(x => ({ name: x.g.name, rounds: x.rounds, gfId: x.g.id, priceUSD: Math.round(usd(fee(x.g)) * 100) / 100, pricePHP: fee(x.g) })),
-    extras: c.items.map(i => ({ name: i.it.name, qty: i.qty, id: String(i.it.id || ''), priceUSD: Number(i.it.price) || 0, pricePHP: itemPhp(i.it), perPerson: !!i.it.perPerson })),
+    extras: c.items.map(i => isLesson(i.it)
+      ? ({ name: i.it.name + ' (' + lessonPpl(i.it) + '명 × ' + i.qty + '회)', qty: i.qty * lessonPpl(i.it), id: String(i.it.id || ''), priceUSD: Number(i.it.price) || 0, pricePHP: itemPhp(i.it), perPerson: false })
+      : ({ name: i.it.name, qty: i.qty, id: String(i.it.id || ''), priceUSD: Number(i.it.price) || 0, pricePHP: itemPhp(i.it), perPerson: !!i.it.perPerson })),
     status: 'pending',
     source: 'quote.html',
     packageType: 'cart',
