@@ -3546,6 +3546,52 @@ async function deleteAccom(id) {
   }, 3000);
 })();
 
+/* 2026-10-18 (2): 두 번째 풀빌라 등록 + 첫 풀빌라에 9번째 사진 추가 — 관리자 로그인 후 각각 한 번만 */
+(function(){
+  const TASKS = [
+    { flag: 'iclarkVilla2Seed_v1', run: async (fs, db) => {
+      const ref = fs.doc(db, 'accommodations', 'iclark_villa2');
+      if ((await fs.getDoc(ref)).exists()) return;
+      await fs.setDoc(ref, {
+        id: 'iclark_villa2', type: 'villa', name: 'iClark 풀빌라 2', stars: 0,
+        pricePHP: 14000, priceUSD: 0, tierPrices: { '3': 14000, '4': 16000, '5': 19000 },
+        location: '앙헬레스', mapUrl: 'https://www.google.com/maps/place/%EC%84%A0%EC%85%8B+K+POOL+VILLA+5/@15.1333875,120.5691851,17z',
+        desc: '골프 한 팀이나 가족이 호텔 방 여러 개 대신 집 한 채를 통째로 쓰는 숙소입니다. 통유리 거실에서 수영장이 바로 보이고, 저녁에는 수영장 옆에서 바베큐와 노래방으로 함께 시간을 보내기 좋습니다.\n방이 5개라 각자 방을 쓰면서도 넓은 거실과 큰 식탁에서 함께 식사할 수 있고, 하우스메이드가 항상 대기하며 아침 식사와 청소를 챙깁니다.',
+        amenities: '방 5개 (메이드룸 별도), 개인 수영장, 조식 포함, 하우스메이드 상주, 요리 도움, 바베큐, 노래방, 청소, 와이파이',
+        photos: [1,2,3,4,5,6,7,8].map(n => 'https://iclarkgolf.com/villa2-' + n + '.jpg'),
+        active: true
+      });
+    }},
+    { flag: 'iclarkVilla1Photo9_v1', run: async (fs, db) => {
+      const ref = fs.doc(db, 'accommodations', 'iclark_villa');
+      const snap = await fs.getDoc(ref); if (!snap.exists()) return;
+      const u = 'https://iclarkgolf.com/villa-9.jpg';
+      const photos = snap.data().photos || [];
+      if (!photos.includes(u)) await fs.updateDoc(ref, { photos: photos.concat(u) });
+    }}
+  ];
+  const todo = TASKS.filter(t => { try { return !localStorage.getItem(t.flag); } catch (e) { return true; } });
+  if (!todo.length) return;
+  let tries = 0;
+  const iv = setInterval(async () => {
+    if (++tries > 60) { clearInterval(iv); return; }
+    try {
+      const { getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+      const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+      const app = getApps().find(a => a.name === 'admin-auth');
+      if (!app || !getAuth(app).currentUser) return;
+      clearInterval(iv);
+      const db = await initAccomDB();
+      const fs = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      for (const t of todo) {
+        try { await t.run(fs, db); try { localStorage.setItem(t.flag, '1'); } catch (e) {} }
+        catch (e) { console.warn('풀빌라 자동 작업 실패(다음에 다시 시도):', t.flag, e); }
+      }
+      if (typeof loadAccoms === 'function') { try { loadAccoms(); } catch (e) {} }
+    } catch (e) {}
+  }, 3000);
+})();
+
 async function toggleAccom(id) {
   const accoms = getAccoms().slice();
   const idx = accoms.findIndex(x => x.id === id);
