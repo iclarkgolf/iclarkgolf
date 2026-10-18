@@ -1766,6 +1766,11 @@ window.adminLogout = function() {
       </div>
     </div>
     <!-- 2026-10-06: 전용숙소 선택 옵션 — 맞춤견적에서 손님이 체크해서 고름 (비우면 기본값) -->
+    <div id="m-villa-opts" style="display:none;background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:10px;padding:12px;margin-bottom:12px;">
+      <div style="font-size:12px;font-weight:800;color:#1e40af;margin-bottom:6px;">🏡 풀빌라 인원별 1박 요금 <span style="font-weight:600;color:#6b7280;">— 사이트·맞춤견적에 그대로 나옵니다</span></div>
+      <input type="text" id="m-tiers" placeholder="3명 15000, 4명 18000, 5명 21000" style="width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box;">
+      <div style="font-size:11px;color:#6b7280;margin-top:5px;">비워두면 위의 「1박 판매가」 한 가지 요금만 씁니다.</div>
+    </div>
     <div id="m-local-opts" style="display:none;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:12px;margin-bottom:12px;">
       <div style="font-size:12px;font-weight:800;color:#065f46;margin-bottom:8px;">🏠 전용숙소 선택 옵션 <span style="font-weight:600;color:#6b7280;">— 맞춤견적에서 손님이 골라 담습니다 (비우면 기본값)</span></div>
       <div class="form-row">
@@ -3369,6 +3374,7 @@ function renderAccomList() {
         <div class="accom-item-btns">
           <button class="btn-edit" onclick="editAccom('${a.id}')">수정</button>
           <button class="btn-del" onclick="toggleAccom('${a.id}')">${a.active ? '비활성' : '활성화'}</button>
+          <button class="btn-del" onclick="deleteAccom('${a.id}')" title="이 숙소를 완전히 삭제">🗑️ 삭제</button>
         </div>
       </div>
     </div>`;
@@ -3398,6 +3404,7 @@ function openAccomModal(id) {
       const photos = a.photos && a.photos.length ? a.photos.join('\n') : '';
       document.getElementById('m-photos').value = photos;
       previewPhotoUrls(photos);
+      document.getElementById('m-tiers').value = villaTiersToText(a.tierPrices);
       updateAccomUsdPreview();
     }
   } else {
@@ -3413,6 +3420,7 @@ function openAccomModal(id) {
     document.getElementById('m-photos').value = '';
     document.getElementById('m-photo-preview').innerHTML = '';
     ['m-opt-bf','m-opt-dn','m-opt-air','m-opt-golf'].forEach(k => document.getElementById(k).value = '');
+    document.getElementById('m-tiers').value = '';
   }
   accomTypeChanged();
   document.getElementById('accom-modal').classList.add('on');
@@ -3421,6 +3429,7 @@ function openAccomModal(id) {
 function accomTypeChanged() {
   const t = document.getElementById('m-type').value;
   document.getElementById('m-local-opts').style.display = 'none';   // 식사·픽업은 맞춤견적 항목 탭에서 공통 관리
+  const vo = document.getElementById('m-villa-opts'); if (vo) vo.style.display = t === 'villa' ? 'block' : 'none';
   document.getElementById('m-price-label').textContent = t === 'local' ? '숙박비 (PHP / 1인·1일 · 청소·세탁·와이파이 포함)' : (t === 'villa' ? '1박 판매가 (PHP / 1채)' : '1박 판매가 (PHP)');
 }
 
@@ -3452,6 +3461,13 @@ async function saveAccom() {
     active:    document.getElementById('m-active').checked
   };
   const idx = accoms.findIndex(x => x.id === id);
+  // 2026-10-18: 이 화면에 없는 기존 값(옵션 등)은 지우지 않고 그대로 둠
+  if (idx >= 0) { const prev = accoms[idx]; Object.keys(prev).forEach(k => { if (!(k in data)) data[k] = prev[k]; }); }
+  if (data.type === 'villa') {
+    const tiers = villaTiersFromText(document.getElementById('m-tiers').value);
+    if (tiers) { data.tierPrices = tiers; if (!data.pricePHP) data.pricePHP = Math.min(...Object.values(tiers)); }
+    else delete data.tierPrices;
+  }
   if (idx >= 0) accoms[idx] = data; else accoms.push(data);
   saveAccomsCache(accoms);
   renderAccomList();
@@ -3465,6 +3481,62 @@ async function saveAccom() {
     alert('⚠️ 이 브라우저에는 저장됐지만 Firebase 동기화에 실패했어요: ' + e.message);
   }
 }
+
+/* ── 2026-10-18: 풀빌라 인원별 요금 · 숙소 삭제 · iClark 풀빌라 첫 등록 ── */
+function villaTiersFromText(txt) {
+  const out = {}; const re = /(\d+)\s*(?:명|인)?\s*[=:\s]\s*₱?\s*([\d,]{3,})/g; let m;
+  while ((m = re.exec(String(txt || '')))) out[m[1]] = Number(m[2].replace(/,/g, ''));
+  return Object.keys(out).length ? out : null;
+}
+function villaTiersToText(t) {
+  if (!t) return '';
+  return Object.keys(t).sort((a, b) => a - b).map(k => k + '명 ' + t[k]).join(', ');
+}
+async function deleteAccom(id) {
+  const a = getAccoms().find(x => x.id === id);
+  if (!a) return;
+  if (!confirm('「' + a.name + '」 숙소를 완전히 삭제할까요?\n사이트와 맞춤견적에서 바로 사라지며 되돌릴 수 없습니다.\n(잠깐 숨기기만 하려면 [비활성]을 누르세요)')) return;
+  try {
+    const db = await initAccomDB();
+    const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await deleteDoc(doc(db, 'accommodations', id));
+    saveAccomsCache(getAccoms().filter(x => x.id !== id));
+    renderAccomList();
+  } catch (e) { alert('삭제 실패: ' + e.message); }
+}
+/* iClark 풀빌라 — 관리자 로그인 후 한 번만 자동 등록 (이미 있거나 지운 적이 있으면 다시 만들지 않음) */
+(function(){
+  const FLAG = 'iclarkVillaSeed_v1';
+  try { if (localStorage.getItem(FLAG)) return; } catch (e) {}
+  let tries = 0;
+  const iv = setInterval(async () => {
+    if (++tries > 60) { clearInterval(iv); return; }
+    try {
+      const { getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+      const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+      const app = getApps().find(a => a.name === 'admin-auth');
+      if (!app || !getAuth(app).currentUser) return;
+      clearInterval(iv);
+      const db = await initAccomDB();
+      const { doc, getDoc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      const ref = doc(db, 'accommodations', 'iclark_villa');
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        await setDoc(ref, {
+          id: 'iclark_villa', type: 'villa', name: 'iClark 풀빌라', stars: 0,
+          pricePHP: 15000, priceUSD: 0, tierPrices: { '3': 15000, '4': 18000, '5': 21000 },
+          location: '앙헬레스',
+          desc: '골프 한 팀이나 가족이 호텔 방 여러 개 대신 집 한 채를 통째로 쓰는 숙소입니다. 낮에는 골프, 저녁에는 수영장 옆에서 바베큐와 노래방으로 함께 시간을 보내기 좋습니다.\n방이 5개라 각자 방을 쓰면서도 넓은 거실과 8인 식탁에서 함께 식사할 수 있고, 하우스메이드가 항상 대기하며 아침 식사와 청소를 챙깁니다.',
+          amenities: '방 5개 (메이드룸 별도), 개인 수영장, 조식 포함, 하우스메이드 상주, 요리 도움, 바베큐, 노래방, 청소, 와이파이',
+          photos: [2,1,3,4,5,7,6,8].map(n => 'https://iclarkgolf.com/villa-' + n + '.jpg'),
+          active: true
+        });
+        if (typeof loadAccoms === 'function') { try { loadAccoms(); } catch (e) {} }
+      }
+      try { localStorage.setItem(FLAG, '1'); } catch (e) {}
+    } catch (e) { console.warn('풀빌라 첫 등록 실패(다음에 다시 시도):', e); }
+  }, 3000);
+})();
 
 async function toggleAccom(id) {
   const accoms = getAccoms().slice();
@@ -4281,6 +4353,7 @@ async function loadInquiries(filter = 'all') {
 
       // 필터
       window._inquiryDocs = docs; // 견적서 자동 채움용
+      if (typeof window.wiRenderRows === 'function') { try { window.wiRenderRows(); } catch(e) {} }
       const filtered = filter === 'all' ? docs : docs.filter(d => d.status === filter);
 
       // 상태 배지 색상
@@ -4320,7 +4393,7 @@ async function loadInquiries(filter = 'all') {
         recentBody.innerHTML = docs.slice(0,5).length ?
           docs.slice(0,5).map(q => `<tr>
             <td>${q.createdAtStr}</td>
-            <td>${q.name||'-'}</td>
+            <td>${q.name||'-'}${(q.fromWebInquiry || q.fromPackage) ? '<div style="font-size:10.5px;font-weight:800;color:#534AB7;margin-top:2px;">⬆ 30초 문의에서</div>' : ''}</td>
             <td>${q.hotel||'-'}</td>
             <td>${q.nights||0}박 / ${q.golfers||0}명</td>
             <td style="font-weight:700;color:#534AB7;">${q.totalPHP ? '₱'+Number(q.totalPHP).toLocaleString() : '$'+(q.totalUSD||0)}</td>
@@ -4391,6 +4464,8 @@ async function loadWebInquiries() {
     _webInquiryUnsubscribe = onSnapshot(q, (snap) => {
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       window._webInquiryDocs = docs; // 전체 삭제용
+      window.wiRenderRows = () => {   // 2026-10-18: 견적문의 승급 표시를 위해 다시 그릴 수 있게 함수로 감쌈
+      const docs = window._webInquiryDocs || [];
       const cardNames = window._webInquiryCardNames || {};
       body.innerHTML = docs.length ? docs.map(d => {
         const _dt = d.created?.toDate ? d.created.toDate() : null;
@@ -4405,6 +4480,8 @@ async function loadWebInquiries() {
                <a href="tel:${phone}" style="background:#d1fae5;color:#065f46;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;text-decoration:none;">📞 전화</a>
              </div>`
           : '<span class="wi-nocontact">연락처 없음</span>';
+        const promo = (typeof wiPromotedOf === 'function') ? wiPromotedOf(d) : null;
+        const promoBtn = promo ? '' : `<button onclick="wiPromote('${d.id}')" title="카톡 상담 등으로 진행된 손님을 '최근 견적 문의'로 올리기" style="background:#534AB7;color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">⬆ 견적문의로</button>`;
         const quoteBtn = `<button onclick="wiToQuote('${d.id}')" title="이 문의 내용으로 견적서 작성 탭 자동 채우기" style="background:#1b4332;color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">📋 견적서</button>`;
         return `<tr>
           <td class="wi-date">${dateStr}</td>
@@ -4414,15 +4491,69 @@ async function loadWebInquiries() {
           <td>${d.시기||'-'}</td>
           <td>${d.페이지 && (window._webInquiryCardTitles || {})[d.페이지] ? `<b style="font-size:12.5px;">${window._webInquiryCardTitles[d.페이지]}</b>${cardName}` : (d.페이지||'-') + cardName}</td>
           <td>${d.연락처||'-'}</td>
-          <td><div class="wi-act">${contactBtns}${quoteBtn}</div></td>
-          <td><span style="${statusStyle}padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;">${status}</span></td>
+          <td><div class="wi-act">${contactBtns}${quoteBtn}${promoBtn}</div></td>
+          <td><span style="${statusStyle}padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;">${status}</span>${promo ? `<div style="margin-top:4px;"><span style="background:#ede9fe;color:#534AB7;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;white-space:nowrap;">⬆ 견적문의${promo.name ? ' · ' + promo.name : ''}</span></div>` : ''}</td>
           <td><button onclick="deleteWebInquiry('${d.id}')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:16px;">🗑️</button></td>
         </tr>`;
       }).join('') : '<tr><td colspan="10" style="text-align:center;color:#9ca3af;padding:20px;">아직 수집된 웹 문의가 없습니다</td></tr>';
+      };
+      window.wiRenderRows();
     });
   } catch(e) {
     console.error('웹 문의 로드 실패:', e);
     body.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#dc2626;padding:20px;">⚠️ 로드 실패 — Firebase 확인 필요</td></tr>';
+  }
+}
+
+/* ── 2026-10-18: 30초 문의 → 견적 문의 승급 ─────────────────────────────
+   ① 자동: 손님이 30초 문의 후 맞춤 견적(quote.html)까지 신청하면 그 문의(fromPackage)를 찾아 연결 표시
+   ② 수동: [⬆ 견적문의로] 버튼 → 'inquiries'에 새 견적 문의를 만들어 「최근 견적 문의」·노션 장부에 올림
+   기존 30초 문의 기록은 고치지 않음(새 문서만 생성) */
+function wiTimeOf(v){ return v && v.toDate ? v.toDate().getTime() : (v ? new Date(v).getTime() : 0); }
+function wiPromotedOf(d){
+  const inq = window._inquiryDocs || [];
+  const byLink = inq.find(q => q.fromWebInquiry === d.id);
+  if (byLink) return byLink;
+  if (d.상태 !== '카카오이동' || !d.페이지) return null;
+  const t0 = wiTimeOf(d.created); if (!t0) return null;
+  // 같은 패키지에서 넘어와 3시간 안에 맞춤 견적을 신청한 문의
+  return inq.find(q => !q.fromWebInquiry && q.fromPackage === d.페이지 && (!q.wishTiming || !d.시기 || q.wishTiming === d.시기) &&
+    (() => { const t = wiTimeOf(q.createdAt); return t >= t0 - 60000 && t <= t0 + 3 * 3600000; })()) || null;
+}
+function wiNights(dur){
+  const s = String(dur || '');
+  let m = s.match(/(\d+)\s*박/); if (m) return Number(m[1]);
+  if (/1\s*주/.test(s)) return 6;
+  m = s.match(/(\d+)\s*일/); if (m) return Math.max(Number(m[1]) - 1, 0);
+  return 0;
+}
+async function wiPromote(docId){
+  const d = (window._webInquiryDocs || []).find(x => x.id === docId);
+  if (!d) { alert('문의를 찾을 수 없습니다. 새로고침 후 다시 해 주세요.'); return; }
+  if (wiPromotedOf(d)) { alert('이미 견적 문의로 올라가 있습니다.'); return; }
+  const name = prompt('손님 이름 (카톡 대화명도 괜찮아요)', d.이름 || '');
+  if (name === null) return;
+  const contact = prompt('연락처 (모르면 비워두세요)', d.연락처 || '');
+  if (contact === null) return;
+  const title = (window._webInquiryCardTitles || {})[d.페이지] || d.페이지 || '';
+  const party = { '혼자': 1, '2명': 2, '3명 이상': 3 }[d.인원] || 0;
+  const memo = ['30초 승급', d.기간, d.인원, d.시기, title].filter(Boolean).join(' · ');
+  try {
+    const db = await initInquiryDB();
+    const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await addDoc(collection(db, 'inquiries'), {
+      name: name.trim() || '30초 문의 손님', contact: contact.trim(), memo,
+      nights: wiNights(d.기간), golfers: party, nonGolfers: 0,
+      totalPHP: 0, totalKRW: 0, totalUSD: 0,
+      hotel: '미선택', hotelId: '', hotelNights: 0, customHotelPriceUSD: 0,
+      arrDate: '', depDate: '', golfCourses: [], extras: [],
+      status: 'pending', source: 'admin-30s', packageType: 'promoted',
+      fromPackage: d.페이지 || '', fromPackageTitle: title, wishTiming: d.시기 || '',
+      fromWebInquiry: d.id, createdAt: serverTimestamp()
+    });
+    if (typeof showToast === 'function') showToast('⬆ 최근 견적 문의로 올렸어요');
+  } catch(e) {
+    alert('승급 실패: ' + e.message);
   }
 }
 

@@ -578,7 +578,7 @@ function renderHotels(){
       <div class="hotel-info">
         <div class="hotel-name">${esc(h.name)}</div>
         <div class="hotel-meta">${esc(h.note || '')}</div>
-        <div class="hotel-price">${fmtPhp(h.pricePhp || u2p(h.priceUsd))}${krwTag(h.pricePhp || u2p(h.priceUsd))} <small>${h.kind === 'villa' ? '/ 1박·1채' : '/ 1인·1일 · 1인 1실 (청소·세탁·와이파이 포함)'}</small></div>
+        <div class="hotel-price">${h.kind === 'villa' ? fmtPhp(villaPrice(h)) + krwTag(villaPrice(h)) : fmtPhp(h.pricePhp || u2p(h.priceUsd)) + krwTag(h.pricePhp || u2p(h.priceUsd))} <small>${h.kind === 'villa' ? '/ 1박·1채' + (h.tiers ? ' · ' + villaPeople() + '명 기준' : '') : '/ 1인·1일 · 1인 1실 (청소·세탁·와이파이 포함)'}</small></div>
         <div class="hotel-btns"><button type="button" class="add${selHotel===h.key?' on':''}" onclick="pickHotel('${h.key}')">${selHotel===h.key ? '✓ 담김' : '🛒 담기'}</button></div>
       </div>
     </div>`;
@@ -600,6 +600,16 @@ function renderHotels(){
     || '<div style="text-align:center;color:var(--muted);padding:16px;font-size:13px;">이 등급의 호텔 정보가 잠시 없습니다. 아래 검색 버튼을 이용해 주세요.</div>';
   const h = findHotel(selHotel);
   $('hotel-sum').textContent = h ? h.name : '선택 안 함';
+}
+/* 2026-10-18: 풀빌라 인원별 1박 요금 (admin 숙소 관리의 「인원별 요금」) — 인원에 맞는 요금, 범위 밖이면 가장 가까운 요금 */
+function villaPeople(){ return pax.g + pax.n; }
+function villaPrice(h){
+  const base = h.pricePhp || u2p(h.priceUsd);
+  const t = h.tiers; if (!t) return base;
+  const ks = Object.keys(t).map(Number).filter(k => k > 0 && Number(t[k]) > 0).sort((a, b) => a - b);
+  if (!ks.length) return base;
+  const k = ks.find(k => k >= villaPeople()) ?? ks[ks.length - 1];
+  return Number(t[k]) || base;
 }
 function findHotel(key){ return key ? (HOTELS.find(x => x.key === key) || LOCALS.find(x => x.key === key) || VILLAS.find(x => x.key === key) || null) : null; }
 function pickHotel(key){ selHotel = selHotel === key ? null : key; renderHotels(); renderSum(); }
@@ -681,7 +691,7 @@ function calc(){
   const n = nights();
   const h = findHotel(selHotel);
   // 모두 페소: 아고다 호텔 1박·객실 PHP × 박수 × 객실 / iClark 전용숙소 1인·1일 × 박수 × 골퍼
-  const hotelPhp = h && n ? (h.kind === 'local' ? (h.pricePhp || u2p(h.priceUsd)) * n * pax.g : h.kind === 'villa' ? (h.pricePhp || u2p(h.priceUsd)) * n : h.price * n * pax.r) : 0;
+  const hotelPhp = h && n ? (h.kind === 'local' ? (h.pricePhp || u2p(h.priceUsd)) * n * pax.g : h.kind === 'villa' ? villaPrice(h) * n : h.price * n * pax.r) : 0;
   const golf = GREENFEE.filter(g => selGolf[g.id]).map(g => ({ g, rounds: selGolf[g.id], php: fee(g) * selGolf[g.id] * pax.g }));
   const golfPhp = golf.reduce((s,x) => s + x.php, 0);
   const items = allItems().filter(it => selItems[it.id]).map(it => ({ it, qty: selItems[it.id], amt: itemAmount(it, selItems[it.id]) }));
@@ -694,7 +704,7 @@ function renderSum(){
   const c = calc();
   const x = (kind, id) => `<button type="button" class="x" title="빼기" onclick="removeFromCart('${kind}','${esc(id)}')">✕</button>`;
   let rows = '';
-  if (c.h) rows += `<div class="cart-group">🏨 숙소</div><div class="cart-row"><span class="k">${esc(c.h.name)}<br><small>${c.n ? (c.h.kind === 'local' ? '객실 ' + c.n + '일 × ' + pax.g + '명' : c.h.kind === 'villa' ? c.n + '박 × 1채' : c.n + '박 × 객실 ' + pax.r + '개 (참고가)') : '날짜를 넣으면 계산됩니다'}</small></span><span class="v">${c.n ? fmtPhp(c.hotelPhp) + '<br>' + krwTag(c.hotelPhp) : '-'}</span>${x('hotel','')}</div>`;
+  if (c.h) rows += `<div class="cart-group">🏨 숙소</div><div class="cart-row"><span class="k">${esc(c.h.name)}<br><small>${c.n ? (c.h.kind === 'local' ? '객실 ' + c.n + '일 × ' + pax.g + '명' : c.h.kind === 'villa' ? c.n + '박 × 1채' + (c.h.tiers ? ' (' + villaPeople() + '명)' : '') : c.n + '박 × 객실 ' + pax.r + '개 (참고가)') : '날짜를 넣으면 계산됩니다'}</small></span><span class="v">${c.n ? fmtPhp(c.hotelPhp) + '<br>' + krwTag(c.hotelPhp) : '-'}</span>${x('hotel','')}</div>`;
   if (c.golf.length) rows += '<div class="cart-group">⛳ 골프</div>' + c.golf.map(g => `<div class="cart-row"><span class="k">${esc(g.g.name)}<br><small>${g.rounds}라운드 × 골퍼 ${pax.g}명</small></span><span class="v">${fmtPhp(g.php)}<br>${krwTag(g.php)}</span>${x('golf', g.g.id)}</div>`).join('');
   if (c.items.length) rows += '<div class="cart-group">🚗 차량 · 레슨 · 식사 등</div>' + c.items.map(i => `<div class="cart-row"><span class="k">${esc(i.it.icon || '')} ${esc(i.it.name)}<br><small>${fmtPhp(itemPhp(i.it))} × ${i.qty}${i.it.perPerson ? ' × ' + (pax.g + pax.n) + '명' : ''}</small></span><span class="v">${fmtPhp(i.amt)}<br>${krwTag(i.amt)}</span>${x('item', i.it.id)}</div>`).join('');
   $('sum-rows').innerHTML = rows || '<div class="cart-empty">장바구니가 비어 있어요.<br>위에서 필요한 것을 🛒 담아 주세요.</div>';
@@ -792,7 +802,7 @@ async function loadGolf(){
     if (acc) acc.forEach(ds => {
       const d = ds.data();
       if (d.active === false || (d.type !== 'local' && d.type !== 'villa')) return;
-      (d.type === 'villa' ? VILLAS : LOCALS).push({ key: ds.id, kind: d.type, options: d.options || {}, name: d.name || '', priceUsd: Number(d.priceUSD) || 0, pricePhp: Number(d.pricePHP) || 0,
+      (d.type === 'villa' ? VILLAS : LOCALS).push({ key: ds.id, kind: d.type, options: d.options || {}, tiers: d.tierPrices || null, name: d.name || '', priceUsd: Number(d.priceUSD) || 0, pricePhp: Number(d.pricePHP) || 0,
         image: (Array.isArray(d.photos) && d.photos[0]) || '', note: [d.location, d.stars ? '⭐'.repeat(d.stars) : ''].filter(Boolean).join(' · ') });
     });
     if (ex.exists() && Number(ex.data().appliedUsdPhp) > 0) RATE = Number(ex.data().appliedUsdPhp);
@@ -827,7 +837,7 @@ function preselectHotel(){
   const NAME_KEY = { h1:'망고', h2:'클락턴', h3:'오아시스', h5:'엠마우스' };
   let h = null;
   if (hp === 'local') h = LOCALS[0] || null;
-  else h = LOCALS.find(x => x.key === hp) || HOTELS.find(x => x.key === hp)
+  else h = LOCALS.find(x => x.key === hp) || VILLAS.find(x => x.key === hp) || HOTELS.find(x => x.key === hp)
         || (NAME_KEY[hp] ? HOTELS.find(x => (x.name || '').includes(NAME_KEY[hp])) : null);
   if (!h) return;
   selHotel = h.key;

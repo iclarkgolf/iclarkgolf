@@ -1578,6 +1578,70 @@ try {
   <div id="lodging-more-wrap" style="margin-top:16px;text-align:center;"></div>
 </div>
 
+<!-- 🏡 풀빌라 (2026-10-18) — 아고다 숙소 아래 iClark 풀빌라 소개, 자세히는 pool-villa.html -->
+<div class="section" id="pool-villa" style="margin-top:20px;border-top:4px solid #0ea5e9;">
+  <div class="sec-head">
+    <h2 class="sec-title">🏡 풀빌라</h2>
+    <span style="background:linear-gradient(135deg,#0ea5e9,#534AB7);color:#fff;font-size:11px;font-weight:800;padding:5px 12px;border-radius:100px;white-space:nowrap;">한 채 통째로</span>
+  </div>
+  <div id="pool-villa-list" style="display:grid;gap:12px;">
+  <a href="pool-villa.html" style="display:flex;flex-wrap:wrap;background:#fff;border:1.5px solid #c8edd9;border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;box-shadow:0 4px 16px rgba(0,0,0,.06);">
+    <div style="flex:1 1 280px;min-height:200px;position:relative;">
+      <img src="villa-2.jpg" alt="iClark 풀빌라 개인 수영장" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;">
+      <span style="position:absolute;top:10px;left:10px;background:#0ea5e9;color:#fff;font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;">iClark 직영</span>
+    </div>
+    <div style="flex:1 1 260px;padding:16px 18px;">
+      <div style="font-size:18px;font-weight:800;color:#18181b;">iClark 풀빌라</div>
+      <div style="font-size:12.5px;color:#6b7280;font-weight:700;margin-top:2px;">📍 앙헬레스</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;">
+        <span style="background:#E1F5EE;color:#065f46;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:20px;">방 5개</span>
+        <span style="background:#E1F5EE;color:#065f46;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:20px;">개인 수영장</span>
+        <span style="background:#E1F5EE;color:#065f46;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:20px;">조식 포함</span>
+        <span style="background:#E1F5EE;color:#065f46;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:20px;">하우스메이드 상주</span>
+        <span style="background:#E1F5EE;color:#065f46;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:20px;">바베큐 · 노래방</span>
+      </div>
+      <div style="font-size:13px;color:#374151;line-height:1.7;">골프 한 팀·가족이 함께 쓰는 집 한 채. 3명 ₱15,000 · 4명 ₱18,000 · 5명 ₱21,000 <span style="color:#9ca3af;">(1박·1채)</span></div>
+      <div style="margin-top:12px;display:inline-block;background:linear-gradient(135deg,#1D9E75,#534AB7);color:#fff;font-size:13px;font-weight:800;padding:9px 16px;border-radius:20px;">사진·요금 자세히 보기 →</div>
+    </div>
+  </a>
+  </div>
+</div>
+<script>
+/* 풀빌라 칸: 관리자 → 숙소 관리에서 「풀빌라」로 등록·활성화된 곳을 자동으로 보여줌 (없으면 칸을 숨김) */
+(async function(){
+  const box = document.getElementById('pool-villa-list'); if (!box) return;
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+  const val = v => !v ? null : 'stringValue' in v ? v.stringValue : 'integerValue' in v ? Number(v.integerValue) : 'doubleValue' in v ? v.doubleValue : 'booleanValue' in v ? v.booleanValue
+    : 'arrayValue' in v ? (v.arrayValue.values || []).map(val) : 'mapValue' in v ? Object.fromEntries(Object.entries(v.mapValue.fields || {}).map(([k, x]) => [k, val(x)])) : null;
+  let villas;
+  try {
+    const j = await (await fetch('https://firestore.googleapis.com/v1/projects/iclarkgolf/databases/(default)/documents/accommodations?pageSize=200&key=AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU')).json();
+    if (!j.documents) return;                              // 못 불러오면 기본 카드 그대로
+    villas = j.documents.map(d => Object.assign({ id: d.name.split('/').pop() }, Object.fromEntries(Object.entries(d.fields || {}).map(([k, x]) => [k, val(x)]))))
+      .filter(v => v.type === 'villa' && v.active !== false);
+  } catch (e) { return; }
+  if (!villas.length) { document.getElementById('pool-villa').style.display = 'none'; return; }
+  const peso = n => '₱' + Number(n || 0).toLocaleString();
+  const chip = t => `<span style="background:#E1F5EE;color:#065f46;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:20px;">${esc(t)}</span>`;
+  box.innerHTML = villas.map(v => {
+    const t = v.tierPrices && Object.keys(v.tierPrices).length ? v.tierPrices : null;
+    const price = t ? Object.keys(t).map(Number).sort((a, b) => a - b).map(k => k + '명 ' + peso(t[k])).join(' · ') : peso(v.pricePHP);
+    const amen = String(v.amenities || '').split(',').map(s => s.trim()).filter(Boolean).slice(0, 5);
+    const img = (v.photos || [])[0];
+    return `<a href="pool-villa.html?id=${encodeURIComponent(v.id)}" style="display:flex;flex-wrap:wrap;background:#fff;border:1.5px solid #c8edd9;border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;box-shadow:0 4px 16px rgba(0,0,0,.06);">
+      <div style="flex:1 1 280px;min-height:200px;position:relative;background:#e0f2fe;">${img ? `<img src="${esc(img)}" alt="${esc(v.name)}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;">` : '<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:44px;">🏡</span>'}
+        <span style="position:absolute;top:10px;left:10px;background:#0ea5e9;color:#fff;font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;">iClark 직영</span></div>
+      <div style="flex:1 1 260px;padding:16px 18px;">
+        <div style="font-size:18px;font-weight:800;color:#18181b;">${esc(v.name)}</div>
+        <div style="font-size:12.5px;color:#6b7280;font-weight:700;margin-top:2px;">📍 ${esc(v.location || '')}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;">${amen.map(chip).join('')}</div>
+        <div style="font-size:13px;color:#374151;line-height:1.7;">${price} <span style="color:#9ca3af;">(1박·1채)</span></div>
+        <div style="margin-top:12px;display:inline-block;background:linear-gradient(135deg,#1D9E75,#534AB7);color:#fff;font-size:13px;font-weight:800;padding:9px 16px;border-radius:20px;">사진·요금 자세히 보기 →</div>
+      </div></a>`;
+  }).join('');
+})();
+</script>
+
 <script>
 /* ── 2026-08-15: 숙소 4곳 수동 관리를 그만두고, 아고다(Agoda) 클락/앙헬레스
    지역의 실시간 호텔 가격·사진을 그대로 보여주는 방식으로 전환.
