@@ -97,12 +97,6 @@
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
-  <url>
-    <loc>https://iclarkgolf.com/disclaimer.html</loc>
-    <lastmod>2026-06-21</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.4</priority>
-  </url>
   <!-- 블로그 목록 -->
   <url>
     <loc>https://iclarkgolf.com/blog.html</loc>
