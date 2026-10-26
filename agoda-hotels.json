@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-26T02:05:41.299Z",
+  "updatedAt": "2026-10-26T11:45:12.017Z",
   "hotels": [
     {
       "hotelId": 83260113,
@@ -143,19 +143,6 @@
       "starRating": 4,
       "reviewScore": 8.3,
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=2424735&currency=PHP&checkin=2026-11-09&checkout=2026-11-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
-      "region": "앙헬레스/클락",
-      "cityId": 18875
-    },
-    {
-      "hotelId": 675470,
-      "name": "윈즈 부티크 호텔",
-      "price": 3367.91,
-      "crossedOutPrice": 5511.75,
-      "currency": "PHP",
-      "image": "http://pix8.agoda.net/hotelImages/675470/0/8539fcae9e0e09775efa563e8e1bd2d2.jpg?ce=3&s=800x600",
-      "starRating": 4,
-      "reviewScore": 8.7,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=675470&currency=PHP&checkin=2026-11-09&checkout=2026-11-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
       "region": "앙헬레스/클락",
       "cityId": 18875
     },
@@ -368,19 +355,6 @@
       "cityId": 18875
     },
     {
-      "hotelId": 46018777,
-      "name": "OYO 1119 헤베아 호텔 앤 리조트",
-      "price": 1657.6,
-      "crossedOutPrice": 4208.82,
-      "currency": "PHP",
-      "image": "http://pix8.agoda.net/hotelImages/46018777/0/90c4313ec69178a78e79082bd3817760.jpg?ce=2&s=800x600",
-      "starRating": 4,
-      "reviewScore": 7.5,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=46018777&currency=PHP&checkin=2026-11-09&checkout=2026-11-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
-      "region": "앙헬레스/클락",
-      "cityId": 18875
-    },
-    {
       "hotelId": 8807370,
       "name": "Clark-Pad Inn, Angeles City",
       "price": 714.28,
@@ -390,6 +364,19 @@
       "starRating": 3.5,
       "reviewScore": 8.2,
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=8807370&currency=PHP&checkin=2026-11-09&checkout=2026-11-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
+      "region": "앙헬레스/클락",
+      "cityId": 18875
+    },
+    {
+      "hotelId": 46018777,
+      "name": "OYO 1119 헤베아 호텔 앤 리조트",
+      "price": 1657.6,
+      "crossedOutPrice": 4208.82,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/46018777/0/90c4313ec69178a78e79082bd3817760.jpg?ce=2&s=800x600",
+      "starRating": 4,
+      "reviewScore": 7.5,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=46018777&currency=PHP&checkin=2026-11-09&checkout=2026-11-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
       "region": "앙헬레스/클락",
       "cityId": 18875
     },
@@ -416,6 +403,19 @@
       "starRating": 3,
       "reviewScore": 7.8,
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=522436&currency=PHP&checkin=2026-11-09&checkout=2026-11-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
+      "region": "앙헬레스/클락",
+      "cityId": 18875
+    },
+    {
+      "hotelId": 798530,
+      "name": "퍼시픽 브리즈 호텔 앤 리조트",
+      "price": 1956.52,
+      "crossedOutPrice": 2500,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/798530/0/f4cce18e3f35cbce089fb970873a6516.jpeg?ce=0&s=800x600",
+      "starRating": 3,
+      "reviewScore": 8,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=798530&currency=PHP&checkin=2026-11-09&checkout=2026-11-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
       "region": "앙헬레스/클락",
       "cityId": 18875
     },
@@ -797,23 +797,23 @@
       "cityId": 180098
     },
     {
-      "hotelId": 76057870,
-      "name": "KRYSTL KRIB Azure North",
-      "price": 2430,
+      "hotelId": 89090954,
+      "name": "Cozy Japandi in Azure North Near Mall and Airport",
+      "price": 1469.21,
       "crossedOutPrice": 0,
       "currency": "PHP",
-      "image": "http://q-xx.bstatic.com/xdata/images/hotel/840x460/704356376.jpg?k=42402f53571fc1c7f6629a073219585a17b5511abd94b5d7781a9496d36d9df3&o=",
+      "image": "http://pix8.agoda.net/hotelImages/89090954/0/66871e337f68c8cff3447a4d57d88898.png?ce=3&s=800x600",
       "starRating": 3,
-      "reviewScore": 9.7,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=76057870&currency=PHP&checkin=2026-11-09&checkout=2026-11-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
+      "reviewScore": 9.1,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=89090954&currency=PHP&checkin=2026-11-09&checkout=2026-11-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
       "region": "산페르난도(팜팡가)",
       "cityId": 180098
     },
     {
       "hotelId": 104974,
       "name": "위더스 호텔 클락",
-      "price": 4480.42,
-      "crossedOutPrice": 7800,
+      "price": 4746.21,
+      "crossedOutPrice": 7900,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/104/104974/104974_14072516240020492698.jpg?ca=2&ce=1&s=800x600",
       "starRating": 5,
@@ -903,8 +903,8 @@
     {
       "hotelId": 2161469,
       "name": "호텔 서울",
-      "price": 3832.89,
-      "crossedOutPrice": 7150,
+      "price": 2692.47,
+      "crossedOutPrice": 7700,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/2161469/-1/bf9a9da25f8b1bee8d14e25f1e307ef1.png?ce=0&s=800x600",
       "starRating": 3,
@@ -1142,7 +1142,7 @@
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/93115075/0/4ad4238ba8981d72842d897b09b56dcd.png?ce=3&s=800x600",
       "starRating": 4,
-      "reviewScore": 8.3,
+      "reviewScore": 8.4,
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=93115075&currency=PHP&checkin=2026-11-09&checkout=2026-11-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
       "region": "마발라캇(팜팡가)",
       "cityId": 176012
@@ -1194,7 +1194,7 @@
       "currency": "PHP",
       "image": "http://q-xx.bstatic.com/xdata/images/hotel/840x460/685476505.jpg?k=6d8b014bf7dd259129a1d5a6c0ba287ff5635968c51ae044614dec9d97614786&o=",
       "starRating": 3.5,
-      "reviewScore": 9.3,
+      "reviewScore": 8.6,
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=74341708&currency=PHP&checkin=2026-11-09&checkout=2026-11-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
       "region": "마발라캇(팜팡가)",
       "cityId": 176012
@@ -1423,7 +1423,7 @@
     {
       "hotelId": 44319567,
       "name": "디 오로라 수빅 호텔 매니지드 바이 HII",
-      "price": 4620,
+      "price": 4536,
       "crossedOutPrice": 0,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/44319567/-1/cd57e54655621e7cf84e9a18ffdd7eee.jpg?ce=0&s=800x600",
@@ -1462,8 +1462,8 @@
     {
       "hotelId": 1932171,
       "name": "르 참 스위트 수빅",
-      "price": 3909.38,
-      "crossedOutPrice": 15637.54,
+      "price": 5997.38,
+      "crossedOutPrice": 16000,
       "currency": "PHP",
       "image": "http://pix8.agoda.net/hotelImages/1932171/0/efa46ebed29c8de2b71739def2dfcc64.png?ce=2&s=800x600",
       "starRating": 4,
@@ -1482,6 +1482,19 @@
       "starRating": 4,
       "reviewScore": 7.8,
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=296034&currency=PHP&checkin=2026-11-09&checkout=2026-11-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
+      "region": "올롱가포/수빅(잠발레스)",
+      "cityId": 18217
+    },
+    {
+      "hotelId": 274266,
+      "name": "카마나 셍추어리 리조트 앤 스파",
+      "price": 8237.44,
+      "crossedOutPrice": 10370,
+      "currency": "PHP",
+      "image": "http://pix8.agoda.net/hotelImages/274266/0/ad692ba1be028c504dc1359d3deb5aed.jpeg?ce=0&s=800x600",
+      "starRating": 4,
+      "reviewScore": 8.4,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=274266&currency=PHP&checkin=2026-11-09&checkout=2026-11-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
       "region": "올롱가포/수빅(잠발레스)",
       "cityId": 18217
     },
@@ -1729,19 +1742,6 @@
       "starRating": 5,
       "reviewScore": 9,
       "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=34247119&currency=PHP&checkin=2026-11-09&checkout=2026-11-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
-      "region": "올롱가포/수빅(잠발레스)",
-      "cityId": 18217
-    },
-    {
-      "hotelId": 285561,
-      "name": "카사블랑카 호텔 콘도미니엄 리조트 바 앤 레스토랑",
-      "price": 5864.56,
-      "crossedOutPrice": 8400,
-      "currency": "PHP",
-      "image": "http://pix8.agoda.net/hotelImages/285561/0/0962129f53dbb4250d7ba99d357ee5c7.jpg?ce=2&s=800x600",
-      "starRating": 3,
-      "reviewScore": 8,
-      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=285561&currency=PHP&checkin=2026-11-09&checkout=2026-11-10&NumberofAdults=2&NumberofChildren=0&Rooms=1&pcs=6",
       "region": "올롱가포/수빅(잠발레스)",
       "cityId": 18217
     },
