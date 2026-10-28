@@ -574,6 +574,23 @@ footer {
   #inquiry-body td:nth-child(9){grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px;padding-top:8px;border-top:1px dashed #e5e7eb;}
   #inquiry-body td:nth-child(9) > *{margin:0 !important;display:inline-block !important;}
 }
+/* 2026-10-28: 폴드 펼친 화면·태블릿(601~1099px)에서도 견적 문의 내역을 카드로 — 표로 나오면 오른쪽 관리 버튼(문자·견적서)이 화면 밖에 숨음 */
+@media (min-width:601px) and (max-width:1099px){
+  #panel-inquiry .mgmt-card .tbl-wrap:has(#inquiry-body){border:none;overflow:visible;}
+  #panel-inquiry .tbl:has(#inquiry-body) thead{display:none;}
+  #panel-inquiry .tbl:has(#inquiry-body),#inquiry-body{display:block;width:100%;}
+  #inquiry-body tr{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px 12px;background:#fff;border:1.5px solid #c8edd9;border-radius:12px;padding:14px;margin-bottom:10px;}
+  #inquiry-body td{display:block;padding:0;border:none;font-size:14px;white-space:normal;}
+  #inquiry-body td[colspan]{grid-column:1/-1;}
+  #inquiry-body td:nth-child(1){font-size:12px;color:#6b7280;}
+  #inquiry-body td:nth-child(2){grid-column:1/-1;grid-row:1;font-size:16px;}
+  #inquiry-body td:nth-child(4){grid-column:1/-1;}
+  #inquiry-body td:nth-child(5)::before{content:'기간 ';color:#9ca3af;font-size:12px;}
+  #inquiry-body td:nth-child(6)::before{content:'인원 ';color:#9ca3af;font-size:12px;}
+  #inquiry-body td:nth-child(7){font-size:16px;}
+  #inquiry-body td:nth-child(9){grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px;padding-top:10px;border-top:1px dashed #e5e7eb;}
+  #inquiry-body td:nth-child(9) > *{margin:0 !important;display:inline-block !important;}
+}
 </style>
 <style>
 body { background:#f4faf7; padding-bottom:40px; }
