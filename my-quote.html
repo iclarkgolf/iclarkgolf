@@ -124,6 +124,13 @@ tbody tr.ref-header td{background:#f9f9f9;font-size:11px;font-weight:700;color:#
 .pay-row .v{flex:1;font-weight:700;color:var(--dark);word-break:break-all;}
 .pay-row button{flex-shrink:0;background:#fff;border:1.5px solid var(--green-mid);color:var(--green);border-radius:6px;padding:3px 10px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
 .pay-foot{background:#fffbf5;padding:10px 18px;font-size:12px;color:#92400e;line-height:1.7;}
+/* 2026-10-28: 카드 결제 (PayPal) */
+.dep-box{padding:16px 18px;border-bottom:1px dashed #e5e7eb;}
+.dep-box .dep-t{font-size:14px;font-weight:800;color:var(--green);margin-bottom:6px;}
+.dep-box .dep-amt{font-size:22px;font-weight:800;color:#111;margin:4px 0;}
+.dep-box .dep-n{font-size:12px;color:#6b7280;line-height:1.7;margin-bottom:10px;}
+.dep-box .dep-ok{background:#ecfdf5;color:#065f46;border-radius:10px;padding:12px;font-size:13px;font-weight:700;line-height:1.7;}
+@media print{ .dep-box{display:none;} }
 .terms{margin:0 48px 28px;border:1px solid #e5e7eb;border-radius:10px;padding:16px 18px;background:#fafafa;}
 .terms h4{font-size:12px;font-weight:800;color:var(--dark);letter-spacing:1px;margin-bottom:10px;}
 .terms .art{margin-bottom:9px;font-size:12px;line-height:1.7;color:#444;}
@@ -367,6 +374,7 @@ function renderPay(data, totalPhp){
   const row = (l, v, copy) => `<div class="pay-row"><span class="l">${l}</span><span class="v">${esc(v)}</span>${copy ? `<button type="button" onclick="copyPay('${esc(v)}')">복사</button>` : ''}</div>`;
   box.innerHTML = `
     <div class="pay-head">💳 송금 안내</div>
+    ${depositHtml(data, totalPhp)}
     <div class="pay-amount">
       <div><div class="k">송금하실 금액 (원화)</div><div class="krw">${fmtKrw(krw)}</div><div class="php">확정 금액 ${fmtPhp(totalPhp)} · 해외송금 수수료·환율 포함</div></div>
       ${data.payDeadline ? `<div style="text-align:right;"><div class="k">입금 기한</div><div class="due">${esc(data.payDeadline)} 까지</div></div>` : ''}
@@ -396,7 +404,89 @@ function renderPay(data, totalPhp){
   box.style.display = 'block';
 }
 
-const TERMS = [["제1조 (견적서와 확정서)", "견적서는 예상 금액을 안내하는 문서이며 예약이 아닙니다. 견적서 금액은 확정서 발행 전까지 골프장·호텔 사정에 따라 바뀔 수 있습니다. 예약 내용과 금액은 확정서 발행으로 정해집니다."], ["제2조 (전액 입금)", "확정서가 발행되면 확정서에 적힌 입금 기한까지 전액을 입금하셔야 합니다. 기한 내 입금되지 않으면 예약은 자동 취소됩니다."], ["제3조 (바우처 발행)", "골프장·호텔 예약은 전액 입금이 확인된 후에 진행되며, 완불이 되어야 바우처가 발행됩니다."], ["제4조 (바우처 발행 후 취소·변경 불가)", "바우처가 발행된 골프장·호텔은 환불과 변경(날짜·시간·인원·이름)이 되지 않습니다. 이용이 어려운 경우 예약자께서 바우처에 적힌 이름 그대로 다른 분께 양도(재판매)하셔야 합니다."], ["제5조 (차량 환불)", "차량(픽업·드롭·전용차량)은 이용일 7일 전까지 취소하시면 환불해 드립니다. 이용일 7일 이내 취소는 환불되지 않습니다."], ["제6조 (현지 별도 지불)", "카트비·캐디피·캐디팁 등 \"현지 별도 지불\"로 표시된 항목은 골프장에서 직접 내시며 확정 금액에 포함되지 않습니다."], ["제7조 (송금)", "송금은 필리핀 현지 계좌(BDO)로 해외송금하셔야 합니다. 송금 금액은 확정서의 원화 송금 금액 기준이며, 해외송금 수수료·환율 차이가 포함된 금액입니다. 송금 후 송금 확인증을 카카오톡(tourjang2)으로 보내주세요."]];
+/* ── 2026-10-28: 카드 결제 (PayPal — PayPal 계정 없어도 VISA·Master 카드로 결제) ──
+   확정 금액 전액을 달러로 카드 결제. 카드 결제 수수료 4%를 더한 금액. 해외송금(BDO)도 그대로 선택 가능.
+   결제되면 PJ에게 이메일 알림(Web3Forms). */
+const PAYPAL_CLIENT_ID = 'BAAjglGNVCaB7LgXBOggtR2z1x9W4o5MiL1VIhVv8WBAznvT7ejEKH7-fFbaRhalKDCkeSn_AUULglPOBA';
+const CARD_FEE_RATE = 0.04;
+function cardUsd(totalPhp, data){
+  const r = data.rate || {};
+  const applied = Number(r.appliedUsdPhp) || 53.2;
+  return Math.ceil((Number(totalPhp)||0) / applied * (1 + CARD_FEE_RATE));
+}
+function depositHtml(data, totalPhp){
+  const usd = cardUsd(totalPhp, data);
+  if (!usd) return '';
+  setTimeout(() => renderDepositButtons(data, totalPhp, usd), 0);
+  return `<div class="dep-box" id="depBox">
+    <div class="dep-t">💳 카드로 결제하기</div>
+    <div class="dep-amt">US$${usd.toLocaleString()}</div>
+    <div class="dep-n">VISA·Master 카드로 바로 결제할 수 있습니다 (PayPal 계정 없어도 됩니다).<br>
+    카드 결제 수수료 4%가 포함된 금액이며, 달러로 결제됩니다.<br>
+    해외송금을 원하시면 아래 계좌 정보로 송금해 주세요.</div>
+    <div id="depButtons" style="min-height:48px;"></div>
+  </div>`;
+}
+let _depRendered = false;
+function loadPaypal(){
+  if (window.paypal) return Promise.resolve(window.paypal);
+  return new Promise((ok, no) => {
+    const sc = document.createElement('script');
+    sc.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(PAYPAL_CLIENT_ID) + '&currency=USD&intent=capture&components=buttons&disable-funding=paylater,venmo';
+    sc.onload = () => ok(window.paypal); sc.onerror = no;
+    document.head.appendChild(sc);
+  });
+}
+function renderDepositButtons(data, totalPhp, usd){
+  if (_depRendered || !document.getElementById('depButtons')) return;
+  _depRendered = true;
+  loadPaypal().then(pp => pp.Buttons({
+    style: { layout:'vertical', shape:'rect', label:'pay' },
+    createOrder: (d, actions) => actions.order.create({
+      purchase_units: [{
+        description: 'iCLARKGOLF ' + (data.quoteNo || ''),
+        invoice_id: (data.quoteNo || 'QT') + '-CARD-' + Date.now(),
+        amount: { currency_code: 'USD', value: usd.toFixed(2) }
+      }],
+      application_context: { shipping_preference: 'NO_SHIPPING', brand_name: 'iCLARKGOLF' }
+    }),
+    onApprove: (d, actions) => actions.order.capture().then(order => {
+      const box = document.getElementById('depBox');
+      if (box) box.innerHTML = `<div class="dep-ok">✅ 카드 결제 US$${usd.toLocaleString()}가 완료되었습니다. 감사합니다.<br>확인 후 골프장·호텔 예약을 진행하고 바우처를 보내드립니다. 따로 송금하지 않으셔도 됩니다.</div>`;
+      notifyDeposit(data, usd, order);
+    }),
+    onError: err => { console.error('PayPal 오류', err); alert('카드 결제가 완료되지 않았습니다. 다시 시도하시거나 해외송금으로 진행해 주세요.'); }
+  }).render('#depButtons')).catch(() => {
+    const el = document.getElementById('depButtons');
+    if (el) el.innerHTML = '<div style="font-size:12px;color:#b91c1c;">카드 결제창을 불러오지 못했습니다. 해외송금으로 진행해 주세요.</div>';
+  });
+}
+async function notifyDeposit(data, usd, order){
+  try {
+    const res = await fetch('https://firestore.googleapis.com/v1/projects/iclarkgolf/databases/(default)/documents/settings/notify?key=AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU');
+    if (!res.ok) return;
+    const f = ((await res.json()) || {}).fields || {};
+    const key = f.web3formsKey && f.web3formsKey.stringValue;
+    if (!key) return;
+    await fetch('https://api.web3forms.com/submit', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key: key,
+        subject: '✅ [iCLARKGOLF] 카드 결제 완료 — ' + (data.clientName || '') + ' US$' + usd,
+        from_name: 'iCLARKGOLF 결제 알림',
+        '고객': data.clientName || '-',
+        '견적번호': data.quoteNo || '-',
+        '결제금액': 'US$' + usd + ' (카드수수료 4% 포함, 확정 금액 전액)',
+        'PayPal 주문번호': order.id || '-',
+        '결제자 이메일': (order.payer && order.payer.email_address) || '-',
+        '결제시각': new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }),
+        '확인': 'PayPal 활동내역에서 입금 확인'
+      })
+    });
+  } catch(e) { console.warn('결제 알림 실패(무시)', e); }
+}
+
+const TERMS = [["제1조 (견적서와 확정서)", "견적서는 예상 금액을 안내하는 문서이며 예약이 아닙니다. 견적서 금액은 확정서 발행 전까지 골프장·호텔 사정에 따라 바뀔 수 있습니다. 예약 내용과 금액은 확정서 발행으로 정해집니다."], ["제2조 (전액 입금)", "확정서가 발행되면 확정서에 적힌 입금 기한까지 전액을 입금하셔야 합니다. 기한 내 입금되지 않으면 예약은 자동 취소됩니다."], ["제3조 (바우처 발행)", "골프장·호텔 예약은 전액 입금이 확인된 후에 진행되며, 완불이 되어야 바우처가 발행됩니다."], ["제4조 (바우처 발행 후 취소·변경 불가)", "바우처가 발행된 골프장·호텔은 환불과 변경(날짜·시간·인원·이름)이 되지 않습니다. 이용이 어려운 경우 예약자께서 바우처에 적힌 이름 그대로 다른 분께 양도(재판매)하셔야 합니다."], ["제5조 (차량 환불)", "차량(픽업·드롭·전용차량)은 이용일 7일 전까지 취소하시면 환불해 드립니다. 이용일 7일 이내 취소는 환불되지 않습니다."], ["제6조 (현지 별도 지불)", "카트비·캐디피·캐디팁 등 \"현지 별도 지불\"로 표시된 항목은 골프장에서 직접 내시며 확정 금액에 포함되지 않습니다."], ["제7조 (결제 방법)", "결제는 카드 결제 또는 필리핀 현지 계좌(BDO) 해외송금 중에서 선택하실 수 있습니다. 카드 결제는 확정서의 카드 결제 버튼으로 하며, 달러로 결제되고 카드 결제 수수료 4%가 포함됩니다. 해외송금은 확정서의 원화 송금 금액 기준이며 해외송금 수수료·환율 차이가 포함된 금액입니다. 송금 후 송금 확인증을 카카오톡(tourjang2)으로 보내주세요."]];
 /* 약관 — 견적서·확정서 공통. payment.html(입금 안내)의 약관과 같은 내용. 바꾸면 두 곳을 함께 고칠 것 */
 function renderTerms(){
   document.getElementById('termsBox').innerHTML = '<h4>📜 예약·환불 약관</h4>' + TERMS.map(t => `<div class="art"><b>${t[0]}</b>${t[0].startsWith('제4조') ? '<span class="hl">' + t[1] + '</span>' : t[1]}</div>`).join('');
