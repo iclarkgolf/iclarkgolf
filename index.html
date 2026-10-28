@@ -2110,12 +2110,20 @@ import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10
     wrap.innerHTML = `<img src="${pfPhoto}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">`;
   }
   // 자격증 사진 (가로 스크롤)
-  const lics = [pf.lic1, pf.lic2, pf.lic3, pf.lic4].map((u, i) => IBB(u) ? LOCAL_LIC[i] : u).filter(Boolean);
+  // 사진 밑 문구 (관리자 > 프로필 관리에서 바꿈. 아직 저장 안 했으면 기본 문구)
+  const CAP_DEF = ["2024 GAB 시니어 투어 프로 라이센스 취득", "필리핀 PGA 정회원 #0507", "프라데라 베르데 G&CC 클럽 프로", "필리핀 현지 거주 등록"];
+  const capEsc = t => String(t || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const lics = [pf.lic1, pf.lic2, pf.lic3, pf.lic4]
+    .map((u, i) => ({ u: IBB(u) ? LOCAL_LIC[i] : u, c: pf['cap' + (i + 1)] != null ? pf['cap' + (i + 1)] : CAP_DEF[i] }))
+    .filter(x => x.u);
   if (lics.length) {
     const box = document.getElementById('pf-licenses');
     box.style.display = 'grid';
-    box.innerHTML = lics.map(u =>
-      `<img src="${u}" style="width:100%;aspect-ratio:1/1;border-radius:10px;object-fit:cover;box-shadow:0 2px 8px rgba(0,0,0,.12);" loading="lazy" onerror="this.style.display='none'">`
+    box.innerHTML = lics.map(x =>
+      `<figure style="margin:0;">
+        <img src="${x.u}" style="width:100%;aspect-ratio:1/1;border-radius:10px;object-fit:cover;box-shadow:0 2px 8px rgba(0,0,0,.12);display:block;" loading="lazy" onerror="this.parentNode.style.display='none'">
+        ${x.c ? `<figcaption style="font-size:12px;font-weight:600;color:#374151;text-align:center;line-height:1.45;margin-top:6px;word-break:keep-all;">${capEsc(x.c)}</figcaption>` : ''}
+      </figure>`
     ).join('');
   }
   // 카카오 버튼

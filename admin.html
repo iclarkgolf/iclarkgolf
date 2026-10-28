@@ -1897,18 +1897,22 @@ async function spDelete(){
       <div>
         <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">사진 1 URL (GAB 라이센스)</label>
         <input id="pf-lic1" type="text" placeholder="https://iclarkgolf.com/images/license-gab.jpg" style="width:100%;padding:11px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:14px;box-sizing:border-box;">
+        <input id="pf-cap1" type="text" placeholder="사진 밑 문구 (예: 2024 GAB 시니어 투어 프로 라이센스 취득)" style="width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:13px;box-sizing:border-box;margin-top:6px;">
       </div>
       <div>
         <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">사진 2 URL (PGAP 카드)</label>
         <input id="pf-lic2" type="text" placeholder="https://iclarkgolf.com/images/license-pgap.jpg" style="width:100%;padding:11px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:14px;box-sizing:border-box;">
+        <input id="pf-cap2" type="text" placeholder="사진 밑 문구 (예: 필리핀 PGA 정회원 #0507)" style="width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:13px;box-sizing:border-box;margin-top:6px;">
       </div>
       <div>
         <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">사진 3 URL (Pradera 사원증)</label>
         <input id="pf-lic3" type="text" placeholder="https://iclarkgolf.com/images/license-pradera.jpg" style="width:100%;padding:11px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:14px;box-sizing:border-box;">
+        <input id="pf-cap3" type="text" placeholder="사진 밑 문구 (예: 프라데라 베르데 G&CC 클럽 프로)" style="width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:13px;box-sizing:border-box;margin-top:6px;">
       </div>
       <div>
         <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">사진 4 URL (Barangay Licence)</label>
         <input id="pf-lic4" type="text" placeholder="https://iclarkgolf.com/images/license-barangay.jpg" style="width:100%;padding:11px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:14px;box-sizing:border-box;">
+        <input id="pf-cap4" type="text" placeholder="사진 밑 문구 (예: 필리핀 현지 거주 등록)" style="width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:13px;box-sizing:border-box;margin-top:6px;">
       </div>
       <!-- 미리보기 -->
       <div id="pf-preview" style="display:none;display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;"></div>
@@ -2536,6 +2540,9 @@ async function loadProfile() {
   document.getElementById('pf-lic2').value     = pf.lic2     || '';
   document.getElementById('pf-lic3').value     = pf.lic3     || '';
   document.getElementById('pf-lic4').value     = pf.lic4     || '';
+  // 사진 밑 문구 (처음엔 기본 문구)
+  const PF_CAP_DEF = ["2024 GAB 시니어 투어 프로 라이센스 취득", "필리핀 PGA 정회원 #0507", "프라데라 베르데 G&CC 클럽 프로", "필리핀 현지 거주 등록"];
+  [1,2,3,4].forEach(n => { document.getElementById('pf-cap' + n).value = (pf['cap' + n] != null ? pf['cap' + n] : PF_CAP_DEF[n - 1]); });
   document.getElementById('pf-kakao').value    = pf.kakao    || 'https://pf.kakao.com/_nbHKX/chat';
   document.getElementById('pf-naver').value    = pf.naver    || 'https://cafe.naver.com/polojang';
   document.getElementById('pf-insta').value    = pf.insta    || '';
@@ -3464,6 +3471,10 @@ async function saveProfile() {
     lic2:     document.getElementById('pf-lic2').value.trim(),
     lic3:     document.getElementById('pf-lic3').value.trim(),
     lic4:     document.getElementById('pf-lic4').value.trim(),
+    cap1:     document.getElementById('pf-cap1').value.trim(),
+    cap2:     document.getElementById('pf-cap2').value.trim(),
+    cap3:     document.getElementById('pf-cap3').value.trim(),
+    cap4:     document.getElementById('pf-cap4').value.trim(),
     kakao:    document.getElementById('pf-kakao').value.trim(),
     naver:    document.getElementById('pf-naver').value.trim(),
     insta:    document.getElementById('pf-insta').value.trim(),
