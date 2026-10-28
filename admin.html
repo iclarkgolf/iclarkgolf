@@ -4743,7 +4743,9 @@ function inqSms(docId) {
   q2Fb().then(o => o.fs.getDocs(o.fs.query(o.fs.collection(o.db, 'quotes'), o.fs.where('clientName', '==', name))))
     .then(snap => {
       const docs = snap.docs.slice().sort((a, b) => String(b.data().createdAt || '') > String(a.data().createdAt || '') ? 1 : -1);
-      show(docs.length ? 'https://iclarkgolf.com/my-quote.html?id=' + encodeURIComponent(docs[0].id) : '');
+      const id = docs.length ? docs[0].id : '';
+      const m = id.match(/^QT-20(\d{6})-(\d{3})$/);   // 짧은 주소로: QT-20261028-001 → iclarkgolf.com/q/261028
+      show(!id ? '' : m ? 'iclarkgolf.com/q/' + m[1] + (m[2] === '001' ? '' : '-' + parseInt(m[2], 10)) : 'https://iclarkgolf.com/my-quote.html?id=' + encodeURIComponent(id));
     })
     .catch(() => show(''));
 }
