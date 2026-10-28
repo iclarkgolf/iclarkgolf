@@ -4731,9 +4731,8 @@ function inqSms(docId) {
     const lines = [
       '안녕하세요, iCLARKGOLF 장수남 프로입니다.',
       link ? `${name}님, 요청하신 클락 ${what}(${period}${stay}) 견적서를 보내드립니다.` : `${name}님, 클락 ${what}(${period}${stay}) 문의 감사합니다. 견적서를 준비하고 있습니다.`,
-      link || '',
-      '궁금하신 점이나 계획하신 것은 카카오톡으로 편하게 말씀해 주세요.',
-      '카카오톡 상담: https://pf.kakao.com/_nbHKX/chat'
+      link ? '▶ 견적서 보기\n' + link : '',
+      '궁금하신 점은 이 번호로 답장 주시거나 카카오톡(ID: tourjang2)으로 편하게 말씀해 주세요.'
     ].filter(Boolean);
     _wiSmsCur = { phone };
     document.getElementById('wi-sms-info').innerHTML = `<b>${name}</b> · ${q.contact}<br>` + (link ? '견적서 링크가 들어갔습니다' : '<span style="color:#b91c1c;">저장된 견적서를 못 찾았습니다 — 견적서를 먼저 저장하세요</span>');
