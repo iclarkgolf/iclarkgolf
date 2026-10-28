@@ -2100,12 +2100,17 @@ import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10
     }
   }
   // 프로필 사진
-  if (pf.photo) {
+  // 2026-10-28: imgbb가 멈추면 "service unavailable" 그림을 대신 보여줌(오류가 안 나서 onerror로 못 잡음)
+  // → imgbb 주소면 사이트 안 images 폴더의 같은 사진을 씀
+  const IBB = u => /(^|\/\/)(i\.)?ibb\.co\//.test(u || '');
+  const LOCAL_LIC = ['images/license-gab.jpg', 'images/license-pgap.jpg', 'images/license-pradera.jpg', 'images/license-barangay.jpg'];
+  const pfPhoto = IBB(pf.photo) ? 'images/profile-pj.jpg' : pf.photo;
+  if (pfPhoto) {
     const wrap = document.getElementById('pf-photo-wrap');
-    wrap.innerHTML = `<img src="${pf.photo}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">`;
+    wrap.innerHTML = `<img src="${pfPhoto}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">`;
   }
   // 자격증 사진 (가로 스크롤)
-  const lics = [pf.lic1, pf.lic2, pf.lic3, pf.lic4].filter(Boolean);
+  const lics = [pf.lic1, pf.lic2, pf.lic3, pf.lic4].map((u, i) => IBB(u) ? LOCAL_LIC[i] : u).filter(Boolean);
   if (lics.length) {
     const box = document.getElementById('pf-licenses');
     box.style.display = 'grid';
