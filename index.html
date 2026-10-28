@@ -454,6 +454,18 @@ img { max-width: 100%; }
 }
 .sec-more svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; }
 .sec-desc { font-size: 13px; line-height: 1.75; color: var(--gray-600); margin: -4px 0 14px; max-width: 640px; }
+/* ── 2026-10-28: 결제 방법 카드 (해외송금 · 카드 결제) ── */
+.pay-ways{display:grid;grid-template-columns:1fr;gap:12px;}
+@media (min-width:640px){ .pay-ways{grid-template-columns:1fr 1fr;} }
+.pay-way{border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:18px 16px;background:#fff;}
+.pay-way.card{border-color:#1b4332;background:#f0faf5;}
+.pay-way .pw-ic{font-size:26px;line-height:1;}
+.pay-way h3{font-size:16px;font-weight:800;color:var(--gray-900);margin:8px 0 6px;}
+.pay-way .pw-tag{display:inline-block;font-size:11px;font-weight:800;border-radius:20px;padding:2px 9px;background:#1b4332;color:#fff;margin-left:4px;vertical-align:middle;}
+.pay-way ul{margin:0;padding-left:16px;font-size:13px;line-height:1.75;color:var(--gray-600);}
+.pay-way ul b{color:var(--gray-900);}
+.pay-note{font-size:12px;color:var(--gray-600);line-height:1.7;margin-top:12px;}
+
 @media (min-width: 640px) { .sec-desc { font-size: 14px; } }
 
 /* ── 프로모 카드 2x2 (견적·숙소·캐디·블로그 — 모두 동일 크기) ── */
@@ -1788,6 +1800,36 @@ try {
 </div>
 
 <!-- 골프장 -->
+<!-- 2026-10-28: 결제 방법 안내 카드 — 해외송금 · 카드 결제 -->
+<div class="section" id="pay-ways">
+  <div class="sec-head">
+    <h2 class="sec-title" data-i18n="sec.pay">💳 결제하기</h2>
+    <a href="payment.html" class="sec-more"><span data-i18n="sec.more">전체보기</span> <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+  </div>
+  <p class="sec-desc" data-i18n="sec.pay.desc">확정서가 발행되면 <b>현지 계좌 해외송금</b> 또는 <b>카드 결제</b> 중 편한 방법으로 결제하세요.</p>
+  <div class="pay-ways">
+    <div class="pay-way">
+      <div class="pw-ic">🏦</div>
+      <h3 data-i18n="pay.bank.t">현지 계좌 해외송금</h3>
+      <ul data-i18n="pay.bank.d">
+        <li>필리핀 현지 계좌(BDO)로 <b>원화 해외송금</b></li>
+        <li>확정서에 송금하실 <b>원화 금액</b>이 바로 계산되어 나옵니다</li>
+        <li>은행 앱 해외송금 메뉴에서 몇 분이면 끝납니다</li>
+      </ul>
+    </div>
+    <div class="pay-way card">
+      <div class="pw-ic">💳</div>
+      <h3><span data-i18n="pay.card.t">카드 결제</span> <span class="pw-tag">VISA · Master</span></h3>
+      <ul data-i18n="pay.card.d">
+        <li><b>예약금 10%</b>만 카드로 결제하고 잔금은 해외송금</li>
+        <li><b>전액 카드 결제</b>도 가능 (출발 30일 이전까지)</li>
+        <li>PayPal 계정 없어도 카드 번호만으로 결제</li>
+      </ul>
+    </div>
+  </div>
+  <p class="pay-note" data-i18n="pay.note">※ 카드 결제는 미화(USD)로 청구되며 카드 결제 수수료 4%가 포함됩니다. 두 방법의 금액은 견적서·확정서에서 함께 비교해 보실 수 있습니다.</p>
+</div>
+
 <div class="section" id="golf">
   <div class="sec-head">
     <h2 class="sec-title" data-i18n="sec.golf">🗺️ 클락 골프장</h2>
@@ -2304,6 +2346,13 @@ const TRANSLATIONS = {
     'banner.blog.desc2': '최신 정보',
     'sec.packages': '⛳ 골프 패키지',
     'sec.golf': '🏌️ 클락 골프장',
+    'sec.pay': '💳 결제하기',
+    'sec.pay.desc': '확정서가 발행되면 <b>현지 계좌 해외송금</b> 또는 <b>카드 결제</b> 중 편한 방법으로 결제하세요.',
+    'pay.bank.t': '현지 계좌 해외송금',
+    'pay.bank.d': '<li>필리핀 현지 계좌(BDO)로 <b>원화 해외송금</b></li><li>확정서에 송금하실 <b>원화 금액</b>이 바로 계산되어 나옵니다</li><li>은행 앱 해외송금 메뉴에서 몇 분이면 끝납니다</li>',
+    'pay.card.t': '카드 결제',
+    'pay.card.d': '<li><b>예약금 10%</b>만 카드로 결제하고 잔금은 해외송금</li><li><b>전액 카드 결제</b>도 가능 (출발 30일 이전까지)</li><li>PayPal 계정 없어도 카드 번호만으로 결제</li>',
+    'pay.note': '※ 카드 결제는 미화(USD)로 청구되며 카드 결제 수수료 4%가 포함됩니다. 두 방법의 금액은 견적서·확정서에서 함께 비교해 보실 수 있습니다.',
     'sec.caddy': '🤝 캐디 매칭',
     'sec.caddy.desc': '캐디는 보통 그날 순번대로 무작위 배정되지만, 여기서는 다릅니다. 경력과 소통 가능 언어를 미리 확인하고 <b>원하는 캐디를 직접 선택</b>하세요.',
     'sec.blog': '📝 여행 블로그',
@@ -2413,6 +2462,13 @@ const TRANSLATIONS = {
     'banner.blog.desc2': 'Latest updates',
     'sec.packages': '⛳ Golf Packages',
     'sec.golf': '🏌️ Clark Golf Courses',
+    'sec.pay': '💳 How to Pay',
+    'sec.pay.desc': 'Once your confirmation is issued, pay by <b>bank transfer to our local account</b> or by <b>card</b> — whichever you prefer.',
+    'pay.bank.t': 'Bank transfer (local account)',
+    'pay.bank.d': '<li>International transfer to our Philippine BDO account</li><li>Your confirmation shows the <b>exact amount</b> to send</li><li>Takes a few minutes in your banking app</li>',
+    'pay.card.t': 'Card payment',
+    'pay.card.d': '<li>Pay just a <b>10% deposit</b> by card, balance by transfer</li><li><b>Full card payment</b> also available (until 30 days before departure)</li><li>No PayPal account needed — just your card</li>',
+    'pay.note': '※ Card payments are charged in US dollars and include a 4% card processing fee. You can compare both amounts on your quote and confirmation.',
     'sec.caddy': '🤝 Caddy Matching',
     'sec.caddy.desc': 'Caddies are usually assigned at random by rotation. Here, it\'s different — check experience and language before you go, and <b>pick your own caddy</b>.',
     'sec.blog': '📝 Travel Blog',
