@@ -465,6 +465,17 @@ img { max-width: 100%; }
 .pay-way ul{margin:0;padding-left:16px;font-size:13px;line-height:1.75;color:var(--gray-600);}
 .pay-way ul b{color:var(--gray-900);}
 .pay-note{font-size:12px;color:var(--gray-600);line-height:1.7;margin-top:12px;}
+/* ── 2026-10-28: 중고 골프용품 (물건이 있을 때만 보임) ── */
+.shop-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+@media (min-width:640px){ .shop-row{grid-template-columns:repeat(4,1fr);gap:12px;} }
+.shop-it{display:block;text-decoration:none;color:inherit;border:1.5px solid var(--gray-200);border-radius:var(--radius);overflow:hidden;background:#fff;}
+.shop-it .ph{aspect-ratio:1/1;background:#eef2ef;position:relative;}
+.shop-it .ph img{width:100%;height:100%;object-fit:cover;display:block;}
+.shop-it .st{position:absolute;top:6px;left:6px;font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:10px;background:#1b4332;color:#fff;}
+.shop-it .st.r{background:#f59f00;}
+.shop-it .bd{padding:8px 10px 10px;}
+.shop-it .nm{font-size:13px;font-weight:700;line-height:1.4;color:var(--gray-900);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.shop-it .pr{font-size:15px;font-weight:900;color:#1b4332;margin-top:2px;}
 
 @media (min-width: 640px) { .sec-desc { font-size: 14px; } }
 
@@ -1035,6 +1046,7 @@ footer {
     <a href="blog.html" class="drawer-item"><span class="drawer-item-icon">📝</span><span data-i18n="drawer.blog">여행 블로그</span></a>
     <a href="gallery.html" class="drawer-item"><span class="drawer-item-icon">📸</span><span data-i18n="quick.gallery">갤러리</span></a>
     <a href="payment.html" class="drawer-item"><span class="drawer-item-icon">💳</span><span data-i18n="drawer.payment">입금 안내</span></a>
+    <a href="shop.html" class="drawer-item"><span class="drawer-item-icon">🏷️</span><span data-i18n="drawer.shop">중고 골프용품</span></a>
     <div class="drawer-divider"></div>
     <a href="https://pf.kakao.com/_nbHKX/chat" target="_blank" class="drawer-item"><span class="drawer-item-icon">💬</span><span data-i18n="drawer.kakao">카카오 문의</span></a>
   </div>
@@ -1830,6 +1842,36 @@ try {
   <p class="pay-note" data-i18n="pay.note">※ 카드 결제는 미화(USD)로 청구되며 카드 결제 수수료 4%가 포함됩니다. 두 방법의 금액은 견적서·확정서에서 함께 비교해 보실 수 있습니다.</p>
 </div>
 
+<!-- 2026-10-28: 중고 골프용품 — admin > 중고장터에 판매중/예약중 물건이 있을 때만 나타남 -->
+<div class="section" id="used-shop" style="display:none;">
+  <div class="sec-head">
+    <h2 class="sec-title" data-i18n="sec.shop">🏷️ 중고 골프용품</h2>
+    <a href="shop.html" class="sec-more"><span data-i18n="sec.more">전체보기</span> <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+  </div>
+  <p class="sec-desc" data-i18n="sec.shop.desc">직접 쓰고 관리한 골프채·용품을 판매합니다. 카드 결제 가능 · 택배 · 직거래 · 클락 현지 전달</p>
+  <div class="shop-row" id="used-shop-row"></div>
+</div>
+<script>
+(async function(){
+  try {
+    const r = await fetch('https://firestore.googleapis.com/v1/projects/iclarkgolf/databases/(default)/documents/settings/shop?key=AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU');
+    if (!r.ok) return;
+    const j = await r.json();
+    const arr = (((j.fields||{}).items||{}).arrayValue||{}).values || [];
+    const g = (f,k) => { const v = f[k]; if (!v) return ''; return v.stringValue != null ? v.stringValue : v.integerValue != null ? Number(v.integerValue) : v.doubleValue != null ? Number(v.doubleValue) : v.booleanValue != null ? v.booleanValue : v.arrayValue ? (v.arrayValue.values||[]).map(x=>x.stringValue) : ''; };
+    const items = arr.map(v => (v.mapValue||{}).fields||{}).map(f => ({ id:g(f,'id'), name:g(f,'name'), price:g(f,'priceKrw'), status:g(f,'status')||'sale', visible:g(f,'visible'), photos:g(f,'photos')||[], at:Number(g(f,'createdAt'))||0 }))
+      .filter(it => it.name && it.visible !== false && it.status !== 'sold')
+      .sort((a,b) => (a.status==='sale'?0:1) - (b.status==='sale'?0:1) || b.at - a.at).slice(0,4);
+    if (!items.length) return;
+    const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    document.getElementById('used-shop-row').innerHTML = items.map(it => `<a class="shop-it" href="shop.html?item=${encodeURIComponent(it.id)}">
+      <div class="ph">${it.photos[0] ? `<img src="${esc(it.photos[0])}" alt="${esc(it.name)}" loading="lazy">` : ''}<span class="st${it.status==='reserved'?' r':''}">${it.status==='reserved'?'예약중':'판매중'}</span></div>
+      <div class="bd"><div class="nm">${esc(it.name)}</div><div class="pr">₩${Number(it.price).toLocaleString()}</div></div></a>`).join('');
+    document.getElementById('used-shop').style.display = '';
+  } catch(e) { console.warn('중고용품 불러오기 실패', e); }
+})();
+</script>
+
 <div class="section" id="golf">
   <div class="sec-head">
     <h2 class="sec-title" data-i18n="sec.golf">🗺️ 클락 골프장</h2>
@@ -2347,6 +2389,9 @@ const TRANSLATIONS = {
     'sec.packages': '⛳ 골프 패키지',
     'sec.golf': '🏌️ 클락 골프장',
     'sec.pay': '💳 결제하기',
+    'sec.shop': '🏷️ 중고 골프용품',
+    'sec.shop.desc': '직접 쓰고 관리한 골프채·용품을 판매합니다. 카드 결제 가능 · 택배 · 직거래 · 클락 현지 전달',
+    'drawer.shop': '중고 골프용품',
     'sec.pay.desc': '확정서가 발행되면 <b>현지 계좌 해외송금</b> 또는 <b>카드 결제</b> 중 편한 방법으로 결제하세요.',
     'pay.bank.t': '현지 계좌 해외송금',
     'pay.bank.d': '<li>필리핀 현지 계좌(BDO)로 <b>원화 해외송금</b></li><li>확정서에 송금하실 <b>원화 금액</b>이 바로 계산되어 나옵니다</li><li>은행 앱 해외송금 메뉴에서 몇 분이면 끝납니다</li>',
@@ -2463,6 +2508,9 @@ const TRANSLATIONS = {
     'sec.packages': '⛳ Golf Packages',
     'sec.golf': '🏌️ Clark Golf Courses',
     'sec.pay': '💳 How to Pay',
+    'sec.shop': '🏷️ Used Golf Gear',
+    'sec.shop.desc': 'Pre-owned clubs and gear, honestly described. Card payment · delivery · meet-up · hand-over in Clark',
+    'drawer.shop': 'Used Golf Gear',
     'sec.pay.desc': 'Once your confirmation is issued, pay by <b>bank transfer to our local account</b> or by <b>card</b> — whichever you prefer.',
     'pay.bank.t': 'Bank transfer (local account)',
     'pay.bank.d': '<li>International transfer to our Philippine BDO account</li><li>Your confirmation shows the <b>exact amount</b> to send</li><li>Takes a few minutes in your banking app</li>',

@@ -866,6 +866,7 @@ window.adminLogout = function() {
   <button class="tab-btn" onclick="showTab('quotemake',this)">📋 견적서 작성</button>
   <button class="tab-btn" onclick="showTab('quoteitems',this)">🎯 맞춤견적 항목</button>
   <button class="tab-btn" onclick="showTab('booking',this);loadBookings()">🤝 골프 부킹</button>
+  <button class="tab-btn" onclick="showTab('shop',this)">🏷️ 중고장터</button>
 </div>
 
 <!-- ========== 대시보드 ========== -->
@@ -1620,6 +1621,215 @@ window.adminLogout = function() {
     </div>
   </div>
 </div>
+<!-- ========== 🏷️ 중고장터 (2026-10-28) — 내 물건을 올리면 shop.html에 바로 보임 ========== -->
+<style>
+.sp-btn{padding:8px 14px;background:#2d6a4f;color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+.sp-btn.gray{background:#fff;color:#2d6a4f;border:1.5px solid #c8edd9;}
+.sp-btn.red{background:#fff;color:#b91c1c;border:1.5px solid #fecaca;}
+.sp-btn.sm{padding:6px 10px;font-size:12px;}
+#sp-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+.sp-card{border:1.5px solid #e5e7eb;border-radius:12px;overflow:hidden;background:#fff;display:flex;flex-direction:column;}
+.sp-card.hid{opacity:.55;}
+.sp-card .ph{aspect-ratio:4/3;background:#eef2ef;display:flex;align-items:center;justify-content:center;font-size:36px;color:#b7c9bf;}
+.sp-card .ph img{width:100%;height:100%;object-fit:cover;}
+.sp-card .bd{padding:10px;font-size:13px;display:flex;flex-direction:column;gap:6px;flex:1;}
+.sp-card .nm{font-weight:800;font-size:14px;}
+.sp-card select{padding:6px;border:1.5px solid #c8edd9;border-radius:8px;font-size:13px;font-family:inherit;}
+.sp-card .row{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;}
+#sp-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;overflow-y:auto;padding:20px 12px;}
+#sp-modal .in{background:#fff;border-radius:16px;max-width:680px;margin:0 auto;padding:20px;}
+#sp-modal label{display:block;font-size:12px;font-weight:700;color:#6b7280;margin:10px 0 4px;}
+#sp-modal input[type=text],#sp-modal input[type=number],#sp-modal select,#sp-modal textarea{width:100%;padding:9px 11px;border:1.5px solid #c8edd9;border-radius:8px;font-size:14px;font-family:inherit;box-sizing:border-box;background:#fff;}
+#sp-modal .g2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px;}
+@media(max-width:520px){#sp-modal .g2{grid-template-columns:1fr;}}
+#sp-modal .chk{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;}
+#sp-modal .chk label{display:flex;gap:6px;align-items:center;margin:0;color:#111;font-weight:500;}
+#sp-thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+#sp-thumbs div{position:relative;}
+#sp-thumbs img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;}
+#sp-thumbs button{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;border:none;background:#b91c1c;color:#fff;font-size:12px;cursor:pointer;line-height:20px;padding:0;}
+</style>
+<div class="panel" id="panel-shop">
+  <div class="mgmt-card">
+    <div class="mgmt-title">🏷️ 중고장터 — 내 물건 올리기
+      <span><a href="shop.html" target="_blank" style="color:#2d6a4f;font-weight:700;">사이트에서 보기 ↗</a>
+      <button class="sp-btn" onclick="spOpen()" style="margin-left:8px;">＋ 물건 올리기</button></span>
+    </div>
+    <div style="font-size:12.5px;color:#6b7280;line-height:1.8;margin-bottom:12px;">
+      ① <b>＋ 물건 올리기</b>로 사진·가격(원화)을 넣고 저장하면 <b>iclarkgolf.com/shop.html</b>에 바로 보입니다 (물건이 있을 때만 홈 화면에도 나타남).<br>
+      ② 손님이 카드로 결제하면 <b>이메일 알림</b>(이름·휴대폰·받는 방법·주소)이 옵니다 → 여기서 그 물건을 <b>판매완료</b>로 바꿔주세요.<br>
+      ③ 카톡으로 흥정 중이면 <b>예약중</b>으로 바꾸면 카드 결제가 막힙니다. 카드 가격 = 원화 ÷ 환율 + 카드 수수료 4%.
+    </div>
+    <div id="sp-list"><div style="grid-column:1/-1;text-align:center;padding:30px;color:#9ca3af;">불러오는 중...</div></div>
+  </div>
+</div>
+
+<div id="sp-modal" onclick="if(event.target===this)spClose()">
+  <div class="in">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <b style="font-size:16px;" id="sp-mt">물건 올리기</b>
+      <button class="sp-btn gray sm" onclick="spClose()">닫기</button>
+    </div>
+    <label>물건 이름 *</label><input type="text" id="sp-name" placeholder="예) 테일러메이드 스텔스2 드라이버 10.5도">
+    <div class="g2">
+      <div><label>종류 *</label><select id="sp-cat"></select></div>
+      <div><label>상태 *</label><select id="sp-cond">
+        <option>새것 (미사용)</option><option>아주 좋음 (사용감 거의 없음)</option><option selected>좋음 (잔기스 약간)</option><option>보통 (사용감 있음)</option><option>사용감 많음</option></select></div>
+      <div><label>브랜드</label><input type="text" id="sp-brand" placeholder="예) 테일러메이드"></div>
+      <div><label>사양 (샤프트·로프트·강도 등)</label><input type="text" id="sp-spec" placeholder="예) 10.5° / 벤투스 6S"></div>
+      <div><label>판매 가격 (원) *</label><input type="number" id="sp-price" min="0" step="1000" placeholder="250000"></div>
+      <div><label>택배비 (원, 가격에 포함이면 0)</label><input type="number" id="sp-ship" min="0" step="500" value="0"></div>
+    </div>
+    <div id="sp-usd" style="font-size:12.5px;color:#2d6a4f;font-weight:700;margin-top:6px;"></div>
+    <div class="g2">
+      <div><label>물건 위치</label><select id="sp-loc"><option>한국 (서울)</option><option>필리핀 클락</option></select></div>
+      <div><label>판매 상태</label><select id="sp-status"><option value="sale">판매중</option><option value="reserved">예약중</option><option value="sold">판매완료</option></select></div>
+    </div>
+    <label>받는 방법 (손님이 고를 수 있는 것)</label>
+    <div class="chk">
+      <label><input type="checkbox" id="sp-r-ship" checked> 📦 택배</label>
+      <label><input type="checkbox" id="sp-r-meet"> 🤝 직거래</label>
+      <label><input type="checkbox" id="sp-r-clark"> ✈️ 클락 현지 전달</label>
+    </div>
+    <label>설명 (상태·흠집·구매 시기 등 솔직하게)</label>
+    <textarea id="sp-desc" rows="5" placeholder="예) 2024년 구매, 30라운드 정도 사용. 헤드 윗면 잔기스 약간, 페이스 깨끗. 헤드커버·렌치 포함."></textarea>
+    <label>사진 (첫 번째 사진이 대표 사진 · 여러 장 가능)</label>
+    <div style="font-size:11.5px;color:#6b7280;">아래 보라색 버튼으로 한 장씩 올리세요 (여러 번 누르면 계속 추가됩니다 · × 로 빼기)</div>
+    <textarea id="sp-photos" rows="2" style="display:none;"></textarea>
+    <div id="sp-thumbs"></div>
+    <label class="chk" style="margin-top:12px;"><label><input type="checkbox" id="sp-visible" checked> 사이트에 보이기</label></label>
+    <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;">
+      <button class="sp-btn" onclick="spSave()" id="sp-save" style="flex:1;">💾 저장</button>
+      <button class="sp-btn red" onclick="spDelete()" id="sp-del" style="display:none;">🗑 삭제</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SP_CATS = ['드라이버','우드','유틸리티','아이언','웨지','퍼터','풀세트','골프백','의류·기타'];
+let _spItems = [], _spEdit = null, _spUsdKrw = 1380;
+async function spDB(){
+  const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+  const fs = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+  const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+  const app = getApps().find(a=>a.name==='admin-auth') || initializeApp(cfg,'admin-auth');
+  return { db: fs.getFirestore(app), fs };
+}
+function spEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function spUsd(krw){ return Math.ceil((Number(krw)||0) / _spUsdKrw * 1.04); }
+async function loadShopAdmin(){
+  try {
+    const { db, fs } = await spDB();
+    const [s, ex] = await Promise.all([fs.getDoc(fs.doc(db,'settings','shop')), fs.getDoc(fs.doc(db,'settings','exchange'))]);
+    _spItems = (s.exists() && s.data().items) || [];
+    if (ex.exists() && Number(ex.data().usdKrw)) _spUsdKrw = Number(ex.data().usdKrw);
+  } catch(e) { console.error(e); document.getElementById('sp-list').innerHTML = '<div style="grid-column:1/-1;color:#b91c1c;">불러오기 실패: ' + spEsc(e.message) + '</div>'; return; }
+  spRender();
+}
+function spRender(){
+  const el = document.getElementById('sp-list');
+  if (!_spItems.length) { el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:#6b7280;">아직 올린 물건이 없습니다. 위의 <b>＋ 물건 올리기</b>를 눌러 시작하세요.<br><small>물건이 하나도 없으면 사이트에는 "준비 중 · 카톡 문의" 안내가 보이고 홈 화면에는 나타나지 않습니다.</small></div>'; return; }
+  const items = _spItems.slice().sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+  el.innerHTML = items.map(it => `<div class="sp-card${it.visible===false?' hid':''}">
+    <div class="ph">${(it.photos||[])[0] ? `<img src="${spEsc(it.photos[0])}">` : '🏌️'}</div>
+    <div class="bd">
+      <div style="font-size:11px;color:#6b7280;">${spEsc(it.category)} · ${spEsc(it.location||'')}${it.visible===false?' · <b>숨김</b>':''}</div>
+      <div class="nm">${spEsc(it.name)}</div>
+      <div><b style="color:#2d6a4f;">₩${(Number(it.priceKrw)||0).toLocaleString()}</b> <small style="color:#6b7280;">카드 US$${spUsd(it.priceKrw)}</small></div>
+      <select onchange="spSetStatus('${it.id}',this.value)">
+        <option value="sale"${(it.status||'sale')==='sale'?' selected':''}>🟢 판매중</option>
+        <option value="reserved"${it.status==='reserved'?' selected':''}>🟡 예약중</option>
+        <option value="sold"${it.status==='sold'?' selected':''}>⚫ 판매완료</option>
+      </select>
+      <div class="row">
+        <button class="sp-btn gray sm" onclick="spOpen('${it.id}')">✏️ 수정</button>
+        <a class="sp-btn gray sm" style="text-decoration:none;" href="shop.html?item=${encodeURIComponent(it.id)}" target="_blank">👁 보기</a>
+      </div>
+    </div></div>`).join('');
+}
+async function spPersist(){
+  const { db, fs } = await spDB();
+  await fs.setDoc(fs.doc(db,'settings','shop'), { items: _spItems, updatedAt: Date.now() });
+}
+async function spSetStatus(id, st){
+  const it = _spItems.find(x => x.id === id); if (!it) return;
+  const prev = it.status; it.status = st;
+  try { await spPersist(); spRender(); }
+  catch(e) { it.status = prev; spRender(); alert('저장 실패: ' + e.message); }
+}
+function spThumbs(){
+  const urls = document.getElementById('sp-photos').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  document.getElementById('sp-thumbs').innerHTML = urls.map((u,i) => `<div><img src="${spEsc(u)}"><button type="button" title="빼기" onclick="spRmPhoto(${i})">×</button></div>`).join('');
+}
+function spRmPhoto(i){
+  const ta = document.getElementById('sp-photos');
+  const urls = ta.value.split('\n').map(s=>s.trim()).filter(Boolean); urls.splice(i,1);
+  ta.value = urls.join('\n'); spThumbs();
+}
+function spUsdPreview(){
+  const p = Number(document.getElementById('sp-price').value)||0, s = Number(document.getElementById('sp-ship').value)||0;
+  document.getElementById('sp-usd').textContent = p ? `💳 카드 결제가: US$${spUsd(p)}` + (s ? ` (택배 선택 시 US$${spUsd(p+s)})` : '') + ` · 환율 ₩${_spUsdKrw.toLocaleString()}/$ + 수수료 4%` : '';
+}
+function spOpen(id){
+  const sel = document.getElementById('sp-cat');
+  if (!sel.options.length) sel.innerHTML = SP_CATS.map(c => `<option>${c}</option>`).join('');
+  iuMount('sp-photos', { multiline: true, onDone: spThumbs });
+  const ta = document.getElementById('sp-photos');
+  if (!ta._spBound) { ta.addEventListener('input', spThumbs); ['sp-price','sp-ship'].forEach(i => document.getElementById(i).addEventListener('input', spUsdPreview)); ta._spBound = true; }
+  const it = id ? _spItems.find(x => x.id === id) : null;
+  _spEdit = it ? it.id : null;
+  document.getElementById('sp-mt').textContent = it ? '물건 수정' : '물건 올리기';
+  document.getElementById('sp-del').style.display = it ? 'inline-flex' : 'none';
+  const v = (k, d) => it && it[k] != null ? it[k] : d;
+  document.getElementById('sp-name').value = v('name','');
+  document.getElementById('sp-cat').value = v('category','드라이버');
+  document.getElementById('sp-cond').value = v('condition','좋음 (잔기스 약간)');
+  document.getElementById('sp-brand').value = v('brand','');
+  document.getElementById('sp-spec').value = v('spec','');
+  document.getElementById('sp-price').value = v('priceKrw','');
+  document.getElementById('sp-ship').value = v('shipKrw',0);
+  document.getElementById('sp-loc').value = v('location','한국 (서울)');
+  document.getElementById('sp-status').value = v('status','sale');
+  const rc = v('receive',['ship']);
+  ['ship','meet','clark'].forEach(k => document.getElementById('sp-r-'+k).checked = rc.includes(k));
+  document.getElementById('sp-desc').value = v('description','');
+  ta.value = (v('photos',[])).join('\n');
+  document.getElementById('sp-visible').checked = v('visible',true) !== false;
+  spThumbs(); spUsdPreview();
+  document.getElementById('sp-modal').style.display = 'block';
+}
+function spClose(){ document.getElementById('sp-modal').style.display = 'none'; }
+async function spSave(){
+  const g = id => document.getElementById(id);
+  const name = g('sp-name').value.trim(), price = Number(g('sp-price').value);
+  const receive = ['ship','meet','clark'].filter(k => g('sp-r-'+k).checked);
+  if (!name) return alert('물건 이름을 넣어주세요.');
+  if (!price || price < 1000) return alert('판매 가격(원)을 넣어주세요.');
+  if (!receive.length) return alert('받는 방법을 하나 이상 골라주세요.');
+  const photos = g('sp-photos').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const data = {
+    name, category: g('sp-cat').value, condition: g('sp-cond').value,
+    brand: g('sp-brand').value.trim(), spec: g('sp-spec').value.trim(),
+    priceKrw: price, shipKrw: Number(g('sp-ship').value)||0,
+    location: g('sp-loc').value, status: g('sp-status').value, receive,
+    description: g('sp-desc').value.trim(), photos, visible: g('sp-visible').checked
+  };
+  const before = JSON.stringify(_spItems);
+  if (_spEdit) Object.assign(_spItems.find(x => x.id === _spEdit), data, { updatedAt: Date.now() });
+  else _spItems.push(Object.assign({ id: 'u' + Date.now().toString(36), createdAt: Date.now() }, data));
+  const btn = g('sp-save'); btn.disabled = true; btn.textContent = '⏳ 저장 중...';
+  try { await spPersist(); spClose(); spRender(); if (!photos.length) alert('저장했습니다.\n\n사진이 없으면 잘 팔리지 않아요. 사진을 꼭 넣어주세요.'); }
+  catch(e) { _spItems = JSON.parse(before); alert('저장 실패: ' + e.message); }
+  finally { btn.disabled = false; btn.textContent = '💾 저장'; }
+}
+async function spDelete(){
+  if (!_spEdit || !confirm('이 물건을 삭제할까요? (판매완료로 두면 사이트에 "판매완료"로 남습니다)')) return;
+  const before = _spItems.slice();
+  _spItems = _spItems.filter(x => x.id !== _spEdit);
+  try { await spPersist(); spClose(); spRender(); } catch(e) { _spItems = before; alert('삭제 실패: ' + e.message); }
+}
+</script>
+
 <div class="panel" id="panel-gallery">
   <div class="mgmt-card">
     <div class="mgmt-title">📸 갤러리 사진 관리
@@ -2028,6 +2238,7 @@ function showTab(name, el) {
   if (name === 'package') loadCards();
   if (name === 'profile') loadProfile();
   if (name === 'quotemake') { if(typeof qfInit==='function') qfInit(); }
+  if (name === 'shop') { if(typeof loadShopAdmin==='function') loadShopAdmin(); }
   if (name === 'quoteitems') { if(typeof loadQuoteItems==='function') loadQuoteItems(); }
 }
 
