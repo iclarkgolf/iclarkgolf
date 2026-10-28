@@ -1885,7 +1885,7 @@ async function spDelete(){
       <div>
         <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">프로필 사진 URL</label>
         <input id="pf-photo" type="text" placeholder="https://iclarkgolf.com/images/profile.jpg" style="width:100%;padding:11px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:14px;box-sizing:border-box;">
-        <div style="font-size:11px;color:#9ca3af;margin-top:4px;">GitHub images 폴더에 업로드 후 URL 입력</div>
+        <div style="font-size:11px;color:#9ca3af;margin-top:4px;">아래 보라색 버튼으로 사진을 고르면 바로 들어갑니다 → 맨 아래 저장</div>
       </div>
     </div>
   </div>
@@ -2166,6 +2166,17 @@ async function iuShrink(file) {
     return blob && blob.size < file.size ? new File([blob], (file.name || 'photo').replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' }) : file;
   } catch (e) { return file; }
 }
+// 2026-10-28: 프로필·자격증 사진은 외부 사이트(imgbb)에 맡기지 않고 사진 자체를 작게 줄여 Firestore에 같이 저장
+// (imgbb가 멈춰도 프로필은 절대 안 깨지게). maxSide = 긴 변 픽셀
+async function iuInline(file, maxSide) {
+  const bmp = await createImageBitmap(file);
+  const k = Math.min(1, maxSide / Math.max(bmp.width, bmp.height));
+  const c = document.createElement('canvas');
+  c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+  ctx.drawImage(bmp, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', 0.78);
+}
 async function iuUploadImageFile(file) {
   file = await iuShrink(file);
   try {
@@ -2227,7 +2238,7 @@ async function iuHandleUpload(fileInputEl, btnId, targetId, opts) {
   if (btn) { btn.textContent = '⏳ 업로드 중...'; btn.disabled = true; }
   const targetEl = document.getElementById(targetId);
   try {
-    const url = await iuUploadImageFile(file);
+    const url = opts.inline ? await iuInline(file, opts.inline) : await iuUploadImageFile(file);
     if (opts.multiline) {
       const cur = targetEl.value.trim();
       targetEl.value = cur ? (cur + '\n' + url) : url;
@@ -2247,7 +2258,13 @@ async function iuHandleUpload(fileInputEl, btnId, targetId, opts) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  ['ce-hero-img-input', 'ce-hero-img2-input', 'gfd-img', 'pf-photo', 'pf-lic1', 'pf-lic2', 'pf-lic3', 'pf-lic4'].forEach(function(id) { iuMount(id); });
+  ['ce-hero-img-input', 'ce-hero-img2-input', 'gfd-img'].forEach(function(id) { iuMount(id); });
+  // 프로필·자격증 사진: 사진을 직접 저장 (외부 사이트 안 씀) + 바로 미리보기
+  [['pf-photo', 400], ['pf-lic1', 800], ['pf-lic2', 800], ['pf-lic3', 800], ['pf-lic4', 800]].forEach(function(x) {
+    iuMount(x[0], { inline: x[1], onDone: function() { pfThumb(x[0]); } });
+    var el = document.getElementById(x[0]);
+    if (el) el.addEventListener('input', function() { pfThumb(x[0]); });
+  });
   iuMount('m-photos', { multiline: true });
 });
 
@@ -2524,6 +2541,7 @@ async function loadProfile() {
   document.getElementById('pf-insta').value    = pf.insta    || '';
   document.getElementById('pf-youtube').value  = pf.youtube  || '';
   document.getElementById('pf-openchat').value = pf.openchat || '';
+  ['pf-photo','pf-lic1','pf-lic2','pf-lic3','pf-lic4'].forEach(pfThumb);
 }
 
 /* ===== 카드 관리 시스템 ===== */
@@ -3472,6 +3490,14 @@ async function saveProfile() {
   setTimeout(() => msg.style.display = 'none', 3500);
 }
 
+// 사진 칸 아래 작은 미리보기 (주소가 길게 보여도 실제 사진을 눈으로 확인)
+function pfThumb(id) {
+  const el = document.getElementById(id); if (!el) return;
+  let t = document.getElementById(id + '-thumb');
+  if (!t) { t = document.createElement('img'); t.id = id + '-thumb'; t.style.cssText = 'display:block;height:90px;margin-top:8px;border-radius:10px;object-fit:cover;box-shadow:0 2px 8px rgba(0,0,0,.12);'; const w = document.getElementById(id + '-iu-btn'); (w ? w.parentNode : el).insertAdjacentElement('afterend', t); }
+  const v = el.value.trim();
+  t.style.display = v ? 'block' : 'none'; if (v) t.src = v;
+}
 function previewLicenses() {
   const urls = [
     document.getElementById('pf-lic1').value.trim(),
