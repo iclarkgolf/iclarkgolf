@@ -638,6 +638,8 @@ body { background:#f4faf7; padding-bottom:40px; }
 #panel-inquiry #wi-tbl td.wi-date small { color:#9ca3af; font-size:11px; }
 #panel-inquiry #wi-tbl .wi-act { display:flex; flex-direction:column; align-items:flex-start; gap:4px; }
 #panel-inquiry #wi-tbl .wi-act .wi-nocontact { font-size:11px; color:#d1d5db; }
+/* 2026-10-28: 문의 내역 탭만 PC에서 넓게 — 960px 폭에 표가 갇혀 "관리" 칸(견적·상태변경·삭제)이 잘리던 문제 */
+@media (min-width:900px){ #panel-inquiry.panel { max-width:1440px; } }
 
 /* 숙소 카드 그리드 — 패키지 썸네일 스타일 */
 .accom-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px; }
