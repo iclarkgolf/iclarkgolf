@@ -39,8 +39,9 @@ const STATIC_PAGES = [
   { loc: '/caddy.html', lastmod: '2026-06-10', changefreq: 'monthly', priority: '0.4' },
   { loc: '/gallery.html', lastmod: '2026-06-10', changefreq: 'monthly', priority: '0.4' },
   { loc: '/about.html', lastmod: '2026-06-21', changefreq: 'monthly', priority: '0.6' },
-  { loc: '/privacy.html', lastmod: '2026-06-21', changefreq: 'yearly', priority: '0.4' },
-  { loc: '/disclaimer.html', lastmod: '2026-06-21', changefreq: 'yearly', priority: '0.4' },
+  // privacy.html·disclaimer.html은 페이지 안에 noindex가 있어 사이트맵에서 뺌 (2026-10-30, Ahrefs 지적 반영)
+  { loc: '/pool-villa.html', lastmod: '2026-10-30', changefreq: 'monthly', priority: '0.8' },
+  { loc: '/shop.html', lastmod: '2026-10-30', changefreq: 'weekly', priority: '0.5' },
 ];
 
 function urlBlock({ loc, lastmod, changefreq, priority }) {
@@ -112,7 +113,7 @@ ${urlBlock(STATIC_PAGES[5])}
   <!-- 패키지 상세페이지 (packages-manifest.json에서 자동 생성 — build-package-pages.js가 6시간마다 갱신) -->
 ${packageBlocks}
 
-  <!-- 정보 페이지 -->
+  <!-- 풀빌라·중고 골프용품 페이지 -->
 ${urlBlock(STATIC_PAGES[6])}
 ${urlBlock(STATIC_PAGES[7])}
   <!-- 블로그 목록 -->
