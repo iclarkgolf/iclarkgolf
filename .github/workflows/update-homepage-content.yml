@@ -27,6 +27,8 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: node .github/scripts/mirror-images.js
+        timeout-minutes: 8
+        continue-on-error: true
 
       - name: build homepage content
         env:
