@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8S6Z4PD9VZ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-8S6Z4PD9VZ');
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>골프용품 팔기·나눔 | iCLARKGOLF 커뮤니티</title>
+<meta name="description" content="안 쓰는 골프채·용품, 한국에서 팔거나 필리핀(클락)에 팔고 기부하세요. 누구나 무료로 올리는 iCLARKGOLF 커뮤니티.">
+<link rel="canonical" href="https://iclarkgolf.com/sell.html">
+<meta name="robots" content="noindex, follow">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Montserrat:wght@700;900&display=swap');
+:root{--green:#2d6a4f;--green2:#52b788;--gold:#f4a261;--red:#e03131;--bg:#f4f4f0;--gray:#6b7280;--border:#e5e7eb;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:#111;line-height:1.6;}
+header{background:linear-gradient(135deg,#2d6a4f 0%,#52b788 100%);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:900;text-decoration:none;}
+.logo .i{color:var(--red);} .logo .c{color:#fff;}
+header a.back{color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;}
+.hero{background:linear-gradient(160deg,var(--green) 0%,var(--green2) 100%);padding:26px 20px 22px;text-align:center;color:#fff;}
+.hero h1{font-size:clamp(21px,5vw,28px);font-weight:900;margin-bottom:4px;}
+.hero p{font-size:13.5px;opacity:.92;}
+main{max-width:720px;margin:0 auto;padding:16px 14px 60px;}
+.tabs{display:flex;gap:8px;margin-bottom:14px;}
+.tabs button{flex:1;padding:11px;border-radius:12px;border:1.5px solid #c8edd9;background:#fff;color:var(--green);font-size:14.5px;font-weight:800;cursor:pointer;font-family:inherit;}
+.tabs button.on{background:var(--green);color:#fff;border-color:var(--green);}
+.box{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;}
+.box h2{font-size:15.5px;color:var(--green);margin-bottom:8px;}
+.rules{font-size:12.8px;color:#374151;line-height:1.85;}
+.rules b{color:#111;}
+label.l{display:block;font-size:12.5px;font-weight:700;color:#374151;margin:11px 0 4px;}
+label.l small{font-weight:500;color:var(--gray);}
+input[type=text],input[type=tel],input[type=number],input[type=password],select,textarea{width:100%;padding:10px 12px;border:1.5px solid #c8edd9;border-radius:9px;font-size:15px;font-family:inherit;background:#fff;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px;}
+@media(max-width:520px){.g2{grid-template-columns:1fr;}}
+.chk{display:flex;gap:12px;flex-wrap:wrap;font-size:14px;}
+.chk label{display:flex;gap:6px;align-items:center;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 16px;border-radius:11px;font-size:15px;font-weight:800;cursor:pointer;border:none;font-family:inherit;text-decoration:none;}
+.btn.green{background:var(--green);color:#fff;}
+.btn.line{background:#fff;color:var(--green);border:1.5px solid #c8edd9;}
+.btn.red{background:#fff;color:#b91c1c;border:1.5px solid #fecaca;}
+.btn.purple{background:#534AB7;color:#fff;}
+.btn:disabled{opacity:.55;cursor:default;}
+.full{width:100%;}
+#thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+#thumbs div{position:relative;}
+#thumbs img{width:76px;height:76px;object-fit:cover;border-radius:9px;border:1px solid var(--border);}
+#thumbs button{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:none;background:#b91c1c;color:#fff;font-size:13px;cursor:pointer;line-height:22px;padding:0;}
+#thumbs .first{position:absolute;left:4px;bottom:4px;background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;}
+.guide{background:#f6f5ff;border:1px solid #ddd9fb;border-radius:10px;padding:9px 12px;font-size:12.3px;color:#3f3a75;line-height:1.75;margin-top:6px;}
+.err{display:none;background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;border-radius:9px;padding:9px 11px;font-size:13px;margin:10px 0;}
+.ok{background:#ecfdf3;border:1.5px solid #86efac;border-radius:12px;padding:16px;font-size:14px;line-height:1.85;color:#14532d;}
+.agree{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#374151;margin:12px 0;cursor:pointer;line-height:1.6;}
+.agree input{width:18px;height:18px;margin-top:2px;flex-shrink:0;}
+.mi{display:flex;gap:10px;border:1px solid var(--border);border-radius:12px;padding:10px;margin-top:10px;background:#fff;}
+.mi img{width:72px;height:72px;object-fit:cover;border-radius:9px;flex-shrink:0;background:#eef2ef;}
+.mi .b{flex:1;font-size:13px;}
+.mi .nm{font-weight:800;font-size:14px;}
+.mi select,.mi input,.mi textarea{font-size:14px;padding:7px 9px;margin-top:5px;}
+.mi .row{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px;}
+.mi .row .btn{padding:8px 12px;font-size:13px;}
+footer{text-align:center;font-size:12px;color:var(--gray);padding:20px;line-height:1.8;}
+</style>
+</head>
+<body>
+<header>
+  <a class="logo" href="/"><span class="i">i</span><span class="c">CLARKGOLF</span></a>
+  <a class="back" href="shop.html">← 중고장터</a>
+</header>
+<div class="hero">
+  <h1>🏌️ 골프용품 팔기 · 나눔</h1>
+  <p>안 쓰는 골프채, 한국에서 팔거나 <b>필리핀에 팔고 기부</b>하세요 · 누구나 무료</p>
+</div>
+
+<main>
+  <div class="tabs">
+    <button type="button" id="tabNew" class="on" onclick="tab('new')">＋ 올리기</button>
+    <button type="button" id="tabMine" onclick="tab('mine')">📋 내 물건 관리</button>
+  </div>
+
+  <!-- ===== 새로 올리기 ===== -->
+  <div id="paneNew">
+    <div class="box rules">
+      <h2>🤝 iCLARKGOLF 골프 커뮤니티</h2>
+      창고에 잠든 골프채, 여기 올려 두세요. <b>한국 골퍼에게 팔 수도</b> 있고,<br>
+      <b>🇵🇭 필리핀 클락의 골퍼에게 팔거나</b>, 골프를 배우고 싶어도 채가 없는 <b>필리핀 아이들·캐디에게 기부</b>할 수도 있습니다.<br>
+      필리핀으로 보내는 방법은 iCLARKGOLF가 안내해 드립니다. 사진 한 장, 연락처 하나면 됩니다.
+    </div>
+
+    <div class="box" id="formBox">
+      <div style="font-size:12.5px;color:#6b7280;margin-bottom:4px;">이야기하듯 위에서부터 채워 주세요 — <b>무엇을 → 언제·얼마에 사서 → 얼마나 썼고 → 그래서 기부할지 팔지</b></div>
+
+      <h2 style="margin-top:12px;">✅ 무엇인가요?</h2>
+      <div class="g2">
+        <div><label class="l">종류 *</label><select id="fCat"><option>드라이버</option><option>우드</option><option>유틸리티</option><option>아이언</option><option>웨지</option><option>퍼터</option><option>풀세트</option><option>골프백</option><option>여성 골프웨어</option><option>남성 골프웨어</option><option>골프화·모자·장갑</option><option>기타</option></select></div>
+        <div><label class="l">브랜드</label><input type="text" id="fBrand" maxlength="30" placeholder="예) 풋조이 / 타이틀리스트"></div>
+      </div>
+      <label class="l">물건 이름 *</label><input type="text" id="fName" maxlength="60" placeholder="예) 풋조이 여성 골프화 흰색 / (헤드만) GT2 드라이버 9도">
+      <div id="wearSpec" style="display:none;">
+        <label class="l">사이즈 * <small>(예: 235 / 55 / M / 90)</small></label><input type="text" id="fSize" maxlength="20">
+      </div>
+      <details id="clubSpec" style="margin-top:10px;">
+        <summary style="cursor:pointer;font-size:13px;font-weight:700;color:#2d6a4f;">⛳ 클럽 사양 (선택 — 로프트·샤프트·강도·구성·정품)</summary>
+        <div class="g2">
+          <div><label class="l">로프트 (도)</label><input type="text" id="fLoft" maxlength="10" placeholder="예) 9.0"></div>
+          <div><label class="l">샤프트 (모델)</label><input type="text" id="fShaft" maxlength="40" placeholder="예) 벤투스 블루 6"></div>
+          <div><label class="l">강도</label><select id="fFlex"><option value="">선택 안 함</option><option>L</option><option>A</option><option>R</option><option>SR</option><option>S</option><option>X</option></select></div>
+          <div><label class="l">정품 구분</label><select id="fGenuine"><option value="">선택 안 함</option><option>국내 정품</option><option>일본 정품</option><option>미국 정품</option><option>정품 (구분 모름)</option></select></div>
+        </div>
+        <label class="l">기타 사양</label><input type="text" id="fSpec" maxlength="60" placeholder="예) 5~P 6개 / 45.5인치">
+        <label class="l">구성</label>
+        <div class="chk">
+          <label><input type="checkbox" id="fWithShaft" checked> 샤프트 포함 <small style="color:#6b7280;">(빼면 "헤드만")</small></label>
+          <label><input type="checkbox" id="fWithCover"> 헤드커버</label>
+          <label><input type="checkbox" id="fWithWrench"> 렌치</label>
+        </div>
+      </details>
+
+      <h2 style="margin-top:18px;">✅ 언제, 얼마에 샀나요?</h2>
+      <div class="g2">
+        <div><label class="l">산 시기</label><input type="text" id="fBought" maxlength="20" placeholder="예) 2024년 5월"></div>
+        <div><label class="l">산 가격 (원)</label><input type="number" id="fBoughtPrice" min="0" step="1000" placeholder="예) 180000"></div>
+      </div>
+
+      <h2 style="margin-top:18px;">✅ 얼마나 썼나요?</h2>
+      <div class="g2">
+        <div><label class="l">사용 정도 *</label><select id="fUsage"><option>안 썼어요 (새것)</option><option selected>몇 번만 썼어요 (1~5회)</option><option>한 시즌 썼어요</option><option>2~3 시즌 썼어요</option><option>오래 썼어요</option></select></div>
+        <div><label class="l">지금 상태 *</label><select id="fCond">
+          <option>새것 (미사용)</option><option>아주 좋음 (사용감 거의 없음)</option><option selected>좋음 (잔기스 약간)</option><option>보통 (사용감 있음)</option><option>사용감 많음</option></select></div>
+      </div>
+
+      <h2 style="margin-top:18px;">✅ 그래서, 어떻게 할까요?</h2>
+      <div class="chk" style="gap:8px;">
+        <label style="flex:1;border:1.5px solid #c8edd9;border-radius:10px;padding:10px;"><input type="radio" name="fMode" value="give"> 🎁 <b>기부 · 무료 나눔</b></label>
+        <label style="flex:1;border:1.5px solid #c8edd9;border-radius:10px;padding:10px;"><input type="radio" name="fMode" value="sale" checked> 💰 <b>팔기</b></label>
+      </div>
+      <div class="g2">
+        <div id="priceWrap"><label class="l">얼마에 팔까요? (원) *</label><input type="number" id="fPrice" min="1000" step="1000" placeholder="예) 50000"></div>
+        <div><label class="l">택배비 (원, 포함이면 0)</label><input type="number" id="fShip" min="0" step="500" value="0"></div>
+        <div><label class="l">물건 위치 *</label><select id="fLoc"><option>한국 (서울)</option><option>필리핀 클락</option></select></div>
+        <div><label class="l">거래 가능 지역 <small>(직거래 장소)</small></label><input type="text" id="fPlace" maxlength="40" placeholder="예) 서울 송파 잠실역"></div>
+      </div>
+      <label class="l">받는 방법 *</label>
+      <div class="chk">
+        <label><input type="checkbox" id="fRShip" checked> 📦 택배</label>
+        <label><input type="checkbox" id="fRMeet" checked> 🤝 직거래</label>
+        <label><input type="checkbox" id="fRClark"> ✈️ 클락 현지 전달</label>
+      </div>
+      <label class="chk" style="margin-top:10px;"><label><input type="checkbox" id="fPH" checked> 🇵🇭 <b>필리핀(클락)</b> 사람에게도 보여 주기 <small style="color:#6b7280;">(영어 화면에 함께 나옴)</small></label></label>
+
+      <h2 style="margin-top:18px;">✅ 하고 싶은 말 <small style="font-weight:500;color:#6b7280;">(선택)</small></h2>
+      <textarea id="fDesc" rows="4" maxlength="1500" placeholder="예) 발이 커져서 몇 번 못 신었어요. 깨끗합니다. 필리핀 캐디분께 기부하고 싶어요."></textarea>
+
+      <h2 style="margin-top:18px;">✅ 사진 (1장 이상) *</h2>
+      <div class="guide">
+        📸 <b>클럽</b>: 흰 벽 앞에서 손에 들고 <b>위에서(크라운) → 바닥(로프트 숫자) → 페이스</b>.<br>
+        👚 <b>골프웨어·신발</b>: <b>옷걸이에 걸거나 밝은 바닥에 반듯하게 펼쳐서</b> 앞·뒤 + <b>사이즈 라벨</b> 1장. 구김을 펴면 훨씬 잘 팔립니다 (필리핀 캐디분들이 많이 찾아요).<br>
+        휴대폰 사진을 그대로 고르세요 — 크기는 자동으로 줄여서 올라갑니다. 첫 사진이 대표 사진(목록에선 정사각형).
+      </div>
+      <input type="file" id="fFile" accept="image/*" multiple style="display:none;">
+      <button type="button" class="btn purple" style="margin-top:10px;" onclick="document.getElementById('fFile').click()">📷 사진 고르기 / 찍기</button>
+      <span id="upSt" style="font-size:12.5px;color:#6b7280;margin-left:6px;"></span>
+      <div id="thumbs"></div>
+
+      <h2 style="margin-top:18px;">✅ 연락처</h2>
+      <div class="g2">
+        <div><label class="l">이름 또는 닉네임 *</label><input type="text" id="fSeller" maxlength="20" placeholder="예) 잠실골퍼"></div>
+        <div><label class="l">휴대폰 번호 * <small>(원하는 분이 연락할 번호)</small></label><input type="tel" id="fPhone" placeholder="010-0000-0000"></div>
+        <div><label class="l">카카오톡 ID <small>(선택)</small></label><input type="text" id="fKakao" maxlength="30"></div>
+        <div><label class="l">관리 비밀번호 * <small>(6자 이상 · 나중에 수정·완료 때 필요)</small></label><input type="password" id="fPw" autocomplete="new-password"></div>
+      </div>
+
+      <div class="err" id="fErr"></div>
+      <button type="button" class="btn green full" style="margin-top:16px;" id="fSubmit" onclick="submitItem()">📤 올리기</button>
+    </div>
+    <div id="doneBox" style="display:none;"></div>
+  </div>
+
+  <!-- ===== 내 물건 관리 ===== -->
+  <div id="paneMine" style="display:none;">
+    <div class="box">
+      <h2>📋 내 물건 관리</h2>
+      <div style="font-size:13px;color:#374151;margin-bottom:6px;">올릴 때 적은 <b>휴대폰 번호</b>와 <b>관리 비밀번호</b>를 넣으세요. 상태(판매중·예약중·완료), 가격, 한마디를 바꾸거나 글을 내릴 수 있습니다.</div>
+      <div class="g2">
+        <div><label class="l">휴대폰 번호</label><input type="tel" id="mPhone" placeholder="010-0000-0000"></div>
+        <div><label class="l">관리 비밀번호</label><input type="password" id="mPw" autocomplete="current-password"></div>
+      </div>
+      <button type="button" class="btn green full" style="margin-top:12px;" onclick="loadMine()">내 물건 불러오기</button>
+      <div class="err" id="mErr"></div>
+      <div id="mList"></div>
+    </div>
+  </div>
+</main>
+
+<footer>iCLARKGOLF 골프 커뮤니티 · 거래와 나눔은 올린 분과 원하는 분이 직접 연락해 진행합니다<br>문제 신고: 카카오톡 tourjang2 · tourjang@gmail.com</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, getDoc, doc, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const app = initializeApp({ apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" }, 'sell');
+const db = getFirestore(app);
+const IMGBB = 'https://api.imgbb.com/1/upload?key=b59ca0d334f2bbbc8e26c620c0936cf5';
+const CATS = ["드라이버", "우드", "유틸리티", "아이언", "웨지", "퍼터", "풀세트", "골프백", "여성 골프웨어", "남성 골프웨어", "골프화·모자·장갑", "기타"];
+const CLUBS = ['드라이버','우드','유틸리티','아이언','웨지','퍼터','풀세트'];
+const MAX_ACTIVE = 5;
+const $ = id => document.getElementById(id);
+let PHOTOS = [];
+
+/* ── 관리 비밀번호: 사이트에는 비밀번호 대신 "한 번 쓰고 버리는 열쇠"의 지문만 저장 (Firestore 규칙이 확인) ── */
+const digits = s => String(s || '').replace(/[^0-9]/g, '');
+async function sha(str){ const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)); return btoa(String.fromCharCode(...new Uint8Array(b))); }
+const secretN = (phone, pw, n) => sha(digits(phone) + '|' + pw + '|' + n);
+const lockOf = async (phone, pw, n) => sha(await secretN(phone, pw, n));
+
+$('fCat').addEventListener('change', () => { const c = $('fCat').value; $('clubSpec').style.display = CLUBS.includes(c) ? 'block' : 'none'; $('wearSpec').style.display = /웨어|화·모자/.test(c) ? 'block' : 'none'; });
+
+document.querySelectorAll('input[name=fMode]').forEach(r => r.addEventListener('change', () => {
+  const give = document.querySelector('input[name=fMode]:checked').value === 'give';
+  $('priceWrap').style.display = give ? 'none' : 'block';
+}));
+window.tab = function(t){
+  $('paneNew').style.display = t === 'new' ? 'block' : 'none';
+  $('paneMine').style.display = t === 'mine' ? 'block' : 'none';
+  $('tabNew').classList.toggle('on', t === 'new'); $('tabMine').classList.toggle('on', t === 'mine');
+};
+if (location.hash === '#mine') tab('mine');
+
+/* ── 사진: 줄여서 imgbb에 올림 ── */
+async function shrink(file){
+  try {
+    const bmp = await createImageBitmap(file);
+    const k = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
+    const c = document.createElement('canvas'); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+    const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(bmp, 0, 0, c.width, c.height);
+    const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.85));
+    return { blob: blob || file, small: Math.max(bmp.width, bmp.height) < 800 };
+  } catch(e) { return { blob: file, small: false }; }
+}
+function drawThumbs(){
+  $('thumbs').innerHTML = PHOTOS.map((u, i) => `<div><img src="${u}">${i ? '' : '<span class="first">대표</span>'}<button type="button" onclick="rmPhoto(${i})">×</button></div>`).join('');
+}
+window.rmPhoto = i => { PHOTOS.splice(i, 1); drawThumbs(); };
+$('fFile').addEventListener('change', async () => {
+  const files = [...$('fFile').files].slice(0, 10 - PHOTOS.length);
+  $('fFile').value = '';
+  if (!files.length) return;
+  let smallWarn = false;
+  for (let i = 0; i < files.length; i++) {
+    $('upSt').textContent = `⏳ 올리는 중 ${i + 1}/${files.length}...`;
+    try {
+      const { blob, small } = await shrink(files[i]); if (small) smallWarn = true;
+      const fd = new FormData(); fd.append('image', blob, 'photo.jpg');
+      const r = await (await fetch(IMGBB, { method:'POST', body: fd })).json();
+      if (!r || !r.success) throw new Error('업로드 실패');
+      PHOTOS.push(r.data.url); drawThumbs();
+    } catch(e) { alert('사진 한 장을 올리지 못했습니다. 다시 시도해 주세요.'); }
+  }
+  $('upSt').textContent = PHOTOS.length >= 10 ? '최대 10장' : `${PHOTOS.length}장 올림`;
+  if (smallWarn) alert('작은 사진이 있어 흐리게 보일 수 있어요. (카톡으로 받은 사진이면 원본을 써 주세요)');
+});
+
+function showErr(id, m){ const e = $(id); e.textContent = m; e.style.display = m ? 'block' : 'none'; if (m) e.scrollIntoView({ behavior:'smooth', block:'center' }); }
+
+window.submitItem = async function(){
+  const v = id => $(id).value.trim();
+  const phone = v('fPhone'), pw = $('fPw').value, mode = document.querySelector('input[name=fMode]:checked').value;
+  const price = mode === 'give' ? 0 : Number(v('fPrice'));
+  const receive = [['fRShip','ship'],['fRMeet','meet'],['fRClark','clark']].filter(x => $(x[0]).checked).map(x => x[1]);
+  let m = '';
+  if (!v('fSeller')) m = '이름 또는 닉네임을 적어주세요.';
+  else if (digits(phone).length < 9) m = '휴대폰 번호를 정확히 적어주세요.';
+  else if (pw.length < 6) m = '관리 비밀번호를 6자 이상으로 정해주세요.';
+  else if (v('fName').length < 3) m = '물건 이름을 적어주세요.';
+  else if (/웨어|화·모자/.test($('fCat').value) && !v('fSize')) m = '사이즈를 적어주세요.';
+  else if (mode === 'sale' && (!price || price < 1000)) m = '판매 가격(원)을 적어주세요. (무료면 "무료 나눔·기부"를 고르세요)';
+  else if (!receive.length) m = '받는 방법을 하나 이상 골라주세요.';
+  else if (PHOTOS.length < 1) m = '사진을 1장 이상 올려주세요.';
+  showErr('fErr', m); if (m) return;
+  const btn = $('fSubmit'); btn.disabled = true; btn.textContent = '⏳ 올리는 중...';
+  try {
+    const club = CLUBS.includes($('fCat').value);
+    const data = {
+      seller: v('fSeller'), phone: digits(phone), kakao: v('fKakao'),
+      name: v('fName'), category: $('fCat').value, condition: $('fCond').value, brand: v('fBrand'), genuine: $('fGenuine').value,
+      loft: club ? v('fLoft') : '', shaft: club ? v('fShaft') : '', flex: club ? $('fFlex').value : '', spec: club ? v('fSpec') : '',
+      size: /웨어|화·모자/.test($('fCat').value) ? v('fSize') : '',
+      bought: v('fBought'), boughtPrice: Number(v('fBoughtPrice')) || 0, usage: $('fUsage').value,
+      withShaft: club ? $('fWithShaft').checked : true, withCover: club && $('fWithCover').checked, withWrench: club && $('fWithWrench').checked,
+      mode, ph: $('fPH').checked, priceKrw: price, shipKrw: Number(v('fShip')) || 0, location: $('fLoc').value, place: v('fPlace'), receive,
+      description: v('fDesc'), photos: PHOTOS.slice(0, 10), status: 'sale',
+      n: 0, keyHash: await lockOf(phone, pw, 0), createdAt: Date.now(), updatedAt: Date.now()
+    };
+    const ref = await addDoc(collection(db, 'market'), data);
+    notifyNew(data, ref.id);
+    $('formBox').style.display = 'none';
+    $('doneBox').style.display = 'block';
+    $('doneBox').innerHTML = `<div class="ok">✅ <b>올라갔습니다!</b> ${mode === 'give' ? '좋은 나눔 감사합니다 🎁' : ''}<br>
+      원하는 분이 <b>${esc(data.phone.replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3'))}</b>로 직접 연락합니다.<br>
+      거래가 끝나면 <b>📋 내 물건 관리</b>에서 <b>완료</b>로 바꿔주세요 (휴대폰 번호 + 관리 비밀번호).<br><br>
+      <a class="btn green" href="shop.html?item=m_${ref.id}">내 물건 보기 →</a>
+      <a class="btn line" href="sell.html">하나 더 올리기</a></div>`;
+    scrollTo({ top: 0, behavior: 'smooth' });
+  } catch(e) {
+    console.error(e); showErr('fErr', '올리지 못했습니다. 잠시 후 다시 시도해 주세요. (' + (e.code || e.message) + ')');
+  } finally { btn.disabled = false; btn.textContent = '📤 중고장터에 올리기'; }
+};
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* 운영자에게 새 글 알림 (실패해도 무시) */
+async function notifyNew(d, id){
+  try {
+    const n = await getDoc(doc(db, 'settings', 'notify'));
+    const key = n.exists() && n.data().web3formsKey; if (!key) return;
+    await fetch('https://api.web3forms.com/submit', { method:'POST', headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
+      body: JSON.stringify({ access_key: key, subject: (d.mode === 'give' ? '🎁 [커뮤니티] 새 나눔글 — ' : '🏷️ [커뮤니티] 새 판매글 — ') + d.name, from_name: 'iCLARKGOLF 중고장터',
+        '물건': d.name, '가격': d.mode === 'give' ? '🎁 무료 나눔·기부' : '₩' + d.priceKrw.toLocaleString(), '필리핀에도': d.ph ? '예' : '아니오', '판매자': d.seller + ' / ' + d.phone, '지역': d.place,
+        '보기': 'https://iclarkgolf.com/shop.html?item=m_' + id, '참고': '이상한 글이면 관리자 → 중고장터 → 개인 판매글에서 내리기' }) });
+  } catch(e) {}
+}
+
+/* ── 내 물건 관리 ── */
+let MINE = [], M_PHONE = '', M_PW = '';
+window.loadMine = async function(){
+  M_PHONE = $('mPhone').value; M_PW = $('mPw').value; showErr('mErr', '');
+  if (digits(M_PHONE).length < 9 || !M_PW) { showErr('mErr', '휴대폰 번호와 관리 비밀번호를 넣어주세요.'); return; }
+  $('mList').innerHTML = '<div style="padding:14px;color:#6b7280;">불러오는 중...</div>';
+  try {
+    const snap = await getDocs(query(collection(db, 'market'), where('phone', '==', digits(M_PHONE))));
+    MINE = [];
+    for (const d of snap.docs) {
+      const x = d.data(); if (x.status === 'deleted') continue;
+      if (await lockOf(M_PHONE, M_PW, x.n || 0) === x.keyHash) MINE.push(Object.assign({ id: d.id }, x));
+    }
+    if (!MINE.length) { $('mList').innerHTML = ''; showErr('mErr', snap.size ? '비밀번호가 맞지 않습니다.' : '이 번호로 올린 물건이 없습니다.'); return; }
+    drawMine();
+  } catch(e) { console.error(e); $('mList').innerHTML = ''; showErr('mErr', '불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'); }
+};
+function drawMine(){
+  MINE.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  $('mList').innerHTML = MINE.map(x => `<div class="mi" id="mi_${x.id}">
+    <img src="${esc((x.photos || [])[0] || '')}" alt="">
+    <div class="b"><div class="nm">${esc(x.name)}</div>
+      <select id="st_${x.id}"><option value="sale"${x.status==='sale'?' selected':''}>🟢 판매중</option><option value="reserved"${x.status==='reserved'?' selected':''}>🟡 예약중</option><option value="sold"${x.status==='sold'?' selected':''}>⚫ 완료 (팔림·나눔 끝)</option></select>
+      <input type="number" id="pr_${x.id}" value="${Number(x.priceKrw) || 0}" step="1000" title="가격(원)">
+      <textarea id="de_${x.id}" rows="3">${esc(x.description || '')}</textarea>
+      <div class="row">
+        <button class="btn green" onclick="saveMine('${x.id}')">💾 저장</button>
+        <a class="btn line" href="shop.html?item=m_${x.id}" target="_blank">👁 보기</a>
+        <button class="btn red" onclick="saveMine('${x.id}', true)">🗑 글 내리기</button>
+      </div></div></div>`).join('');
+}
+window.saveMine = async function(id, remove){
+  const x = MINE.find(i => i.id === id); if (!x) return;
+  if (remove && !confirm('이 글을 내릴까요? 다시 되살릴 수 없습니다.')) return;
+  try {
+    const cur = (await getDoc(doc(db, 'market', id))).data();
+    const n = cur.n || 0;
+    const editKey = await secretN(M_PHONE, M_PW, n);
+    if (await sha(editKey) !== cur.keyHash) { alert('비밀번호가 맞지 않습니다.'); return; }
+    const upd = { editKey, n: n + 1, keyHash: await lockOf(M_PHONE, M_PW, n + 1), updatedAt: Date.now() };
+    if (remove) upd.status = 'deleted';
+    else {
+      upd.status = $('st_' + id).value;
+      upd.priceKrw = Math.max(1000, Number($('pr_' + id).value) || cur.priceKrw);
+      upd.description = $('de_' + id).value.trim().slice(0, 1500);
+    }
+    await updateDoc(doc(db, 'market', id), upd);
+    Object.assign(x, upd);
+    if (remove) { MINE = MINE.filter(i => i.id !== id); drawMine(); alert('글을 내렸습니다.'); }
+    else alert('저장했습니다.');
+  } catch(e) { console.error(e); alert('저장하지 못했습니다. (' + (e.code || e.message) + ')'); }
+};
+</script>
+</body>
+</html>

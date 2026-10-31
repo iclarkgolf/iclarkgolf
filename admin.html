@@ -1663,6 +1663,12 @@ window.adminLogout = function() {
     </div>
     <div id="sp-list"><div style="grid-column:1/-1;text-align:center;padding:30px;color:#9ca3af;">불러오는 중...</div></div>
   </div>
+  <!-- 2026-10-31: 개인 판매자가 sell.html에서 직접 올린 글 — 운영자는 규칙 위반 글만 내리면 됨 -->
+  <div class="mgmt-card" style="margin-top:14px;">
+    <div class="mgmt-title">👥 개인 판매글 <span style="font-size:12px;font-weight:400;color:#6b7280;">판매자가 직접 올리고 직접 거래 · 이상한 글만 🚫 내리기</span>
+      <span><a href="sell.html" target="_blank" style="color:#2d6a4f;font-weight:700;">판매 등록 화면 ↗</a></span></div>
+    <div id="mk-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;"><div style="grid-column:1/-1;color:#9ca3af;padding:20px;text-align:center;">불러오는 중...</div></div>
+  </div>
 </div>
 
 <div id="sp-modal" onclick="if(event.target===this)spClose()">
@@ -1736,7 +1742,7 @@ window.adminLogout = function() {
 </div>
 
 <script>
-const SP_CATS = ['드라이버','우드','유틸리티','아이언','웨지','퍼터','풀세트','골프백','의류·기타'];
+const SP_CATS = ['드라이버','우드','유틸리티','아이언','웨지','퍼터','풀세트','골프백','여성 골프웨어','남성 골프웨어','골프화·모자·장갑','의류·기타','기타'];
 let _spItems = [], _spEdit = null, _spUsdKrw = 1380, _spKrwPerPhp = 0;
 async function spDB(){
   const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
@@ -1749,7 +1755,7 @@ function spEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&
 function spUsd(krw){ return Math.ceil((Number(krw)||0) / _spUsdKrw * 1.04); }
 /* 2026-10-31 필리핀 판매: 페소 가격(직접 넣은 값 우선, 없으면 원화÷환율을 50페소 단위 올림) · 영어 홍보글 · 페이스북 공유 */
 function spPhp(it){ if (Number(it.pricePhp) > 0) return Number(it.pricePhp); return _spKrwPerPhp ? Math.ceil((Number(it.priceKrw)||0) / _spKrwPerPhp / 50) * 50 : 0; }
-const SP_CAT_EN = { '드라이버':'Driver','우드':'Fairway Wood','유틸리티':'Hybrid / Utility','아이언':'Irons','웨지':'Wedge','퍼터':'Putter','풀세트':'Full Set','골프백':'Golf Bag','의류·기타':'Apparel & Others' };
+const SP_CAT_EN = { '드라이버':'Driver','우드':'Fairway Wood','유틸리티':'Hybrid / Utility','아이언':'Irons','웨지':'Wedge','퍼터':'Putter','풀세트':'Full Set','골프백':'Golf Bag','의류·기타':'Apparel & Others','여성 골프웨어':'Women\'s Golf Wear','남성 골프웨어':'Men\'s Golf Wear','골프화·모자·장갑':'Shoes · Caps · Gloves','기타':'Others', };
 const SP_COND_EN = { '새것 (미사용)':'New (unused)','아주 좋음 (사용감 거의 없음)':'Excellent (barely used)','좋음 (잔기스 약간)':'Good (minor scratches)','보통 (사용감 있음)':'Fair (visible wear)','사용감 많음':'Well used' };
 function spNameEn(it){ return it.nameEn || ((it.brand ? it.brand + ' ' : '') + (SP_CAT_EN[it.category] || it.category || 'Golf gear')); }
 function spFbUrl(it){ return 'https://iclarkgolf.com/shop-' + encodeURIComponent(it.id) + '.html'; }
@@ -1789,6 +1795,34 @@ async function loadShopAdmin(){
     if (ex.exists() && Number(ex.data().usdKrw)) _spKrwPerPhp = Number(ex.data().usdKrw) / (Number(ex.data().appliedUsdPhp) || 53.2);
   } catch(e) { console.error(e); document.getElementById('sp-list').innerHTML = '<div style="grid-column:1/-1;color:#b91c1c;">불러오기 실패: ' + spEsc(e.message) + '</div>'; return; }
   spRender();
+  mkLoad();
+}
+async function mkLoad(){
+  const el = document.getElementById('mk-list');
+  try {
+    const { db, fs } = await spDB();
+    const snap = await fs.getDocs(fs.collection(db, 'market'));
+    const items = snap.docs.map(d => Object.assign({ id: d.id }, d.data())).filter(x => x.status !== 'deleted').sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+    if (!items.length) { el.innerHTML = '<div style="grid-column:1/-1;color:#6b7280;padding:16px;text-align:center;">아직 개인 판매글이 없습니다.</div>'; return; }
+    const ST = { sale:'🟢 판매중', reserved:'🟡 예약중', sold:'⚫ 판매완료' };
+    el.innerHTML = items.map(x => `<div class="sp-card">
+      <div class="ph">${(x.photos||[])[0] ? `<img src="${spEsc(x.photos[0])}">` : '🏌️'}</div>
+      <div class="bd">
+        <div style="font-size:11px;color:#6b7280;">${spEsc(x.category)} · ${ST[x.status] || x.status} · ${new Date(x.createdAt||0).toLocaleDateString('ko-KR')}</div>
+        <div class="nm">${spEsc(x.name)}</div>
+        <div><b style="color:#2d6a4f;">₩${(Number(x.priceKrw)||0).toLocaleString()}</b></div>
+        <div style="font-size:12px;">${spEsc(x.seller)} · ${spEsc(x.phone)}</div>
+        <div class="row">
+          <a class="sp-btn gray sm" style="text-decoration:none;" href="shop.html?item=m_${encodeURIComponent(x.id)}" target="_blank">👁 보기</a>
+          <button class="sp-btn red sm" onclick="mkHide('${x.id}')">🚫 내리기</button>
+        </div>
+      </div></div>`).join('');
+  } catch(e) { el.innerHTML = '<div style="grid-column:1/-1;color:#b91c1c;">불러오기 실패: ' + spEsc(e.message) + '</div>'; }
+}
+async function mkHide(id){
+  if (!confirm('이 개인 판매글을 내릴까요? (사이트에서 사라집니다)')) return;
+  try { const { db, fs } = await spDB(); await fs.updateDoc(fs.doc(db, 'market', id), { status: 'deleted', updatedAt: Date.now(), hiddenBy: 'admin' }); mkLoad(); }
+  catch(e) { alert('내리기 실패: ' + e.message + '\n(Firestore 규칙에 market 칸이 들어갔는지 확인)'); }
 }
 function spRender(){
   const el = document.getElementById('sp-list');

@@ -1846,9 +1846,10 @@ try {
 <div class="section" id="used-shop" style="display:none;">
   <div class="sec-head">
     <h2 class="sec-title" data-i18n="sec.shop">🏷️ 중고 골프용품</h2>
+    <a href="sell.html" class="sec-more" style="margin-left:auto;margin-right:12px;">📤 팔기·나눔</a>
     <a href="shop.html" class="sec-more"><span data-i18n="sec.more">전체보기</span> <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
   </div>
-  <p class="sec-desc" data-i18n="sec.shop.desc">직접 쓰고 관리한 골프채·용품을 판매합니다. 카드 결제 가능 · 택배 · 직거래 · 클락 현지 전달</p>
+  <p class="sec-desc" data-i18n="sec.shop.desc">누구나 올리는 골프용품 장터 · 한국에서 팔거나 필리핀에 팔고 기부하세요</p>
   <div class="shop-row" id="used-shop-row"></div>
 </div>
 <script>
@@ -1856,7 +1857,7 @@ try {
 (function(){
   const FS = 'https://firestore.googleapis.com/v1/projects/iclarkgolf/databases/(default)/documents/settings/';
   const KEY = '?key=AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU';
-  const CAT_EN = { '드라이버':'Driver','우드':'Fairway Wood','유틸리티':'Hybrid / Utility','아이언':'Irons','웨지':'Wedge','퍼터':'Putter','풀세트':'Full Set','골프백':'Golf Bag','의류·기타':'Apparel & Others' };
+  const CAT_EN = { '드라이버':'Driver','우드':'Fairway Wood','유틸리티':'Hybrid / Utility','아이언':'Irons','웨지':'Wedge','퍼터':'Putter','풀세트':'Full Set','골프백':'Golf Bag','의류·기타':'Apparel & Others','여성 골프웨어':'Women\'s Golf Wear','남성 골프웨어':'Men\'s Golf Wear','골프화·모자·장갑':'Shoes · Caps · Gloves','기타':'Others', };
   const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const g = (f,k) => { const v = f[k]; if (!v) return ''; return v.stringValue != null ? v.stringValue : v.integerValue != null ? Number(v.integerValue) : v.doubleValue != null ? Number(v.doubleValue) : v.booleanValue != null ? v.booleanValue : v.arrayValue ? (v.arrayValue.values||[]).map(x=>x.stringValue) : ''; };
   let ITEMS = [], KRW_PER_PHP = 0;
@@ -1866,10 +1867,10 @@ try {
     const row = document.getElementById('used-shop-row');
     if (!row || !ITEMS.length) return;
     const en = lang() === 'en';
-    row.innerHTML = ITEMS.map(it => {
+    row.innerHTML = ITEMS.filter(it => !(en && it.ph === false)).map(it => {
       const nm = en ? (it.nameEn || (it.brand ? it.brand + ' ' : '') + (CAT_EN[it.category] || it.category || 'Golf gear')) : it.name;
-      const pr = en && php(it) ? '₱' + php(it).toLocaleString() : '₩' + Number(it.price).toLocaleString();
-      const st = it.status === 'reserved' ? (en ? 'Reserved' : '예약중') : (en ? 'For sale' : '판매중');
+      const pr = it.mode === 'give' ? (en ? '🎁 Free' : '🎁 무료 나눔') : en && php(it) ? '₱' + php(it).toLocaleString() : '₩' + Number(it.price).toLocaleString();
+      const st = it.status === 'reserved' ? (en ? 'Reserved' : '예약중') : it.mode === 'give' ? (en ? 'Free' : '나눔') : (en ? 'For sale' : '판매중');
       return `<a class="shop-it" href="shop.html?item=${encodeURIComponent(it.id)}">
       <div class="ph">${it.photos[0] ? `<img src="${esc(it.photos[0])}" alt="${esc(nm)}" loading="lazy" onerror="this.remove()">` : ''}<span class="st${it.status==='reserved'?' r':''}">${st}</span></div>
       <div class="bd"><div class="nm">${esc(nm)}</div><div class="pr">${pr}</div></div></a>`;
@@ -1886,12 +1887,15 @@ try {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hook); else hook();
   (async function(){
     try {
-      const [r, rx] = await Promise.all([fetch(FS + 'shop' + KEY), fetch(FS + 'exchange' + KEY).catch(() => null)]);
+      const [r, rx, rm] = await Promise.all([fetch(FS + 'shop' + KEY), fetch(FS + 'exchange' + KEY).catch(() => null), fetch(FS.replace('/settings/', '/market') + KEY + '&pageSize=300').catch(() => null)]);
       if (!r.ok) return;
       const j = await r.json();
       try { if (rx && rx.ok) { const x = (await rx.json()).fields || {}; const usdKrw = Number(g(x,'usdKrw')); if (usdKrw) KRW_PER_PHP = usdKrw / (Number(g(x,'appliedUsdPhp')) || 53.2); } } catch(e) {}
       const arr = (((j.fields||{}).items||{}).arrayValue||{}).values || [];
       ITEMS = arr.map(v => (v.mapValue||{}).fields||{}).map(f => ({ id:g(f,'id'), name:g(f,'name'), nameEn:g(f,'nameEn'), brand:g(f,'brand'), category:g(f,'category'), price:g(f,'priceKrw'), pricePhp:g(f,'pricePhp'), status:g(f,'status')||'sale', visible:g(f,'visible'), photos:g(f,'photos')||[], at:Number(g(f,'createdAt'))||0 }))
+        .concat(await (async () => { try { if (!rm || !rm.ok) return []; const jm = await rm.json();
+          return (jm.documents || []).map(d => { const f = d.fields || {}; return { id:'m_' + d.name.split('/').pop(), name:g(f,'name'), nameEn:'', brand:g(f,'brand'), category:g(f,'category'), price:g(f,'priceKrw'), pricePhp:0, mode:g(f,'mode'), ph:g(f,'ph'), status:g(f,'status'), visible:true, photos:g(f,'photos')||[], at:Number(g(f,'createdAt'))||0 }; })
+            .filter(it => it.status === 'sale' || it.status === 'reserved'); } catch(e) { return []; } })())
         .filter(it => it.name && it.visible !== false && it.status !== 'sold')
         .sort((a,b) => (a.status==='sale'?0:1) - (b.status==='sale'?0:1) || b.at - a.at).slice(0,4);
       if (!ITEMS.length) return;
@@ -2433,7 +2437,7 @@ const TRANSLATIONS = {
     'sec.golf': '🏌️ 클락 골프장',
     'sec.pay': '💳 결제하기',
     'sec.shop': '🏷️ 중고 골프용품',
-    'sec.shop.desc': '직접 쓰고 관리한 골프채·용품을 판매합니다. 카드 결제 가능 · 택배 · 직거래 · 클락 현지 전달',
+    'sec.shop.desc': '누구나 올리는 골프용품 장터 · 한국에서 팔거나 필리핀에 팔고 기부하세요',
     'drawer.shop': '중고 골프용품',
     'sec.pay.desc': '확정서가 발행되면 <b>현지 계좌 해외송금</b> 또는 <b>카드 결제</b> 중 편한 방법으로 결제하세요.',
     'pay.bank.t': '현지 계좌 해외송금',
@@ -2552,7 +2556,7 @@ const TRANSLATIONS = {
     'sec.golf': '🏌️ Clark Golf Courses',
     'sec.pay': '💳 How to Pay',
     'sec.shop': '🏷️ Used Golf Gear',
-    'sec.shop.desc': 'Pre-owned clubs and gear, honestly described. Pay by GCash, cash or card · meet-up / hand-over in Clark',
+    'sec.shop.desc': 'Golf clubs, golf wear and gear from Korea — buy it or get it free · GCash, cash or card · Clark / Angeles',
     'drawer.shop': 'Used Golf Gear',
     'sec.pay.desc': 'Once your confirmation is issued, pay by <b>bank transfer to our local account</b> or by <b>card</b> — whichever you prefer.',
     'pay.bank.t': 'Bank transfer (local account)',

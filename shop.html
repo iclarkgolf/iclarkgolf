@@ -112,6 +112,13 @@ footer{text-align:center;font-size:12px;color:var(--gray);padding:20px;line-heig
 .btn.msgr{background:#0084FF;color:#fff;}
 .btn.fb{background:#1877F2;color:#fff;}
 .card .loc{font-size:11px;color:#2d6a4f;font-weight:700;}
+.sellcta{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:#fff;border:1.5px dashed #52b788;border-radius:14px;padding:14px 16px;margin-top:18px;font-size:13.5px;color:#374151;}
+.sellcta b{color:var(--green);}
+.badge-p{position:absolute;bottom:8px;left:8px;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,.92);color:#374151;border:1px solid #e5e7eb;}
+.warnbox{background:#fff7e6;border:1px solid #fde3a7;border-radius:10px;padding:9px 11px;font-size:12.5px;color:#7a4b00;line-height:1.7;margin-bottom:12px;}
+.btn.tel{background:#2d6a4f;color:#fff;}
+.story{list-style:none;background:#f3faf6;border:1px solid #c8edd9;border-radius:12px;padding:10px 12px;margin:2px 0 12px;font-size:14px;line-height:1.9;}
+.story li b{color:var(--green);}
 .paybox{background:#eef6ff;border:1px solid #cfe3ff;border-radius:10px;padding:9px 11px;font-size:12.5px;color:#1e3a5f;line-height:1.7;margin-bottom:12px;}
 </style>
 </head>
@@ -136,6 +143,8 @@ footer{text-align:center;font-size:12px;color:var(--gray);padding:20px;line-heig
 
   <div class="chips" id="chips"></div>
   <div id="list"><div class="empty">불러오는 중...</div></div>
+
+  <div class="sellcta" id="sellcta"><span>🏌️ 안 쓰는 골프용품, 여기 올려 보세요 — <b>한국에서 팔거나 🇵🇭 필리핀에 팔고 기부</b>할 수 있어요 · 누구나 무료</span><a class="btn green" href="sell.html">📤 팔기 · 나눔</a></div>
 
   <div class="info" id="info"></div>
 </main>
@@ -163,21 +172,25 @@ const MSGR = 'https://m.me/iclarkgolf';
 const SITE = 'https://iclarkgolf.com';
 const FS = 'https://firestore.googleapis.com/v1/projects/iclarkgolf/databases/(default)/documents/settings/';
 const KEY = '?key=AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU';
-const CATS = ['드라이버','우드','유틸리티','아이언','웨지','퍼터','풀세트','골프백','의류·기타'];
+const CATS = ['드라이버','우드','유틸리티','아이언','웨지','퍼터','풀세트','골프백','여성 골프웨어','남성 골프웨어','골프화·모자·장갑','의류·기타','기타'];
 
 /* ── 한/영 ── */
 const T = {
   kr: {
-    home:'← 홈으로', h1:'🏷️ 중고 골프용품', heroP:'직접 쓰고 관리한 골프채·용품을 정직한 상태 설명과 함께 판매합니다',
-    trust:['📸 실물 사진 그대로','💳 카드 결제 (VISA·Master)','📦 택배 · 🤝 직거래 · ✈️ 클락 현지 전달'],
+    home:'← 홈으로', h1:'🏷️ 골프용품 장터', heroP:'누구나 올리는 골프용품 장터 — 한국에서 팔고, 🇵🇭 필리핀에 팔고, 기부하세요',
+    trust:['📸 실물 사진','🎁 나눔 · 기부','🇵🇭 필리핀 클락까지','💳 iCLARKGOLF 물건은 카드 결제'],
     all:'전체', loading:'불러오는 중...', sale:'판매중', rsv:'예약중', sold:'판매완료',
     empty:'지금 판매 중인 물건을 준비하고 있습니다.<br>찾으시는 골프채·용품이 있으면 카톡으로 말씀해 주세요.',
     ask:'💬 카톡 문의', buyCard:'💳 카드로 구매', fb:'📘 페이스북 공유', copy:'🔗 링크 복사', copied:'링크가 복사되었습니다', copyPrompt:'아래 링크를 복사하세요',
     cardPrice: u => `카드 US$${u}`, cardPriceL: u => `카드 결제 시 US$${u} (카드 수수료 4% 포함)`,
     rsvNote:'⏳ 다른 분과 거래가 진행 중입니다. 거래가 취소되면 다시 판매됩니다.',
-    spec:{ condition:'상태', brand:'브랜드', spec:'기타 사양', location:'물건 위치', receive:'받는 방법', genuine:'정품', loft:'로프트', shaft:'샤프트', flex:'강도', parts:'구성', place:'거래 지역' },
+    spec:{ condition:'상태', brand:'브랜드', spec:'기타 사양', location:'물건 위치', receive:'받는 방법', genuine:'정품', loft:'로프트', shaft:'샤프트', flex:'강도', parts:'구성', place:'거래 지역', size:'사이즈' },
     parts:{ head:'헤드만', shaft:'샤프트 포함', cover:'헤드커버 포함', wrench:'렌치 포함' },
     seller:'✅ iCLARKGOLF 직접 판매 · 판매자가 직접 찍은 실물 사진',
+    personal:'개인 판매', sellerL:'판매자', call:'📞 전화하기', sms:'💬 문자 보내기', kakaoL:'카카오톡 ID',
+    pNote:'💬 커뮤니티 회원이 올린 물건입니다. <b>올린 분께 직접 연락</b>하세요. 돈을 보내기 전에 물건을 꼭 확인하세요.',
+    free:'🎁 무료 나눔', giveBadge:'나눔',
+    smsBody: n => `[iCLARKGOLF 중고장터] "${n}" 아직 판매 중인가요?`,
     rcv:{ ship:'📦 택배로 받기', meet:'🤝 직거래', clark:'✈️ 클락 현지 전달' },
     rcvD:{ clark:'클락 골프 여행 오실 때 현지에서 전달' },
     shipFee: w => ` (택배비 ${w})`, shipIncl:' (택배비 포함)', meetNear: l => `${l} 근처에서 만나 전달`,
@@ -202,16 +215,20 @@ const T = {
         payFail:'카드 결제가 완료되지 않았습니다. 다시 시도하시거나 카톡으로 문의해 주세요.', payLoadFail:'카드 결제창을 불러오지 못했습니다. 카톡으로 문의해 주세요.' }
   },
   en: {
-    home:'← Home', h1:'🏷️ Used Golf Gear', heroP:'Pre-owned clubs and gear I have used and cared for — sold with honest condition notes',
-    trust:['📸 Real photos','💚 GCash · 💵 Cash · 💳 Card','🤝 Meet-up / hand-over in Clark'],
+    home:'← Home', h1:'🏷️ Used Golf Gear', heroP:'Pre-owned golf clubs, golf wear and gear from Korea — buy it or get it free in Clark',
+    trust:['📸 Real photos','👚 Golf wear too','🎁 Free donations','💚 GCash · 💵 Cash · 💳 Card'],
     all:'All', loading:'Loading...', sale:'For sale', rsv:'Reserved', sold:'Sold',
     empty:'New items are coming soon.<br>Looking for something specific? Send us a message.',
     ask:'💬 Message us', buyCard:'💳 Pay by card', fb:'📘 Share on Facebook', copy:'🔗 Copy link', copied:'Link copied', copyPrompt:'Copy this link',
     cardPrice: u => `Card US$${u}`, cardPriceL: u => `By card: US$${u} (incl. 4% card fee)`,
     rsvNote:'⏳ Another buyer is in the middle of a deal. If it falls through, it will be back on sale.',
-    spec:{ condition:'Condition', brand:'Brand', spec:'Other specs', location:'Location', receive:'How to get it', genuine:'Authentic', loft:'Loft', shaft:'Shaft', flex:'Flex', parts:'Includes', place:'Meet-up area' },
+    spec:{ condition:'Condition', brand:'Brand', spec:'Other specs', location:'Location', receive:'How to get it', genuine:'Authentic', loft:'Loft', shaft:'Shaft', flex:'Flex', parts:'Includes', place:'Meet-up area', size:'Size' },
     parts:{ head:'Head only', shaft:'Shaft included', cover:'Headcover', wrench:'Wrench' },
     seller:'✅ Sold directly by iCLARKGOLF · real photos taken by the seller',
+    personal:'Private seller', sellerL:'Seller', call:'📞 Call', sms:'💬 Text', kakaoL:'KakaoTalk ID',
+    pNote:'💬 Posted by a community member. <b>Contact them directly.</b> Please check the item before sending any money.',
+    free:'🎁 Free / Donation', giveBadge:'Free',
+    smsBody: n => `[iCLARKGOLF] Is "${n}" still available?`,
     rcv:{ ship:'📦 Courier delivery (Korea only)', meet:'🤝 Meet-up', clark:'✈️ Hand-over in Clark' },
     rcvD:{ clark:'Handed over in Clark (Angeles / Clark area)' },
     shipFee: w => ` (shipping ${w})`, shipIncl:' (shipping incl.)', meetNear: l => `Meet near ${l}`,
@@ -237,8 +254,9 @@ const T = {
         payFail:'The card payment did not go through. Please try again or message us.', payLoadFail:'Could not load the card payment. Please message us.' }
   }
 };
-const CAT_EN = { '드라이버':'Driver','우드':'Fairway Wood','유틸리티':'Hybrid / Utility','아이언':'Irons','웨지':'Wedge','퍼터':'Putter','풀세트':'Full Set','골프백':'Golf Bag','의류·기타':'Apparel & Others' };
+const CAT_EN = { '드라이버':'Driver','우드':'Fairway Wood','유틸리티':'Hybrid / Utility','아이언':'Irons','웨지':'Wedge','퍼터':'Putter','풀세트':'Full Set','골프백':'Golf Bag','의류·기타':'Apparel & Others','여성 골프웨어':'Women\'s Golf Wear','남성 골프웨어':'Men\'s Golf Wear','골프화·모자·장갑':'Shoes · Caps · Gloves','기타':'Others', };
 const COND_EN = { '새것 (미사용)':'New (unused)','아주 좋음 (사용감 거의 없음)':'Excellent (barely used)','좋음 (잔기스 약간)':'Good (minor scratches)','보통 (사용감 있음)':'Fair (visible wear)','사용감 많음':'Well used' };
+const USAGE_EN = { '안 썼어요 (새것)':'Never used (new)','몇 번만 썼어요 (1~5회)':'Used only a few times (1–5)','한 시즌 썼어요':'Used one season','2~3 시즌 썼어요':'Used 2–3 seasons','오래 썼어요':'Used for a long time' };
 const GEN_EN = { '국내 정품':'Genuine (Korea model)','일본 정품':'Genuine (Japan model)','미국 정품':'Genuine (US model)','정품 (구분 모름)':'Genuine' };
 const LOC_EN = { '한국 (서울)':'Korea (Seoul) — brought to Clark on request','필리핀 클락':'Clark, Philippines' };
 
@@ -269,6 +287,19 @@ function nameOf(it){
   const c = CAT_EN[it.category] || it.category || 'Golf gear';
   return it.brand ? it.brand + ' ' + c : c;
 }
+/* 2026-10-31: 올린 분의 이야기 흐름 — 언제·얼마에 샀고 → 얼마나 썼고 → 사이즈 → 그래서 기부/판매 */
+function storyOf(it){
+  const en = LANG === 'en', li = [];
+  if (it.bought || Number(it.boughtPrice)) li.push(en
+    ? '✅ Bought' + (it.bought ? ': ' + it.bought : '') + (Number(it.boughtPrice) ? ' for ' + won(it.boughtPrice) : '')
+    : '✅ ' + (it.bought ? it.bought + '에 ' : '') + (Number(it.boughtPrice) ? won(it.boughtPrice) + '에 ' : '') + '샀어요');
+  if (it.usage) li.push((en ? '✅ Used: ' : '✅ 사용: ') + (en ? (USAGE_EN[it.usage] || it.usage) : it.usage));
+  if (it.size) li.push((en ? '✅ Size: ' : '✅ 사이즈: ') + it.size);
+  if (!li.length) return '';
+  li.push(it.mode === 'give' ? (en ? '✅ <b>🎁 I am giving this away for free</b>' : '✅ <b>🎁 무료로 기부·나눔합니다</b>')
+    : (en ? `✅ <b>Selling for ${priceMain(it)}</b>` : `✅ <b>${won(it.priceKrw)}에 팝니다</b>`));
+  return '<ul class="story">' + li.map(x => `<li>${x}</li>`).join('') + '</ul>';
+}
 function partsOf(it){
   const P = L().parts, out = [];
   if (it.withShaft === false) out.push(P.head);
@@ -276,10 +307,10 @@ function partsOf(it){
   if (it.withWrench) out.push(P.wrench);
   return out.join(' · ');
 }
-function specLine(it){ return [it.loft ? it.loft + '°' : '', it.flex || '', it.withShaft === false ? L().parts.head : ''].filter(Boolean).join(' · '); }
+function specLine(it){ return [it.size ? (LANG === 'en' ? 'Size ' : '사이즈 ') + it.size : '', it.loft ? it.loft + '°' : '', it.flex || '', it.withShaft === false ? L().parts.head : ''].filter(Boolean).join(' · '); }
 function catOf(c){ return LANG === 'en' ? (CAT_EN[c] || c) : c; }
-function priceMain(it){ return LANG === 'en' && phpOf(it) ? peso(phpOf(it)) : won(it.priceKrw); }
-function priceSub(it){ return LANG === 'en' && phpOf(it) ? '≈ ' + won(it.priceKrw) : L().cardPrice(usdOf(it.priceKrw).toLocaleString()); }
+function priceMain(it){ if (it.mode === 'give') return L().free; return LANG === 'en' && phpOf(it) ? peso(phpOf(it)) : won(it.priceKrw); }
+function priceSub(it){ if (it.mode === 'give') return ''; return LANG === 'en' && phpOf(it) ? '≈ ' + won(it.priceKrw) : (it.user ? '' : L().cardPrice(usdOf(it.priceKrw).toLocaleString())); }
 function fv(v){
   if (!v) return null;
   if ('stringValue' in v) return v.stringValue;
@@ -303,6 +334,7 @@ function toast(m){ const t = document.getElementById('toast'); t.textContent = m
 function stBadge(it){
   if (it.status === 'sold') return `<span class="badge-st sold">${L().sold}</span>`;
   if (it.status === 'reserved') return `<span class="badge-st rsv">${L().rsv}</span>`;
+  if (it.mode === 'give') return `<span class="badge-st" style="background:#d6336c;">🎁 ${L().giveBadge}</span>`;
   return `<span class="badge-st">${L().sale}</span>`;
 }
 function askBtn(){
@@ -320,6 +352,7 @@ function setLang(l){
   document.getElementById('trust').innerHTML = L().trust.map(s => `<span>${s}</span>`).join('');
   document.getElementById('info').innerHTML = L().info;
   document.getElementById('foot').innerHTML = L().foot;
+  document.getElementById('sellcta').style.display = LANG === 'en' ? 'none' : 'flex';
   renderChips(); renderList();
   if (CUR && document.getElementById('md').classList.contains('on')) openMd(CUR.id);
   const u = new URL(location.href);
@@ -332,6 +365,20 @@ async function load(){
     if (ex && Number(ex.usdKrw)) USD_KRW = Number(ex.usdKrw);
     if (ex && Number(ex.usdKrw)) KRW_PER_PHP = Number(ex.usdKrw) / (Number(ex.appliedUsdPhp) || 53.2);
     ITEMS = ((shop && shop.items) || []).filter(it => it && it.visible !== false && it.name);
+    // 2026-10-31: 개인 판매자가 sell.html에서 직접 올린 물건 (market 컬렉션)
+    try {
+      const r = await fetch(FS.replace('/settings/', '/market') + KEY + '&pageSize=300', { cache:'no-store' });
+      if (r.ok) {
+        const j = await r.json();
+        (j.documents || []).forEach(d => {
+          const o = {}; const f = d.fields || {}; for (const k in f) o[k] = fv(f[k]);
+          if (!o.name || !['sale','reserved','sold'].includes(o.status)) return;
+          if (o.status === 'sold' && Date.now() - (o.updatedAt || 0) > 30 * 86400000) return;   // 판매완료 30일 지나면 목록에서 뺌
+          o.id = 'm_' + d.name.split('/').pop(); o.user = true;
+          ITEMS.push(o);
+        });
+      }
+    } catch(e) { console.warn('개인 판매글 불러오기 실패', e); }
     const ord = { sale:0, reserved:1, sold:2 };
     ITEMS.sort((a,b) => (ord[a.status||'sale'] - ord[b.status||'sale']) || ((b.createdAt||0) - (a.createdAt||0)));
   } catch(e) { console.warn('상품 불러오기 실패', e); ITEMS = []; }
@@ -350,7 +397,7 @@ function renderChips(){
 }
 function renderList(){
   const el = document.getElementById('list');
-  const list = ITEMS.filter(it => CUR_CAT === '전체' || it.category === CUR_CAT);
+  const list = ITEMS.filter(it => (CUR_CAT === '전체' || it.category === CUR_CAT) && !(LANG === 'en' && it.user && it.ph === false));
   if (!list.length) {
     el.innerHTML = `<div class="empty"><div class="big">⛳</div>${L().empty}<br><br>${askBtn()}</div>`;
     return;
@@ -360,7 +407,7 @@ function renderList(){
     const nm = nameOf(it);
     const where = LANG === 'en' ? `<div class="loc">📍 ${/클락/.test(it.location||'') ? 'In Clark' : 'In Korea'}</div>` : '';
     return `<div class="card${it.status==='sold'?' sold':''}" onclick="openMd('${esc(it.id)}')">
-      <div class="ph">${ph ? `<img src="${esc(ph)}" alt="${esc(nm)}" loading="lazy" onerror="this.outerHTML='<div class=&quot;noimg&quot;>📷</div>'">` : '<div class="noimg">🏌️</div>'}${stBadge(it)}</div>
+      <div class="ph">${ph ? `<img src="${esc(ph)}" alt="${esc(nm)}" loading="lazy" onerror="this.outerHTML='<div class=&quot;noimg&quot;>📷</div>'">` : '<div class="noimg">🏌️</div>'}${stBadge(it)}${it.user ? `<span class="badge-p">${L().personal}</span>` : ''}</div>
       <div class="bd">
         <div class="cat">${esc(catOf(it.category||''))}${it.brand ? ' · ' + esc(it.brand) : ''}</div>
         <div class="nm">${esc(nm)}</div>
@@ -392,9 +439,10 @@ function openMd(id){
     [S.genuine, en ? (GEN_EN[it.genuine] || it.genuine) : it.genuine],
     [S.condition, en ? (COND_EN[it.condition] || it.condition) : it.condition],
     [S.brand, it.brand], [S.loft, it.loft ? it.loft + '°' : ''], [S.shaft, it.shaft], [S.flex, it.flex],
-    [S.parts, partsOf(it)], [S.spec, it.spec],
+    [S.parts, partsOf(it)], [S.size, it.size], [S.spec, it.spec],
     [S.location, en ? (LOC_EN[it.location] || it.location) : it.location],
     [S.place, it.place],
+    [L().sellerL, it.user ? it.seller : ''],
     [S.receive, rcv.map(k => esc(rcvLine(it, k))).join('<br>'), true]
   ].filter(r => r[1]);
   const desc = en ? (it.descriptionEn || '') : (it.description || '');
@@ -404,23 +452,37 @@ function openMd(id){
     <div class="cat">${esc(catOf(it.category||''))}</div>
     <h2>${esc(nm)}</h2>
     ${sold ? `<div class="md-pr" style="color:#6b7280">${L().sold}</div>` : `<div class="md-pr">${priceMain(it)}</div>
-    <div class="md-usd">${en && phpOf(it) ? '≈ ' + won(it.priceKrw) + ' · ' : ''}${L().cardPriceL(usdOf(it.priceKrw).toLocaleString())}</div>`}
+    <div class="md-usd">${it.mode === 'give' ? '' : (en && phpOf(it) ? '≈ ' + won(it.priceKrw) + (it.user ? '' : ' · ') : '') + (it.user ? '' : L().cardPriceL(usdOf(it.priceKrw).toLocaleString()))}</div>`}
+    ${storyOf(it)}
     ${it.status==='reserved' ? `<div style="background:#fff7e6;border-radius:8px;padding:8px 10px;font-size:13px;margin-bottom:10px;">${L().rsvNote}</div>` : ''}
     <table class="spec">${rows.map(r => `<tr><td>${r[0]}</td><td>${r[2] ? r[1] : esc(r[1])}</td></tr>`).join('')}</table>
     ${desc ? `<div class="desc">${esc(desc)}</div>` : ''}
-    <div style="font-size:12px;color:#2d6a4f;font-weight:700;margin-bottom:10px;">${L().seller}</div>
-    ${en && !sold ? `<div class="paybox">${L().paybox}</div>` : ''}
-    <div class="acts">
+    ${it.user ? `<div class="warnbox">${L().pNote}</div>` : `<div style="font-size:12px;color:#2d6a4f;font-weight:700;margin-bottom:10px;">${L().seller}</div>`}
+    ${en && !sold && !it.user ? `<div class="paybox">${L().paybox}</div>` : ''}
+    ${it.user ? userActs(it) : `<div class="acts">
       ${en ? askBtn() : ''}
       ${canBuy ? `<button class="btn green" onclick="openBuy()">${L().buyCard}</button>` : ''}
       ${en ? '' : askBtn()}
       <button class="btn fb" onclick="shareFb()">${L().fb}</button>
       <button class="btn line" onclick="copyLink()">${L().copy}</button>
-    </div>`;
+    </div>`}`;
   const buy = document.getElementById('buy'); buy.style.display = 'none'; buy.innerHTML = '';
   document.getElementById('md').classList.add('on');
   document.body.style.overflow = 'hidden';
   history.replaceState(null, '', '?item=' + encodeURIComponent(it.id));
+}
+function userActs(it){
+  const ph = String(it.phone || '').replace(/[^0-9]/g, '');
+  const intl = LANG === 'en' && ph.startsWith('0') ? '+82' + ph.slice(1) : ph;
+  const pretty = ph.replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3');
+  const sold = it.status === 'sold';
+  return `<div style="font-size:14px;font-weight:800;margin-bottom:8px;">📞 ${esc(pretty)}${it.kakao ? ` · ${L().kakaoL} <span style="font-weight:600;">${esc(it.kakao)}</span>` : ''}</div>
+    <div class="acts">
+      ${sold ? '' : `<a class="btn tel" href="tel:${intl}">${L().call}</a>
+      <a class="btn line" href="sms:${intl}?body=${encodeURIComponent(L().smsBody(nameOf(it)))}">${L().sms}</a>`}
+      <button class="btn fb" onclick="shareFb()">${L().fb}</button>
+      <button class="btn line" onclick="copyLink()">${L().copy}</button>
+    </div>`;
 }
 function galGo(el, src){
   document.querySelectorAll('#galThumbs img').forEach(i => i.classList.remove('on'));
