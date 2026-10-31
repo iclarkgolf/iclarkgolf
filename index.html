@@ -1852,23 +1852,53 @@ try {
   <div class="shop-row" id="used-shop-row"></div>
 </div>
 <script>
-(async function(){
-  try {
-    const r = await fetch('https://firestore.googleapis.com/v1/projects/iclarkgolf/databases/(default)/documents/settings/shop?key=AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU');
-    if (!r.ok) return;
-    const j = await r.json();
-    const arr = (((j.fields||{}).items||{}).arrayValue||{}).values || [];
-    const g = (f,k) => { const v = f[k]; if (!v) return ''; return v.stringValue != null ? v.stringValue : v.integerValue != null ? Number(v.integerValue) : v.doubleValue != null ? Number(v.doubleValue) : v.booleanValue != null ? v.booleanValue : v.arrayValue ? (v.arrayValue.values||[]).map(x=>x.stringValue) : ''; };
-    const items = arr.map(v => (v.mapValue||{}).fields||{}).map(f => ({ id:g(f,'id'), name:g(f,'name'), price:g(f,'priceKrw'), status:g(f,'status')||'sale', visible:g(f,'visible'), photos:g(f,'photos')||[], at:Number(g(f,'createdAt'))||0 }))
-      .filter(it => it.name && it.visible !== false && it.status !== 'sold')
-      .sort((a,b) => (a.status==='sale'?0:1) - (b.status==='sale'?0:1) || b.at - a.at).slice(0,4);
-    if (!items.length) return;
-    const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    document.getElementById('used-shop-row').innerHTML = items.map(it => `<a class="shop-it" href="shop.html?item=${encodeURIComponent(it.id)}">
-      <div class="ph">${it.photos[0] ? `<img src="${esc(it.photos[0])}" alt="${esc(it.name)}" loading="lazy">` : ''}<span class="st${it.status==='reserved'?' r':''}">${it.status==='reserved'?'예약중':'판매중'}</span></div>
-      <div class="bd"><div class="nm">${esc(it.name)}</div><div class="pr">₩${Number(it.price).toLocaleString()}</div></div></a>`).join('');
-    document.getElementById('used-shop').style.display = '';
-  } catch(e) { console.warn('중고용품 불러오기 실패', e); }
+/* 2026-10-31: 중고 골프용품 — KOR/ENG 버튼을 따라 이름·가격(ENG는 페소) 전환 */
+(function(){
+  const FS = 'https://firestore.googleapis.com/v1/projects/iclarkgolf/databases/(default)/documents/settings/';
+  const KEY = '?key=AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU';
+  const CAT_EN = { '드라이버':'Driver','우드':'Fairway Wood','유틸리티':'Hybrid / Utility','아이언':'Irons','웨지':'Wedge','퍼터':'Putter','풀세트':'Full Set','골프백':'Golf Bag','의류·기타':'Apparel & Others' };
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const g = (f,k) => { const v = f[k]; if (!v) return ''; return v.stringValue != null ? v.stringValue : v.integerValue != null ? Number(v.integerValue) : v.doubleValue != null ? Number(v.doubleValue) : v.booleanValue != null ? v.booleanValue : v.arrayValue ? (v.arrayValue.values||[]).map(x=>x.stringValue) : ''; };
+  let ITEMS = [], KRW_PER_PHP = 0;
+  const lang = () => { try { return currentLang === 'en' ? 'en' : 'kr'; } catch(e) { try { return localStorage.getItem('clarkgo_lang') === 'en' ? 'en' : 'kr'; } catch(_) { return 'kr'; } } };
+  const php = it => Number(it.pricePhp) > 0 ? Number(it.pricePhp) : (KRW_PER_PHP ? Math.ceil(Number(it.price) / KRW_PER_PHP / 50) * 50 : 0);
+  function render(){
+    const row = document.getElementById('used-shop-row');
+    if (!row || !ITEMS.length) return;
+    const en = lang() === 'en';
+    row.innerHTML = ITEMS.map(it => {
+      const nm = en ? (it.nameEn || (it.brand ? it.brand + ' ' : '') + (CAT_EN[it.category] || it.category || 'Golf gear')) : it.name;
+      const pr = en && php(it) ? '₱' + php(it).toLocaleString() : '₩' + Number(it.price).toLocaleString();
+      const st = it.status === 'reserved' ? (en ? 'Reserved' : '예약중') : (en ? 'For sale' : '판매중');
+      return `<a class="shop-it" href="shop.html?item=${encodeURIComponent(it.id)}">
+      <div class="ph">${it.photos[0] ? `<img src="${esc(it.photos[0])}" alt="${esc(nm)}" loading="lazy">` : ''}<span class="st${it.status==='reserved'?' r':''}">${st}</span></div>
+      <div class="bd"><div class="nm">${esc(nm)}</div><div class="pr">${pr}</div></div></a>`;
+    }).join('');
+  }
+  // KOR/ENG 버튼을 누를 때 이 코너도 다시 그리기 (기존 setLang은 그대로 실행)
+  function hook(){
+    if (typeof window.setLang === 'function' && !window.setLang._shop) {
+      const orig = window.setLang;
+      window.setLang = function(l){ orig(l); render(); };
+      window.setLang._shop = true;
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hook); else hook();
+  (async function(){
+    try {
+      const [r, rx] = await Promise.all([fetch(FS + 'shop' + KEY), fetch(FS + 'exchange' + KEY).catch(() => null)]);
+      if (!r.ok) return;
+      const j = await r.json();
+      try { if (rx && rx.ok) { const x = (await rx.json()).fields || {}; const usdKrw = Number(g(x,'usdKrw')); if (usdKrw) KRW_PER_PHP = usdKrw / (Number(g(x,'appliedUsdPhp')) || 53.2); } } catch(e) {}
+      const arr = (((j.fields||{}).items||{}).arrayValue||{}).values || [];
+      ITEMS = arr.map(v => (v.mapValue||{}).fields||{}).map(f => ({ id:g(f,'id'), name:g(f,'name'), nameEn:g(f,'nameEn'), brand:g(f,'brand'), category:g(f,'category'), price:g(f,'priceKrw'), pricePhp:g(f,'pricePhp'), status:g(f,'status')||'sale', visible:g(f,'visible'), photos:g(f,'photos')||[], at:Number(g(f,'createdAt'))||0 }))
+        .filter(it => it.name && it.visible !== false && it.status !== 'sold')
+        .sort((a,b) => (a.status==='sale'?0:1) - (b.status==='sale'?0:1) || b.at - a.at).slice(0,4);
+      if (!ITEMS.length) return;
+      render();
+      document.getElementById('used-shop').style.display = '';
+    } catch(e) { console.warn('중고용품 불러오기 실패', e); }
+  })();
 })();
 </script>
 
@@ -2522,7 +2552,7 @@ const TRANSLATIONS = {
     'sec.golf': '🏌️ Clark Golf Courses',
     'sec.pay': '💳 How to Pay',
     'sec.shop': '🏷️ Used Golf Gear',
-    'sec.shop.desc': 'Pre-owned clubs and gear, honestly described. Card payment · delivery · meet-up · hand-over in Clark',
+    'sec.shop.desc': 'Pre-owned clubs and gear, honestly described. Pay by GCash, cash or card · meet-up / hand-over in Clark',
     'drawer.shop': 'Used Golf Gear',
     'sec.pay.desc': 'Once your confirmation is issued, pay by <b>bank transfer to our local account</b> or by <b>card</b> — whichever you prefer.',
     'pay.bank.t': 'Bank transfer (local account)',

@@ -1658,7 +1658,8 @@ window.adminLogout = function() {
     <div style="font-size:12.5px;color:#6b7280;line-height:1.8;margin-bottom:12px;">
       ① <b>＋ 물건 올리기</b>로 사진·가격(원화)을 넣고 저장하면 <b>iclarkgolf.com/shop.html</b>에 바로 보입니다 (물건이 있을 때만 홈 화면에도 나타남).<br>
       ② 손님이 카드로 결제하면 <b>이메일 알림</b>(이름·휴대폰·받는 방법·주소)이 옵니다 → 여기서 그 물건을 <b>판매완료</b>로 바꿔주세요.<br>
-      ③ 카톡으로 흥정 중이면 <b>예약중</b>으로 바꾸면 카드 결제가 막힙니다. 카드 가격 = 원화 ÷ 환율 + 카드 수수료 4%.
+      ③ 카톡으로 흥정 중이면 <b>예약중</b>으로 바꾸면 카드 결제가 막힙니다. 카드 가격 = 원화 ÷ 환율 + 카드 수수료 4%.<br>
+      ④ 🇵🇭 <b>필리핀 손님</b>: 사이트 ENG 화면에는 <b>영어 이름·페소 가격·메신저 문의·GCash 안내</b>가 나옵니다. <b>📋 영어 홍보글</b>을 눌러 페이스북 마켓플레이스·클락 골프 그룹에 붙여넣고, <b>📘 페이스북 공유</b>로 사진 미리보기 링크를 올리세요 (미리보기 페이지는 저장 후 최대 6시간 안에 자동으로 만들어짐).
     </div>
     <div id="sp-list"><div style="grid-column:1/-1;text-align:center;padding:30px;color:#9ca3af;">불러오는 중...</div></div>
   </div>
@@ -1671,6 +1672,7 @@ window.adminLogout = function() {
       <button class="sp-btn gray sm" onclick="spClose()">닫기</button>
     </div>
     <label>물건 이름 *</label><input type="text" id="sp-name" placeholder="예) 테일러메이드 스텔스2 드라이버 10.5도">
+    <label>영어 이름 (ENG 화면·필리핀 손님용 — 비우면 "브랜드 + 종류"로 자동 표시)</label><input type="text" id="sp-nameEn" placeholder="e.g. TaylorMade Stealth 2 Driver 10.5°">
     <div class="g2">
       <div><label>종류 *</label><select id="sp-cat"></select></div>
       <div><label>상태 *</label><select id="sp-cond">
@@ -1679,6 +1681,7 @@ window.adminLogout = function() {
       <div><label>사양 (샤프트·로프트·강도 등)</label><input type="text" id="sp-spec" placeholder="예) 10.5° / 벤투스 6S"></div>
       <div><label>판매 가격 (원) *</label><input type="number" id="sp-price" min="0" step="1000" placeholder="250000"></div>
       <div><label>택배비 (원, 가격에 포함이면 0)</label><input type="number" id="sp-ship" min="0" step="500" value="0"></div>
+      <div><label>필리핀 판매가 (₱) — 비우면 원화에서 자동 계산</label><input type="number" id="sp-php" min="0" step="50" placeholder="자동"></div>
     </div>
     <div id="sp-usd" style="font-size:12.5px;color:#2d6a4f;font-weight:700;margin-top:6px;"></div>
     <div class="g2">
@@ -1693,6 +1696,8 @@ window.adminLogout = function() {
     </div>
     <label>설명 (상태·흠집·구매 시기 등 솔직하게)</label>
     <textarea id="sp-desc" rows="5" placeholder="예) 2024년 구매, 30라운드 정도 사용. 헤드 윗면 잔기스 약간, 페이스 깨끗. 헤드커버·렌치 포함."></textarea>
+    <label>영어 설명 (ENG 화면용 · 선택 — 한글 설명을 Claude에게 주면 번역해 드립니다)</label>
+    <textarea id="sp-descEn" rows="3" placeholder="e.g. Bought in 2024, used about 30 rounds. Light scratches on the crown, clean face. Headcover and wrench included."></textarea>
     <label>사진 (첫 번째 사진이 대표 사진 · 여러 장 가능)</label>
     <div style="font-size:11.5px;color:#6b7280;">아래 보라색 버튼으로 한 장씩 올리세요 (여러 번 누르면 계속 추가됩니다 · × 로 빼기)</div>
     <textarea id="sp-photos" rows="2" style="display:none;"></textarea>
@@ -1707,7 +1712,7 @@ window.adminLogout = function() {
 
 <script>
 const SP_CATS = ['드라이버','우드','유틸리티','아이언','웨지','퍼터','풀세트','골프백','의류·기타'];
-let _spItems = [], _spEdit = null, _spUsdKrw = 1380;
+let _spItems = [], _spEdit = null, _spUsdKrw = 1380, _spKrwPerPhp = 0;
 async function spDB(){
   const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
   const fs = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
@@ -1717,12 +1722,41 @@ async function spDB(){
 }
 function spEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function spUsd(krw){ return Math.ceil((Number(krw)||0) / _spUsdKrw * 1.04); }
+/* 2026-10-31 필리핀 판매: 페소 가격(직접 넣은 값 우선, 없으면 원화÷환율을 50페소 단위 올림) · 영어 홍보글 · 페이스북 공유 */
+function spPhp(it){ if (Number(it.pricePhp) > 0) return Number(it.pricePhp); return _spKrwPerPhp ? Math.ceil((Number(it.priceKrw)||0) / _spKrwPerPhp / 50) * 50 : 0; }
+const SP_CAT_EN = { '드라이버':'Driver','우드':'Fairway Wood','유틸리티':'Hybrid / Utility','아이언':'Irons','웨지':'Wedge','퍼터':'Putter','풀세트':'Full Set','골프백':'Golf Bag','의류·기타':'Apparel & Others' };
+const SP_COND_EN = { '새것 (미사용)':'New (unused)','아주 좋음 (사용감 거의 없음)':'Excellent (barely used)','좋음 (잔기스 약간)':'Good (minor scratches)','보통 (사용감 있음)':'Fair (visible wear)','사용감 많음':'Well used' };
+function spNameEn(it){ return it.nameEn || ((it.brand ? it.brand + ' ' : '') + (SP_CAT_EN[it.category] || it.category || 'Golf gear')); }
+function spFbUrl(it){ return 'https://iclarkgolf.com/shop-' + encodeURIComponent(it.id) + '.html'; }
+async function spFbShare(id){
+  const it = _spItems.find(x => x.id === id); if (!it) return;
+  let url = 'https://iclarkgolf.com/shop.html?item=' + encodeURIComponent(it.id) + '&lang=en';
+  try { const r = await fetch('shop-manifest.json?t=' + Date.now()); if (r.ok && ((await r.json()).ids || []).includes(it.id)) url = spFbUrl(it); else alert('이 물건의 페이스북 미리보기 페이지가 아직 만들어지지 않았습니다 (저장 후 최대 6시간).\n\n지금 공유하면 사진 미리보기 없이 링크만 올라갑니다. 계속 진행합니다.'); } catch(e) {}
+  window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), 'fbshare', 'width=620,height=560');
+}
+function spEnPost(id){
+  const it = _spItems.find(x => x.id === id); if (!it) return;
+  const p = spPhp(it), inClark = /클락/.test(it.location || '');
+  const lines = [
+    '⛳ FOR SALE: ' + spNameEn(it),
+    p ? '💰 ₱' + p.toLocaleString() : '',
+    it.condition ? '✔ Condition: ' + (SP_COND_EN[it.condition] || it.condition) : '',
+    it.spec ? '✔ Specs: ' + it.spec : '',
+    '📍 ' + (inClark ? 'Clark / Angeles — meet-up' : 'Can be brought to Clark / Angeles (currently in Korea)'),
+    it.descriptionEn ? '\n' + it.descriptionEn : '',
+    '\n💚 GCash · 💵 Cash · 💳 Card accepted',
+    '📩 PM me or message m.me/iclarkgolf',
+    '🔗 ' + 'https://iclarkgolf.com/shop.html?item=' + encodeURIComponent(it.id) + '&lang=en'
+  ].filter(Boolean).join('\n');
+  (navigator.clipboard ? navigator.clipboard.writeText(lines) : Promise.reject()).then(() => alert('영어 홍보글을 복사했습니다.\n페이스북 마켓플레이스나 클락·앙헬레스 골프 그룹에 붙여넣으세요.\n\n' + lines)).catch(() => prompt('아래 글을 복사하세요', lines));
+}
 async function loadShopAdmin(){
   try {
     const { db, fs } = await spDB();
     const [s, ex] = await Promise.all([fs.getDoc(fs.doc(db,'settings','shop')), fs.getDoc(fs.doc(db,'settings','exchange'))]);
     _spItems = (s.exists() && s.data().items) || [];
     if (ex.exists() && Number(ex.data().usdKrw)) _spUsdKrw = Number(ex.data().usdKrw);
+    if (ex.exists() && Number(ex.data().usdKrw)) _spKrwPerPhp = Number(ex.data().usdKrw) / (Number(ex.data().appliedUsdPhp) || 53.2);
   } catch(e) { console.error(e); document.getElementById('sp-list').innerHTML = '<div style="grid-column:1/-1;color:#b91c1c;">불러오기 실패: ' + spEsc(e.message) + '</div>'; return; }
   spRender();
 }
@@ -1735,7 +1769,8 @@ function spRender(){
     <div class="bd">
       <div style="font-size:11px;color:#6b7280;">${spEsc(it.category)} · ${spEsc(it.location||'')}${it.visible===false?' · <b>숨김</b>':''}</div>
       <div class="nm">${spEsc(it.name)}</div>
-      <div><b style="color:#2d6a4f;">₩${(Number(it.priceKrw)||0).toLocaleString()}</b> <small style="color:#6b7280;">카드 US$${spUsd(it.priceKrw)}</small></div>
+      <div><b style="color:#2d6a4f;">₩${(Number(it.priceKrw)||0).toLocaleString()}</b> <small style="color:#6b7280;">카드 US$${spUsd(it.priceKrw)}${spPhp(it) ? ' · ₱' + spPhp(it).toLocaleString() : ''}</small></div>
+      ${it.nameEn ? '' : '<div style="font-size:11px;color:#b45309;">영어 이름 없음 → ENG 화면엔 "' + spEsc(spNameEn(it)) + '"</div>'}
       <select onchange="spSetStatus('${it.id}',this.value)">
         <option value="sale"${(it.status||'sale')==='sale'?' selected':''}>🟢 판매중</option>
         <option value="reserved"${it.status==='reserved'?' selected':''}>🟡 예약중</option>
@@ -1744,6 +1779,10 @@ function spRender(){
       <div class="row">
         <button class="sp-btn gray sm" onclick="spOpen('${it.id}')">✏️ 수정</button>
         <a class="sp-btn gray sm" style="text-decoration:none;" href="shop.html?item=${encodeURIComponent(it.id)}" target="_blank">👁 보기</a>
+      </div>
+      <div class="row" style="margin-top:0;">
+        <button class="sp-btn sm" style="background:#1877F2;" onclick="spFbShare('${it.id}')">📘 페이스북 공유</button>
+        <button class="sp-btn gray sm" onclick="spEnPost('${it.id}')">📋 영어 홍보글</button>
       </div>
     </div></div>`).join('');
 }
@@ -1768,20 +1807,25 @@ function spRmPhoto(i){
 }
 function spUsdPreview(){
   const p = Number(document.getElementById('sp-price').value)||0, s = Number(document.getElementById('sp-ship').value)||0;
-  document.getElementById('sp-usd').textContent = p ? `💳 카드 결제가: US$${spUsd(p)}` + (s ? ` (택배 선택 시 US$${spUsd(p+s)})` : '') + ` · 환율 ₩${_spUsdKrw.toLocaleString()}/$ + 수수료 4%` : '';
+  const ph = Number(document.getElementById('sp-php').value)||0;
+  const autoPhp = _spKrwPerPhp && p ? Math.ceil(p / _spKrwPerPhp / 50) * 50 : 0;
+  document.getElementById('sp-usd').textContent = p ? `💳 카드 결제가: US$${spUsd(p)}` + (s ? ` (택배 선택 시 US$${spUsd(p+s)})` : '') + ` · 환율 ₩${_spUsdKrw.toLocaleString()}/$ + 수수료 4%` + ((ph || autoPhp) ? ` · 🇵🇭 ENG 화면 가격 ₱${(ph || autoPhp).toLocaleString()}${ph ? '' : ' (자동)'}` : '') : '';
 }
 function spOpen(id){
   const sel = document.getElementById('sp-cat');
   if (!sel.options.length) sel.innerHTML = SP_CATS.map(c => `<option>${c}</option>`).join('');
   iuMount('sp-photos', { multiline: true, onDone: spThumbs });
   const ta = document.getElementById('sp-photos');
-  if (!ta._spBound) { ta.addEventListener('input', spThumbs); ['sp-price','sp-ship'].forEach(i => document.getElementById(i).addEventListener('input', spUsdPreview)); ta._spBound = true; }
+  if (!ta._spBound) { ta.addEventListener('input', spThumbs); ['sp-price','sp-ship','sp-php'].forEach(i => document.getElementById(i).addEventListener('input', spUsdPreview)); ta._spBound = true; }
   const it = id ? _spItems.find(x => x.id === id) : null;
   _spEdit = it ? it.id : null;
   document.getElementById('sp-mt').textContent = it ? '물건 수정' : '물건 올리기';
   document.getElementById('sp-del').style.display = it ? 'inline-flex' : 'none';
   const v = (k, d) => it && it[k] != null ? it[k] : d;
   document.getElementById('sp-name').value = v('name','');
+  document.getElementById('sp-nameEn').value = v('nameEn','');
+  document.getElementById('sp-php').value = Number(v('pricePhp',0)) > 0 ? v('pricePhp','') : '';
+  document.getElementById('sp-descEn').value = v('descriptionEn','');
   document.getElementById('sp-cat').value = v('category','드라이버');
   document.getElementById('sp-cond').value = v('condition','좋음 (잔기스 약간)');
   document.getElementById('sp-brand').value = v('brand','');
@@ -1812,7 +1856,8 @@ async function spSave(){
     brand: g('sp-brand').value.trim(), spec: g('sp-spec').value.trim(),
     priceKrw: price, shipKrw: Number(g('sp-ship').value)||0,
     location: g('sp-loc').value, status: g('sp-status').value, receive,
-    description: g('sp-desc').value.trim(), photos, visible: g('sp-visible').checked
+    description: g('sp-desc').value.trim(), photos, visible: g('sp-visible').checked,
+    nameEn: g('sp-nameEn').value.trim(), descriptionEn: g('sp-descEn').value.trim(), pricePhp: Number(g('sp-php').value)||0
   };
   const before = JSON.stringify(_spItems);
   if (_spEdit) Object.assign(_spItems.find(x => x.id === _spEdit), data, { updatedAt: Date.now() });

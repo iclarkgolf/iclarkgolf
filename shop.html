@@ -104,52 +104,43 @@ footer{text-align:center;font-size:12px;color:var(--gray);padding:20px;line-heig
 .err{display:none;font-size:12.5px;color:#b91c1c;margin:4px 0 8px;}
 .ok{background:#ecfdf3;border:1.5px solid #86efac;border-radius:12px;padding:14px;font-size:14px;line-height:1.8;color:#14532d;}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#111;color:#fff;font-size:13px;padding:9px 18px;border-radius:20px;display:none;z-index:2000;}
+/* 2026-10-31: 한/영 전환 · 페소 가격 · 메신저 · 페이스북 공유 */
+.hdr-r{display:flex;align-items:center;gap:10px;}
+.lang{display:flex;gap:4px;}
+.lang button{border:1px solid rgba(255,255,255,.5);background:transparent;color:#fff;font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:14px;cursor:pointer;font-family:inherit;}
+.lang button.on{background:#fff;color:var(--green);border-color:#fff;}
+.btn.msgr{background:#0084FF;color:#fff;}
+.btn.fb{background:#1877F2;color:#fff;}
+.card .loc{font-size:11px;color:#2d6a4f;font-weight:700;}
+.paybox{background:#eef6ff;border:1px solid #cfe3ff;border-radius:10px;padding:9px 11px;font-size:12.5px;color:#1e3a5f;line-height:1.7;margin-bottom:12px;}
 </style>
 </head>
 <body>
 
 <header>
   <a class="logo" href="/"><span class="i">i</span><span class="c">CLARKGOLF</span></a>
-  <a class="back" href="/">← 홈으로</a>
+  <div class="hdr-r">
+    <div class="lang"><button type="button" data-l="kr" onclick="setLang('kr')">KOR</button><button type="button" data-l="en" onclick="setLang('en')">ENG</button></div>
+    <a class="back" href="/" data-t="home">← 홈으로</a>
+  </div>
 </header>
 
 <div class="hero">
   <div class="badge">USED GOLF GEAR</div>
-  <h1>🏷️ 중고 골프용품</h1>
-  <p>직접 쓰고 관리한 골프채·용품을 정직한 상태 설명과 함께 판매합니다</p>
+  <h1 data-t="h1">🏷️ 중고 골프용품</h1>
+  <p data-t="heroP">직접 쓰고 관리한 골프채·용품을 정직한 상태 설명과 함께 판매합니다</p>
 </div>
 
 <main>
-  <div class="trust">
-    <span>📸 실물 사진 그대로</span>
-    <span>💳 카드 결제 (VISA·Master)</span>
-    <span>📦 택배 · 🤝 직거래 · ✈️ 클락 현지 전달</span>
-  </div>
+  <div class="trust" id="trust"></div>
 
   <div class="chips" id="chips"></div>
   <div id="list"><div class="empty">불러오는 중...</div></div>
 
-  <div class="info">
-    <h3>🛒 구매 방법</h3>
-    <ol>
-      <li>물건을 눌러 사진·상태를 확인하세요. 궁금한 점은 <b>카톡 문의</b>로 먼저 물어보셔도 됩니다.</li>
-      <li><b>💳 카드로 구매</b>를 누르고 이름·연락처·받는 방법을 적은 뒤 카드로 결제하세요. (PayPal 계정 없어도 카드 번호만으로 결제됩니다)</li>
-      <li>결제가 확인되면 적어주신 연락처로 연락드리고 택배 발송·직거래·클락 현지 전달을 진행합니다.</li>
-    </ol>
-    <h3 style="margin-top:12px;">📌 알아두세요</h3>
-    <ol>
-      <li>중고 물품 특성상 사진과 설명에 적힌 사용감·흠집은 반품 사유가 되지 않습니다. 단순 변심 반품은 어렵습니다.</li>
-      <li>설명과 크게 다른 물건(파손·다른 사양)을 받으셨다면 받은 날로부터 3일 이내 카톡으로 알려주세요. 확인 후 반품·환불해 드립니다.</li>
-      <li>한 개뿐인 물건이라 동시에 결제가 들어오면 먼저 결제하신 분께 판매되고, 나중 결제는 전액 환불해 드립니다.</li>
-      <li>카드 결제는 미화(USD)로 청구되며 카드 결제 수수료 4%가 포함됩니다.</li>
-    </ol>
-  </div>
+  <div class="info" id="info"></div>
 </main>
 
-<footer>
-  iCLARKGOLF · 톡코리아커넥트(TALK KOREA CONNECT)<br>
-  문의: 카카오톡 tourjang2 · tourjang@gmail.com
-</footer>
+<footer id="foot"></footer>
 
 <!-- 상세 모달 -->
 <div id="md" onclick="if(event.target===this)closeMd()">
@@ -168,19 +159,114 @@ footer{text-align:center;font-size:12px;color:var(--gray);padding:20px;line-heig
 const PAYPAL_CLIENT_ID = 'BAAjglGNVCaB7LgXBOggtR2z1x9W4o5MiL1VIhVv8WBAznvT7ejEKH7-fFbaRhalKDCkeSn_AUULglPOBA';
 const CARD_FEE_RATE = 0.04;
 const KAKAO = 'https://pf.kakao.com/_nbHKX/chat';
+const MSGR = 'https://m.me/iclarkgolf';
+const SITE = 'https://iclarkgolf.com';
 const FS = 'https://firestore.googleapis.com/v1/projects/iclarkgolf/databases/(default)/documents/settings/';
 const KEY = '?key=AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU';
 const CATS = ['드라이버','우드','유틸리티','아이언','웨지','퍼터','풀세트','골프백','의류·기타'];
-const RCV = {
-  ship:  { t:'📦 택배로 받기', d:'국내 택배 발송' },
-  meet:  { t:'🤝 직거래', d:'' },
-  clark: { t:'✈️ 클락 현지 전달', d:'클락 골프 여행 오실 때 현지에서 전달' }
+
+/* ── 한/영 ── */
+const T = {
+  kr: {
+    home:'← 홈으로', h1:'🏷️ 중고 골프용품', heroP:'직접 쓰고 관리한 골프채·용품을 정직한 상태 설명과 함께 판매합니다',
+    trust:['📸 실물 사진 그대로','💳 카드 결제 (VISA·Master)','📦 택배 · 🤝 직거래 · ✈️ 클락 현지 전달'],
+    all:'전체', loading:'불러오는 중...', sale:'판매중', rsv:'예약중', sold:'판매완료',
+    empty:'지금 판매 중인 물건을 준비하고 있습니다.<br>찾으시는 골프채·용품이 있으면 카톡으로 말씀해 주세요.',
+    ask:'💬 카톡 문의', buyCard:'💳 카드로 구매', fb:'📘 페이스북 공유', copy:'🔗 링크 복사', copied:'링크가 복사되었습니다', copyPrompt:'아래 링크를 복사하세요',
+    cardPrice: u => `카드 US$${u}`, cardPriceL: u => `카드 결제 시 US$${u} (카드 수수료 4% 포함)`,
+    rsvNote:'⏳ 다른 분과 거래가 진행 중입니다. 거래가 취소되면 다시 판매됩니다.',
+    spec:{ condition:'상태', brand:'브랜드', spec:'사양', location:'물건 위치', receive:'받는 방법' },
+    rcv:{ ship:'📦 택배로 받기', meet:'🤝 직거래', clark:'✈️ 클락 현지 전달' },
+    rcvD:{ clark:'클락 골프 여행 오실 때 현지에서 전달' },
+    shipFee: w => ` (택배비 ${w})`, shipIncl:' (택배비 포함)', meetNear: l => `${l} 근처에서 만나 전달`,
+    paybox:'',
+    info:`<h3>🛒 구매 방법</h3><ol>
+      <li>물건을 눌러 사진·상태를 확인하세요. 궁금한 점은 <b>카톡 문의</b>로 먼저 물어보셔도 됩니다.</li>
+      <li><b>💳 카드로 구매</b>를 누르고 이름·연락처·받는 방법을 적은 뒤 카드로 결제하세요. (PayPal 계정 없어도 카드 번호만으로 결제됩니다)</li>
+      <li>결제가 확인되면 적어주신 연락처로 연락드리고 택배 발송·직거래·클락 현지 전달을 진행합니다.</li></ol>
+      <h3 style="margin-top:12px;">📌 알아두세요</h3><ol>
+      <li>중고 물품 특성상 사진과 설명에 적힌 사용감·흠집은 반품 사유가 되지 않습니다. 단순 변심 반품은 어렵습니다.</li>
+      <li>설명과 크게 다른 물건(파손·다른 사양)을 받으셨다면 받은 날로부터 3일 이내 카톡으로 알려주세요. 확인 후 반품·환불해 드립니다.</li>
+      <li>한 개뿐인 물건이라 동시에 결제가 들어오면 먼저 결제하신 분께 판매되고, 나중 결제는 전액 환불해 드립니다.</li>
+      <li>카드 결제는 미화(USD)로 청구되며 카드 결제 수수료 4%가 포함됩니다.</li></ol>`,
+    foot:'iCLARKGOLF · 톡코리아커넥트(TALK KOREA CONNECT)<br>문의: 카카오톡 tourjang2 · tourjang@gmail.com',
+    f:{ title: n => `💳 카드로 구매 — ${n}`, name:'받는 분 이름 *', phone:'휴대폰 번호 * (결제 후 이 번호로 연락드립니다)', phonePh:'010-0000-0000',
+        rcv:'받는 방법 *', addr:'받는 주소 *', addrPh:'우편번호, 주소, 상세주소', memo:'요청 사항 (선택)', memoClark:'클락 방문 날짜, 숙소 이름 등', memoShip:'배송 요청 등',
+        agree:'중고 물품이며 사진·설명의 사용감과 흠집을 확인했습니다. 단순 변심 반품이 어렵다는 점에 동의합니다.',
+        item:'물건 가격', ship:'택배비', total:'카드 결제 금액', basis: w => `원화 ${w} 기준 · 카드 결제 수수료 4% 포함 · 미화(USD) 청구`,
+        eName:'받는 분 이름을 적어주세요.', ePhone:'연락 가능한 휴대폰 번호를 적어주세요.', eAddr:'택배 받으실 주소를 적어주세요.', eAgree:'중고 물품 안내에 동의(체크)해 주세요.',
+        eGone:'죄송합니다. 방금 다른 분과 거래가 진행되어 결제할 수 없습니다. 카톡으로 문의해 주세요.',
+        done:(u,p,r) => `✅ <b>US$${u} 카드 결제가 완료되었습니다.</b> 감사합니다!<br>${p} 번호로 곧 연락드리고 ${r} 일정을 안내해 드립니다.<br>급하신 일은 카톡(tourjang2)으로 말씀해 주세요.`,
+        payFail:'카드 결제가 완료되지 않았습니다. 다시 시도하시거나 카톡으로 문의해 주세요.', payLoadFail:'카드 결제창을 불러오지 못했습니다. 카톡으로 문의해 주세요.' }
+  },
+  en: {
+    home:'← Home', h1:'🏷️ Used Golf Gear', heroP:'Pre-owned clubs and gear I have used and cared for — sold with honest condition notes',
+    trust:['📸 Real photos','💚 GCash · 💵 Cash · 💳 Card','🤝 Meet-up / hand-over in Clark'],
+    all:'All', loading:'Loading...', sale:'For sale', rsv:'Reserved', sold:'Sold',
+    empty:'New items are coming soon.<br>Looking for something specific? Send us a message.',
+    ask:'💬 Message us', buyCard:'💳 Pay by card', fb:'📘 Share on Facebook', copy:'🔗 Copy link', copied:'Link copied', copyPrompt:'Copy this link',
+    cardPrice: u => `Card US$${u}`, cardPriceL: u => `By card: US$${u} (incl. 4% card fee)`,
+    rsvNote:'⏳ Another buyer is in the middle of a deal. If it falls through, it will be back on sale.',
+    spec:{ condition:'Condition', brand:'Brand', spec:'Specs', location:'Location', receive:'How to get it' },
+    rcv:{ ship:'📦 Courier delivery (Korea only)', meet:'🤝 Meet-up', clark:'✈️ Hand-over in Clark' },
+    rcvD:{ clark:'Handed over in Clark (Angeles / Clark area)' },
+    shipFee: w => ` (shipping ${w})`, shipIncl:' (shipping incl.)', meetNear: l => `Meet near ${l}`,
+    paybox:'💚 <b>GCash</b> · 💵 <b>Cash</b> on meet-up · 💳 <b>Card</b><br>Message us on Messenger to reserve — we will send GCash details there.',
+    info:`<h3>🛒 How to buy</h3><ol>
+      <li>Tap an item to see the photos and condition.</li>
+      <li>Tap <b>💬 Message us</b> (Facebook Messenger) to ask questions or reserve it.</li>
+      <li>Pay by <b>GCash</b>, <b>cash</b> on meet-up, or <b>card</b> (💳 Pay by card — no PayPal account needed).</li>
+      <li>We hand it over in Clark / Angeles. Items located in Korea are brought over on our next trip — we will tell you the date.</li></ol>
+      <h3 style="margin-top:12px;">📌 Good to know</h3><ol>
+      <li>These are used items. Wear and scratches shown in the photos or description are not a reason for return.</li>
+      <li>If the item is very different from the description (damage, wrong specs), tell us within 3 days and we will refund it.</li>
+      <li>Each item is one of a kind — the first confirmed payment gets it. Any later payment is fully refunded.</li>
+      <li>Card payments are charged in US dollars and include a 4% card fee.</li></ol>`,
+    foot:'iCLARKGOLF · TALK KOREA CONNECT<br>Messenger: m.me/iclarkgolf · tourjang@gmail.com',
+    f:{ title: n => `💳 Pay by card — ${n}`, name:'Your name *', phone:'Mobile number * (we will contact you on this number)', phonePh:'+63 9XX XXX XXXX',
+        rcv:'How to get it *', addr:'Delivery address *', addrPh:'Full address', memo:'Notes (optional)', memoClark:'Preferred date, hotel name, etc.', memoShip:'Delivery notes',
+        agree:'I understand this is a used item and I have checked the wear and scratches in the photos and description. No returns for change of mind.',
+        item:'Item price', ship:'Shipping', total:'Card total', basis: w => `Based on ${w} · incl. 4% card fee · charged in USD`,
+        eName:'Please enter your name.', ePhone:'Please enter a mobile number we can reach.', eAddr:'Please enter the delivery address.', eAgree:'Please tick the box to agree.',
+        eGone:'Sorry — this item was just reserved by another buyer. Please message us.',
+        done:(u,p,r) => `✅ <b>Card payment of US$${u} completed.</b> Thank you!<br>We will contact you at ${p} shortly to arrange the ${r.toLowerCase()}.<br>For anything urgent, message us on Messenger (m.me/iclarkgolf).`,
+        payFail:'The card payment did not go through. Please try again or message us.', payLoadFail:'Could not load the card payment. Please message us.' }
+  }
 };
-let ITEMS = [], USD_KRW = 1380, CUR_CAT = '전체', CUR = null;
+const CAT_EN = { '드라이버':'Driver','우드':'Fairway Wood','유틸리티':'Hybrid / Utility','아이언':'Irons','웨지':'Wedge','퍼터':'Putter','풀세트':'Full Set','골프백':'Golf Bag','의류·기타':'Apparel & Others' };
+const COND_EN = { '새것 (미사용)':'New (unused)','아주 좋음 (사용감 거의 없음)':'Excellent (barely used)','좋음 (잔기스 약간)':'Good (minor scratches)','보통 (사용감 있음)':'Fair (visible wear)','사용감 많음':'Well used' };
+const LOC_EN = { '한국 (서울)':'Korea (Seoul) — brought to Clark on request','필리핀 클락':'Clark, Philippines' };
+
+function pickLang(){
+  const q = new URLSearchParams(location.search).get('lang');
+  if (q === 'en' || q === 'kr') return q;
+  try { const s = localStorage.getItem('clarkgo_lang'); if (s === 'en' || s === 'kr') return s; } catch(e) {}
+  return /^ko/i.test(navigator.language || '') ? 'kr' : 'en';
+}
+let LANG = pickLang();
+const L = () => T[LANG];
+
+let ITEMS = [], USD_KRW = 1380, KRW_PER_PHP = 0, CUR_CAT = '전체', CUR = null, FB_PAGES = [];
 
 function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function won(n){ return '₩' + (Number(n)||0).toLocaleString(); }
 function usdOf(krw){ return Math.ceil((Number(krw)||0) / USD_KRW * (1 + CARD_FEE_RATE)); }
+/* 페소 가격: 관리자에서 직접 넣은 값이 있으면 그것, 없으면 원화 ÷ 환율(관리자 환율 설정)을 50페소 단위로 올림 */
+function phpOf(it){
+  if (Number(it.pricePhp) > 0) return Number(it.pricePhp);
+  if (!KRW_PER_PHP) return 0;
+  return Math.ceil((Number(it.priceKrw)||0) / KRW_PER_PHP / 50) * 50;
+}
+function peso(n){ return '₱' + (Number(n)||0).toLocaleString(); }
+function nameOf(it){
+  if (LANG === 'kr') return it.name;
+  if (it.nameEn) return it.nameEn;
+  const c = CAT_EN[it.category] || it.category || 'Golf gear';
+  return it.brand ? it.brand + ' ' + c : c;
+}
+function catOf(c){ return LANG === 'en' ? (CAT_EN[c] || c) : c; }
+function priceMain(it){ return LANG === 'en' && phpOf(it) ? peso(phpOf(it)) : won(it.priceKrw); }
+function priceSub(it){ return LANG === 'en' && phpOf(it) ? '≈ ' + won(it.priceKrw) : L().cardPrice(usdOf(it.priceKrw).toLocaleString()); }
 function fv(v){
   if (!v) return null;
   if ('stringValue' in v) return v.stringValue;
@@ -202,20 +288,42 @@ async function getSetting(name){
 }
 function toast(m){ const t = document.getElementById('toast'); t.textContent = m; t.style.display = 'block'; clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 2200); }
 function stBadge(it){
-  if (it.status === 'sold') return '<span class="badge-st sold">판매완료</span>';
-  if (it.status === 'reserved') return '<span class="badge-st rsv">예약중</span>';
-  return '<span class="badge-st">판매중</span>';
+  if (it.status === 'sold') return `<span class="badge-st sold">${L().sold}</span>`;
+  if (it.status === 'reserved') return `<span class="badge-st rsv">${L().rsv}</span>`;
+  return `<span class="badge-st">${L().sale}</span>`;
+}
+function askBtn(){
+  return LANG === 'en'
+    ? `<a class="btn msgr" href="${MSGR}" target="_blank" rel="noopener">${L().ask}</a>`
+    : `<a class="btn kakao" href="${KAKAO}" target="_blank" rel="noopener">${L().ask}</a>`;
+}
+
+function setLang(l){
+  LANG = l === 'en' ? 'en' : 'kr';
+  try { localStorage.setItem('clarkgo_lang', LANG); } catch(e) {}
+  document.documentElement.lang = LANG === 'en' ? 'en' : 'ko';
+  document.querySelectorAll('.lang button').forEach(b => b.classList.toggle('on', b.dataset.l === LANG));
+  document.querySelectorAll('[data-t]').forEach(el => { const v = L()[el.dataset.t]; if (typeof v === 'string') el.innerHTML = v; });
+  document.getElementById('trust').innerHTML = L().trust.map(s => `<span>${s}</span>`).join('');
+  document.getElementById('info').innerHTML = L().info;
+  document.getElementById('foot').innerHTML = L().foot;
+  renderChips(); renderList();
+  if (CUR && document.getElementById('md').classList.contains('on')) openMd(CUR.id);
+  const u = new URL(location.href);
+  if (u.searchParams.has('lang')) { u.searchParams.delete('lang'); history.replaceState(null, '', u.pathname + (u.search || '')); }
 }
 
 async function load(){
   try {
     const [shop, ex] = await Promise.all([getSetting('shop'), getSetting('exchange')]);
     if (ex && Number(ex.usdKrw)) USD_KRW = Number(ex.usdKrw);
+    if (ex && Number(ex.usdKrw)) KRW_PER_PHP = Number(ex.usdKrw) / (Number(ex.appliedUsdPhp) || 53.2);
     ITEMS = ((shop && shop.items) || []).filter(it => it && it.visible !== false && it.name);
-    // 판매중 → 예약중 → 판매완료 순, 같은 상태는 최근 등록 먼저
     const ord = { sale:0, reserved:1, sold:2 };
     ITEMS.sort((a,b) => (ord[a.status||'sale'] - ord[b.status||'sale']) || ((b.createdAt||0) - (a.createdAt||0)));
   } catch(e) { console.warn('상품 불러오기 실패', e); ITEMS = []; }
+  // 페이스북 미리보기용 개별 페이지 목록 (6시간마다 자동 생성 — 없으면 일반 링크로 공유)
+  try { const r = await fetch('shop-manifest.json?t=' + Date.now()); if (r.ok) FB_PAGES = (await r.json()).ids || []; } catch(e) {}
   renderChips(); renderList();
   const q = new URLSearchParams(location.search).get('item');
   if (q) { const it = ITEMS.find(x => x.id === q); if (it) openMd(it.id); }
@@ -225,56 +333,71 @@ function renderChips(){
   const el = document.getElementById('chips');
   if (ITEMS.length < 2 || have.length < 2) { el.style.display = 'none'; return; }
   el.style.display = 'flex';
-  el.innerHTML = ['전체'].concat(have).map(c => `<button class="chip${c===CUR_CAT?' on':''}" onclick="CUR_CAT='${c}';renderChips();renderList()">${c}</button>`).join('');
+  el.innerHTML = ['전체'].concat(have).map(c => `<button class="chip${c===CUR_CAT?' on':''}" onclick="CUR_CAT='${c}';renderChips();renderList()">${c==='전체' ? L().all : catOf(c)}</button>`).join('');
 }
 function renderList(){
   const el = document.getElementById('list');
   const list = ITEMS.filter(it => CUR_CAT === '전체' || it.category === CUR_CAT);
   if (!list.length) {
-    el.innerHTML = `<div class="empty"><div class="big">⛳</div>
-      지금 판매 중인 물건을 준비하고 있습니다.<br>찾으시는 골프채·용품이 있으면 카톡으로 말씀해 주세요.<br><br>
-      <a class="btn kakao" href="${KAKAO}" target="_blank">💬 카톡 문의</a></div>`;
+    el.innerHTML = `<div class="empty"><div class="big">⛳</div>${L().empty}<br><br>${askBtn()}</div>`;
     return;
   }
   el.innerHTML = '<div class="grid">' + list.map(it => {
     const ph = (it.photos || [])[0];
+    const nm = nameOf(it);
+    const where = LANG === 'en' ? `<div class="loc">📍 ${/클락/.test(it.location||'') ? 'In Clark' : 'In Korea'}</div>` : '';
     return `<div class="card${it.status==='sold'?' sold':''}" onclick="openMd('${esc(it.id)}')">
-      <div class="ph">${ph ? `<img src="${esc(ph)}" alt="${esc(it.name)}" loading="lazy">` : '<div class="noimg">🏌️</div>'}${stBadge(it)}</div>
+      <div class="ph">${ph ? `<img src="${esc(ph)}" alt="${esc(nm)}" loading="lazy">` : '<div class="noimg">🏌️</div>'}${stBadge(it)}</div>
       <div class="bd">
-        <div class="cat">${esc(it.category||'')}${it.brand ? ' · ' + esc(it.brand) : ''}</div>
-        <div class="nm">${esc(it.name)}</div>
-        <div class="pr">${it.status==='sold' ? '<span style="color:#6b7280">판매완료</span>' : won(it.priceKrw)}</div>
-        ${it.status==='sold' ? '' : `<div class="usd">카드 US$${usdOf(it.priceKrw).toLocaleString()}</div>`}
+        <div class="cat">${esc(catOf(it.category||''))}${it.brand ? ' · ' + esc(it.brand) : ''}</div>
+        <div class="nm">${esc(nm)}</div>
+        ${where}
+        <div class="pr">${it.status==='sold' ? `<span style="color:#6b7280">${L().sold}</span>` : priceMain(it)}</div>
+        ${it.status==='sold' ? '' : `<div class="usd">${priceSub(it)}</div>`}
       </div></div>`;
   }).join('') + '</div>';
 }
 
+function rcvLine(it, k){
+  const R = L().rcv;
+  if (k === 'ship') return R.ship + (Number(it.shipKrw) ? L().shipFee(won(it.shipKrw)) : L().shipIncl);
+  return R[k];
+}
 function openMd(id){
   const it = ITEMS.find(x => x.id === id); if (!it) return;
   CUR = it;
+  const nm = nameOf(it);
   const photos = it.photos || [];
   document.getElementById('galMain').innerHTML = photos[0] ? `<img src="${esc(photos[0])}" alt="">` : '<div style="aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-size:60px;color:#b7c9bf;">🏌️</div>';
   document.getElementById('galThumbs').innerHTML = photos.length > 1 ? photos.map((p,i) => `<img src="${esc(p)}" class="${i?'':'on'}" onclick="galGo(this,'${esc(p)}')">`).join('') : '';
   document.getElementById('galThumbs').style.display = photos.length > 1 ? 'flex' : 'none';
-  const rcv = (it.receive || []).filter(k => RCV[k]);
+  const rcv = (it.receive || []).filter(k => T.kr.rcv[k]).filter(k => !(LANG === 'en' && k === 'ship'));
+  if (!rcv.length && LANG === 'en') rcv.push('clark');   // 한국 택배만 있는 물건도 필리핀 손님에겐 클락 전달로 안내
+  const en = LANG === 'en', S = L().spec;
   const rows = [
-    ['상태', it.condition], ['브랜드', it.brand], ['사양', it.spec],
-    ['물건 위치', it.location],
-    ['받는 방법', rcv.map(k => RCV[k].t + (k==='ship' ? (Number(it.shipKrw) ? ' (택배비 ' + won(it.shipKrw) + ')' : ' (택배비 포함)') : '')).join('<br>')]
+    [S.condition, en ? (COND_EN[it.condition] || it.condition) : it.condition],
+    [S.brand, it.brand], [S.spec, it.spec],
+    [S.location, en ? (LOC_EN[it.location] || it.location) : it.location],
+    [S.receive, rcv.map(k => esc(rcvLine(it, k))).join('<br>'), true]
   ].filter(r => r[1]);
+  const desc = en ? (it.descriptionEn || '') : (it.description || '');
   const canBuy = (it.status || 'sale') === 'sale';
+  const sold = it.status === 'sold';
   document.getElementById('mdTxt').innerHTML = `
-    <div class="cat">${esc(it.category||'')}</div>
-    <h2>${esc(it.name)}</h2>
-    ${it.status==='sold' ? '<div class="md-pr" style="color:#6b7280">판매완료</div>' : `<div class="md-pr">${won(it.priceKrw)}</div>
-    <div class="md-usd">카드 결제 시 US$${usdOf(it.priceKrw).toLocaleString()} (카드 수수료 4% 포함)</div>`}
-    ${it.status==='reserved' ? '<div style="background:#fff7e6;border-radius:8px;padding:8px 10px;font-size:13px;margin-bottom:10px;">⏳ 다른 분과 거래가 진행 중입니다. 거래가 취소되면 다시 판매됩니다.</div>' : ''}
-    <table class="spec">${rows.map(r => `<tr><td>${r[0]}</td><td>${r[0]==='받는 방법' ? r[1] : esc(r[1])}</td></tr>`).join('')}</table>
-    ${it.description ? `<div class="desc">${esc(it.description)}</div>` : ''}
+    <div class="cat">${esc(catOf(it.category||''))}</div>
+    <h2>${esc(nm)}</h2>
+    ${sold ? `<div class="md-pr" style="color:#6b7280">${L().sold}</div>` : `<div class="md-pr">${priceMain(it)}</div>
+    <div class="md-usd">${en && phpOf(it) ? '≈ ' + won(it.priceKrw) + ' · ' : ''}${L().cardPriceL(usdOf(it.priceKrw).toLocaleString())}</div>`}
+    ${it.status==='reserved' ? `<div style="background:#fff7e6;border-radius:8px;padding:8px 10px;font-size:13px;margin-bottom:10px;">${L().rsvNote}</div>` : ''}
+    <table class="spec">${rows.map(r => `<tr><td>${r[0]}</td><td>${r[2] ? r[1] : esc(r[1])}</td></tr>`).join('')}</table>
+    ${desc ? `<div class="desc">${esc(desc)}</div>` : ''}
+    ${en && !sold ? `<div class="paybox">${L().paybox}</div>` : ''}
     <div class="acts">
-      ${canBuy ? `<button class="btn green" onclick="openBuy()">💳 카드로 구매</button>` : ''}
-      <a class="btn kakao" href="${KAKAO}" target="_blank">💬 카톡 문의</a>
-      <button class="btn line" onclick="copyLink()">🔗 링크 복사</button>
+      ${en ? askBtn() : ''}
+      ${canBuy ? `<button class="btn green" onclick="openBuy()">${L().buyCard}</button>` : ''}
+      ${en ? '' : askBtn()}
+      <button class="btn fb" onclick="shareFb()">${L().fb}</button>
+      <button class="btn line" onclick="copyLink()">${L().copy}</button>
     </div>`;
   const buy = document.getElementById('buy'); buy.style.display = 'none'; buy.innerHTML = '';
   document.getElementById('md').classList.add('on');
@@ -289,27 +412,35 @@ function galGo(el, src){
 function closeMd(){
   document.getElementById('md').classList.remove('on');
   document.body.style.overflow = '';
+  CUR = null;
   history.replaceState(null, '', location.pathname);
 }
+function itemUrl(it){ return SITE + '/shop.html?item=' + encodeURIComponent(it.id) + (LANG === 'en' ? '&lang=en' : ''); }
 function copyLink(){
-  const url = 'https://iclarkgolf.com/shop.html?item=' + encodeURIComponent(CUR.id);
-  (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(() => toast('링크가 복사되었습니다')).catch(() => prompt('아래 링크를 복사하세요', url));
+  const url = itemUrl(CUR);
+  (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(() => toast(L().copied)).catch(() => prompt(L().copyPrompt, url));
+}
+/* 페이스북 공유: 사진·이름·가격이 미리보기로 뜨는 개별 페이지(shop-아이디.html)가 있으면 그 주소로 */
+function shareFb(){
+  const url = FB_PAGES.includes(CUR.id) ? SITE + '/shop-' + encodeURIComponent(CUR.id) + '.html' : itemUrl(CUR);
+  window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), 'fbshare', 'width=620,height=560');
 }
 
 /* ── 카드 구매 ── */
 function openBuy(){
-  const it = CUR;
-  const rcv = (it.receive && it.receive.length ? it.receive : ['ship']).filter(k => RCV[k]);
+  const it = CUR, F = L().f;
+  const rcv = (it.receive && it.receive.length ? it.receive : ['ship']).filter(k => T.kr.rcv[k]).filter(k => !(LANG === 'en' && k === 'ship'));
+  if (!rcv.length) rcv.push('clark');
   const buy = document.getElementById('buy');
   buy.innerHTML = `
-    <h3>💳 카드로 구매 — ${esc(it.name)}</h3>
-    <div class="f"><label>받는 분 이름 *</label><input type="text" id="bName" autocomplete="name"></div>
-    <div class="f"><label>휴대폰 번호 * (결제 후 이 번호로 연락드립니다)</label><input type="tel" id="bPhone" autocomplete="tel" placeholder="010-0000-0000"></div>
-    <div class="f"><label>받는 방법 *</label><div class="rcv">${rcv.map((k,i) => `<label><input type="radio" name="bRcv" value="${k}"${i?'':' checked'}><span><b>${RCV[k].t}</b>${k==='ship' ? (Number(it.shipKrw) ? ' — 택배비 ' + won(it.shipKrw) : ' — 택배비 포함') : ''}${k==='meet' && it.location ? '<br><small>' + esc(it.location) + ' 근처에서 만나 전달</small>' : (RCV[k].d && k!=='ship' ? '<br><small>' + RCV[k].d + '</small>' : '')}</span></label>`).join('')}</div></div>
-    <div class="f" id="bAddrF"><label>받는 주소 *</label><input type="text" id="bAddr" autocomplete="street-address" placeholder="우편번호, 주소, 상세주소"></div>
-    <div class="f"><label>요청 사항 (선택)</label><textarea id="bMemo" rows="2" placeholder="${rcv.includes('clark') ? '클락 방문 날짜, 숙소 이름 등' : '배송 요청 등'}"></textarea></div>
+    <h3>${esc(F.title(nameOf(it)))}</h3>
+    <div class="f"><label>${F.name}</label><input type="text" id="bName" autocomplete="name"></div>
+    <div class="f"><label>${F.phone}</label><input type="tel" id="bPhone" autocomplete="tel" placeholder="${F.phonePh}"></div>
+    <div class="f"><label>${F.rcv}</label><div class="rcv">${rcv.map((k,i) => `<label><input type="radio" name="bRcv" value="${k}"${i?'':' checked'}><span><b>${L().rcv[k]}</b>${k==='ship' ? (Number(it.shipKrw) ? ' — ' + L().shipFee(won(it.shipKrw)).trim() : ' — ' + L().shipIncl.trim()) : ''}${k==='meet' && it.location ? '<br><small>' + esc(L().meetNear(LANG==='en' ? (LOC_EN[it.location]||it.location).split(' —')[0] : it.location)) + '</small>' : (L().rcvD[k] ? '<br><small>' + L().rcvD[k] + '</small>' : '')}</span></label>`).join('')}</div></div>
+    <div class="f" id="bAddrF"><label>${F.addr}</label><input type="text" id="bAddr" autocomplete="street-address" placeholder="${F.addrPh}"></div>
+    <div class="f"><label>${F.memo}</label><textarea id="bMemo" rows="2" placeholder="${rcv.includes('clark') ? F.memoClark : F.memoShip}"></textarea></div>
     <div class="sum" id="bSum"></div>
-    <label class="agree"><input type="checkbox" id="bAgree"><span>중고 물품이며 사진·설명의 사용감과 흠집을 확인했습니다. 단순 변심 반품이 어렵다는 점에 동의합니다.</span></label>
+    <label class="agree"><input type="checkbox" id="bAgree"><span>${F.agree}</span></label>
     <div class="err" id="bErr"></div>
     <div id="bPay" style="min-height:48px;"></div>`;
   buy.style.display = 'block';
@@ -321,23 +452,26 @@ function openBuy(){
 function curRcv(){ const r = document.querySelector('input[name=bRcv]:checked'); return r ? r.value : 'ship'; }
 function totalKrw(){ return (Number(CUR.priceKrw)||0) + (curRcv()==='ship' ? (Number(CUR.shipKrw)||0) : 0); }
 function updSum(){
+  const F = L().f;
   const ship = curRcv()==='ship' && Number(CUR.shipKrw);
   document.getElementById('bAddrF').style.display = curRcv()==='ship' ? 'block' : 'none';
+  const itemPrice = LANG === 'en' && phpOf(CUR) ? peso(phpOf(CUR)) + ' (' + won(CUR.priceKrw) + ')' : won(CUR.priceKrw);
   document.getElementById('bSum').innerHTML =
-    `<div class="row"><span>물건 가격</span><span>${won(CUR.priceKrw)}</span></div>` +
-    (ship ? `<div class="row"><span>택배비</span><span>${won(CUR.shipKrw)}</span></div>` : '') +
-    `<div class="row tot"><span>카드 결제 금액</span><span>US$${usdOf(totalKrw()).toLocaleString()}</span></div>
-     <div style="font-size:11.5px;color:#6b7280;margin-top:4px;">원화 ${won(totalKrw())} 기준 · 카드 결제 수수료 4% 포함 · 미화(USD) 청구</div>`;
+    `<div class="row"><span>${F.item}</span><span>${itemPrice}</span></div>` +
+    (ship ? `<div class="row"><span>${F.ship}</span><span>${won(CUR.shipKrw)}</span></div>` : '') +
+    `<div class="row tot"><span>${F.total}</span><span>US$${usdOf(totalKrw()).toLocaleString()}</span></div>
+     <div style="font-size:11.5px;color:#6b7280;margin-top:4px;">${F.basis(won(totalKrw()))}</div>`;
 }
 function checkForm(){
+  const F = L().f;
   const name = document.getElementById('bName').value.trim();
   const phone = document.getElementById('bPhone').value.replace(/[^0-9+]/g,'');
   const addr = document.getElementById('bAddr').value.trim();
   let msg = '';
-  if (!name) msg = '받는 분 이름을 적어주세요.';
-  else if (phone.length < 9) msg = '연락 가능한 휴대폰 번호를 적어주세요.';
-  else if (curRcv()==='ship' && addr.length < 6) msg = '택배 받으실 주소를 적어주세요.';
-  else if (!document.getElementById('bAgree').checked) msg = '중고 물품 안내에 동의(체크)해 주세요.';
+  if (!name) msg = F.eName;
+  else if (phone.length < 9) msg = F.ePhone;
+  else if (curRcv()==='ship' && addr.length < 6) msg = F.eAddr;
+  else if (!document.getElementById('bAgree').checked) msg = F.eAgree;
   const e = document.getElementById('bErr');
   e.textContent = msg; e.style.display = msg ? 'block' : 'none';
   return !msg;
@@ -357,12 +491,11 @@ function renderPay(){
     style: { layout:'vertical', shape:'rect', label:'pay' },
     onClick: async (d, actions) => {
       if (!checkForm()) return actions.reject();
-      // 결제 직전에 아직 판매중인지 다시 확인 (다른 분이 먼저 샀거나 예약중으로 바뀐 경우)
       try {
         const shop = await getSetting('shop');
         const now = ((shop && shop.items) || []).find(x => x.id === CUR.id);
         if (!now || (now.status || 'sale') !== 'sale' || now.visible === false) {
-          const e = document.getElementById('bErr'); e.textContent = '죄송합니다. 방금 다른 분과 거래가 진행되어 결제할 수 없습니다. 카톡으로 문의해 주세요.'; e.style.display = 'block';
+          const e = document.getElementById('bErr'); e.textContent = L().f.eGone; e.style.display = 'block';
           return actions.reject();
         }
         if (Number(now.priceKrw) !== Number(CUR.priceKrw) || Number(now.shipKrw||0) !== Number(CUR.shipKrw||0)) { Object.assign(CUR, now); updSum(); }
@@ -373,13 +506,13 @@ function renderPay(){
         rcv: curRcv(),
         addr: curRcv()==='ship' ? document.getElementById('bAddr').value.trim() : '',
         memo: document.getElementById('bMemo').value.trim(),
-        krw: totalKrw(), usd: usdOf(totalKrw())
+        krw: totalKrw(), usd: usdOf(totalKrw()), lang: LANG
       };
       return actions.resolve();
     },
     createOrder: (d, actions) => actions.order.create({
       purchase_units: [{
-        description: ('iCLARKGOLF used: ' + CUR.name).slice(0, 120),
+        description: ('iCLARKGOLF used: ' + (CUR.nameEn || CUR.name)).slice(0, 120),
         invoice_id: 'SHOP-' + CUR.id + '-' + Date.now(),
         amount: { currency_code: 'USD', value: _order.usd.toFixed(2) }
       }],
@@ -387,14 +520,13 @@ function renderPay(){
     }),
     onApprove: (d, actions) => actions.order.capture().then(order => {
       const o = Object.assign({}, _order), it = CUR;
-      document.getElementById('buy').innerHTML = `<div class="ok">✅ <b>US$${o.usd.toLocaleString()} 카드 결제가 완료되었습니다.</b> 감사합니다!<br>
-        ${esc(o.phone)} 번호로 곧 연락드리고 ${RCV[o.rcv].t.replace(/^\S+\s/,'')} 일정을 안내해 드립니다.<br>
-        급하신 일은 카톡(tourjang2)으로 말씀해 주세요.</div>`;
+      const r = L().rcv[o.rcv].replace(/^\S+\s/,'');
+      document.getElementById('buy').innerHTML = `<div class="ok">${L().f.done(o.usd.toLocaleString(), esc(o.phone), r)}</div>`;
       notifyBuy(it, o, order);
     }),
-    onError: err => { console.error('PayPal 오류', err); alert('카드 결제가 완료되지 않았습니다. 다시 시도하시거나 카톡으로 문의해 주세요.'); }
+    onError: err => { console.error('PayPal 오류', err); alert(L().f.payFail); }
   }).render('#bPay')).catch(() => {
-    document.getElementById('bPay').innerHTML = '<div style="font-size:12.5px;color:#b91c1c;">카드 결제창을 불러오지 못했습니다. 카톡으로 문의해 주세요.</div>';
+    document.getElementById('bPay').innerHTML = `<div style="font-size:12.5px;color:#b91c1c;">${L().f.payLoadFail}</div>`;
   });
 }
 async function notifyBuy(it, o, order){
@@ -405,14 +537,15 @@ async function notifyBuy(it, o, order){
       method: 'POST', headers: { 'Content-Type':'application/json', 'Accept':'application/json' },
       body: JSON.stringify({
         access_key: n.web3formsKey,
-        subject: '🏷️ [iCLARKGOLF 중고장터] 판매 완료 — ' + it.name + ' US$' + o.usd,
+        subject: '🏷️ [iCLARKGOLF 중고장터] 판매 완료 — ' + it.name + ' US$' + o.usd + (o.lang === 'en' ? ' (영어 손님)' : ''),
         from_name: 'iCLARKGOLF 중고장터',
         '물건': it.name + (it.brand ? ' (' + it.brand + ')' : ''),
         '물건 ID': it.id,
+        '손님 화면 언어': o.lang === 'en' ? 'ENG (필리핀 등 외국 손님)' : '한국어',
         '결제금액': 'US$' + o.usd + ' (원화 ' + won(o.krw) + ' 기준, 카드 수수료 4% 포함)',
         '받는 분': o.name,
         '휴대폰': o.phone,
-        '받는 방법': RCV[o.rcv].t,
+        '받는 방법': T.kr.rcv[o.rcv],
         '주소': o.addr || '-',
         '요청 사항': o.memo || '-',
         'PayPal 주문번호': order.id || '-',
@@ -424,6 +557,7 @@ async function notifyBuy(it, o, order){
   } catch(e) { console.warn('판매 알림 실패(무시)', e); }
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMd(); });
+setLang(LANG);
 load();
 </script>
 </body>
