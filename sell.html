@@ -215,7 +215,8 @@ let PHOTOS = [];
 
 /* ── 관리 비밀번호: 사이트에는 비밀번호 대신 "한 번 쓰고 버리는 열쇠"의 지문만 저장 (Firestore 규칙이 확인) ── */
 const digits = s => String(s || '').replace(/[^0-9]/g, '');
-async function sha(str){ const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)); return btoa(String.fromCharCode(...new Uint8Array(b))); }
+// Firestore 규칙의 toBase64()는 URL용 base64(+ → -, / → _ , = 유지)라서 똑같이 맞춤
+async function sha(str){ const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)); return btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g, '-').replace(/\//g, '_'); }
 const secretN = (phone, pw, n) => sha(digits(phone) + '|' + pw + '|' + n);
 const lockOf = async (phone, pw, n) => sha(await secretN(phone, pw, n));
 
