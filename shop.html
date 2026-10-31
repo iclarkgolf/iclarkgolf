@@ -347,7 +347,7 @@ function renderList(){
     const nm = nameOf(it);
     const where = LANG === 'en' ? `<div class="loc">📍 ${/클락/.test(it.location||'') ? 'In Clark' : 'In Korea'}</div>` : '';
     return `<div class="card${it.status==='sold'?' sold':''}" onclick="openMd('${esc(it.id)}')">
-      <div class="ph">${ph ? `<img src="${esc(ph)}" alt="${esc(nm)}" loading="lazy">` : '<div class="noimg">🏌️</div>'}${stBadge(it)}</div>
+      <div class="ph">${ph ? `<img src="${esc(ph)}" alt="${esc(nm)}" loading="lazy" onerror="this.outerHTML='<div class=&quot;noimg&quot;>📷</div>'">` : '<div class="noimg">🏌️</div>'}${stBadge(it)}</div>
       <div class="bd">
         <div class="cat">${esc(catOf(it.category||''))}${it.brand ? ' · ' + esc(it.brand) : ''}</div>
         <div class="nm">${esc(nm)}</div>

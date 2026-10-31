@@ -1871,7 +1871,7 @@ try {
       const pr = en && php(it) ? '₱' + php(it).toLocaleString() : '₩' + Number(it.price).toLocaleString();
       const st = it.status === 'reserved' ? (en ? 'Reserved' : '예약중') : (en ? 'For sale' : '판매중');
       return `<a class="shop-it" href="shop.html?item=${encodeURIComponent(it.id)}">
-      <div class="ph">${it.photos[0] ? `<img src="${esc(it.photos[0])}" alt="${esc(nm)}" loading="lazy">` : ''}<span class="st${it.status==='reserved'?' r':''}">${st}</span></div>
+      <div class="ph">${it.photos[0] ? `<img src="${esc(it.photos[0])}" alt="${esc(nm)}" loading="lazy" onerror="this.remove()">` : ''}<span class="st${it.status==='reserved'?' r':''}">${st}</span></div>
       <div class="bd"><div class="nm">${esc(nm)}</div><div class="pr">${pr}</div></div></a>`;
     }).join('');
   }

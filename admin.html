@@ -1700,6 +1700,14 @@ window.adminLogout = function() {
     <textarea id="sp-descEn" rows="3" placeholder="e.g. Bought in 2024, used about 30 rounds. Light scratches on the crown, clean face. Headcover and wrench included."></textarea>
     <label>사진 (첫 번째 사진이 대표 사진 · 여러 장 가능)</label>
     <div style="font-size:11.5px;color:#6b7280;">아래 보라색 버튼으로 한 장씩 올리세요 (여러 번 누르면 계속 추가됩니다 · × 로 빼기)</div>
+    <details style="margin:8px 0 4px;background:#f6f5ff;border:1px solid #ddd9fb;border-radius:10px;padding:8px 11px;font-size:12px;color:#3f3a75;line-height:1.75;" open>
+      <summary style="cursor:pointer;font-weight:800;">📸 사진 올리는 법 (꼭 읽어주세요)</summary>
+      ① <b>휴대폰으로 찍은 원본 사진</b>을 그대로 올리세요. 크기는 자동으로 줄여서 올라갑니다 (최대 30MB).<br>
+      ② <b>가로·세로 800픽셀 이상</b> — 휴대폰 사진은 모두 해당. <b>카톡으로 받은 사진은 화질이 떨어지니</b> 원본을 쓰세요.<br>
+      ③ <b>첫 사진 = 대표 사진</b>이고 목록에서는 <b>정사각형</b>으로 잘려 보입니다 → 물건을 <b>가운데</b>에 두고 찍으세요.<br>
+      ④ <b>3~6장</b>: 전체 모습 → 헤드 앞·뒤 → 페이스·바닥 → 샤프트 글씨(사양) → 흠집 가까이.<br>
+      ⑤ 밝은 곳, 단색 바닥이나 벽 앞에서, 그림자·손가락이 나오지 않게.
+    </details>
     <textarea id="sp-photos" rows="2" style="display:none;"></textarea>
     <div id="sp-thumbs"></div>
     <label class="chk" style="margin-top:12px;"><label><input type="checkbox" id="sp-visible" checked> 사이트에 보이기</label></label>
@@ -1765,7 +1773,7 @@ function spRender(){
   if (!_spItems.length) { el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:#6b7280;">아직 올린 물건이 없습니다. 위의 <b>＋ 물건 올리기</b>를 눌러 시작하세요.<br><small>물건이 하나도 없으면 사이트에는 "준비 중 · 카톡 문의" 안내가 보이고 홈 화면에는 나타나지 않습니다.</small></div>'; return; }
   const items = _spItems.slice().sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
   el.innerHTML = items.map(it => `<div class="sp-card${it.visible===false?' hid':''}">
-    <div class="ph">${(it.photos||[])[0] ? `<img src="${spEsc(it.photos[0])}">` : '🏌️'}</div>
+    <div class="ph">${(it.photos||[])[0] ? `<img src="${spEsc(it.photos[0])}" onerror="this.outerHTML='<span style=&quot;font-size:12px;color:#b91c1c;text-align:center;padding:8px;&quot;>⚠️ 사진이 안 열립니다<br>(사진을 다시 올려주세요)</span>'">` : '🏌️'}</div>
     <div class="bd">
       <div style="font-size:11px;color:#6b7280;">${spEsc(it.category)} · ${spEsc(it.location||'')}${it.visible===false?' · <b>숨김</b>':''}</div>
       <div class="nm">${spEsc(it.name)}</div>
@@ -1815,6 +1823,15 @@ function spOpen(id){
   const sel = document.getElementById('sp-cat');
   if (!sel.options.length) sel.innerHTML = SP_CATS.map(c => `<option>${c}</option>`).join('');
   iuMount('sp-photos', { multiline: true, onDone: spThumbs });
+  // 사진이 너무 작으면(긴 변 800픽셀 미만) 알려주기 — 올리기는 막지 않음
+  const spFile = document.getElementById('sp-photos-iu-file');
+  if (spFile && !spFile._spSizeChk) {
+    spFile._spSizeChk = true;
+    spFile.addEventListener('change', async () => {
+      const f = spFile.files && spFile.files[0]; if (!f) return;
+      try { const b = await createImageBitmap(f); if (Math.max(b.width, b.height) < 800) alert(`이 사진은 ${b.width}×${b.height} 픽셀로 작아서 흐리게 보일 수 있어요.\n(카톡으로 받은 사진이면 원본 사진을 써 주세요)\n\n일단 올리기는 계속 진행합니다.`); } catch(e) {}
+    });
+  }
   const ta = document.getElementById('sp-photos');
   if (!ta._spBound) { ta.addEventListener('input', spThumbs); ['sp-price','sp-ship','sp-php'].forEach(i => document.getElementById(i).addEventListener('input', spUsdPreview)); ta._spBound = true; }
   const it = id ? _spItems.find(x => x.id === id) : null;
