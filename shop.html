@@ -175,7 +175,9 @@ const T = {
     ask:'💬 카톡 문의', buyCard:'💳 카드로 구매', fb:'📘 페이스북 공유', copy:'🔗 링크 복사', copied:'링크가 복사되었습니다', copyPrompt:'아래 링크를 복사하세요',
     cardPrice: u => `카드 US$${u}`, cardPriceL: u => `카드 결제 시 US$${u} (카드 수수료 4% 포함)`,
     rsvNote:'⏳ 다른 분과 거래가 진행 중입니다. 거래가 취소되면 다시 판매됩니다.',
-    spec:{ condition:'상태', brand:'브랜드', spec:'사양', location:'물건 위치', receive:'받는 방법' },
+    spec:{ condition:'상태', brand:'브랜드', spec:'기타 사양', location:'물건 위치', receive:'받는 방법', genuine:'정품', loft:'로프트', shaft:'샤프트', flex:'강도', parts:'구성', place:'거래 지역' },
+    parts:{ head:'헤드만', shaft:'샤프트 포함', cover:'헤드커버 포함', wrench:'렌치 포함' },
+    seller:'✅ iCLARKGOLF 직접 판매 · 판매자가 직접 찍은 실물 사진',
     rcv:{ ship:'📦 택배로 받기', meet:'🤝 직거래', clark:'✈️ 클락 현지 전달' },
     rcvD:{ clark:'클락 골프 여행 오실 때 현지에서 전달' },
     shipFee: w => ` (택배비 ${w})`, shipIncl:' (택배비 포함)', meetNear: l => `${l} 근처에서 만나 전달`,
@@ -207,7 +209,9 @@ const T = {
     ask:'💬 Message us', buyCard:'💳 Pay by card', fb:'📘 Share on Facebook', copy:'🔗 Copy link', copied:'Link copied', copyPrompt:'Copy this link',
     cardPrice: u => `Card US$${u}`, cardPriceL: u => `By card: US$${u} (incl. 4% card fee)`,
     rsvNote:'⏳ Another buyer is in the middle of a deal. If it falls through, it will be back on sale.',
-    spec:{ condition:'Condition', brand:'Brand', spec:'Specs', location:'Location', receive:'How to get it' },
+    spec:{ condition:'Condition', brand:'Brand', spec:'Other specs', location:'Location', receive:'How to get it', genuine:'Authentic', loft:'Loft', shaft:'Shaft', flex:'Flex', parts:'Includes', place:'Meet-up area' },
+    parts:{ head:'Head only', shaft:'Shaft included', cover:'Headcover', wrench:'Wrench' },
+    seller:'✅ Sold directly by iCLARKGOLF · real photos taken by the seller',
     rcv:{ ship:'📦 Courier delivery (Korea only)', meet:'🤝 Meet-up', clark:'✈️ Hand-over in Clark' },
     rcvD:{ clark:'Handed over in Clark (Angeles / Clark area)' },
     shipFee: w => ` (shipping ${w})`, shipIncl:' (shipping incl.)', meetNear: l => `Meet near ${l}`,
@@ -235,6 +239,7 @@ const T = {
 };
 const CAT_EN = { '드라이버':'Driver','우드':'Fairway Wood','유틸리티':'Hybrid / Utility','아이언':'Irons','웨지':'Wedge','퍼터':'Putter','풀세트':'Full Set','골프백':'Golf Bag','의류·기타':'Apparel & Others' };
 const COND_EN = { '새것 (미사용)':'New (unused)','아주 좋음 (사용감 거의 없음)':'Excellent (barely used)','좋음 (잔기스 약간)':'Good (minor scratches)','보통 (사용감 있음)':'Fair (visible wear)','사용감 많음':'Well used' };
+const GEN_EN = { '국내 정품':'Genuine (Korea model)','일본 정품':'Genuine (Japan model)','미국 정품':'Genuine (US model)','정품 (구분 모름)':'Genuine' };
 const LOC_EN = { '한국 (서울)':'Korea (Seoul) — brought to Clark on request','필리핀 클락':'Clark, Philippines' };
 
 function pickLang(){
@@ -264,6 +269,14 @@ function nameOf(it){
   const c = CAT_EN[it.category] || it.category || 'Golf gear';
   return it.brand ? it.brand + ' ' + c : c;
 }
+function partsOf(it){
+  const P = L().parts, out = [];
+  if (it.withShaft === false) out.push(P.head);
+  if (it.withCover) out.push(P.cover);
+  if (it.withWrench) out.push(P.wrench);
+  return out.join(' · ');
+}
+function specLine(it){ return [it.loft ? it.loft + '°' : '', it.flex || '', it.withShaft === false ? L().parts.head : ''].filter(Boolean).join(' · '); }
 function catOf(c){ return LANG === 'en' ? (CAT_EN[c] || c) : c; }
 function priceMain(it){ return LANG === 'en' && phpOf(it) ? peso(phpOf(it)) : won(it.priceKrw); }
 function priceSub(it){ return LANG === 'en' && phpOf(it) ? '≈ ' + won(it.priceKrw) : L().cardPrice(usdOf(it.priceKrw).toLocaleString()); }
@@ -351,6 +364,7 @@ function renderList(){
       <div class="bd">
         <div class="cat">${esc(catOf(it.category||''))}${it.brand ? ' · ' + esc(it.brand) : ''}</div>
         <div class="nm">${esc(nm)}</div>
+        ${specLine(it) ? `<div class="cat" style="color:#374151;font-weight:600;">${esc(specLine(it))}</div>` : ''}
         ${where}
         <div class="pr">${it.status==='sold' ? `<span style="color:#6b7280">${L().sold}</span>` : priceMain(it)}</div>
         ${it.status==='sold' ? '' : `<div class="usd">${priceSub(it)}</div>`}
@@ -375,9 +389,12 @@ function openMd(id){
   if (!rcv.length && LANG === 'en') rcv.push('clark');   // 한국 택배만 있는 물건도 필리핀 손님에겐 클락 전달로 안내
   const en = LANG === 'en', S = L().spec;
   const rows = [
+    [S.genuine, en ? (GEN_EN[it.genuine] || it.genuine) : it.genuine],
     [S.condition, en ? (COND_EN[it.condition] || it.condition) : it.condition],
-    [S.brand, it.brand], [S.spec, it.spec],
+    [S.brand, it.brand], [S.loft, it.loft ? it.loft + '°' : ''], [S.shaft, it.shaft], [S.flex, it.flex],
+    [S.parts, partsOf(it)], [S.spec, it.spec],
     [S.location, en ? (LOC_EN[it.location] || it.location) : it.location],
+    [S.place, it.place],
     [S.receive, rcv.map(k => esc(rcvLine(it, k))).join('<br>'), true]
   ].filter(r => r[1]);
   const desc = en ? (it.descriptionEn || '') : (it.description || '');
@@ -391,6 +408,7 @@ function openMd(id){
     ${it.status==='reserved' ? `<div style="background:#fff7e6;border-radius:8px;padding:8px 10px;font-size:13px;margin-bottom:10px;">${L().rsvNote}</div>` : ''}
     <table class="spec">${rows.map(r => `<tr><td>${r[0]}</td><td>${r[2] ? r[1] : esc(r[1])}</td></tr>`).join('')}</table>
     ${desc ? `<div class="desc">${esc(desc)}</div>` : ''}
+    <div style="font-size:12px;color:#2d6a4f;font-weight:700;margin-bottom:10px;">${L().seller}</div>
     ${en && !sold ? `<div class="paybox">${L().paybox}</div>` : ''}
     <div class="acts">
       ${en ? askBtn() : ''}
@@ -436,7 +454,7 @@ function openBuy(){
     <h3>${esc(F.title(nameOf(it)))}</h3>
     <div class="f"><label>${F.name}</label><input type="text" id="bName" autocomplete="name"></div>
     <div class="f"><label>${F.phone}</label><input type="tel" id="bPhone" autocomplete="tel" placeholder="${F.phonePh}"></div>
-    <div class="f"><label>${F.rcv}</label><div class="rcv">${rcv.map((k,i) => `<label><input type="radio" name="bRcv" value="${k}"${i?'':' checked'}><span><b>${L().rcv[k]}</b>${k==='ship' ? (Number(it.shipKrw) ? ' — ' + L().shipFee(won(it.shipKrw)).trim() : ' — ' + L().shipIncl.trim()) : ''}${k==='meet' && it.location ? '<br><small>' + esc(L().meetNear(LANG==='en' ? (LOC_EN[it.location]||it.location).split(' —')[0] : it.location)) + '</small>' : (L().rcvD[k] ? '<br><small>' + L().rcvD[k] + '</small>' : '')}</span></label>`).join('')}</div></div>
+    <div class="f"><label>${F.rcv}</label><div class="rcv">${rcv.map((k,i) => `<label><input type="radio" name="bRcv" value="${k}"${i?'':' checked'}><span><b>${L().rcv[k]}</b>${k==='ship' ? (Number(it.shipKrw) ? ' — ' + L().shipFee(won(it.shipKrw)).trim() : ' — ' + L().shipIncl.trim()) : ''}${k==='meet' && (it.place || it.location) ? '<br><small>' + esc(L().meetNear(it.place || (LANG==='en' ? (LOC_EN[it.location]||it.location).split(' —')[0] : it.location))) + '</small>' : (L().rcvD[k] ? '<br><small>' + L().rcvD[k] + '</small>' : '')}</span></label>`).join('')}</div></div>
     <div class="f" id="bAddrF"><label>${F.addr}</label><input type="text" id="bAddr" autocomplete="street-address" placeholder="${F.addrPh}"></div>
     <div class="f"><label>${F.memo}</label><textarea id="bMemo" rows="2" placeholder="${rcv.includes('clark') ? F.memoClark : F.memoShip}"></textarea></div>
     <div class="sum" id="bSum"></div>

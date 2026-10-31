@@ -1678,16 +1678,32 @@ window.adminLogout = function() {
       <div><label>상태 *</label><select id="sp-cond">
         <option>새것 (미사용)</option><option>아주 좋음 (사용감 거의 없음)</option><option selected>좋음 (잔기스 약간)</option><option>보통 (사용감 있음)</option><option>사용감 많음</option></select></div>
       <div><label>브랜드</label><input type="text" id="sp-brand" placeholder="예) 테일러메이드"></div>
-      <div><label>사양 (샤프트·로프트·강도 등)</label><input type="text" id="sp-spec" placeholder="예) 10.5° / 벤투스 6S"></div>
+      <div><label>정품 구분</label><select id="sp-genuine"><option value="">선택 안 함</option><option>국내 정품</option><option>일본 정품</option><option>미국 정품</option><option>정품 (구분 모름)</option></select></div>
       <div><label>판매 가격 (원) *</label><input type="number" id="sp-price" min="0" step="1000" placeholder="250000"></div>
       <div><label>택배비 (원, 가격에 포함이면 0)</label><input type="number" id="sp-ship" min="0" step="500" value="0"></div>
       <div><label>필리핀 판매가 (₱) — 비우면 원화에서 자동 계산</label><input type="number" id="sp-php" min="0" step="50" placeholder="자동"></div>
     </div>
     <div id="sp-usd" style="font-size:12.5px;color:#2d6a4f;font-weight:700;margin-top:6px;"></div>
+    <!-- 2026-10-31 골마켓 벤치마킹: 클럽 사양을 칸으로 (손님이 비교하기 쉽고 영어 화면도 자동) -->
+    <div id="sp-clubspec" style="margin-top:10px;border:1.5px dashed #c8edd9;border-radius:10px;padding:4px 12px 10px;">
+      <div class="g2">
+        <div><label>로프트 (도)</label><input type="text" id="sp-loft" placeholder="예) 9.0 · 아이언 세트는 비워도 됨"></div>
+        <div><label>샤프트 (모델)</label><input type="text" id="sp-shaft" placeholder="예) 벤투스 블루 6 / NS PRO 950"></div>
+        <div><label>강도</label><select id="sp-flex"><option value="">선택 안 함</option><option>L</option><option>A</option><option>R</option><option>SR</option><option>S</option><option>X</option></select></div>
+        <div><label>기타 사양 (구성·길이·그립 등)</label><input type="text" id="sp-spec" placeholder="예) 5~P 6개 / 45.5인치 / 그립 새것"></div>
+      </div>
+      <label>구성</label>
+      <div class="chk">
+        <label><input type="checkbox" id="sp-withShaft" checked> 샤프트 포함 <small style="color:#6b7280;">(빼면 "헤드만")</small></label>
+        <label><input type="checkbox" id="sp-withCover"> 헤드커버 포함</label>
+        <label><input type="checkbox" id="sp-withWrench"> 렌치 포함</label>
+      </div>
+    </div>
     <div class="g2">
       <div><label>물건 위치</label><select id="sp-loc"><option>한국 (서울)</option><option>필리핀 클락</option></select></div>
       <div><label>판매 상태</label><select id="sp-status"><option value="sale">판매중</option><option value="reserved">예약중</option><option value="sold">판매완료</option></select></div>
     </div>
+    <label>거래 가능 지역 (직거래 장소)</label><input type="text" id="sp-place" placeholder="예) 서울 송파 잠실역 근처 / 클락 앙헬레스">
     <label>받는 방법 (손님이 고를 수 있는 것)</label>
     <div class="chk">
       <label><input type="checkbox" id="sp-r-ship" checked> 📦 택배</label>
@@ -1705,8 +1721,9 @@ window.adminLogout = function() {
       ① <b>휴대폰으로 찍은 원본 사진</b>을 그대로 올리세요. 크기는 자동으로 줄여서 올라갑니다 (최대 30MB).<br>
       ② <b>가로·세로 800픽셀 이상</b> — 휴대폰 사진은 모두 해당. <b>카톡으로 받은 사진은 화질이 떨어지니</b> 원본을 쓰세요.<br>
       ③ <b>첫 사진 = 대표 사진</b>이고 목록에서는 <b>정사각형</b>으로 잘려 보입니다 → 물건을 <b>가운데</b>에 두고 찍으세요.<br>
-      ④ <b>3~6장</b>: 전체 모습 → 헤드 앞·뒤 → 페이스·바닥 → 샤프트 글씨(사양) → 흠집 가까이.<br>
-      ⑤ 밝은 곳, 단색 바닥이나 벽 앞에서, 그림자·손가락이 나오지 않게.
+      ④ <b>클럽은 기본 3장</b> (골마켓 판매글 방식): <b>위에서(크라운)</b> → <b>바닥(솔 — 로프트 숫자가 보이게)</b> → <b>페이스</b>. 그다음 샤프트 글씨(사양) · 흠집 가까이를 더하면 좋습니다.<br>
+      ⑤ <b>흰 벽 앞에서 손에 들고</b> 찍으면 깔끔합니다. 밝은 곳에서, 그림자 없이.<br>
+      ⑥ <b>내가 직접 찍은 실물 사진만</b> — 인터넷·제품 홍보 사진은 쓰지 마세요 (손님이 가장 먼저 의심하는 부분).
     </details>
     <textarea id="sp-photos" rows="2" style="display:none;"></textarea>
     <div id="sp-thumbs"></div>
@@ -1749,6 +1766,11 @@ function spEnPost(id){
     '⛳ FOR SALE: ' + spNameEn(it),
     p ? '💰 ₱' + p.toLocaleString() : '',
     it.condition ? '✔ Condition: ' + (SP_COND_EN[it.condition] || it.condition) : '',
+    it.genuine ? '✔ ' + ({'국내 정품':'Genuine (Korea model)','일본 정품':'Genuine (Japan model)','미국 정품':'Genuine (US model)','정품 (구분 모름)':'Genuine'}[it.genuine] || it.genuine) : '',
+    it.loft ? '✔ Loft: ' + it.loft + '°' : '',
+    (it.shaft || it.flex) ? '✔ Shaft: ' + [it.shaft, it.flex ? 'Flex ' + it.flex : ''].filter(Boolean).join(' / ') : '',
+    it.withShaft === false ? '✔ HEAD ONLY' : '',
+    [it.withCover ? 'headcover' : '', it.withWrench ? 'wrench' : ''].filter(Boolean).length ? '✔ Includes ' + [it.withCover ? 'headcover' : '', it.withWrench ? 'wrench' : ''].filter(Boolean).join(' & ') : '',
     it.spec ? '✔ Specs: ' + it.spec : '',
     '📍 ' + (inClark ? 'Clark / Angeles — meet-up' : 'Can be brought to Clark / Angeles (currently in Korea)'),
     it.descriptionEn ? '\n' + it.descriptionEn : '',
@@ -1841,6 +1863,10 @@ function spOpen(id){
   const v = (k, d) => it && it[k] != null ? it[k] : d;
   document.getElementById('sp-name').value = v('name','');
   document.getElementById('sp-nameEn').value = v('nameEn','');
+  ['loft','shaft','flex','genuine','place'].forEach(k => document.getElementById('sp-' + k).value = v(k,''));
+  document.getElementById('sp-withShaft').checked = v('withShaft', true) !== false;
+  document.getElementById('sp-withCover').checked = !!v('withCover', false);
+  document.getElementById('sp-withWrench').checked = !!v('withWrench', false);
   document.getElementById('sp-php').value = Number(v('pricePhp',0)) > 0 ? v('pricePhp','') : '';
   document.getElementById('sp-descEn').value = v('descriptionEn','');
   document.getElementById('sp-cat').value = v('category','드라이버');
@@ -1856,8 +1882,13 @@ function spOpen(id){
   document.getElementById('sp-desc').value = v('description','');
   ta.value = (v('photos',[])).join('\n');
   document.getElementById('sp-visible').checked = v('visible',true) !== false;
-  spThumbs(); spUsdPreview();
+  spThumbs(); spUsdPreview(); spClubSpecToggle();
+  if (!sel._spCatBound) { sel.addEventListener('change', spClubSpecToggle); sel._spCatBound = true; }
   document.getElementById('sp-modal').style.display = 'block';
+}
+function spClubSpecToggle(){
+  const club = ['드라이버','우드','유틸리티','아이언','웨지','퍼터','풀세트'].includes(document.getElementById('sp-cat').value);
+  document.getElementById('sp-clubspec').style.display = club ? 'block' : 'none';
 }
 function spClose(){ document.getElementById('sp-modal').style.display = 'none'; }
 async function spSave(){
@@ -1874,7 +1905,10 @@ async function spSave(){
     priceKrw: price, shipKrw: Number(g('sp-ship').value)||0,
     location: g('sp-loc').value, status: g('sp-status').value, receive,
     description: g('sp-desc').value.trim(), photos, visible: g('sp-visible').checked,
-    nameEn: g('sp-nameEn').value.trim(), descriptionEn: g('sp-descEn').value.trim(), pricePhp: Number(g('sp-php').value)||0
+    nameEn: g('sp-nameEn').value.trim(), descriptionEn: g('sp-descEn').value.trim(), pricePhp: Number(g('sp-php').value)||0,
+    loft: g('sp-loft').value.trim(), shaft: g('sp-shaft').value.trim(), flex: g('sp-flex').value,
+    genuine: g('sp-genuine').value, place: g('sp-place').value.trim(),
+    withShaft: g('sp-withShaft').checked, withCover: g('sp-withCover').checked, withWrench: g('sp-withWrench').checked
   };
   const before = JSON.stringify(_spItems);
   if (_spEdit) Object.assign(_spItems.find(x => x.id === _spEdit), data, { updatedAt: Date.now() });
