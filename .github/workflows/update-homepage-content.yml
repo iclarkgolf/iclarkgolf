@@ -23,6 +23,11 @@ jobs:
       - name: install firebase-admin
         run: npm install firebase-admin@12
 
+      - name: mirror imgbb photos into this site (imgbb 사진을 우리 사이트로 복사·주소 교체)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node .github/scripts/mirror-images.js
+
       - name: build homepage content
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
@@ -48,6 +53,8 @@ jobs:
           git add index.html package-*.html packages-manifest.json sitemap.xml
           git add shop-manifest.json
           git add -A -- 'shop-*.html' || true
+          git add -A images/m || true
+          git add -u -- '*.html' || true
           if git diff --cached --quiet; then
             echo "no changes"
           else
