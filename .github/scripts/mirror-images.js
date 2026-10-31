@@ -85,9 +85,12 @@ async function main() {
   // ── 2) 아직 복사 안 된 사진 내려받기 ──
   const todo = [...found].filter((u) => !mirrored(u)).slice(0, MAX_NEW_PER_RUN);
   const got = [];
+  const startedAt = Date.now();
   for (const url of todo) {
+    if (Date.now() - startedAt > 4 * 60 * 1000) { console.log('  ⏱ 4분 넘어서 이번엔 여기까지 — 나머지는 다음 실행 때'); break; }
     try {
-      const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (iclarkgolf image backup)' } });
+      // imgbb가 멈춰서 대답을 안 하면 무한정 기다리지 않고 10초 만에 넘어감
+      const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (iclarkgolf image backup)' }, signal: AbortSignal.timeout(10000) });
       const type = r.headers.get('content-type') || '';
       if (!r.ok || !type.startsWith('image/')) { console.log(`  ⏭ ${url} — ${r.status} ${type}`); continue; }
       const buf = Buffer.from(await r.arrayBuffer());
