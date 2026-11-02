@@ -862,6 +862,28 @@ span[style*="border-radius:20px"],span[style*="border-radius:100px"],span[style*
   #inquiry-body td:last-child>*{display:inline-block!important;margin:0 3px 0 0!important;vertical-align:middle;}
   #inquiry-body td:last-child select{padding:3px 4px!important;font-size:11.5px!important;}
 }
+/* 2026-11-02 c: 모바일 점검 보완 */
+.panel div[style*="border-radius:16px"],.panel div[style*="border-radius:14px"],.panel div[style*="border-radius:12px"],.panel div[style*="border-radius:20px"]{border-radius:3px!important;}
+@media (max-width:600px){
+  /* 메뉴 12개를 한눈에 — 4칸 × 3줄 */
+  .tab-bar{display:grid!important;grid-template-columns:repeat(4,1fr);overflow:visible!important;padding:0!important;border-bottom:1px solid var(--doc-line)!important;}
+  .tab-btn{padding:8px 2px!important;font-size:12px!important;text-align:center;border-bottom:2px solid transparent!important;border-right:1px solid var(--doc-line2)!important;border-top:1px solid var(--doc-line2)!important;margin:0!important;}
+  .tab-btn:nth-child(4n){border-right:none!important;}
+  .tab-btn.on{background:#eef0f3!important;}
+  .admin-logo>span:last-child{display:none!important;}
+  .panel{padding:10px 10px!important;}
+  .mgmt-card{padding:12px!important;}
+  /* 표 첫 칸(골프장·이름)이 한 글자씩 꺾이지 않게 */
+  .tbl td:first-child{white-space:nowrap;}
+  .accom-item-thumb{height:96px!important;}
+  .accom-item-thumb .thumb-emoji{font-size:32px!important;}
+}
+@media (max-width:1099px){
+  #inquiry-body td{border:none!important;padding:2px 0!important;background:transparent!important;}
+  #inquiry-body tr{padding:10px 12px!important;}
+  #inquiry-body td:last-child{border-top:1px dashed var(--doc-line)!important;padding-top:8px!important;margin-top:4px;}
+  #panel-inquiry .tbl-wrap:has(#inquiry-body){border:none!important;}
+}
 </style>
 </head>
 <body>
