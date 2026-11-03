@@ -708,9 +708,9 @@ async function loadAgodaPick() {
       const j = await (await fetch('agoda-hotels.json?t=' + Date.now())).json();
       const seen = new Set();
       agHotels = (j.hotels || [])
-        .filter(h => Number(h.price) > 0 && AG_REGIONS.includes(h.region))
+        .filter(h => h.featured || (Number(h.price) > 0 && AG_REGIONS.includes(h.region)))
         .filter(h => !seen.has(h.hotelId) && seen.add(h.hotelId))
-        .sort((a, b) => Number(b.price) - Number(a.price));
+        .sort((a, b) => ((b.featured ? 1 : 0) - (a.featured ? 1 : 0)) || (Number(b.price) - Number(a.price)));
     } catch (e) { console.warn('아고다 호텔 목록 불러오기 실패', e); agHotels = []; }
   }
   if (!window.AGODA_PICK_ON) return;
@@ -734,9 +734,9 @@ function renderAgodaPick() {
     return `<a class="ag-item" href="${agEsc(agUrl(h.hotelId))}" target="_blank" rel="noopener sponsored" data-n="${agEsc(h.name)}" onclick="agTrack(this.dataset.n)">
       <img class="ag-img" src="${agEsc(img)}" alt="${agEsc(h.name)}" loading="lazy" onerror="this.style.visibility='hidden'">
       <div class="ag-info">
-        <div class="ag-name">${agEsc(h.name)}</div>
+        <div class="ag-name">${h.featured ? '<span style="color:#e8453c;">⭐ iClark 추천 · </span>' : ''}${agEsc(h.name)}</div>
         <div class="ag-meta">${[star, rv].filter(Boolean).join(' · ')}</div>
-        <div class="ag-price"><div class="ag-php">₱${php.toLocaleString()}${krw}</div><span class="ag-btn">최저가 확인·예약 →</span></div>
+        <div class="ag-price"><div class="ag-php">${php > 0 ? '₱' + php.toLocaleString() + krw : '<span style="font-size:12px;">날짜 선택 후 요금 확인</span>'}</div><span class="ag-btn">최저가 확인·예약 →</span></div>
       </div></a>`;
   }).join('');
   if (agHotels.length > first) {

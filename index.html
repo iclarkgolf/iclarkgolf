@@ -1485,6 +1485,20 @@ try {
   </div>
   <div class="lodging-grid" id="lodging-grid">
     <!-- AUTO-GENERATED:LODGING:START (2026-10-06~ agoda-hotels.json 기준 자동 생성 — 비싼 순 8개) -->
+    <a href="https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&amp;hid=12179901&amp;currency=PHP" target="_blank" rel="noopener" class="lodging-card" style="text-decoration:none;display:flex;flex-direction:column;cursor:pointer;">
+       <div class="lodging-thumb">
+         <img src="https://pix8.agoda.net/hotelImages/121/12179901/12179901_20010713400086828465.jpg" alt="프라데라 베르데 (Pradera Verde)" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\'thumb-emoji\'>🏨</span>'">
+         <span class="lodging-type-badge hotel" style="background:#e8453c;">⭐ iClark 추천</span>
+       </div>
+       <div class="lodging-body">
+         
+         <div class="lodging-name">프라데라 베르데 (Pradera Verde)</div>
+         <div class="lodging-price" style="font-size:13px;">날짜 선택 후 요금 확인</div>
+         <div class="lodging-location">📍 루바오(프라데라 골프장)</div>
+         <div class="lodging-tags"><span class="lodging-tag special">⛳ 골프장 안 호텔</span><span class="lodging-tag special">후기 7.5점</span></div>
+         <div class="lodging-btn">아고다에서 예약 →</div>
+       </div>
+     </a>
     <a href="https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&amp;hid=88135170&amp;currency=PHP&amp;checkin=2026-11-17&amp;checkout=2026-11-18&amp;NumberofAdults=2&amp;NumberofChildren=0&amp;Rooms=1&amp;pcs=6" target="_blank" rel="noopener" class="lodging-card" style="text-decoration:none;display:flex;flex-direction:column;cursor:pointer;">
        <div class="lodging-thumb">
          <img src="http://pix8.agoda.net/hotelImages/88135170/0/9de9be381ead6478f546b51f785b9ddf.jpeg?ce=3&amp;s=800x600" alt="Asher Staycation" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\'thumb-emoji\'>🏨</span>'">
@@ -1583,20 +1597,6 @@ try {
          <div class="lodging-btn">아고다에서 예약 →</div>
        </div>
      </a>
-    <a href="https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&amp;hid=5862582&amp;currency=PHP&amp;checkin=2026-11-17&amp;checkout=2026-11-18&amp;NumberofAdults=2&amp;NumberofChildren=0&amp;Rooms=1&amp;pcs=6" target="_blank" rel="noopener" class="lodging-card" style="text-decoration:none;display:flex;flex-direction:column;cursor:pointer;">
-       <div class="lodging-thumb">
-         <img src="http://q-xx.bstatic.com/xdata/images/hotel/840x460/433327615.jpg?k=acd59ad5ebf0379feb2e8cb78b815aaf3e29105dad5bff0a1fd681112450daf9&amp;o=" alt="클락 메리어트 호텔" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\'thumb-emoji\'>🏨</span>'">
-         <span class="lodging-type-badge hotel">아고다</span>
-       </div>
-       <div class="lodging-body">
-         <div class="lodging-stars">★★★★★</div>
-         <div class="lodging-name">클락 메리어트 호텔</div>
-         <div class="lodging-price">₱10,000<span style="font-size:11px;">/박</span><span style="display:block;font-family:'Nunito',sans-serif;font-size:11px;font-weight:600;color:#9ca3af;margin-top:2px;">약 ₩225,000</span></div>
-         <div class="lodging-location">📍 마발라캇(팜팡가)</div>
-         <div class="lodging-tags"><span class="lodging-tag special">후기 9.1점</span></div>
-         <div class="lodging-btn">아고다에서 예약 →</div>
-       </div>
-     </a>
     <!-- AUTO-GENERATED:LODGING:END -->
   </div>
   <div id="lodging-more-wrap" style="margin-top:16px;text-align:center;"></div>
@@ -1683,6 +1683,7 @@ try {
   let dataLoaded = false;
 
   const REGION_ALIASES = {
+    '루바오(프라데라 골프장)': 'lubao pradera pampanga 루바오 프라데라 팜팡가',
     '앙헬레스/클락': 'angeles clark 앙헬레스 클락',
     '산페르난도(팜팡가)': 'san fernando pampanga 산페르난도 팜팡가',
     '마발라캇(팜팡가)': 'mabalacat pampanga 마발라캇 팜팡가',
@@ -1731,18 +1732,18 @@ try {
     const thumbHTML = h.image
       ? `<img src="${escapeHtml(h.image)}" alt="${escapeHtml(h.name)}" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'thumb-emoji\\'>🏨</span>'">`
       : `<span class="thumb-emoji">🏨</span>`;
-    const reviewTag = h.reviewScore ? `<span class="lodging-tag special">후기 ${h.reviewScore}점</span>` : '';
+    const reviewTag = (h.featured ? '<span class="lodging-tag special">⛳ 골프장 안 호텔</span>' : '') + (h.reviewScore ? `<span class="lodging-tag special">후기 ${h.reviewScore}점</span>` : '');
 
     return `
     <a href="${escapeHtml(h.bookingUrl)}" target="_blank" rel="noopener" class="lodging-card" style="text-decoration:none;display:flex;flex-direction:column;cursor:pointer;">
       <div class="lodging-thumb">
         ${thumbHTML}
-        <span class="lodging-type-badge hotel">아고다</span>
+        <span class="lodging-type-badge hotel"${h.featured ? ' style="background:#e8453c;"' : ''}>${h.featured ? '⭐ iClark 추천' : '아고다'}</span>
       </div>
       <div class="lodging-body">
         ${stars ? `<div class="lodging-stars">${stars}</div>` : ''}
         <div class="lodging-name">${escapeHtml(h.name)}</div>
-        <div class="lodging-price">₱${priceNum.toLocaleString()}<span style="font-size:11px;">/박</span><span class="krw-ref" data-php="${priceNum}" style="display:block;font-size:11px;font-weight:600;color:#9ca3af;margin-top:2px;"></span></div>
+        ${priceNum > 0 ? `<div class="lodging-price">₱${priceNum.toLocaleString()}<span style="font-size:11px;">/박</span><span class="krw-ref" data-php="${priceNum}" style="display:block;font-size:11px;font-weight:600;color:#9ca3af;margin-top:2px;"></span></div>` : `<div class="lodging-price" style="font-size:13px;">날짜 선택 후 요금 확인</div>`}
         <div class="lodging-location">📍 ${escapeHtml(h.region || '앙헬레스 / 클락')}</div>
         ${reviewTag ? `<div class="lodging-tags">${reviewTag}</div>` : ''}
         <div class="lodging-btn">아고다에서 예약 →</div>
@@ -1790,7 +1791,8 @@ try {
     }
 
     // 비싼 호텔부터 싼 호텔 순으로 정렬
-    sortedHotels = hotels.slice().sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
+    // ★ 주력 호텔(featured, 프라데라)은 항상 맨 앞 (2026-11-03)
+    sortedHotels = hotels.slice().sort((a, b) => ((b.featured ? 1 : 0) - (a.featured ? 1 : 0)) || ((Number(b.price) || 0) - (Number(a.price) || 0)));
     dataLoaded = true;
     renderLodgingGrid();
   } catch(e) {

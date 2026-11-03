@@ -869,7 +869,7 @@ async function loadHotels(){
       .filter(h => Number(h.price) > 0)
       .filter(h => !seen.has(h.hotelId) && seen.add(h.hotelId))
       .map(h => ({ ...h, key: 'agoda-' + h.hotelId, kind: 'agoda', price: Number(h.price), near: HOTEL_REGIONS.includes(h.region) }))
-      .sort((a,b) => (b.near - a.near) || (b.price - a.price));
+      .sort((a,b) => ((b.featured ? 1 : 0) - (a.featured ? 1 : 0)) || (b.near - a.near) || (b.price - a.price));
   } catch(e) {
     console.error('호텔 목록 불러오기 실패:', e);
     $('hotel-list').innerHTML = '<div style="text-align:center;color:var(--muted);padding:16px;font-size:13px;">호텔 목록을 불러오지 못했어요. 아래 검색 버튼을 이용해 주세요.</div>';

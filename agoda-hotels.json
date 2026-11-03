@@ -2,6 +2,21 @@
   "updatedAt": "2026-11-03T00:08:45.174Z",
   "hotels": [
     {
+      "hotelId": 12179901,
+      "name": "프라데라 베르데 (Pradera Verde)",
+      "price": 0,
+      "crossedOutPrice": 0,
+      "currency": "PHP",
+      "image": "https://pix8.agoda.net/hotelImages/121/12179901/12179901_20010713400086828465.jpg",
+      "starRating": 0,
+      "reviewScore": 7.5,
+      "bookingUrl": "https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=12179901&currency=PHP",
+      "region": "루바오(프라데라 골프장)",
+      "cityId": 737237,
+      "pinned": true,
+      "featured": true
+    },
+    {
       "hotelId": 83260113,
       "name": "망고 스위트 - 앙헬레스",
       "price": 1432.45,
