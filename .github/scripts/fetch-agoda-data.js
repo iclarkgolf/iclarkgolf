@@ -37,6 +37,21 @@ const PINNED_HOTELS = [
 ];
 const PINNED_REGION = { id: 18875, label: '앙헬레스/클락' };
 
+// ★ 주력 상품 — 호텔 목록 맨 위에 항상 나오는 호텔 (2026-11-03)
+// featured: true 가 붙어 홈페이지·패키지 페이지에서 무조건 첫 번째 칸에 나온다.
+// 매진이라 아고다가 가격을 안 주는 날에도 사라지지 않도록, 지난 데이터나 아래 기본 정보로 유지한다.
+const FEATURED_REGION = { id: 737237, label: '루바오(프라데라 골프장)' };
+const FEATURED_HOTELS = [
+  {
+    hotelId: 12179901,
+    name: '프라데라 베르데 (Pradera Verde)',
+    image: 'https://pix8.agoda.net/hotelImages/121/12179901/12179901_20010713400086828465.jpg',
+    starRating: 0,
+    reviewScore: 7.5,
+    bookingUrl: 'https://www.agoda.com/ko-kr/partners/partnersearch.aspx?cid=1969951&hid=12179901&currency=PHP',
+  },
+];
+
 // 지역 하나당 몇 개 호텔을 가져올지 (지역 수가 늘어난 만큼 지역당 개수는 줄여
 // 전체 API 호출 부담과 최종 목록 크기를 적정 수준으로 유지)
 const MAX_RESULTS_PER_CITY = 40;
@@ -148,6 +163,27 @@ async function main() {
     const hotels = [];
     let okCities = 0;
     let keptCities = 0;
+
+  // ⓪ 주력 호텔 (프라데라) — 맨 앞. 가격이 오면 최신값, 매진/실패면 지난 데이터, 그것도 없으면 기본 정보
+  {
+        const ids = FEATURED_HOTELS.map((h) => h.hotelId);
+        const got = (await fetchAgoda(siteId, apiKey, FEATURED_REGION.id, FEATURED_REGION.label, ids)) || [];
+        for (const base of FEATURED_HOTELS) {
+                const fresh = got.find((h) => h.hotelId === base.hotelId);
+                const old = previous.find((h) => h.hotelId === base.hotelId);
+                let hotel;
+                if (fresh && Number(fresh.price) > 0) {
+                        hotel = { ...fresh, image: fresh.image || base.image };
+                        console.log(`  - 주력 호텔: ${hotel.name} ₱${Math.round(hotel.price)} 조회`);
+                } else {
+                        hotel = { ...base, price: 0, crossedOutPrice: 0, currency: 'PHP', ...(old || {}), price: 0 };
+                        console.log(`  - 주력 호텔: ${base.name} 매진/조회 실패 → 가격 없이 유지`);
+                }
+                Object.assign(hotel, { region: FEATURED_REGION.label, cityId: FEATURED_REGION.id, pinned: true, featured: true });
+                if (!seen.has(hotel.hotelId)) { seen.add(hotel.hotelId); hotels.push(hotel); }
+        }
+        await sleep(DELAY_BETWEEN_CALLS_MS);
+  }
 
   // ① 단골 호텔 먼저 (실패하면 지난번 데이터 유지)
   {

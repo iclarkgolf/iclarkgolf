@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- 새 문의 즉시 이메일 알림 (Web3Forms) — quote.html과 동일한 방식, 설정은 admin.html "새 문의 이메일 알림" -->
+<script>
+window.iclarkNotifyNewLead = async function(lead){
+  try {
+    const cfgRes = await fetch('https://firestore.googleapis.com/v1/projects/iclarkgolf/databases/(default)/documents/settings/notify?key=AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU');
+    if (!cfgRes.ok) return;
+    const cfg = await cfgRes.json();
+    const f = (cfg && cfg.fields) || {};
+    const key = f.web3formsKey && f.web3formsKey.stringValue;
+    const enabled = !(f.enabled && f.enabled.booleanValue === false);
+    if (!key || !enabled) return;
+    const when = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+    const body = Object.assign({
+      access_key: key,
+      subject: '📩 [iCLARKGOLF] 새 문의 — ' + (lead['이름'] || '이름 없음') + (lead['연락처'] ? ' · ' + lead['연락처'] : ''),
+      from_name: 'iCLARKGOLF 새 문의 알림',
+      '접수시각': when,
+      '관리자 페이지': 'https://iclarkgolf.com/admin.html'
+    }, lead);
+    await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(body)
+    });
+  } catch(e) { console.warn('새 문의 알림 전송 실패(무시):', e); }
+};
+</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8S6Z4PD9VZ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-8S6Z4PD9VZ');
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>맞춤 견적 — 클락 골프 여행 호텔·골프·차량·레슨 한 번에 | iCLARKGOLF</title>
+<meta name="description" content="필리핀 클락 골프 여행 맞춤 견적 — 호텔(아고다 최저가), 골프장 그린피, 공항 픽업·차량, 레슨, 식사까지 필요한 것만 장바구니에 담으면 견적이 자동 계산됩니다.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://iclarkgolf.com/quote.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="iCLARKGOLF">
+<meta property="og:title" content="맞춤 견적 — iCLARKGOLF">
+<meta property="og:description" content="호텔·골프장·차량·레슨·식사까지 필요한 것만 담으면 클락 골프 여행 견적이 자동 계산됩니다.">
+<meta property="og:url" content="https://iclarkgolf.com/quote.html">
+<meta property="og:image" content="https://iclarkgolf.com/images/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="맞춤 견적 — iCLARKGOLF">
+<meta name="twitter:description" content="호텔·골프장·차량·레슨·식사까지 필요한 것만 담으면 클락 골프 여행 견적이 자동 계산됩니다.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+button,a,input,select,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+:root{
+  --purple:#534AB7; --purple-dark:#3C3489; --purple-deep:#26215C; --purple-pale:#EEEDFE; --purple-border:#AFA9EC;
+  --mint:#1D9E75; --mint-light:#E1F5EE; --mint-border:#c8edd9;
+  --gold:#b45309; --gold-light:#fef3c7; --gold-border:#fcd34d;
+  --bg:#f4faf7; --white:#fff; --text:#26215C; --muted:#6b7280;
+  --radius:14px; --shadow:0 2px 12px rgba(83,74,183,0.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{overflow-x:hidden;max-width:100%;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:96px;}
+a{text-decoration:none;color:inherit;}
+
+nav{background:linear-gradient(135deg,#26215C,#534AB7);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#fff;letter-spacing:2px;}
+.nav-logo .i{color:#ff4444!important;-webkit-text-fill-color:#ff4444!important;font-family:'Nunito',sans-serif;font-weight:800;font-size:22px;letter-spacing:0;vertical-align:middle;}
+.nav-back{color:rgba(255,255,255,.85);font-size:13px;font-weight:700;}
+
+.hero{background:linear-gradient(135deg,#1D9E75,#534AB7);color:#fff;padding:34px 20px 38px;text-align:center;}
+.hero-badge{display:inline-block;background:rgba(255,255,255,.22);border:1.5px solid rgba(255,255,255,.5);font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;margin-bottom:14px;}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(34px,7vw,54px);letter-spacing:2px;line-height:1.05;margin-bottom:12px;}
+.hero h1 span{color:#FBBF24;}
+.hero p{font-size:15px;opacity:.9;max-width:520px;margin:0 auto;line-height:1.7;}
+
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px;}
+
+.benefit{background:var(--white);border:2px solid var(--mint);border-radius:var(--radius);padding:20px;margin-bottom:18px;box-shadow:var(--shadow);}
+.benefit h2{font-size:18px;font-weight:800;color:var(--purple-deep);margin-bottom:6px;line-height:1.4;}
+.benefit .lead{font-size:13.5px;color:#4b5563;line-height:1.8;margin-bottom:12px;}
+.benefit ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.benefit li{background:var(--mint-light);border-radius:10px;padding:10px 12px;font-size:13px;font-weight:700;color:#085041;line-height:1.5;}
+.benefit li small{display:block;font-weight:600;color:#3f6b5c;font-size:11.5px;margin-top:2px;}
+.from-banner{background:var(--purple-pale);border:1.5px solid var(--purple-border);border-radius:var(--radius);padding:14px 16px;margin-bottom:16px;font-size:13.5px;line-height:1.7;color:var(--purple-deep);}
+.from-banner b{color:var(--purple);}
+.benefit .honest{margin-top:12px;font-size:12.5px;color:var(--muted);line-height:1.7;background:#f9fafb;border-radius:10px;padding:10px 12px;}
+@media(max-width:520px){.benefit ul{grid-template-columns:1fr;}}
+
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden;}
+.card-head{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid #eef0f4;}
+.step{width:28px;height:28px;border-radius:50%;background:var(--purple);color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.card-title{font-size:16px;font-weight:800;}
+.card-sub{margin-left:auto;font-size:12px;color:var(--muted);font-weight:700;text-align:right;}
+.card-body{padding:16px 18px;}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+@media(max-width:520px){.grid3{grid-template-columns:1fr 1fr;}}
+label.f{display:block;font-size:12px;font-weight:800;color:var(--muted);margin-bottom:5px;}
+input.inp,textarea.inp{width:100%;border:1.5px solid var(--mint-border);border-radius:10px;padding:11px 12px;font-family:'Nunito',sans-serif;font-size:16px;color:var(--text);outline:none;background:#fff;}
+input.inp:focus,textarea.inp:focus{border-color:var(--purple);}
+.stepper{display:flex;align-items:center;border:1.5px solid var(--mint-border);border-radius:10px;overflow:hidden;background:#fff;}
+.stepper button{width:40px;height:44px;border:none;background:var(--mint-light);color:var(--mint);font-size:20px;font-weight:800;cursor:pointer;}
+.stepper span{flex:1;text-align:center;font-size:16px;font-weight:800;}
+/* 2026-10-18: 풀빌라를 담으면 카드 안에 인원·박수·합계 */
+.vp{margin-top:10px;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:10px;padding:10px;}
+.vp-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;font-size:13px;font-weight:800;color:#3730a3;}
+.vp .stepper{flex:0 0 auto;}
+.vp .stepper button{width:34px;height:34px;font-size:18px;}
+.vp .stepper span{min-width:58px;font-size:14px;padding:0 4px;}
+.vp-total{font-size:13px;font-weight:700;color:#374151;border-top:1px dashed #c4b5fd;padding-top:8px;}
+.vp-total b{color:#534AB7;font-size:15px;}
+.season-note{margin-top:12px;font-size:13px;font-weight:800;border-radius:10px;padding:9px 12px;display:none;}
+.season-note.peak{display:block;background:var(--gold-light);color:var(--gold);border:1.5px solid var(--gold-border);}
+.season-note.off{display:block;background:var(--mint-light);color:#085041;border:1.5px solid var(--mint-border);}
+
+.tabs{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.tab{flex:1;min-width:0;padding:10px 6px;border-radius:12px;border:1.5px solid var(--purple-border);background:#fff;color:var(--purple);font-family:'Nunito',sans-serif;font-size:13.5px;font-weight:800;cursor:pointer;white-space:nowrap;}
+.tab.on{background:var(--purple);color:#fff;border-color:var(--purple);}
+.tab-desc{font-size:12.5px;color:var(--muted);margin:-4px 0 12px;line-height:1.6;}
+/* 여행 목적 선택 (2026-10-06) — 관광골프: 호텔·풀빌라 / 전지훈련: iClark 전용숙소·호텔 */
+.purpose{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.purpose button{padding:12px 8px;border-radius:12px;border:2px solid var(--purple-border);background:#fff;color:var(--purple-deep);font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;line-height:1.35;}
+.purpose button small{display:block;font-size:11.5px;font-weight:700;color:var(--muted);margin-top:3px;}
+.purpose button.on{background:var(--purple);border-color:var(--purple);color:#fff;}
+.purpose button.on small{color:rgba(255,255,255,.85);}
+.purpose-hint{font-size:12px;color:var(--muted);margin:-6px 0 12px;}
+
+.hotel{display:flex;gap:12px;border:1.5px solid #e5e7eb;border-radius:12px;padding:10px;margin-bottom:10px;background:#fff;transition:border-color .15s;}
+.hotel.on{border-color:var(--mint);background:#f3fbf7;}
+.hotel-img{width:104px;height:92px;border-radius:9px;object-fit:cover;flex-shrink:0;background:#eef0f4;}
+.hotel-info{flex:1;min-width:0;}
+.hotel-name{font-size:14.5px;font-weight:800;line-height:1.35;}
+.hotel-meta{font-size:12px;color:var(--muted);margin-top:2px;}
+.hotel-price{font-size:13px;font-weight:800;color:var(--purple);margin-top:4px;}
+.hotel-price small{font-weight:600;color:var(--muted);font-size:11px;}
+.krw{font-size:11px;font-weight:600;color:#9ca3af;white-space:nowrap;}
+.hotel-btns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.btn-agoda{background:#e8453c;color:#fff;border-radius:8px;padding:8px 12px;font-size:12.5px;font-weight:800;display:inline-block;}
+.btn-pick{background:#fff;color:var(--mint);border:1.5px solid var(--mint);border-radius:8px;padding:7px 12px;font-size:12.5px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;}
+.hotel.on .btn-pick{background:var(--mint);color:#fff;}
+@media(max-width:420px){.hotel-img{width:84px;height:84px;}}
+.more-btn{width:100%;padding:12px;background:#fff;color:var(--purple);border:1.5px dashed var(--purple-border);border-radius:12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+.other-hotel{display:block;text-align:center;margin-top:10px;font-size:13px;font-weight:800;color:var(--purple);padding:10px;border-radius:10px;background:var(--purple-pale);}
+.need-date{font-size:12.5px;color:var(--gold);font-weight:800;background:var(--gold-light);border-radius:10px;padding:9px 12px;margin-bottom:12px;}
+
+.golf{border:1.5px solid #e5e7eb;border-radius:12px;padding:12px;margin-bottom:8px;background:#fff;}
+.golf.on{border-color:var(--mint);background:#f3fbf7;}
+.golf-top{display:flex;align-items:center;gap:10px;}
+.golf-name{font-size:14.5px;font-weight:800;}
+.golf-fee{font-size:12px;color:var(--muted);margin-top:2px;}
+.golf-fee b{color:var(--purple);}
+.golf-extra{font-size:11.5px;color:#c2410c;margin-top:2px;}
+.golf-total{font-size:12.5px;font-weight:800;color:var(--purple-deep);margin-top:4px;}
+.golf .stepper{width:130px;margin-left:auto;flex-shrink:0;}
+.golf .stepper button{width:36px;height:38px;}
+
+.sum-row{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:7px 0;border-bottom:1px dashed #e5e7eb;}
+.sum-row:last-child{border-bottom:none;}
+.sum-row .k{color:#4b5563;}
+.sum-row .v{font-weight:800;text-align:right;}
+.sum-total{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;padding-top:12px;border-top:2px solid var(--purple);}
+.sum-total .k{font-size:15px;font-weight:800;}
+.sum-total .v{font-size:24px;font-weight:800;color:var(--purple);}
+.sum-note{font-size:11.5px;color:var(--muted);line-height:1.7;margin-top:10px;}
+
+.submit{width:100%;padding:15px;border:none;border-radius:12px;background:linear-gradient(135deg,#1D9E75,#534AB7);color:#fff;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;margin-top:14px;}
+.submit:disabled{opacity:.6;}
+.msg{display:none;margin-top:12px;border-radius:10px;padding:12px;font-size:14px;font-weight:800;line-height:1.6;}
+.kakao{display:block;text-align:center;margin-top:10px;background:#FEE500;color:#3c1e1e;border-radius:12px;padding:13px;font-weight:800;font-size:14px;}
+
+.fixed-bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1.5px solid var(--mint-border);padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px;z-index:90;box-shadow:0 -4px 16px rgba(0,0,0,.06);}
+.fixed-bar .t{flex:1;min-width:0;}
+.fixed-bar .t small{display:block;font-size:11px;color:var(--muted);font-weight:700;}
+.fixed-bar .t b{font-size:20px;color:var(--purple);}
+.fixed-bar button{background:var(--purple);color:#fff;border:none;border-radius:10px;padding:12px 18px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap;}
+footer{text-align:center;font-size:12px;color:var(--muted);padding:20px 16px 10px;}
+
+/* 소개 카피 섹션 */
+.intro-copy{background:var(--white);border-bottom:1px solid var(--mint-border);}
+.intro-copy-inner{max-width:720px;margin:0 auto;padding:32px 20px;}
+.intro-copy h2{font-family:'Nunito',sans-serif;font-weight:800;font-size:21px;color:var(--purple-deep);margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--mint);line-height:1.4;}
+.intro-copy h3{font-family:'Nunito',sans-serif;font-weight:800;font-size:16px;color:var(--purple);margin:22px 0 10px;padding-left:10px;border-left:4px solid var(--mint);line-height:1.4;}
+.intro-copy p{font-size:14.5px;line-height:1.9;color:#4b5563;margin-bottom:12px;}
+.intro-copy p:last-of-type{margin-bottom:0;}
+.intro-copy strong{color:var(--purple-deep);font-weight:800;}
+.intro-copy ul{list-style:none;margin:12px 0 4px;padding:0;}
+.intro-copy ul li{font-size:14px;line-height:1.8;color:#374151;padding:6px 0 6px 26px;position:relative;}
+.intro-copy ul li::before{content:'✓';position:absolute;left:0;top:6px;color:var(--mint);font-weight:800;}
+.intro-tip{margin-top:18px;background:var(--mint-light);border:1.5px solid var(--mint-border);border-radius:12px;padding:14px 18px;font-size:13.5px;line-height:1.8;color:#085041;font-weight:700;}
+@media(max-width:480px){.intro-copy-inner{padding:24px 16px;}.intro-copy h2{font-size:18px;}.intro-copy h3{font-size:15px;}.intro-copy p{font-size:14px;}}
+.intro-copy{border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-top:6px;}
+
+/* ── 장바구니(쿠팡식) 공통 ── */
+.howto{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.howto div{background:#fff;border-radius:12px;padding:12px 8px;text-align:center;font-size:12.5px;font-weight:800;color:var(--purple-deep);box-shadow:var(--shadow);line-height:1.5;}
+.howto div b{display:block;font-size:20px;margin-bottom:2px;}
+.add{flex-shrink:0;background:#fff;color:#346aff;border:1.5px solid #346aff;border-radius:8px;padding:8px 12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;}
+.add.on{background:#346aff;color:#fff;}
+.item{display:flex;align-items:center;gap:10px;border:1.5px solid #e5e7eb;border-radius:12px;padding:12px;margin-bottom:8px;background:#fff;}
+/* 2026-10-18: 레슨 받는 인원 */
+.lp{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12.5px;font-weight:800;color:#3730a3;flex-wrap:wrap;}
+.qty.sm button{width:30px;height:30px;font-size:16px;}
+.qty.sm span{min-width:40px;font-size:13px;}
+.lp-sum{margin-top:6px;font-size:12.5px;color:#374151;font-weight:700;}
+.lp-sum b{color:#534AB7;}
+.item.on{border-color:#346aff;background:#f5f8ff;}
+.item-icon{font-size:24px;width:32px;text-align:center;flex-shrink:0;}
+.item-info{flex:1;min-width:0;}
+.item-name{font-size:14.5px;font-weight:800;line-height:1.35;}
+.item-note{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5;}
+.item-price{font-size:13px;font-weight:800;color:var(--purple);margin-top:3px;}
+.item-price small{font-weight:600;color:var(--muted);}
+.qty{display:flex;align-items:center;border:1.5px solid #346aff;border-radius:8px;overflow:hidden;flex-shrink:0;}
+.qty button{width:32px;height:34px;border:none;background:#f5f8ff;color:#346aff;font-size:18px;font-weight:800;cursor:pointer;}
+.qty span{min-width:40px;text-align:center;font-size:13.5px;font-weight:800;color:#346aff;}
+.cart-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px dashed #e5e7eb;font-size:14px;}
+.cart-row:last-child{border-bottom:none;}
+.cart-row .k{flex:1;min-width:0;color:#374151;line-height:1.45;}
+.cart-row .k small{color:var(--muted);font-size:11.5px;}
+.cart-row .v{font-weight:800;white-space:nowrap;text-align:right;line-height:1.3;}
+.cart-row .x{border:none;background:#f3f4f6;color:#6b7280;width:26px;height:26px;border-radius:50%;font-size:14px;cursor:pointer;flex-shrink:0;}
+.cart-group{font-size:12px;font-weight:800;color:var(--muted);margin-top:10px;}
+.cart-empty{color:var(--muted);font-size:13.5px;padding:10px 0;text-align:center;line-height:1.7;}
+.cart-badge{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;border-radius:10px;background:#e8453c;color:#fff;font-size:11px;font-weight:800;padding:0 6px;margin-left:4px;vertical-align:middle;}
+.golf .add{margin-left:auto;}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://iclarkgolf.com" class="nav-logo"><span class="i">i</span>CLARKGOLF</a>
+  <a href="https://iclarkgolf.com" class="nav-back">← 홈으로</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">맞춤 견적</div>
+  <h1>필요한 것만 <span>🛒 담으면</span><br>견적이 <span>자동 계산</span></h1>
+  <p>호텔·골프장·차량·레슨·식사까지 한 곳에서 고르세요.<br>호텔은 아고다 최저가로, 나머지는 iCLARKGOLF가 챙깁니다.</p>
+</div>
+
+<div class="wrap">
+
+  <div class="howto">
+    <div><b>①</b>날짜·인원 넣기</div>
+    <div><b>②</b>필요한 것<br>🛒 담기</div>
+    <div><b>③</b>장바구니 확인<br>후 신청</div>
+  </div>
+
+  <div class="from-banner" id="from-banner" style="display:none;"></div>
+
+  <!-- 1. 날짜·인원 -->
+  <div class="card">
+    <div class="card-head"><div class="step">1</div><div class="card-title">여행 목적 · 날짜 · 인원</div><div class="card-sub" id="date-sum"></div></div>
+    <div class="card-body">
+      <label class="f">어떤 골프 여행인가요?</label>
+      <div class="purpose" id="purpose">
+        <button type="button" data-p="tour" onclick="setPurpose('tour')">⛳ 관광골프<small>호텔·풀빌라에서 편하게</small></button>
+        <button type="button" data-p="training" onclick="setPurpose('training')">🏌️ 전지훈련<small>먹고 자고 골프만 · 전용숙소</small></button>
+      </div>
+      <div class="purpose-hint" id="purpose-hint">목적을 고르시면 맞는 숙소를 먼저 보여 드립니다.</div>
+      <div class="grid2">
+        <div><label class="f" for="arr">도착일 (체크인)</label><input type="date" class="inp" id="arr"></div>
+        <div><label class="f" for="dep">출발일 (체크아웃)</label><input type="date" class="inp" id="dep"></div>
+      </div>
+      <div class="grid3" style="margin-top:12px;">
+        <div><label class="f">골퍼</label><div class="stepper"><button type="button" onclick="chg('g',-1)">−</button><span id="n-g">2</span><button type="button" onclick="chg('g',1)">+</button></div></div>
+        <div><label class="f">동반 비골퍼</label><div class="stepper"><button type="button" onclick="chg('n',-1)">−</button><span id="n-n">0</span><button type="button" onclick="chg('n',1)">+</button></div></div>
+        <div><label class="f">객실 수</label><div class="stepper"><button type="button" onclick="chg('r',-1)">−</button><span id="n-r">1</span><button type="button" onclick="chg('r',1)">+</button></div></div>
+      </div>
+      <div class="season-note" id="season-note"></div>
+    </div>
+  </div>
+
+  <!-- 2. 숙소 -->
+  <div class="card">
+    <div class="card-head"><div class="step">2</div><div class="card-title">🏨 숙소</div><div class="card-sub" id="hotel-sum">선택 안 함</div></div>
+    <div class="card-body">
+      <div class="benefit" style="margin-bottom:14px;padding:14px;box-shadow:none;">
+        <h2 style="font-size:15px;">🎁 여기서 호텔을 예약하시면 여행 정보를 수시로 챙겨 드립니다</h2>
+        <p class="lead" style="margin-bottom:8px;">출발 전 준비(환전·유심·eTravel), 라운드 안내, 현지 체류 중 1:1 카톡 상담, 맛집·이동 정보까지. 호텔 요금은 아고다에서 직접 예약하시는 것과 같습니다.</p>
+      </div>
+<!-- 아고다 시즌 세일 배너 (2026-10-05) — 세일 기간에만 자동 표시, 기간 끝나면 자동 숨김. 새 세일은 PROMOS에 한 줄 추가 -->
+<div id="agPromo" style="display:none;margin:0 0 14px;"></div>
+<script>
+(function(){
+  var PROMOS = [
+    { name:'아고다 10.10 세일', emoji:'🔟', off:'최대 15% 할인', start:'2026-10-01', end:'2026-10-14', path:'DoubleDaySale', img:'images/agoda-1010-sale-kr.jpg' },
+    { name:'아고다 할로윈 세일', emoji:'🎃', off:'최대 15% 할인', start:'2026-10-24', end:'2026-11-06', path:'HalloweenSale', img:'images/agoda-halloween-sale-kr.jpg' }
+  ];
+  var now = new Date(), p = null;
+  for (var i = 0; i < PROMOS.length; i++) {
+    var s = new Date(PROMOS[i].start + 'T00:00:00+09:00'), e = new Date(PROMOS[i].end + 'T23:59:59+09:00');
+    if (now >= s && now <= e) { p = PROMOS[i]; p._end = e; break; }
+  }
+  if (!p) return;
+  var left = Math.floor((p._end - now) / 86400000), md = parseInt(p.end.slice(5,7),10) + '월 ' + parseInt(p.end.slice(8,10),10) + '일';
+  var url = 'https://www.agoda.com/ko-kr/' + p.path + '?cid=1969951';
+  var el = document.getElementById('agPromo');
+  el.innerHTML = '<a href="' + url + '" target="_blank" rel="noopener sponsored" onclick="if(window.gtag)gtag(\'event\',\'agoda_promo_click\',{promo:\'' + p.path + '\',page:location.pathname})" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:linear-gradient(120deg,#3b0764,#7c3aed 55%,#f97316);color:#fff;border-radius:14px;padding:12px;text-decoration:none;box-shadow:0 4px 14px rgba(124,58,237,.25);">'
+    + (p.img ? '<img src="' + p.img + '" alt="' + p.name + ' 공식 배너" loading="lazy" onerror="this.remove()" style="flex:1 1 300px;max-width:380px;width:100%;aspect-ratio:688/320;object-fit:cover;border-radius:10px;display:block;">' : '')
+    + '<span style="flex:1 1 220px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><span style="font-size:28px;line-height:1;">' + p.emoji + '</span>'
+    + '<span style="flex:1;min-width:180px;"><b style="display:block;font-size:15px;">' + p.name + ' 진행 중 · ' + p.off + '</b>'
+    + '<span style="font-size:12px;opacity:.9;">' + md + '까지' + (left <= 0 ? ' · <b style="color:#fde68a;">오늘 마감!</b>' : ' · <b style="color:#fde68a;">D-' + left + '</b>') + ' · 겨울 시즌 호텔 미리 잡으세요</span>'
+    + '<span style="display:block;font-size:10px;opacity:.75;margin-top:4px;">🤝 iCLARKGOLF는 아고다 공식 제휴 파트너입니다</span></span>'
+    + '<span style="background:#fff;color:#6d28d9;font-size:12px;font-weight:800;padding:8px 14px;border-radius:20px;white-space:nowrap;">세일 호텔 보기 →</span></span></a>';
+  el.style.display = 'block';
+})();
+</script>
+      <div class="need-date" id="need-date">📅 먼저 날짜를 넣으시면, 아고다 버튼이 그 날짜로 바로 열립니다.</div>
+      <div class="tabs" id="tabs"></div>
+      <div class="tab-desc" id="tab-desc"></div>
+      <div id="hotel-list"><div style="text-align:center;color:var(--muted);padding:20px;font-size:13px;">숙소 목록을 불러오는 중…</div></div>
+      <a class="other-hotel" id="other-hotel" target="_blank" rel="noopener sponsored" onclick="trackAgoda('search')">🔍 목록에 없는 호텔은 아고다에서 검색하기 →</a>
+    </div>
+  </div>
+
+  <!-- 3. 골프장 -->
+  <div class="card">
+    <div class="card-head"><div class="step">3</div><div class="card-title">⛳ 골프장</div><div class="card-sub" id="golf-sum">0라운드</div></div>
+    <div class="card-body">
+      <div id="golf-list"></div>
+      <p class="sum-note">그린피는 1인 1라운드 주중 기준입니다. 카트·캐디비는 현지에서 따로 냅니다. 주말은 요금이 조금 높을 수 있고, 확정 요금은 견적서로 안내해 드립니다.</p>
+    </div>
+  </div>
+
+  <!-- 4~6. 차량·레슨·식사 (admin 맞춤견적 항목) -->
+  <div class="card">
+    <div class="card-head"><div class="step">4</div><div class="card-title">🚗 공항 픽업 · 차량</div><div class="card-sub" id="sum-transfers"></div></div>
+    <div class="card-body"><div id="list-transfers"></div></div>
+  </div>
+  <div class="card">
+    <div class="card-head"><div class="step">5</div><div class="card-title">🏌️ 레슨</div><div class="card-sub" id="sum-lessons"></div></div>
+    <div class="card-body"><div id="list-lessons"></div></div>
+  </div>
+  <div class="card">
+    <div class="card-head"><div class="step">6</div><div class="card-title">🍽️ 식사 · 기타</div><div class="card-sub" id="sum-extras"></div></div>
+    <div class="card-body"><div id="list-extras"></div></div>
+  </div>
+  <div id="custom-sections"></div>
+
+  <!-- 장바구니 -->
+  <div class="card" id="sum-card">
+    <div class="card-head"><div class="step">🛒</div><div class="card-title">장바구니</div><div class="card-sub" id="cart-count">0개</div></div>
+    <div class="card-body">
+      <div id="sum-rows"></div>
+      <div class="sum-total"><span class="k">예상 총액</span><span class="v" id="sum-total">₱0</span></div>
+      <p class="sum-note" id="sum-note"></p>
+    </div>
+  </div>
+
+  <!-- 신청 -->
+  <div class="card" id="apply-card">
+    <div class="card-head"><div class="step">✓</div><div class="card-title">신청하기</div></div>
+    <div class="card-body">
+      <div class="grid2">
+        <div><label class="f" for="nm">이름 *</label><input class="inp" id="nm" autocomplete="name"></div>
+        <div><label class="f" for="ct">연락처 (휴대폰·카톡) *</label><input class="inp" id="ct" inputmode="tel" autocomplete="tel"></div>
+      </div>
+      <div style="margin-top:12px;">
+        <label class="f" for="bk">아고다 예약번호 (호텔을 예약하셨다면)</label>
+        <input class="inp" id="bk" inputmode="numeric" placeholder="예: 1234567890">
+        <div style="font-size:11.5px;color:var(--muted);margin-top:5px;line-height:1.6;">예약번호를 남겨 주시면 여행 정보 서비스 대상으로 바로 등록해 드립니다. 나중에 카톡으로 알려 주셔도 됩니다.</div>
+      </div>
+      <div style="margin-top:12px;">
+        <label class="f" for="mm">요청사항</label>
+        <textarea class="inp" id="mm" rows="3" placeholder="희망 티타임(오전/오후), 항공편 시간 등"></textarea>
+      </div>
+      <button class="submit" id="submit-btn" onclick="submitApply()">🛒 장바구니 내용으로 신청하기</button>
+      <div class="msg" id="msg"></div>
+      <a class="kakao" href="https://pf.kakao.com/_nbHKX/chat" target="_blank" rel="noopener" onclick="if(window.gtag)gtag('event','quote_kakao_click')">💬 카카오톡으로 바로 물어보기</a>
+      <a href="payment.html" style="display:block;text-align:center;margin-top:10px;font-size:13px;font-weight:800;color:var(--purple);">💳 입금 안내 보기</a>
+    </div>
+  </div>
+
+  <!-- 클락 골프 여행 안내 (기존 맞춤견적 소개 글 — 검색 노출용으로 보존) -->
+<div class="intro-copy">
+  <div class="intro-copy-inner">
+    <h2>클락 골프 여행, 왜 다른 동남아 골프 지역과 다른가</h2>
+
+    <h3>태국·베트남과 달리, 혼자서도 다닐 수 있는 곳</h3>
+    <p><strong>태국이나 베트남으로 골프 여행</strong>을 떠난다면 십중팔구 여행사를 거치게 됩니다. 현지에 아는 사람이 없는 한 그게 정석이니까요. 그런데 <strong>클락과 앙헬레스</strong>는 다릅니다. 최소한의 정보만 있으면 <strong>혼자서도 얼마든지 다닐 수 있는 지역</strong>입니다. 골프장 밖에서는 한국의 신생 도시에 여행 온 것과 크게 다르지 않은 느낌을 받으실 겁니다.</p>
+
+    <h3>다만 골프장 부킹·레슨·차량은 다릅니다</h3>
+    <p>문제는 <strong>골프와 엮이는 순간</strong>부터입니다. <strong>골프장 부킹</strong>, <strong>레슨</strong>, 그리고 <strong>차량과 기사</strong> — 이 세 가지가 개인이 혼자 준비하기엔 까다로운 부분입니다. 특히 필리핀은 <strong>차량만 렌트해주는 곳이 드뭅니다</strong>. 대부분 기사가 함께 붙는 방식이라, 현지 사정을 모르면 적정 가격을 가늠하기가 쉽지 않습니다.</p>
+
+    <h3>이 페이지가 해결해 드립니다</h3>
+    <p>이 페이지는 바로 그 부분만 콕 집어서 해결하기 위해 만들었습니다. 숙소는 원하시는 대로 따로 정하셔도 됩니다. 여기서는 다음 항목만 골라 담아 견적을 만들어 보세요.</p>
+    <ul>
+      <li><strong>숙소</strong> — 아고다 최저가로 날짜 맞춰 바로 예약</li>
+      <li><strong>골프장</strong> — 그린피·카트·캐디비까지 실비 기준으로 확인</li>
+      <li><strong>차량과 기사</strong> — 공항 픽업부터 전용 차량까지</li>
+      <li><strong>레슨</strong> — 필드 레슨·연습장 레슨 선택</li>
+    </ul>
+    <p><strong>20년 넘게 현장에서 직접 다져온 단가</strong>라, 이보다 낮은 가격은 어디서도 찾기 어려우실 겁니다.</p>
+
+    <div class="intro-tip">💡 먼저 원하는 항목으로 직접 견적을 맞춰보세요. 그다음 <strong>"견적 신청하기"</strong>를 눌러 실제 견적과 비교해 보시기 바랍니다.</div>
+  </div>
+</div>
+
+
+</div>
+
+<div class="fixed-bar">
+  <div class="t"><small>🛒 장바구니 <span class="cart-badge" id="bar-count">0</span></small><b id="bar-total">₱0</b></div>
+  <button type="button" onclick="document.getElementById('sum-card').scrollIntoView({behavior:'smooth',block:'start'})">장바구니 보기</button>
+</div>
+
+<footer><a href="https://iclarkgolf.com">iCLARKGOLF</a> · Clark, Pampanga, Philippines</footer>
+<script>
+/* ────────────────────────────────────────────────
+   quote.html — 맞춤 견적 장바구니 (2026-09-29 개편: 옛 맞춤견적 + hotel-golf.html 통합) (숙소·골프·차량·레슨·식사를 한 곳에서)
+   · 차량/레슨/식사·기타/추가 섹션: Firestore settings/quote_config (admin "맞춤견적 항목" 탭)
+   · iClark 전용숙소: Firestore accommodations(type:'local', active!==false) — admin "숙소 관리"에서 켜고 끔
+   · 호텔: agoda-hotels.json(GitHub Actions 6시간 자동 갱신)에서 앙헬레스/클락 지역만
+   · 아고다 링크: 고객이 입력한 날짜·인원·객실 + 파트너 cid 자동 포함
+   · 골프: Firestore settings/greenfee(admin 요금표) + 성수기 기간(peakMonths) 자동 적용
+   · 신청: Firestore inquiries (quote.html과 같은 형식 → admin 문의 내역·견적서 자동 채움 그대로 사용)
+   ──────────────────────────────────────────────── */
+const AGODA_CID = '1969951';
+const CLARK_CITY_ID = '18875';
+// 2026-09-29: 아고다 목록 전체(수빅·바타안·산페르난도·타를락 등 포함)를 모두 보여줌 — 처음엔 몇 개만, "모두 보기"로 전부.
+// 클락 인근(아래 두 지역)은 각 탭의 맨 앞에 먼저 나오도록 정렬만 우선시함
+const HOTEL_REGIONS = ['앙헬레스/클락', '마발라캇(팜팡가)'];
+const TIERS = [
+  { id:'lux',  name:'⭐ 특급호텔',   desc:'메리어트·힐튼·스위소텔 등 특급호텔 (1박 ₱6,000 이상) · 클락 인근이 먼저, "모두 보기"로 수빅·바타안 등 전체', test:h=>h.price>=6000 },
+  { id:'mid',  name:'🏨 4성급',      desc:'시설과 가격의 균형이 좋은 숙소 (1박 ₱3,000~6,000) · 클락 인근이 먼저, "모두 보기"로 전체', test:h=>h.price>=3000 && h.price<6000 },
+  { id:'eco',  name:'💰 가성비',     desc:'혼자·장기 골프 여행에 알맞은 숙소 (1박 ₱3,000 미만) · 클락 인근이 먼저, "모두 보기"로 전체', test:h=>h.price<3000 },
+];
+const PAGE = 6;
+const DEFAULT_GREENFEE = [
+  { id:'pradera',  name:'프라데라',       weekday:2500, weekend:3000, caddy:600, cart:1500 },
+  { id:'korea-cc', name:'코리아 CC',      weekday:1800, weekend:2200, caddy:700, cart:2000 },
+  { id:'luisita',  name:'루이시타',       weekday:1600, weekend:1800, caddy:600, cart:1600 },
+  { id:'dheights', name:'디하이츠',       weekday:2900, weekend:3400, caddy:700, cart:1500 },
+  { id:'mimosa',   name:'미모사',         weekday:3900, weekend:4400, caddy:600, cart:1600 },
+  { id:'new-asia', name:'뉴 아시아',      weekday:1000, weekend:1000, caddy:600, cart:1500 },
+  { id:'beverly',  name:'베벌리',         weekday:1000, weekend:1000, caddy:600, cart:1500 },
+  { id:'royal',    name:'로얄 센트럴',    weekday:1500, weekend:2000, caddy:600, cart:1600 },
+  { id:'lakewood', name:'레이크우드',     weekday:800,  weekend:800,  caddy:600, cart:1600 },
+  { id:'vista-am', name:'비스타 오전',    weekday:3600, weekend:4000, caddy:700, cart:0 },
+  { id:'vista-pm', name:'비스타 오후',    weekday:3200, weekend:3600, caddy:700, cart:0 },
+  { id:'hann',     name:'한 리저브',      weekday:8600, weekend:8600, caddy:1000, cart:1700 },
+  { id:'subic',    name:'수빅 인터내셔널', weekday:6000, weekend:10000, caddy:0, cart:0 },
+];
+
+let RATE = 57;                       // $1 = ₱ (admin 적용환율, 환전마진 포함) — 2026-10-03부터 화면 표시는 전부 페소, 이 값은 예전 달러 항목 환산·원화 송금액 계산에만 사용
+let KRW = 1380;                      // $1 = ₩ (admin 환율)
+let PEAK_MONTHS = [11,12,1,2];       // admin 성수기 기간으로 덮어씀
+let GREENFEE = DEFAULT_GREENFEE.slice();
+let HOTELS = [];                     // 아고다 호텔 (key: 'agoda-<hotelId>')
+let LOCALS = [];                     // iClark 전용숙소 (key: Firestore 문서 id)
+let VILLAS = [];                     // 풀빌라 (Firestore accommodations type:'villa' — admin 숙소 관리에서 "풀빌라"로 등록하면 자동 표시)
+let purpose = '';                    // '' | 'tour'(관광골프) | 'training'(전지훈련)
+let tier = 'lux', expanded = false, selHotel = null;   // selHotel = 숙소 key
+const DEFAULT_TRANSFERS = [
+  {id:'t1',icon:'✈️',name:'클락 공항 → 숙소 픽업',note:'클락(CRK) 도착 편도',price:35,unit:'회'},
+  {id:'t2',icon:'✈️',name:'마닐라 공항 → 숙소 픽업',note:'NAIA 도착 편도 (2시간+)',price:80,unit:'회'},
+  {id:'t3',icon:'🚗',name:'전용 차량 + 기사',note:'8시간 기준',price:90,unit:'일'},
+];
+const DEFAULT_LESSONS = [
+  {id:'l1',icon:'🏌️',name:'필드 레슨',note:'18홀 라운드 중 프로 동반 지도',price:90,unit:'회'},
+  {id:'l2',icon:'🎯',name:'연습장 레슨',note:'2시간 기준 · 1:1 개인 지도',price:60,unit:'회'},
+];
+const DEFAULT_EXTRAS = [
+  {id:'e1',icon:'🍳',name:'조식',note:'숙소 조식 · 1인 기준',price:12,unit:'일×인',perPerson:true},
+  {id:'e2',icon:'🍽️',name:'석식',note:'현지 식당 석식 · 1인 기준',price:20,unit:'일×인',perPerson:true},
+  {id:'e3',icon:'🗣️',name:'한국어 통역 가이드',note:'통역 동행 · 8시간 기준',price:80,unit:'일'},
+];
+let TRANSFERS = DEFAULT_TRANSFERS, LESSONS = DEFAULT_LESSONS, EXTRAS = DEFAULT_EXTRAS, CUSTOM_SECTIONS = [];
+let selItems = {};                   // 차량·레슨·식사 등 id → 수량
+let selPpl = {};                     // 2026-10-18: 레슨 id → 받는 인원 (안 정하면 골퍼 수)
+let pax = { g:2, n:0, r:1 };
+let selGolf = {};                    // id → rounds
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const usd = php => php / RATE;
+const u2p = v => Math.round((Number(v) || 0) * RATE / 100) * 100;   // 예전 달러 값 → 페소, ₱100 단위 (admin q2U2P와 같음)
+const itemPhp = it => Number(it && it.pricePhp) || u2p(it && it.price);   // 맞춤견적 항목 페소 단가 (admin에서 페소로 저장한 pricePhp 우선)
+const fmtPhp = v => '₱' + Math.round(v).toLocaleString();
+const krwOf = php => Math.ceil((Number(php) || 0) / RATE * KRW / 1000) * 1000;   // 원화 송금 금액 (my-quote.html과 같은 계산)
+const krwTag = php => php ? ` <span class="krw">약 ₩${krwOf(php).toLocaleString()}</span>` : '';   // 페소 옆 작은 원화 참고
+
+/* ── 날짜 ── */
+function nights(){
+  const a = $('arr').value, d = $('dep').value;
+  if (!a || !d) return 0;
+  const n = Math.round((new Date(d) - new Date(a)) / 86400000);
+  return n > 0 ? n : 0;
+}
+function isPeak(){
+  const a = $('arr').value;
+  if (!a) return false;
+  return PEAK_MONTHS.includes(Number(a.slice(5,7)));
+}
+function onDates(){
+  const a = $('arr').value;
+  if (a) {
+    $('dep').min = a;
+    if ($('dep').value && $('dep').value <= a) $('dep').value = '';
+    // 30초 문의에서 넘어온 "기간"이 있으면, 도착일만 넣어도 출발일을 자동으로 채움
+    if (!$('dep').value && FROM.nights > 0) {
+      const d = new Date(a); d.setDate(d.getDate() + FROM.nights);
+      $('dep').value = d.toISOString().slice(0,10);
+    }
+  }
+  const n = nights();
+  $('date-sum').textContent = n ? n + '박 ' + (n+1) + '일' : '';
+  $('need-date').style.display = n ? 'none' : 'block';
+  const sn = $('season-note');
+  if (a) {
+    sn.className = 'season-note ' + (isPeak() ? 'peak' : 'off');
+    sn.textContent = isPeak()
+      ? '🔥 성수기(' + PEAK_MONTHS.slice().sort((x,y)=>x-y).join('·') + '월) 그린피가 적용됩니다'
+      : '🌿 비수기 그린피가 적용됩니다';
+  } else sn.className = 'season-note';
+  renderHotels(); renderGolf(); renderItems(); renderSum();
+}
+function chg(k, d){
+  const min = k === 'n' ? 0 : 1;
+  pax[k] = Math.max(min, Math.min(20, pax[k] + d));
+  if (k !== 'r') {
+    // 객실 수는 인원(2인 1실) 기준으로 자동 제안하되, 직접 바꾼 값보다 작아지지는 않게
+    const need = Math.ceil((pax.g + pax.n) / 2);
+    if (pax.r < need) pax.r = need;
+  }
+  $('n-g').textContent = pax.g; $('n-n').textContent = pax.n; $('n-r').textContent = pax.r;
+  renderHotels(); renderGolf(); renderSum();
+}
+
+/* ── 아고다 커미션 링크 ── */
+function agodaUrl(hid){
+  const a = $('arr').value, d = $('dep').value;
+  const p = new URLSearchParams({ cid: AGODA_CID, currency: 'KRW', NumberofAdults: String(pax.g + pax.n), NumberofChildren: '0', Rooms: String(pax.r) });
+  if (hid) { p.set('hid', hid); p.set('pcs', '6'); } else { p.set('city', CLARK_CITY_ID); p.set('pcs', '1'); }
+  if (a && d && nights()) { p.set('checkin', a); p.set('checkout', d); }
+  return 'https://www.agoda.com/ko-kr/partners/partnersearch.aspx?' + p.toString();
+}
+function trackAgoda(what){ if (window.gtag) gtag('event', 'quote_agoda_click', { hotel: what }); }
+
+/* ── 호텔 ── */
+const LOCAL_TIER = { id:'local', name:'🏠 iClark 전용', desc:'전지훈련 전용 숙소 — 프라데라 골프장 정문 앞. 1인 1실 숙박비(청소·세탁·와이파이 포함)이며, 식사와 픽업·드롭은 아래 항목에서 함께 골라 담습니다' };
+const VILLA_TIER = { id:'villa', name:'🏡 풀빌라', desc:'단체 골프·가족 여행에 알맞은 풀빌라 — 한 채를 통째로 쓰는 요금(1박·1채)' };
+function tierList(id){ return id === 'local' ? LOCALS : id === 'villa' ? VILLAS : HOTELS.filter(TIERS.find(t => t.id === id).test); }
+// 목적에 따라 보이는 숙소 탭: 관광골프 = 풀빌라·호텔 / 전지훈련 = 전용숙소·호텔 / 미선택 = 전부
+function allTiers(){
+  const L = LOCALS.length ? [LOCAL_TIER] : [], V = VILLAS.length ? [VILLA_TIER] : [];
+  if (purpose === 'training') return L.concat(TIERS);
+  if (purpose === 'tour') return V.concat(TIERS);
+  return TIERS.concat(V, L);
+}
+function renderPurpose(){
+  document.querySelectorAll('#purpose button').forEach(b => b.classList.toggle('on', b.dataset.p === purpose));
+  $('purpose-hint').textContent = purpose === 'training' ? '🏌️ 전지훈련: 프라데라 정문 앞 iClark 전용숙소(올인클루시브)를 먼저 보여 드립니다. 호텔도 고를 수 있어요.'
+    : purpose === 'tour' ? '⛳ 관광골프: 호텔' + (VILLAS.length ? '·풀빌라' : '') + ' 중에서 고르세요.'
+    : '목적을 고르시면 맞는 숙소를 먼저 보여 드립니다.';
+}
+function setPurpose(p){
+  purpose = p;
+  const tiers = allTiers();
+  tier = tiers[0].id; expanded = false;
+  // 지금 목적에서 고를 수 없는 숙소가 담겨 있으면 빼기 (예: 전용숙소 담고 관광골프로 바꿈)
+  const h = findHotel(selHotel);
+  if (h && !tiers.some(t => tierList(t.id).includes(h))) selHotel = null;
+  renderPurpose(); renderTabs(); renderHotels(); renderItems(); renderSum();
+  if (window.gtag) gtag('event', 'quote_purpose', { purpose: p });
+}
+function renderTabs(){
+  $('tabs').innerHTML = allTiers().map(t => {
+    const cnt = tierList(t.id).length;
+    return `<button type="button" class="tab${tier===t.id?' on':''}" onclick="setTier('${t.id}')">${t.name} <span style="opacity:.7">${cnt}</span></button>`;
+  }).join('');
+  $('tab-desc').textContent = (allTiers().find(t => t.id === tier) || allTiers()[0]).desc;
+}
+function setTier(id){ tier = id; expanded = false; renderTabs(); renderHotels(); }
+function renderHotels(){
+  $('other-hotel').href = agodaUrl('');
+  if (!HOTELS.length && !LOCALS.length && !VILLAS.length) return;
+  if (!allTiers().some(t => t.id === tier)) tier = allTiers()[0].id;
+  const list = tierList(tier);
+  const shown = expanded ? list : list.slice(0, PAGE);
+  const n = nights();
+  $('hotel-list').innerHTML = shown.map(h => {
+    if (h.kind === 'local' || h.kind === 'villa') return `<div class="hotel${selHotel===h.key?' on':''}">
+      ${h.image ? `<img class="hotel-img" src="${esc(h.image)}" alt="${esc(h.name)}" loading="lazy" onerror="this.style.visibility='hidden'">` : `<div class="hotel-img" style="display:flex;align-items:center;justify-content:center;font-size:30px;">${h.kind === 'villa' ? '🏡' : '🏠'}</div>`}
+      <div class="hotel-info">
+        <div class="hotel-name">${esc(h.name)}</div>
+        <div class="hotel-meta">${esc(h.note || '')}</div>
+        <div class="hotel-price">${h.kind === 'villa' ? fmtPhp(villaPrice(h)) + krwTag(villaPrice(h)) : fmtPhp(h.pricePhp || u2p(h.priceUsd)) + krwTag(h.pricePhp || u2p(h.priceUsd))} <small>${h.kind === 'villa' ? '/ 1박·1채' + (h.tiers ? ' · ' + villaTierNote(h) : '') : '/ 1인·1일 · 1인 1실 (청소·세탁·와이파이 포함)'}</small></div>
+        <div class="hotel-btns"><button type="button" class="add${selHotel===h.key?' on':''}" onclick="pickHotel('${h.key}')">${selHotel===h.key ? '✓ 담김' : '🛒 담기'}</button></div>
+        ${h.kind === 'villa' && selHotel === h.key ? villaPanel(h) : ''}
+      </div>
+    </div>`;
+    const stars = h.starRating > 0 ? '⭐'.repeat(Math.round(h.starRating)) : '';
+    const perNight = fmtPhp(h.price);
+    return `<div class="hotel${selHotel===h.key?' on':''}">
+      ${h.image ? `<img class="hotel-img" src="${esc(h.image.replace(/^http:/,'https:'))}" alt="${esc(h.name)}" loading="lazy" onerror="this.style.visibility='hidden'">` : '<div class="hotel-img"></div>'}
+      <div class="hotel-info">
+        <div class="hotel-name">${esc(h.name)}</div>
+        <div class="hotel-meta">${stars}${h.reviewScore ? ' · 평점 ' + h.reviewScore : ''}${h.region ? ' · 📍' + esc(h.region) : ''}</div>
+        <div class="hotel-price">참고가 ${perNight}${krwTag(h.price)} <small>/ 1박·객실</small></div>
+        <div class="hotel-btns">
+          <a class="btn-agoda" href="${esc(agodaUrl(h.hotelId))}" target="_blank" rel="noopener sponsored" onclick="trackAgoda('${esc(h.name)}')">${n ? '이 날짜로 예약하기 →' : '아고다에서 보기 →'}</a>
+          <button type="button" class="add${selHotel===h.key?' on':''}" onclick="pickHotel('${h.key}')">${selHotel===h.key ? '✓ 담김' : '🛒 담기'}</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('') + (list.length > PAGE ? `<button type="button" class="more-btn" onclick="expanded=!expanded;renderHotels()">${expanded ? '접기 ▲' : '모두 보기 (전체 ' + list.length + '개) ▼'}</button>` : '')
+    || '<div style="text-align:center;color:var(--muted);padding:16px;font-size:13px;">이 등급의 호텔 정보가 잠시 없습니다. 아래 검색 버튼을 이용해 주세요.</div>';
+  const h = findHotel(selHotel);
+  $('hotel-sum').textContent = h ? h.name : '선택 안 함';
+}
+/* 2026-10-18: 풀빌라 인원별 1박 요금 (admin 숙소 관리의 「인원별 요금」) — 인원에 맞는 요금, 범위 밖이면 가장 가까운 요금 */
+function villaPeople(){ return pax.g + pax.n; }
+function villaTierKey(h){
+  const t = h.tiers; if (!t) return 0;
+  const ks = Object.keys(t).map(Number).filter(k => k > 0 && Number(t[k]) > 0).sort((a, b) => a - b);
+  if (!ks.length) return 0;
+  return ks.find(k => k >= villaPeople()) ?? ks[ks.length - 1];
+}
+function villaPrice(h){
+  const base = h.pricePhp || u2p(h.priceUsd);
+  const k = villaTierKey(h);
+  return k ? (Number(h.tiers[k]) || base) : base;
+}
+function villaTierNote(h){   // 실제로 적용된 인원 요금을 알려줌 (2명이면 '3명 요금', 6명이면 '5명 요금 · 인원 추가는 문의')
+  const k = villaTierKey(h); if (!k) return '';
+  return k + '명 요금' + (villaPeople() > k ? ' · 인원 추가는 문의' : '');
+}
+function villaPanel(h){
+  const n = nights(), p = villaPeople(), price = villaPrice(h);
+  return `<div class="vp">
+    <div class="vp-row"><span>👥 인원</span><div class="stepper"><button type="button" onclick="chg('g',-1)">−</button><span>${p}명</span><button type="button" onclick="chg('g',1)">+</button></div></div>
+    <div class="vp-row"><span>🌙 박수</span><div class="stepper"><button type="button" onclick="villaN(-1)">−</button><span>${n ? n + '박' : '-'}</span><button type="button" onclick="villaN(1)">+</button></div></div>
+    <div class="vp-total">${n ? fmtPhp(price) + ' × ' + n + '박 = <b>' + fmtPhp(price * n) + '</b>' + krwTag(price * n) : '📅 도착일을 넣으면 박수와 합계가 나옵니다'}</div>
+  </div>`;
+}
+function villaN(d){   // 풀빌라 카드에서 박수 조절 → 출발일을 도착일 + 박수로 맞춤
+  const a = $('arr').value;
+  if (!a) { $('arr').scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => { try { $('arr').showPicker(); } catch (e) { $('arr').focus(); } }, 450); return; }
+  const n = Math.max(1, Math.min(60, (nights() || 0) + d));
+  const dt = new Date(a); dt.setDate(dt.getDate() + n);
+  $('dep').value = dt.toISOString().slice(0, 10);
+  onDates();
+}
+function findHotel(key){ return key ? (HOTELS.find(x => x.key === key) || LOCALS.find(x => x.key === key) || VILLAS.find(x => x.key === key) || null) : null; }
+function pickHotel(key){ selHotel = selHotel === key ? null : key; renderHotels(); renderSum(); }
+
+/* ── 골프 ── */
+function fee(g){
+  const peakWd = (g.peakWeekday != null && g.peakWeekday !== '') ? Number(g.peakWeekday) : Number(g.weekday) || 0;
+  return isPeak() ? peakWd : Number(g.weekday) || 0;
+}
+function renderGolf(){
+  $('golf-list').innerHTML = GREENFEE.filter(g => Number(g.weekday) > 0).map(g => {
+    const r = selGolf[g.id] || 0, f = fee(g);
+    const extra = [g.cart ? '카트 ₱' + Number(g.cart).toLocaleString() : '', g.caddy ? '캐디 ₱' + Number(g.caddy).toLocaleString() : ''].filter(Boolean).join(' · ');
+    return `<div class="golf${r?' on':''}">
+      <div class="golf-top">
+        <div style="min-width:0;">
+          <div class="golf-name">${esc(g.name)}</div>
+          <div class="golf-fee"><b>${fmtPhp(f)}</b>${krwTag(f)} / 1인·1R${isPeak() ? ' 🔥' : ''}</div>
+          ${extra ? `<div class="golf-extra">현지 별도: ${extra}</div>` : ''}
+          ${r ? `<div class="golf-total">합계 ${fmtPhp(f * r * pax.g)}${krwTag(f * r * pax.g)} · ${r}라운드 × 골퍼 ${pax.g}명</div>` : ''}
+        </div>
+        ${r ? `<div class="qty"><button type="button" onclick="chgGolf('${g.id}',-1)">−</button><span>${r}라운드</span><button type="button" onclick="chgGolf('${g.id}',1)">+</button></div>`
+            : `<button type="button" class="add" onclick="chgGolf('${g.id}',1)">🛒 담기</button>`}
+      </div>
+    </div>`;
+  }).join('');
+  const total = Object.values(selGolf).reduce((s,v) => s + v, 0);
+  $('golf-sum').textContent = total + '라운드';
+}
+function chgGolf(id, d){
+  selGolf[id] = Math.max(0, Math.min(30, (selGolf[id] || 0) + d));
+  if (!selGolf[id]) delete selGolf[id];
+  renderGolf(); renderSum();
+}
+
+/* ── 차량·레슨·식사·추가 섹션 (admin 맞춤견적 항목) ── */
+function allItems(){ return [...TRANSFERS, ...LESSONS, ...EXTRAS, ...CUSTOM_SECTIONS.flatMap(s => s.items || [])]; }
+const isLesson = it => LESSONS.includes(it);
+function lessonPpl(it){ const max = pax.g + pax.n; const v = selPpl[it.id] || pax.g; return Math.max(1, Math.min(max, v)); }   // 레슨 받는 인원
+function chgPpl(id, d){ const it = LESSONS.find(x => String(x.id) === String(id)); if (!it) return; selPpl[id] = Math.max(1, Math.min(pax.g + pax.n, lessonPpl(it) + d)); renderItems(); renderSum(); }
+function itemAmount(it, qty){ return itemPhp(it) * qty * (isLesson(it) ? lessonPpl(it) : (it.perPerson ? (pax.g + pax.n) : 1)); }   // 페소 (레슨은 횟수 × 받는 인원)
+function itemRows(items){
+  return items.map(it => {
+    const q = selItems[it.id] || 0;
+    return `<div class="item${q?' on':''}">
+      <div class="item-icon">${esc(it.icon || '•')}</div>
+      <div class="item-info">
+        <div class="item-name">${esc(it.name)}</div>
+        ${it.note ? `<div class="item-note">${esc(it.note)}</div>` : ''}
+        <div class="item-price">${fmtPhp(itemPhp(it))}${krwTag(itemPhp(it))} <small>/ ${isLesson(it) ? '1인·1회' : esc(it.unit || '회')}</small></div>
+        ${q && isLesson(it) ? `<div class="lp"><span>👥 받는 인원</span><div class="qty sm"><button type="button" onclick="chgPpl('${esc(it.id)}',-1)">−</button><span>${lessonPpl(it)}명</span><button type="button" onclick="chgPpl('${esc(it.id)}',1)">+</button></div></div>
+          <div class="lp-sum">${fmtPhp(itemPhp(it))} × ${q}회 × ${lessonPpl(it)}명 = <b>${fmtPhp(itemAmount(it, q))}</b></div>` : ''}
+      </div>
+      ${q ? `<div class="qty"><button type="button" onclick="chgItem('${esc(it.id)}',-1)">−</button><span>${q}${isLesson(it) ? '회' : ''}</span><button type="button" onclick="chgItem('${esc(it.id)}',1)">+</button></div>`
+          : `<button type="button" class="add" onclick="chgItem('${esc(it.id)}',1)">🛒 담기</button>`}
+    </div>`;
+  }).join('') || '<div class="cart-empty">준비 중입니다.</div>';
+}
+function secCount(items){ const n = items.filter(it => selItems[it.id]).length; return n ? n + '개 담김' : ''; }
+function renderItems(){
+  $('list-transfers').innerHTML = itemRows(TRANSFERS); $('sum-transfers').textContent = secCount(TRANSFERS);
+  $('list-lessons').innerHTML   = itemRows(LESSONS);   $('sum-lessons').textContent   = secCount(LESSONS);
+  $('list-extras').innerHTML    = itemRows(EXTRAS);    $('sum-extras').textContent    = secCount(EXTRAS);
+  $('custom-sections').innerHTML = CUSTOM_SECTIONS.filter(sec => sec.items && sec.items.length).map((sec, i) => `
+    <div class="card">
+      <div class="card-head"><div class="step">${7 + i}</div><div class="card-title">${esc(sec.title || '추가 항목')}</div><div class="card-sub">${secCount(sec.items)}</div></div>
+      <div class="card-body">${sec.sub ? `<div class="tab-desc" style="margin:0 0 10px;">${esc(sec.sub)}</div>` : ''}${itemRows(sec.items)}</div>
+    </div>`).join('');
+}
+function chgItem(id, d){
+  selItems[id] = Math.max(0, Math.min(99, (selItems[id] || 0) + d));
+  if (!selItems[id]) delete selItems[id];
+  renderItems(); renderSum();
+}
+function removeFromCart(kind, id){
+  if (kind === 'hotel') selHotel = null;
+  else if (kind === 'golf') delete selGolf[id];
+  else delete selItems[id];
+  renderHotels(); renderGolf(); renderItems(); renderSum();
+}
+
+/* ── 합계(장바구니) ── */
+function calc(){
+  const n = nights();
+  const h = findHotel(selHotel);
+  // 모두 페소: 아고다 호텔 1박·객실 PHP × 박수 × 객실 / iClark 전용숙소 1인·1일 × 박수 × 골퍼
+  const hotelPhp = h && n ? (h.kind === 'local' ? (h.pricePhp || u2p(h.priceUsd)) * n * pax.g : h.kind === 'villa' ? villaPrice(h) * n : h.price * n * pax.r) : 0;
+  const golf = GREENFEE.filter(g => selGolf[g.id]).map(g => ({ g, rounds: selGolf[g.id], php: fee(g) * selGolf[g.id] * pax.g }));
+  const golfPhp = golf.reduce((s,x) => s + x.php, 0);
+  const items = allItems().filter(it => selItems[it.id]).map(it => ({ it, qty: selItems[it.id], amt: itemAmount(it, selItems[it.id]) }));
+  const itemsPhp = items.reduce((s,x) => s + x.amt, 0);
+  const count = (h ? 1 : 0) + golf.length + items.length;
+  const totalPhp = hotelPhp + golfPhp + itemsPhp;
+  return { n, h, hotelPhp, golf, golfPhp, items, itemsPhp, count, totalPhp, totalUsd: usd(totalPhp) };
+}
+function renderSum(){
+  const c = calc();
+  const x = (kind, id) => `<button type="button" class="x" title="빼기" onclick="removeFromCart('${kind}','${esc(id)}')">✕</button>`;
+  let rows = '';
+  if (c.h) rows += `<div class="cart-group">🏨 숙소</div><div class="cart-row"><span class="k">${esc(c.h.name)}<br><small>${c.n ? (c.h.kind === 'local' ? '객실 ' + c.n + '일 × ' + pax.g + '명' : c.h.kind === 'villa' ? c.n + '박 × 1채' + (c.h.tiers ? ' (' + villaTierNote(c.h) + ')' : '') : c.n + '박 × 객실 ' + pax.r + '개 (참고가)') : '날짜를 넣으면 계산됩니다'}</small></span><span class="v">${c.n ? fmtPhp(c.hotelPhp) + '<br>' + krwTag(c.hotelPhp) : '-'}</span>${x('hotel','')}</div>`;
+  if (c.golf.length) rows += '<div class="cart-group">⛳ 골프</div>' + c.golf.map(g => `<div class="cart-row"><span class="k">${esc(g.g.name)}<br><small>${g.rounds}라운드 × 골퍼 ${pax.g}명</small></span><span class="v">${fmtPhp(g.php)}<br>${krwTag(g.php)}</span>${x('golf', g.g.id)}</div>`).join('');
+  if (c.items.length) rows += '<div class="cart-group">🚗 차량 · 레슨 · 식사 등</div>' + c.items.map(i => `<div class="cart-row"><span class="k">${esc(i.it.icon || '')} ${esc(i.it.name)}<br><small>${fmtPhp(itemPhp(i.it))} × ${i.qty}${isLesson(i.it) ? '회 × ' + lessonPpl(i.it) + '명' : (i.it.perPerson ? ' × ' + (pax.g + pax.n) + '명' : '')}</small></span><span class="v">${fmtPhp(i.amt)}<br>${krwTag(i.amt)}</span>${x('item', i.it.id)}</div>`).join('');
+  $('sum-rows').innerHTML = rows || '<div class="cart-empty">장바구니가 비어 있어요.<br>위에서 필요한 것을 🛒 담아 주세요.</div>';
+  $('sum-total').textContent = fmtPhp(c.totalPhp);
+  $('bar-total').textContent = fmtPhp(c.totalPhp);
+  $('bar-count').textContent = c.count;
+  $('cart-count').textContent = c.count + '개';
+  $('sum-note').innerHTML = (c.totalPhp ? '원화로는 약 <b>₩' + krwOf(c.totalPhp).toLocaleString() + '</b> (해외송금 수수료·환율 포함). ' : '') + '모든 금액은 필리핀 페소(₱) 기준 예상 금액입니다. 아고다 호텔은 날짜에 따라 요금이 달라지니 <b>실제 요금은 아고다 화면에서 확인</b>하시고 아고다에서 결제하세요. 나머지 항목은 확정 견적서로 안내해 드립니다.';
+}
+
+/* ── 신청 ── */
+async function submitApply(){
+  const name = $('nm').value.trim(), contact = $('ct').value.trim();
+  const booking = $('bk').value.trim(), memoIn = $('mm').value.trim();
+  const msg = $('msg'), btn = $('submit-btn');
+  const show = (ok, t) => { msg.style.display = 'block'; msg.style.background = ok ? '#f0fdf4' : '#fef2f2'; msg.style.color = ok ? '#16a34a' : '#dc2626'; msg.textContent = t; };
+  if (!name || !contact) { show(false, '⚠️ 이름과 연락처를 입력해 주세요'); return; }
+  const c = calc();
+  if (!c.count) { show(false, '⚠️ 장바구니에 하나 이상 담아 주세요'); return; }
+
+  const PURPOSE_KO = { tour:'관광골프', training:'전지훈련' };
+  const memo = [purpose ? '🎯 목적: ' + PURPOSE_KO[purpose] : '', FROM.id ? '📦 30초 문의에서 이어옴: ' + (FROM.pkg || FROM.id) + (FROM.timing ? ' · 희망시기 ' + FROM.timing : '') : '', '🛒 맞춤 견적 장바구니 신청', booking ? '아고다 예약번호: ' + booking : '아고다 예약번호: 미입력', memoIn].filter(Boolean).join(' / ');
+  const data = {
+    name, contact, memo,
+    nights: c.n,
+    golfers: pax.g, nonGolfers: pax.n,
+    totalPHP: Math.round(c.totalPhp),
+    totalKRW: krwOf(c.totalPhp),
+    totalUSD: Math.round(c.totalUsd),   // 예전 화면 호환용
+    hotel: c.h ? c.h.name : '미선택',
+    hotelId: c.h ? c.h.key : '',
+    hotelNights: c.h ? c.n : 0,
+    customHotelPriceUSD: 0,
+    arrDate: $('arr').value || '', depDate: $('dep').value || '',
+    golfCourses: c.golf.map(x => ({ name: x.g.name, rounds: x.rounds, gfId: x.g.id, priceUSD: Math.round(usd(fee(x.g)) * 100) / 100, pricePHP: fee(x.g) })),
+    extras: c.items.map(i => isLesson(i.it)
+      ? ({ name: i.it.name + ' (' + lessonPpl(i.it) + '명 × ' + i.qty + '회)', qty: i.qty * lessonPpl(i.it), id: String(i.it.id || ''), priceUSD: Number(i.it.price) || 0, pricePHP: itemPhp(i.it), perPerson: false })
+      : ({ name: i.it.name, qty: i.qty, id: String(i.it.id || ''), priceUSD: Number(i.it.price) || 0, pricePHP: itemPhp(i.it), perPerson: !!i.it.perPerson })),
+    status: 'pending',
+    source: 'quote.html',
+    packageType: 'cart',
+    fromPackage: FROM.id || '',
+    fromPackageTitle: FROM.pkg || '',
+    wishTiming: FROM.timing || '',
+    season: isPeak() ? 'peak' : 'off',
+    rooms: pax.r,
+    agodaBookingNo: booking,
+    purpose: purpose || '',
+  };
+
+  btn.disabled = true; btn.textContent = '저장 중...';
+  try {
+    const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const { getFirestore, collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const app = getApps().length ? getApps()[0] : initializeApp({ apiKey:'AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU', authDomain:'iclarkgolf.firebaseapp.com', projectId:'iclarkgolf' });
+    await addDoc(collection(getFirestore(app), 'inquiries'), { ...data, createdAt: serverTimestamp() });
+    window.iclarkNotifyNewLead && window.iclarkNotifyNewLead({
+      '여행목적': PURPOSE_KO[purpose] || '미선택', '문의종류': FROM.id ? '맞춤 견적 신청(30초 문의→' + (FROM.pkg || FROM.id) + ')' : '맞춤 견적 신청(quote.html)', '희망시기': FROM.timing || '-', '이름': name, '연락처': contact,
+      '날짜': (data.arrDate || '-') + ' ~ ' + (data.depDate || '-') + ' (' + c.n + '박)',
+      '인원': '골퍼 ' + pax.g + ' / 비골퍼 ' + pax.n + ' / 객실 ' + pax.r,
+      '호텔': data.hotel, '아고다 예약번호': booking || '미입력',
+      '골프장': c.golf.map(x => x.g.name + ' ' + x.rounds + 'R').join(', ') || '-',
+      '추가항목': c.items.map(i => i.it.name + ' x' + i.qty).join(', ') || '-',
+      '시즌': isPeak() ? '성수기' : '비수기', '예상총액': '₱' + data.totalPHP.toLocaleString() + ' (약 ₩' + data.totalKRW.toLocaleString() + ')', '요청사항': memoIn || ''
+    });
+    if (window.gtag) gtag('event', 'quote_inquiry_submit', { value: data.totalPHP, currency: 'PHP', hotel_booked: booking ? 'yes' : 'no' });
+    show(true, '✅ 신청이 완료됐어요! 곧 카카오톡이나 문자로 연락드릴게요 😊\n입금 안내는 아래 "💳 입금 안내 보기"에서 확인하실 수 있어요.' + ((booking || !c.h || c.h.kind !== 'agoda') ? '' : '\n호텔을 아직 예약하지 않으셨다면 위의 "이 날짜로 예약하기" 버튼을 이용해 주세요.'));
+    msg.style.whiteSpace = 'pre-line';
+    btn.textContent = '신청 완료 ✅';
+  } catch(e) {
+    console.error('신청 저장 실패:', e);
+    btn.disabled = false; btn.textContent = '🛒 장바구니 내용으로 신청하기';
+    show(false, '⚠️ 저장에 실패했어요. 아래 카카오톡으로 직접 문의해 주세요');
+  }
+}
+
+/* ── 데이터 불러오기 ── */
+async function loadGolf(){
+  try {
+    const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const { getFirestore, doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const app = getApps().length ? getApps()[0] : initializeApp({ apiKey:'AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU', authDomain:'iclarkgolf.firebaseapp.com', projectId:'iclarkgolf' });
+    const db = getFirestore(app);
+    const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const [ex, gf, qc, acc] = await Promise.all([
+      getDoc(doc(db, 'settings', 'exchange')), getDoc(doc(db, 'settings', 'greenfee')),
+      getDoc(doc(db, 'settings', 'quote_config')).catch(() => null),
+      getDocs(collection(db, 'accommodations')).catch(() => null),
+    ]);
+    if (qc && qc.exists()) {
+      const d = qc.data();
+      if (Array.isArray(d.transfers) && d.transfers.length) TRANSFERS = d.transfers;
+      if (Array.isArray(d.lessons)   && d.lessons.length)   LESSONS   = d.lessons;
+      if (Array.isArray(d.extras)    && d.extras.length)    EXTRAS    = d.extras;
+      if (Array.isArray(d.customSections)) CUSTOM_SECTIONS = d.customSections.filter(x => x && Array.isArray(x.items));
+    }
+    if (acc) acc.forEach(ds => {
+      const d = ds.data();
+      if (d.active === false || (d.type !== 'local' && d.type !== 'villa')) return;
+      (d.type === 'villa' ? VILLAS : LOCALS).push({ key: ds.id, kind: d.type, options: d.options || {}, tiers: d.tierPrices || null, name: d.name || '', priceUsd: Number(d.priceUSD) || 0, pricePhp: Number(d.pricePHP) || 0,
+        image: (Array.isArray(d.photos) && d.photos[0]) || '', note: [d.location, d.stars ? '⭐'.repeat(d.stars) : ''].filter(Boolean).join(' · ') });
+    });
+    if (ex.exists() && Number(ex.data().appliedUsdPhp) > 0) RATE = Number(ex.data().appliedUsdPhp);
+    if (ex.exists() && Number(ex.data().usdKrw) > 0) KRW = Number(ex.data().usdKrw);
+    if (gf.exists()) {
+      const d = gf.data();
+      if (Array.isArray(d.data) && d.data.length) GREENFEE = d.data.filter(g => g && g.id && g.name);
+      if (Array.isArray(d.peakMonths)) PEAK_MONTHS = d.peakMonths.map(Number);
+    }
+  } catch(e) { console.warn('요금표 불러오기 실패 — 기본값 사용:', e); }
+}
+async function loadHotels(){
+  try {
+    const res = await fetch('agoda-hotels.json?t=' + Date.now());
+    const j = await res.json();
+    const seen = new Set();
+    HOTELS = (j.hotels || [])
+      .filter(h => Number(h.price) > 0)
+      .filter(h => !seen.has(h.hotelId) && seen.add(h.hotelId))
+      .map(h => ({ ...h, key: 'agoda-' + h.hotelId, kind: 'agoda', price: Number(h.price), near: HOTEL_REGIONS.includes(h.region) }))
+      .sort((a,b) => ((b.featured ? 1 : 0) - (a.featured ? 1 : 0)) || (b.near - a.near) || (b.price - a.price));
+  } catch(e) {
+    console.error('호텔 목록 불러오기 실패:', e);
+    $('hotel-list').innerHTML = '<div style="text-align:center;color:var(--muted);padding:16px;font-size:13px;">호텔 목록을 불러오지 못했어요. 아래 검색 버튼을 이용해 주세요.</div>';
+  }
+}
+
+/* ── 숙소 상세 페이지(lodging-*.html)에서 "견적 담기"로 넘어온 경우: quote.html?hotel=local|h1|h2|h3|h5 ── */
+function preselectHotel(){
+  const hp = new URLSearchParams(location.search).get('hotel');
+  if (!hp) return;
+  const NAME_KEY = { h1:'망고', h2:'클락턴', h3:'오아시스', h5:'엠마우스' };
+  let h = null;
+  if (hp === 'local') h = LOCALS[0] || null;
+  else h = LOCALS.find(x => x.key === hp) || VILLAS.find(x => x.key === hp) || HOTELS.find(x => x.key === hp)
+        || (NAME_KEY[hp] ? HOTELS.find(x => (x.name || '').includes(NAME_KEY[hp])) : null);
+  if (!h) return;
+  selHotel = h.key;
+  if (h.kind === 'local') { tier = 'local'; if (!purpose) purpose = 'training'; }
+  else if (h.kind === 'villa') { tier = 'villa'; if (!purpose) purpose = 'tour'; }
+  else { const t = TIERS.find(t => t.test(h)); if (t) tier = t.id; expanded = true; }
+  setTimeout(() => { const el = document.querySelector('.hotel.on'); if (el) el.scrollIntoView({ behavior:'smooth', block:'center' }); }, 500);
+}
+
+/* ── 30초 간편 문의(패키지 페이지)에서 넘어온 선택 내용 ──
+   주소: quote.html?from=카드ID&pkg=패키지명&dur=4일&party=2명&timing=겨울
+   이름·연락처는 개인정보라 주소 대신 sessionStorage('iclark_lead')로만 받음 */
+const FROM = { id:'', pkg:'', dur:'', party:'', timing:'', nights:0 };
+function readFrom(){
+  const q = new URLSearchParams(location.search);
+  FROM.id = (q.get('from') || '').slice(0, 60);
+  FROM.pkg = (q.get('pkg') || '').slice(0, 80);
+  FROM.dur = (q.get('dur') || '').slice(0, 20);
+  FROM.party = (q.get('party') || '').slice(0, 20);
+  FROM.timing = (q.get('timing') || '').slice(0, 20);
+  const pp = q.get('purpose'); if (pp === 'tour' || pp === 'training') purpose = pp;   // 예: quote.html?purpose=training
+  const days = parseInt(FROM.dur, 10);
+  if (days > 1) FROM.nights = days - 1;
+  const partyN = { '혼자':1, '2명':2, '3명 이상':3 }[FROM.party];
+  if (partyN) { pax.g = partyN; pax.r = Math.ceil(partyN / 2); }
+  $('n-g').textContent = pax.g; $('n-r').textContent = pax.r;
+  try {
+    const lead = JSON.parse(sessionStorage.getItem('iclark_lead') || 'null');
+    if (lead) { if (lead.name) $('nm').value = lead.name; if (lead.phone) $('ct').value = lead.phone; }
+  } catch(e) {}
+  if (FROM.id || FROM.dur || FROM.party || FROM.timing) {
+    const parts = [FROM.dur, FROM.party, FROM.timing ? '희망시기 ' + FROM.timing : ''].filter(Boolean).join(' · ');
+    $('from-banner').innerHTML = '📋 ' + (FROM.pkg ? '<b>' + esc(FROM.pkg) + '</b>에서 ' : '') + '고르신 내용: <b>' + esc(parts || '-') + '</b><br>'
+      + (FROM.nights ? '도착일만 넣으시면 출발일은 자동으로 채워집니다. ' : '날짜를 넣어 주세요. ')
+      + '필요한 것을 🛒 담고 아래 장바구니에서 신청해 주세요.';
+    $('from-banner').style.display = 'block';
+    if (window.gtag) gtag('event', 'quote_from_widget', { from: FROM.id });
+  }
+}
+
+(async function init(){
+  readFrom();
+  const t = new Date(); t.setDate(t.getDate() + 1);
+  $('arr').min = t.toISOString().slice(0,10);
+  $('arr').addEventListener('change', onDates); $('dep').addEventListener('change', onDates);
+  $('arr').addEventListener('input', onDates);  $('dep').addEventListener('input', onDates);
+  renderGolf(); renderItems(); renderSum(); onDates();
+  await Promise.all([loadGolf(), loadHotels()]);
+  preselectHotel();
+  if (purpose && !selHotel) tier = allTiers()[0].id;
+  renderPurpose(); renderTabs(); renderItems(); onDates();
+})();
+</script>
+</body>
+</html>

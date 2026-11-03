@@ -104,16 +104,16 @@ function renderAgodaCard(h) {
   const thumbHTML = h.image
     ? `<img src="${escapeHtml(h.image)}" alt="${escapeHtml(h.name)}" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'thumb-emoji\\'>🏨</span>'">`
     : `<span class="thumb-emoji">🏨</span>`;
-  const reviewTag = h.reviewScore ? `<span class="lodging-tag special">후기 ${escapeHtml(h.reviewScore)}점</span>` : '';
+  const reviewTag = (h.featured ? '<span class="lodging-tag special">⛳ 골프장 안 호텔</span>' : '') + (h.reviewScore ? `<span class="lodging-tag special">후기 ${escapeHtml(h.reviewScore)}점</span>` : '');
   return `    <a href="${escapeHtml(h.bookingUrl)}" target="_blank" rel="noopener" class="lodging-card" style="text-decoration:none;display:flex;flex-direction:column;cursor:pointer;">
        <div class="lodging-thumb">
          ${thumbHTML}
-         <span class="lodging-type-badge hotel">아고다</span>
+         <span class="lodging-type-badge hotel"${h.featured ? ' style="background:#e8453c;"' : ''}>${h.featured ? '⭐ iClark 추천' : '아고다'}</span>
        </div>
        <div class="lodging-body">
          ${stars ? `<div class="lodging-stars">${stars}</div>` : ''}
          <div class="lodging-name">${escapeHtml(h.name)}</div>
-         <div class="lodging-price">₱${priceNum.toLocaleString()}<span style="font-size:11px;">/박</span>${krwSpan(priceNum)}</div>
+         ${priceNum > 0 ? `<div class="lodging-price">₱${priceNum.toLocaleString()}<span style="font-size:11px;">/박</span>${krwSpan(priceNum)}</div>` : `<div class="lodging-price" style="font-size:13px;">날짜 선택 후 요금 확인</div>`}
          <div class="lodging-location">📍 ${escapeHtml(h.region || '앙헬레스 / 클락')}</div>
          ${reviewTag ? `<div class="lodging-tags">${reviewTag}</div>` : ''}
          <div class="lodging-btn">아고다에서 예약 →</div>
@@ -128,7 +128,8 @@ function buildLodgingHtml() {
   const hotels = Array.isArray(data.hotels) ? data.hotels : [];
   if (hotels.length === 0) return '';
   // 화면과 같은 순서(비싼 호텔부터) — 처음 보이는 8개만 정적으로
-  return hotels.slice().sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0))
+  // ★ 주력 호텔(featured)은 항상 맨 앞
+  return hotels.slice().sort((a, b) => ((b.featured ? 1 : 0) - (a.featured ? 1 : 0)) || ((Number(b.price) || 0) - (Number(a.price) || 0)))
     .slice(0, LODGING_STATIC_COUNT).map(renderAgodaCard).join('\n');
 }
 
