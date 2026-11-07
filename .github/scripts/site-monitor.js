@@ -51,7 +51,7 @@ const SITES = [
 ];
 
 // 남의 서비스(광고·통계·지도 등)가 내는 잡음은 오류로 치지 않음
-const NOISE = [/googletagmanager|google-analytics|gtag|googlesyndication|adsbygoogle|doubleclick|adservice/i,
+const NOISE = [/TagError|adsbygoogle|pagead/i, /googletagmanager|google-analytics|gtag|googlesyndication|adsbygoogle|doubleclick|adservice/i,
   /favicon/i, /ERR_BLOCKED_BY_CLIENT|ERR_ABORTED/i, /kakao|facebook|fbcdn|instagram|tiktok|naver/i,
   /Failed to load resource: the server responded with a status of 4\d\d/i, /ResizeObserver/i, /third-party cookie/i,
   /paypal/i, /jitsi|8x8/i, /Permissions-Policy/i];
@@ -117,7 +117,7 @@ async function checkPages(browser, site){
     const ctx = await browser.newContext({ userAgent: UA + ' Chrome/120', viewport: { width: 390, height: 844 }, locale: 'ko-KR' });
     const page = await ctx.newPage();
     const errs = [];
-    page.on('pageerror', e => { if(!isNoise(e.message)) errs.push('스크립트 오류: ' + e.message); });
+    page.on('pageerror', e => { const full = (e.message || '') + ' ' + (e.stack || ''); if(!isNoise(full)) errs.push('스크립트 오류: ' + (e.message || '') + ' ' + (e.stack || '').split('\n').slice(1, 3).join(' ')); });
     page.on('console', m => { if(m.type() === 'error' && !isNoise(m.text())) errs.push('콘솔: ' + m.text()); });
     const url = site.base + pg.path;
     try{
