@@ -117,7 +117,12 @@ async function checkPages(browser, site){
     const ctx = await browser.newContext({ userAgent: UA + ' Chrome/120', viewport: { width: 390, height: 844 }, locale: 'ko-KR' });
     const page = await ctx.newPage();
     const errs = [];
-    page.on('pageerror', e => { const full = (e.message || '') + ' ' + (e.stack || ''); if(!isNoise(full)) errs.push('스크립트 오류: ' + (e.message || '') + ' ' + (e.stack || '').split('\n').slice(1, 3).join(' ')); });
+    page.on('pageerror', e => {
+      const msg = e.message || '', stack = e.stack || '', full = msg + ' ' + stack;
+      // 우리 사이트 파일에서 난 오류만 셈 — 광고 등 남의 스크립트(파일 위치가 없거나 다른 주소)는 제외
+      const ours = stack.includes(site.host) || (!/https?:\/\//.test(stack) && msg.length >= 5);
+      if(ours && !isNoise(full)) errs.push('스크립트 오류: ' + msg + ' ' + stack.split('\n').slice(1, 3).join(' '));
+    });
     page.on('console', m => { if(m.type() === 'error' && !isNoise(m.text())) errs.push('콘솔: ' + m.text()); });
     const url = site.base + pg.path;
     try{
