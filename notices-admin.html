@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>공지사항 관리 | 말문 Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root{
+    --bg: #FFF9F0;
+    --card: #FFFFFF;
+    --card-border: #E8E4D8;
+    --text: #2C2C2A;
+    --text-secondary: #5F5E5A;
+    --text-muted: #8A8880;
+    --accent: #EF9F27;
+    --accent-text: #412402;
+    --accent-soft: #FFF3E0;
+    --danger: #D85A30;
+    --success: #3FA34D;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; text-decoration:none; }
+  .wrap{ max-width:640px; margin:0 auto; padding:24px 20px 60px; }
+  h1{ font-size:18px; margin:0 0 4px; }
+  .sub{ font-size:13px; color:var(--text-muted); margin:0 0 24px; }
+
+  #gate{ max-width:320px; margin:80px auto; text-align:center; }
+  #gate input{
+    width:100%; padding:12px; border:1px solid var(--card-border); border-radius:10px;
+    font-size:14px; margin-bottom:10px; box-sizing:border-box;
+  }
+  #gate button{
+    width:100%; padding:12px; border:none; border-radius:10px; background:var(--accent);
+    color:var(--accent-text); font-weight:600; font-size:14px; cursor:pointer;
+  }
+  #gateError{ color:var(--danger); font-size:12px; margin-top:8px; display:none; }
+
+  #app{ display:none; }
+
+  .write-card{
+    background:var(--card); border:1px solid var(--card-border); border-radius:16px;
+    padding:18px; margin-bottom:26px;
+  }
+  label{ display:block; font-size:13px; font-weight:600; color:var(--text); margin-bottom:8px; }
+  input[type=text], textarea{
+    width:100%; padding:12px 14px; border:1px solid var(--card-border); border-radius:10px;
+    font-size:14px; color:var(--text); font-family:inherit; background:#fff; box-sizing:border-box;
+    margin-bottom:16px;
+  }
+  textarea{ resize:vertical; min-height:110px; line-height:1.6; }
+
+  .important-row{
+    display:flex; align-items:center; gap:10px; background:var(--accent-soft);
+    border:1px solid #F0D9A8; border-radius:12px; padding:12px 14px; margin-bottom:16px;
+  }
+  .important-row input{ width:auto; margin:0; }
+  .important-row .txt{ font-size:12px; color:var(--accent-text); line-height:1.6; }
+
+  .submit-btn{
+    display:block; width:100%; text-align:center; padding:13px; border-radius:12px;
+    font-size:14px; font-weight:700; cursor:pointer; border:none;
+    background:var(--accent); color:var(--accent-text);
+  }
+  .submit-btn:disabled{ background:#EAE6D8; color:var(--text-muted); cursor:default; }
+  .status-msg{ font-size:12px; margin-top:10px; display:none; }
+  .status-msg.ok{ color:var(--success); }
+  .status-msg.err{ color:var(--danger); }
+
+  .section-label{ font-size:12px; font-weight:600; color:var(--text-muted); margin:0 0 12px; }
+
+  .audience-tabs{ display:flex; gap:8px; margin-bottom:16px; }
+  .audience-tab{
+    flex:1; padding:10px; border-radius:10px; border:1px solid var(--card-border);
+    background:#fff; font-size:13px; font-weight:600; color:var(--text-secondary); cursor:pointer;
+  }
+  .audience-tab.active{ background:var(--accent); color:var(--accent-text); border-color:var(--accent); }
+
+  .notice-card{
+    background:var(--card); border:1px solid var(--card-border); border-radius:14px;
+    padding:16px 18px; margin-bottom:12px;
+  }
+  .n-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:6px; }
+  .n-title{ font-size:14px; font-weight:700; margin:0; }
+  .n-badge{ font-size:11px; font-weight:700; padding:3px 9px; border-radius:14px; background:var(--accent-soft); color:var(--accent-text); white-space:nowrap; }
+  .n-body{ font-size:13px; color:var(--text-secondary); line-height:1.6; white-space:pre-wrap; margin:0 0 8px; }
+  .n-meta{ font-size:11px; color:var(--text-muted); display:flex; justify-content:space-between; align-items:center; }
+  .del-btn{ background:none; border:none; color:var(--danger); font-size:11px; cursor:pointer; padding:0; }
+
+  .empty{ text-align:center; color:var(--text-muted); font-size:13px; padding:40px 0; }
+  .loading{ text-align:center; color:var(--text-muted); font-size:13px; padding:40px 0; }
+
+  .n-stats{ margin-top:8px; }
+  .stat-btn{
+    background:var(--accent-soft); border:1px solid #F0D9A8; color:var(--accent-text);
+    font-size:11px; font-weight:600; padding:5px 10px; border-radius:20px; cursor:pointer;
+  }
+  .reader-list{
+    margin-top:10px; border-top:1px dashed var(--card-border); padding-top:10px;
+    max-height:180px; overflow-y:auto;
+  }
+  .reader-row{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:12px; padding:5px 0; color:var(--text-secondary);
+  }
+  .reader-email{ color:var(--text-muted); font-size:11px; }
+
+  /* 학생 공지 번역 (영어·일본어) */
+  #transBox{ display:none; border-top:1px dashed var(--card-border); padding-top:14px; margin-bottom:6px; }
+  .trans-head{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px; }
+  .trans-head .t{ font-size:12px; color:var(--text-secondary); line-height:1.5; }
+  .trans-btn{
+    background:#fff; border:1px solid var(--accent); color:var(--accent-text);
+    font-size:12px; font-weight:700; padding:8px 12px; border-radius:10px; cursor:pointer; white-space:nowrap;
+  }
+  .trans-btn:disabled{ border-color:var(--card-border); color:var(--text-muted); cursor:default; }
+  .lang-label{ font-size:12px; font-weight:700; color:var(--text-muted); margin-bottom:6px; }
+  #transBox textarea{ min-height:80px; }
+  .n-trans{ font-size:12px; color:var(--text-muted); line-height:1.6; white-space:pre-wrap; margin:0 0 8px; border-left:3px solid var(--accent-soft); padding-left:10px; }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1 style="text-align:center;">공지사항 admin</h1>
+  <input type="hidden" id="pwInput">
+  <button id="pwBtn">구글로 로그인 (PJ 계정)</button>
+  <p id="gateError"></p>
+</div>
+
+<div id="app">
+  <div class="wrap">
+    <p style="margin:0 0 10px;"><a href="admin.html" style="font-size:12px; color:var(--text-muted);">← 관리자 홈</a></p>
+    <h1>공지사항 관리</h1>
+    <p class="sub" id="subText">여기서 작성하면 튜터들이 튜터 마이페이지의 "튜터 공지사항"에서 바로 확인할 수 있어요. "중요" 체크하면 이메일도 같이 발송돼요.</p>
+
+    <div class="audience-tabs">
+      <button class="audience-tab active" id="tabTutor" onclick="switchAudience('tutor')">튜터 공지</button>
+      <button class="audience-tab" id="tabStudent" onclick="switchAudience('student')">학생 공지</button>
+    </div>
+
+    <div class="write-card">
+      <label>제목</label>
+      <input type="text" id="fTitle" placeholder="예: 8월 셋째 주 수업시간 안내">
+      <label>내용</label>
+      <textarea id="fBody" placeholder="전달할 내용을 적어주세요"></textarea>
+
+      <!-- 학생 공지일 때만 보임: 영어·일본어 번역 -->
+      <div id="transBox">
+        <div class="trans-head">
+          <span class="t">외국인 학생용 번역 — 비워 두면 등록할 때 자동으로 번역돼요. 고칠 곳이 있으면 직접 고치세요.</span>
+          <button type="button" class="trans-btn" id="transBtn">자동 번역</button>
+        </div>
+        <p class="lang-label">English</p>
+        <input type="text" id="fTitleEn" placeholder="English title">
+        <textarea id="fBodyEn" placeholder="English message"></textarea>
+        <p class="lang-label">日本語</p>
+        <input type="text" id="fTitleJa" placeholder="日本語タイトル">
+        <textarea id="fBodyJa" placeholder="日本語の本文"></textarea>
+      </div>
+      <div class="important-row">
+        <input type="checkbox" id="fImportant">
+        <label for="fImportant" class="txt" id="importantLabel" style="margin:0;">중요 공지 — 저장 시 승인된 튜터 전원에게 이메일도 자동 발송</label>
+      </div>
+      <button class="submit-btn" id="submitBtn">공지 등록하기</button>
+      <p class="status-msg" id="statusMsg"></p>
+    </div>
+
+    <p class="section-label" id="listLabel">등록된 튜터 공지 (최신순)</p>
+    <div id="list"><p class="loading">불러오는 중...</p></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyD10IdHCDkCybMrkO5fewo0ksYFBmqwWro",
+  authDomain: "malmun-bca03.firebaseapp.com",
+  projectId: "malmun-bca03",
+  storageBucket: "malmun-bca03.firebasestorage.app",
+  messagingSenderId: "831462084669",
+  appId: "1:831462084669:web:003a844918b165d5b65a54"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+// 필리핀 통신망·카카오톡 등 인앱브라우저에서 Firestore 연결 실패 방지 (롱폴링 강제)
+try{ db.settings({ experimentalForceLongPolling: true, experimentalAutoDetectLongPolling: false, merge: true }); }catch(e){ console.warn('firestore settings', e); }
+
+// 2026-11-07: 비밀번호 방식 폐지 — 아래 "관리자 입장" 스크립트에서 PJ 구글 계정으로 확인
+
+// 공지 이메일 발송용 Google Apps Script 웹앱 URL — 배포 후 여기에 붙여넣으세요.
+// 비워두면 공지는 정상 저장되고, 이메일 발송만 건너뜁니다.
+const EMAIL_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwpKuWSh3qwOEnd6WdBOdigPe0QFLNsHqdFgXJdH0NJAxSKtHHtMw9oYmL2pgJNB4XryA/exec";
+
+document.getElementById('pwBtn').addEventListener('click', tryUnlock);
+document.getElementById('pwInput').addEventListener('keydown', e => { if(e.key === 'Enter') tryUnlock(); });
+
+function tryUnlock(){
+  if(window.__malmunAdminOk !== true){ adminGoogleLogin(); return; }
+  const val = document.getElementById('pwInput').value;
+  if(window.__malmunAdminOk === true){
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    sessionStorage.setItem('malmun_admin_ok', '1');
+    loadNotices();
+  }else{
+    document.getElementById('gateError').style.display = 'block';
+  }
+}
+
+if(false /* 2026-11-07: 구글 로그인 확인 후 자동 입장 */){
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadNotices();
+}
+
+let allNotices = [];
+let currentAudience = 'tutor';
+
+function switchAudience(aud){
+  currentAudience = aud;
+  document.getElementById('tabTutor').classList.toggle('active', aud === 'tutor');
+  document.getElementById('tabStudent').classList.toggle('active', aud === 'student');
+  document.getElementById('subText').textContent = aud === 'tutor'
+    ? '여기서 작성하면 튜터들이 튜터 마이페이지의 "튜터 공지사항"에서 바로 확인할 수 있어요. "중요" 체크하면 이메일도 같이 발송돼요.'
+    : '여기서 작성하면 학생들이 마이페이지(mypage.html) 상단에서 바로 확인할 수 있어요. "중요" 체크하면 이메일도 같이 발송돼요.';
+  document.getElementById('importantLabel').textContent = aud === 'tutor'
+    ? '중요 공지 — 저장 시 승인된 튜터 전원에게 이메일도 자동 발송'
+    : '중요 공지 — 저장 시 가입한 학생 전원에게 이메일도 자동 발송';
+  document.getElementById('listLabel').textContent = aud === 'tutor' ? '등록된 튜터 공지 (최신순)' : '등록된 학생 공지 (최신순)';
+  document.getElementById('transBox').style.display = aud === 'student' ? 'block' : 'none';
+  render();
+}
+
+async function loadNotices(){
+  try{
+    const snap = await db.collection('notices').orderBy('createdAt', 'desc').limit(100).get();
+    allNotices = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    render();
+  }catch(err){
+    console.error('공지 목록 불러오기 실패:', err);
+    document.getElementById('list').innerHTML = `<p class="empty">공지 목록을 불러오지 못했어요.<br>${err.message}</p>`;
+  }
+}
+
+async function getApprovedTutorEmails(){
+  const snap = await db.collection('tutorApplications').where('status', '==', 'approved').get();
+  return snap.docs.map(d => d.data().email).filter(Boolean);
+}
+
+async function getStudentEmails(){
+  const snap = await db.collection('users').get();
+  return snap.docs.map(d => d.data().email).filter(Boolean);
+}
+
+async function sendEmailNotice(title, body, emails){
+  if(!EMAIL_WEBHOOK_URL){
+    console.warn('EMAIL_WEBHOOK_URL이 설정되지 않아 이메일 발송을 건너뜁니다.');
+    return { skipped: true };
+  }
+  if(emails.length === 0){
+    return { skipped: true, reason: 'no-emails' };
+  }
+  const res = await fetch(EMAIL_WEBHOOK_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Apps Script CORS 우회용
+    body: JSON.stringify({ title, body, emails })
+  });
+  return res.json().catch(() => ({}));
+}
+
+// ── 학생 공지 자동 번역 (구글 번역, 키 없이 브라우저에서 호출) ──
+async function translateText(text, tl){
+  if(!text) return '';
+  const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=ko&tl=' + tl + '&dt=t&q=' + encodeURIComponent(text);
+  const res = await fetch(url);
+  if(!res.ok) throw new Error('번역 서버 응답 ' + res.status);
+  const data = await res.json();
+  return (data[0] || []).map(seg => seg[0] || '').join('');
+}
+
+// 빈 칸만 채움 (PJ가 직접 고친 번역은 덮어쓰지 않음). force=true면 모두 새로 번역
+async function fillTranslations(force){
+  const title = document.getElementById('fTitle').value.trim();
+  const body = document.getElementById('fBody').value.trim();
+  const pairs = [
+    ['fTitleEn', title, 'en'], ['fBodyEn', body, 'en'],
+    ['fTitleJa', title, 'ja'], ['fBodyJa', body, 'ja']
+  ];
+  for(const [id, src, tl] of pairs){
+    const el = document.getElementById(id);
+    if(src && (force || !el.value.trim())){
+      el.value = await translateText(src, tl);
+    }
+  }
+}
+
+document.getElementById('transBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('transBtn');
+  const msgEl = document.getElementById('statusMsg');
+  msgEl.style.display = 'none';
+  if(!document.getElementById('fTitle').value.trim() && !document.getElementById('fBody').value.trim()){
+    msgEl.textContent = '먼저 한국어 제목과 내용을 적어주세요.';
+    msgEl.className = 'status-msg err';
+    msgEl.style.display = 'block';
+    return;
+  }
+  btn.disabled = true; btn.textContent = '번역 중...';
+  try{
+    await fillTranslations(true);
+  }catch(err){
+    msgEl.textContent = '자동 번역에 실패했어요. 직접 적거나 잠시 후 다시 눌러주세요. (' + err.message + ')';
+    msgEl.className = 'status-msg err';
+    msgEl.style.display = 'block';
+  }finally{
+    btn.disabled = false; btn.textContent = '자동 번역';
+  }
+});
+
+document.getElementById('submitBtn').addEventListener('click', async () => {
+  const title = document.getElementById('fTitle').value.trim();
+  const body = document.getElementById('fBody').value.trim();
+  const important = document.getElementById('fImportant').checked;
+  const btn = document.getElementById('submitBtn');
+  const msgEl = document.getElementById('statusMsg');
+  msgEl.style.display = 'none';
+
+  if(!title || !body){
+    msgEl.textContent = '제목과 내용을 모두 입력해주세요.';
+    msgEl.className = 'status-msg err';
+    msgEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '등록 중...';
+
+  // 학생 공지: 비어 있는 번역 칸은 자동 번역으로 채움 (실패해도 한국어 공지는 그대로 등록)
+  let transFailed = false;
+  if(currentAudience === 'student'){
+    btn.textContent = '번역 중...';
+    try{ await fillTranslations(false); }catch(e){ transFailed = true; console.warn('자동 번역 실패:', e); }
+    btn.textContent = '등록 중...';
+  }
+
+  try{
+    const doc = {
+      title, body, important,
+      audience: currentAudience,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    if(currentAudience === 'student'){
+      doc.en = { title: document.getElementById('fTitleEn').value.trim(), body: document.getElementById('fBodyEn').value.trim() };
+      doc.ja = { title: document.getElementById('fTitleJa').value.trim(), body: document.getElementById('fBodyJa').value.trim() };
+    }
+    await db.collection('notices').add(doc);
+
+    if(important){
+      btn.textContent = '이메일 발송 중...';
+      try{
+        const emails = currentAudience === 'tutor'
+          ? await getApprovedTutorEmails()
+          : await getStudentEmails();
+        let mailTitle = title, mailBody = body;
+        if(currentAudience === 'student' && doc.en && doc.en.body){
+          mailTitle = title + (doc.en.title ? ' / ' + doc.en.title : '');
+          mailBody = body + '\n\n— English —\n' + (doc.en.title ? doc.en.title + '\n' : '') + doc.en.body;
+        }
+        await sendEmailNotice(mailTitle, mailBody, emails);
+      }catch(mailErr){
+        console.error('이메일 발송 실패:', mailErr);
+        msgEl.textContent = '공지는 저장됐지만 이메일 발송에는 실패했어요: ' + mailErr.message;
+        msgEl.className = 'status-msg err';
+        msgEl.style.display = 'block';
+      }
+    }
+
+    if(msgEl.style.display !== 'block'){
+      msgEl.textContent = '공지 등록 완료' + (important ? ' — 이메일도 발송했어요.' : '')
+        + (transFailed ? ' (자동 번역은 실패해서 외국어 화면에는 한국어로 보여요)' : '');
+      msgEl.className = 'status-msg ok';
+      msgEl.style.display = 'block';
+    }
+
+    document.getElementById('fTitle').value = '';
+    document.getElementById('fBody').value = '';
+    document.getElementById('fImportant').checked = false;
+    ['fTitleEn','fBodyEn','fTitleJa','fBodyJa'].forEach(id => { document.getElementById(id).value = ''; });
+    loadNotices();
+  }catch(err){
+    console.error('공지 등록 실패:', err);
+    msgEl.textContent = '등록 중 문제가 생겼어요: ' + err.message;
+    msgEl.className = 'status-msg err';
+    msgEl.style.display = 'block';
+  }finally{
+    btn.disabled = false;
+    btn.textContent = '공지 등록하기';
+  }
+});
+
+async function deleteNotice(id){
+  if(!confirm('이 공지를 삭제할까요?')) return;
+  try{
+    await db.collection('notices').doc(id).delete();
+    allNotices = allNotices.filter(n => n.id !== id);
+    render();
+  }catch(err){
+    alert('삭제 실패: ' + err.message);
+  }
+}
+
+function render(){
+  const list = document.getElementById('list');
+  const filtered = allNotices.filter(n => (n.audience || 'tutor') === currentAudience);
+  if(filtered.length === 0){
+    list.innerHTML = `<p class="empty">아직 등록된 공지가 없어요.</p>`;
+    return;
+  }
+  list.innerHTML = filtered.map(n => {
+    const date = n.createdAt && n.createdAt.toDate ? n.createdAt.toDate().toLocaleDateString('ko-KR') : '';
+    const statBtn = currentAudience === 'student'
+      ? `<button class="stat-btn" id="stat-${n.id}" onclick="toggleReaders('${n.id}')">읽음 확인 중...</button>`
+      : `<span class="stat-btn" style="cursor:default;">조회 ${n.viewCount || 0}회</span>`;
+    return `
+      <div class="notice-card">
+        <div class="n-top">
+          <p class="n-title">${escapeHtml(n.title || '')}</p>
+          ${n.important ? '<span class="n-badge">중요·이메일발송</span>' : ''}
+        </div>
+        <p class="n-body">${escapeHtml(n.body || '')}</p>
+        ${currentAudience === 'student' ? (
+          (n.en && (n.en.title || n.en.body))
+            ? `<p class="n-trans">EN · ${escapeHtml(n.en.title || '')}\n${escapeHtml(n.en.body || '')}</p>`
+            : `<p class="n-trans">번역 없음 — 외국어 화면에는 한국어로 보여요</p>`
+        ) : ''}
+        <div class="n-meta">
+          <span>${date}</span>
+          <button class="del-btn" onclick="deleteNotice('${n.id}')">삭제</button>
+        </div>
+        <div class="n-stats">${statBtn}</div>
+        <div class="reader-list" id="readers-${n.id}" style="display:none;"></div>
+      </div>
+    `;
+  }).join('');
+
+  if(currentAudience === 'student'){
+    filtered.forEach(n => loadReadCount(n.id));
+  }
+}
+
+async function loadReadCount(noticeId){
+  try{
+    const snap = await db.collection('noticeReads').where('noticeId', '==', noticeId).get();
+    const btn = document.getElementById(`stat-${noticeId}`);
+    if(btn) btn.textContent = `읽음 ${snap.size}명 (눌러서 보기)`;
+  }catch(err){
+    console.error('읽음수 불러오기 실패:', err);
+    const btn = document.getElementById(`stat-${noticeId}`);
+    if(btn) btn.textContent = '읽음수 확인 실패';
+  }
+}
+
+async function toggleReaders(noticeId){
+  const box = document.getElementById(`readers-${noticeId}`);
+  if(box.style.display === 'block'){
+    box.style.display = 'none';
+    return;
+  }
+  box.style.display = 'block';
+  box.innerHTML = `<p class="notice-empty">불러오는 중...</p>`;
+  try{
+    const snap = await db.collection('noticeReads').where('noticeId', '==', noticeId).get();
+    if(snap.empty){
+      box.innerHTML = `<p class="notice-empty">아직 아무도 읽지 않았어요.</p>`;
+      return;
+    }
+    const readers = snap.docs.map(d => d.data()).sort((a, b) => {
+      const at = a.readAt && a.readAt.toMillis ? a.readAt.toMillis() : 0;
+      const bt = b.readAt && b.readAt.toMillis ? b.readAt.toMillis() : 0;
+      return bt - at;
+    });
+    box.innerHTML = readers.map(r => `
+      <div class="reader-row">
+        <span>${escapeHtml(r.name || r.email || '학생')}</span>
+        <span class="reader-email">${escapeHtml(r.email || '')}</span>
+      </div>
+    `).join('');
+  }catch(err){
+    console.error('읽은 사람 목록 불러오기 실패:', err);
+    box.innerHTML = `<p class="notice-empty">불러오지 못했어요: ${err.message}</p>`;
+  }
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script>
+/* ───── 관리자 입장: 비밀번호 대신 PJ 구글 계정(tourjang@gmail.com)으로만 열림 (2026-11-07) ───── */
+(function(){
+  const ADMIN_EMAILS = ['tourjang@gmail.com'];
+  if(!firebase.apps.length) firebase.initializeApp({
+    apiKey: "AIzaSyD10IdHCDkCybMrkO5fewo0ksYFBmqwWro",
+    authDomain: "malmun-bca03.firebaseapp.com",
+    projectId: "malmun-bca03",
+    storageBucket: "malmun-bca03.firebasestorage.app",
+    messagingSenderId: "831462084669",
+    appId: "1:831462084669:web:003a844918b165d5b65a54"
+  });
+  const a = firebase.auth();
+  window.adminGoogleLogin = function(){
+    const p = new firebase.auth.GoogleAuthProvider();
+    p.setCustomParameters({ prompt: 'select_account' });
+    a.signInWithPopup(p).catch(() => a.signInWithRedirect(p));
+  };
+  window.adminSignOut = function(){ a.signOut(); };
+  let opened = false;
+  a.onAuthStateChanged(u => {
+    const ok = !!u && ADMIN_EMAILS.includes((u.email || '').toLowerCase());
+    window.__malmunAdminOk = ok;
+    const err = document.getElementById('gateError');
+    if(ok){
+      if(!opened){ opened = true; tryUnlock(); }
+    }else if(u && err){
+      err.innerHTML = '관리자 계정이 아니에요 (' + (u.email || '') + ')<br><a href="#" onclick="adminSignOut();return false;" style="text-decoration:underline;">다른 계정으로 로그인</a>';
+      err.style.display = 'block';
+    }
+  });
+})();
+</script>
+</body>
+</html>

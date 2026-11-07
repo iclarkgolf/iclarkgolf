@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>튜터 즉석 연락 | 말문 Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root{
+    --bg:#FFF9F0; --card:#FFFFFF; --card-border:#E8E4D8;
+    --text:#2C2C2A; --text-secondary:#5F5E5A; --text-muted:#8A8880;
+    --accent:#EF9F27; --accent-text:#412402; --accent-soft:#FFF3E0;
+    --danger:#D85A30; --success:#3FA34D; --kakao:#FEE500;
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR",sans-serif;
+    -webkit-font-smoothing:antialiased; }
+  a{ color:inherit; text-decoration:none; }
+  .wrap{ max-width:640px; margin:0 auto; padding:24px 20px 60px; }
+  h1{ font-size:18px; margin:0 0 4px; }
+  .sub{ font-size:13px; color:var(--text-muted); margin:0 0 20px; line-height:1.6; }
+
+  #gate{ max-width:320px; margin:80px auto; text-align:center; padding:0 20px; }
+  #gate input{ width:100%; padding:12px; border:1px solid var(--card-border); border-radius:10px; font-size:14px; margin-bottom:10px; }
+  #gate button{ width:100%; padding:12px; border:none; border-radius:10px; background:var(--accent); color:var(--accent-text); font-weight:600; font-size:14px; cursor:pointer; }
+  #gateError{ color:var(--danger); font-size:12px; margin-top:8px; display:none; }
+  #app{ display:none; }
+
+  .card{ background:var(--card); border:1px solid var(--card-border); border-radius:16px; padding:18px; margin-bottom:18px; }
+  .card h2{ font-size:15px; margin:0 0 6px; }
+  .card .desc{ font-size:12px; color:var(--text-muted); margin:0 0 12px; line-height:1.6; }
+  textarea, input[type=text], input[type=tel]{
+    width:100%; padding:12px 14px; border:1px solid var(--card-border); border-radius:10px;
+    font-size:15px; color:var(--text); font-family:inherit; background:#fff; }
+  textarea{ resize:vertical; min-height:110px; line-height:1.6; margin-bottom:12px; }
+
+  .btn-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .btn{ flex:1; min-width:140px; padding:13px 10px; border-radius:12px; border:none; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; text-align:center; }
+  .btn.sms{ background:#2C2C2A; color:#fff; }
+  .btn.kakao{ background:var(--kakao); color:#3A1D1D; }
+  .btn.line{ background:#fff; border:1.5px solid var(--text); color:var(--text); }
+  .btn:disabled{ opacity:.45; cursor:default; }
+  .hint{ font-size:12px; color:var(--text-muted); margin:10px 0 0; line-height:1.6; }
+  .msg{ font-size:12px; margin:10px 0 0; display:none; }
+  .msg.ok{ color:var(--success); display:block; }
+  .msg.err{ color:var(--danger); display:block; }
+
+  .tutor-row{ display:flex; align-items:center; gap:10px; padding:10px 0; border-top:1px solid var(--card-border); }
+  .tutor-row:first-child{ border-top:none; }
+  .t-check{ width:20px; height:20px; flex-shrink:0; }
+  .t-photo{ width:38px; height:38px; border-radius:50%; background:var(--accent-soft) center/cover; flex-shrink:0; }
+  .t-info{ flex:1; min-width:0; }
+  .t-name{ font-size:14px; font-weight:700; margin:0; }
+  .t-meta{ font-size:11px; color:var(--text-muted); margin:2px 0 0; word-break:break-all; }
+  .t-phone{ display:flex; gap:6px; margin-top:6px; }
+  .t-phone input{ padding:8px 10px; font-size:14px; }
+  .t-phone button{ padding:8px 12px; border-radius:8px; border:1px solid var(--card-border); background:#fff; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap; font-family:inherit; }
+  .no-phone{ color:var(--danger); font-weight:700; }
+  .count-line{ font-size:12px; color:var(--text-secondary); margin:0 0 10px; }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1>튜터 즉석 연락 admin</h1>
+  <input type="hidden" id="pwInput">
+  <button id="pwBtn">구글로 로그인 (PJ 계정)</button>
+  <p id="gateError"></p>
+</div>
+
+<div id="app">
+  <div class="wrap">
+    <p style="margin:0 0 10px;"><a href="admin.html" style="font-size:12px; color:var(--text-muted);">← 관리자 홈</a></p>
+    <h1>📱 튜터 즉석 연락</h1>
+    <p class="sub">급하게 바로 알릴 때 쓰세요. 문자는 PJ님 휴대폰의 문자 앱이 받는 사람·내용이 채워진 채로 열리고, 보내기만 누르면 돼요. 카톡은 튜터 단톡방으로 보내요.<br>(정식 기록이 필요한 공지는 "공지사항 관리"에서 따로 올리세요)</p>
+
+    <div class="card">
+      <h2>1. 보낼 내용</h2>
+      <textarea id="msgText" placeholder="예: 오늘 저녁 8시 수업 화상방 링크가 바뀌었어요. 튜터 마이페이지에서 다시 확인해주세요."></textarea>
+      <div class="btn-row">
+        <button class="btn sms" id="smsBtn">💬 문자로 보내기</button>
+        <button class="btn kakao" id="kakaoBtn">카톡 단톡방에 보내기</button>
+      </div>
+      <p class="hint" id="sendHint">문자: 아래에서 체크된 튜터 중 휴대폰 번호가 있는 사람에게 갑니다.<br>카톡: 내용이 복사되고 단톡방이 열려요. 채팅창을 길게 눌러 "붙여넣기" 후 보내세요.</p>
+      <p class="msg" id="sendMsg"></p>
+    </div>
+
+    <div class="card">
+      <h2>2. 받는 튜터</h2>
+      <p class="desc">승인된 튜터만 나와요. 휴대폰 번호는 튜터가 지원서에 적은 번호이고, 없으면 여기서 PJ님이 직접 넣고 "저장"을 눌러도 돼요.</p>
+      <p class="count-line" id="countLine"></p>
+      <div id="tutorList"><p class="desc">불러오는 중...</p></div>
+    </div>
+
+    <div class="card">
+      <h2>3. 튜터 카톡 단톡방 링크</h2>
+      <p class="desc">카카오톡에서 "오픈채팅 → 그룹채팅 만들기"로 방을 만들고, 방의 "링크 공유 → 링크 복사"로 받은 주소를 붙여넣으세요.<br>저장하면 튜터들의 <b>튜터 마이페이지</b>에 "튜터 단톡방 들어가기" 버튼이 생겨요.</p>
+      <input type="text" id="chatLink" placeholder="https://open.kakao.com/o/...">
+      <div class="btn-row" style="margin-top:10px;">
+        <button class="btn line" id="saveLinkBtn">링크 저장</button>
+        <button class="btn line" id="testLinkBtn">방 열어보기</button>
+      </div>
+      <p class="msg" id="linkMsg"></p>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyD10IdHCDkCybMrkO5fewo0ksYFBmqwWro",
+  authDomain: "malmun-bca03.firebaseapp.com",
+  projectId: "malmun-bca03",
+  storageBucket: "malmun-bca03.firebasestorage.app",
+  messagingSenderId: "831462084669",
+  appId: "1:831462084669:web:003a844918b165d5b65a54"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+try{ db.settings({ experimentalForceLongPolling: true, experimentalAutoDetectLongPolling: false, merge: true }); }catch(e){ console.warn('firestore settings', e); }
+
+// 2026-11-07: 비밀번호 방식 폐지 — 아래 "관리자 입장" 스크립트에서 PJ 구글 계정으로 확인
+// 단톡방 링크는 notices 컬렉션의 설정용 문서에 저장 (audience:'config' → 공지 목록에는 안 나옴)
+const CHAT_DOC = db.collection('notices').doc('tutorChatLink');
+
+let tutors = [];
+let chatUrl = '';
+
+document.getElementById('pwBtn').addEventListener('click', tryUnlock);
+document.getElementById('pwInput').addEventListener('keydown', e => { if(e.key === 'Enter') tryUnlock(); });
+function tryUnlock(){
+  if(window.__malmunAdminOk !== true){ adminGoogleLogin(); return; }
+  if(window.__malmunAdminOk === true){
+    sessionStorage.setItem('malmun_admin_ok', '1');
+    openApp();
+  }else{
+    document.getElementById('gateError').style.display = 'block';
+  }
+}
+if(false /* 2026-11-07: 구글 로그인 확인 후 자동 입장 */) openApp();
+
+function openApp(){
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadTutors();
+  loadChatLink();
+}
+
+function esc(s){ const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+function cleanPhone(p){ return String(p || '').replace(/[^0-9+]/g, ''); }
+
+async function loadTutors(){
+  const el = document.getElementById('tutorList');
+  try{
+    const snap = await db.collection('tutorApplications').where('status', '==', 'approved').get();
+    // PJ 본인 지원서(tourjang@naver.com)는 받는 사람에서 제외
+    tutors = snap.docs.map(d => ({ id: d.id, ...d.data(), checked: true }))
+      .filter(t => (t.email || '').toLowerCase() !== 'tourjang@naver.com');
+    tutors.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ko'));
+    renderTutors();
+  }catch(err){
+    el.innerHTML = `<p class="desc" style="color:var(--danger)">튜터 목록을 불러오지 못했어요: ${esc(err.message)}</p>`;
+  }
+}
+
+function renderTutors(){
+  const el = document.getElementById('tutorList');
+  if(!tutors.length){ el.innerHTML = '<p class="desc">승인된 튜터가 없어요.</p>'; updateCount(); return; }
+  el.innerHTML = tutors.map((t, i) => `
+    <div class="tutor-row">
+      <input type="checkbox" class="t-check" data-i="${i}" ${t.checked ? 'checked' : ''}>
+      <div class="t-photo" style="${t.photoURL ? `background-image:url('${esc(t.photoURL)}')` : ''}"></div>
+      <div class="t-info">
+        <p class="t-name">${esc(t.name || '이름 없음')}</p>
+        <p class="t-meta">${t.phone ? '📱 ' + esc(t.phone) : '<span class="no-phone">휴대폰 번호 없음</span>'}${t.kakaoId ? ' · 카톡 ' + esc(t.kakaoId) : ''}</p>
+        <div class="t-phone">
+          <input type="tel" inputmode="tel" class="t-phone-input" data-i="${i}" placeholder="010-0000-0000" value="${esc(t.phone || '')}">
+          <button type="button" class="t-phone-save" data-i="${i}">저장</button>
+        </div>
+      </div>
+    </div>`).join('');
+  el.querySelectorAll('.t-check').forEach(cb => cb.addEventListener('change', () => {
+    tutors[cb.dataset.i].checked = cb.checked; updateCount();
+  }));
+  el.querySelectorAll('.t-phone-save').forEach(b => b.addEventListener('click', () => savePhone(Number(b.dataset.i), b)));
+  updateCount();
+}
+
+function smsTargets(){ return tutors.filter(t => t.checked && cleanPhone(t.phone)); }
+
+function updateCount(){
+  const sel = tutors.filter(t => t.checked).length;
+  const withPhone = smsTargets().length;
+  document.getElementById('countLine').textContent =
+    `선택 ${sel}명 · 문자 받을 수 있는 사람 ${withPhone}명` + (sel > withPhone ? ` (번호 없는 ${sel - withPhone}명은 문자 제외)` : '');
+  document.getElementById('smsBtn').disabled = withPhone === 0;
+}
+
+async function savePhone(i, btn){
+  const t = tutors[i];
+  const val = document.querySelector(`.t-phone-input[data-i="${i}"]`).value.trim();
+  btn.disabled = true; btn.textContent = '저장 중';
+  try{
+    await db.collection('tutorApplications').doc(t.id).update({ phone: val });
+    t.phone = val;
+    renderTutors();
+  }catch(err){
+    alert('번호 저장 실패: ' + err.message);
+    btn.disabled = false; btn.textContent = '저장';
+  }
+}
+
+function showMsg(id, text, ok){
+  const m = document.getElementById(id);
+  m.className = 'msg ' + (ok ? 'ok' : 'err');
+  m.textContent = text;
+}
+
+// 문자: 휴대폰 기본 문자 앱을 받는 사람·내용이 채워진 상태로 연다 (발송은 PJ님 폰에서 직접)
+document.getElementById('smsBtn').addEventListener('click', () => {
+  const text = document.getElementById('msgText').value.trim();
+  if(!text){ showMsg('sendMsg', '보낼 내용을 먼저 적어주세요.', false); return; }
+  const nums = smsTargets().map(t => cleanPhone(t.phone));
+  if(!nums.length){ showMsg('sendMsg', '휴대폰 번호가 있는 튜터가 없어요.', false); return; }
+  const body = encodeURIComponent('[말문] ' + text);
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const url = isIOS
+    ? `sms:/open?addresses=${nums.join(',')}&body=${body}`
+    : `sms:${nums.join(',')}?body=${body}`;
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if(!isMobile){
+    showMsg('sendMsg', '문자 보내기는 휴대폰에서 이 화면을 열어야 작동해요. (받는 번호: ' + nums.join(', ') + ')', false);
+    return;
+  }
+  location.href = url;
+  showMsg('sendMsg', `문자 앱이 열렸어요 (${nums.length}명). 보내기 버튼만 누르세요.`, true);
+});
+
+// 카톡: 내용 복사 + 단톡방 열기
+document.getElementById('kakaoBtn').addEventListener('click', async () => {
+  const text = document.getElementById('msgText').value.trim();
+  if(!text){ showMsg('sendMsg', '보낼 내용을 먼저 적어주세요.', false); return; }
+  try{ await navigator.clipboard.writeText('[말문] ' + text); }
+  catch(e){ prompt('아래 내용을 복사하세요:', '[말문] ' + text); }
+  if(chatUrl){
+    showMsg('sendMsg', '내용이 복사됐어요. 단톡방이 열리면 붙여넣기 후 보내세요.', true);
+    setTimeout(() => { location.href = chatUrl; }, 400);
+  }else{
+    showMsg('sendMsg', '내용은 복사됐어요. 아래 3번에 단톡방 링크를 먼저 저장해두면 다음부터는 방이 바로 열려요.', false);
+  }
+});
+
+async function loadChatLink(){
+  try{
+    const d = await CHAT_DOC.get();
+    if(d.exists && d.data().url){
+      chatUrl = d.data().url;
+      document.getElementById('chatLink').value = chatUrl;
+    }
+  }catch(err){ console.error('단톡방 링크 불러오기 실패', err); }
+}
+
+document.getElementById('saveLinkBtn').addEventListener('click', async () => {
+  const url = document.getElementById('chatLink').value.trim();
+  if(url && !/^https:\/\/(open\.kakao\.com|qr\.kakao\.com)\//.test(url)){
+    showMsg('linkMsg', '카카오톡 오픈채팅 링크(https://open.kakao.com/...)를 붙여넣어 주세요.', false);
+    return;
+  }
+  try{
+    await CHAT_DOC.set({ audience: 'config', url: url, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+    chatUrl = url;
+    showMsg('linkMsg', url ? '저장됐어요. 튜터 마이페이지에 단톡방 버튼이 생겼어요.' : '링크를 지웠어요.', true);
+  }catch(err){
+    showMsg('linkMsg', '저장 실패: ' + err.message, false);
+  }
+});
+document.getElementById('testLinkBtn').addEventListener('click', () => {
+  const url = document.getElementById('chatLink').value.trim();
+  if(url) window.open(url, '_blank');
+});
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script>
+/* ───── 관리자 입장: 비밀번호 대신 PJ 구글 계정(tourjang@gmail.com)으로만 열림 (2026-11-07) ───── */
+(function(){
+  const ADMIN_EMAILS = ['tourjang@gmail.com'];
+  if(!firebase.apps.length) firebase.initializeApp({
+    apiKey: "AIzaSyD10IdHCDkCybMrkO5fewo0ksYFBmqwWro",
+    authDomain: "malmun-bca03.firebaseapp.com",
+    projectId: "malmun-bca03",
+    storageBucket: "malmun-bca03.firebasestorage.app",
+    messagingSenderId: "831462084669",
+    appId: "1:831462084669:web:003a844918b165d5b65a54"
+  });
+  const a = firebase.auth();
+  window.adminGoogleLogin = function(){
+    const p = new firebase.auth.GoogleAuthProvider();
+    p.setCustomParameters({ prompt: 'select_account' });
+    a.signInWithPopup(p).catch(() => a.signInWithRedirect(p));
+  };
+  window.adminSignOut = function(){ a.signOut(); };
+  let opened = false;
+  a.onAuthStateChanged(u => {
+    const ok = !!u && ADMIN_EMAILS.includes((u.email || '').toLowerCase());
+    window.__malmunAdminOk = ok;
+    const err = document.getElementById('gateError');
+    if(ok){
+      if(!opened){ opened = true; tryUnlock(); }
+    }else if(u && err){
+      err.innerHTML = '관리자 계정이 아니에요 (' + (u.email || '') + ')<br><a href="#" onclick="adminSignOut();return false;" style="text-decoration:underline;">다른 계정으로 로그인</a>';
+      err.style.display = 'block';
+    }
+  });
+})();
+</script>
+</body>
+</html>

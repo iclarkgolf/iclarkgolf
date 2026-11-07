@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>튜터 관리 | 말문 Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root{
+    --bg: #FFF9F0;
+    --card: #FFFFFF;
+    --card-border: #E8E4D8;
+    --text: #2C2C2A;
+    --text-secondary: #5F5E5A;
+    --text-muted: #8A8880;
+    --accent: #EF9F27;
+    --accent-text: #412402;
+    --danger: #D85A30;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; text-decoration:none; }
+  .wrap{ max-width:720px; margin:0 auto; padding:24px 20px 60px; }
+  h1{ font-size:18px; margin:0 0 4px; }
+  .sub{ font-size:13px; color:var(--text-muted); margin:0 0 24px; }
+
+  /* ---- password gate ---- */
+  #gate{ max-width:320px; margin:80px auto; text-align:center; }
+  #gate input{
+    width:100%; padding:12px; border:1px solid var(--card-border); border-radius:10px;
+    font-size:14px; margin-bottom:10px; box-sizing:border-box;
+  }
+  #gate button{
+    width:100%; padding:12px; border:none; border-radius:10px; background:var(--accent);
+    color:var(--accent-text); font-weight:600; font-size:14px; cursor:pointer;
+  }
+  #gateError{ color:var(--danger); font-size:12px; margin-top:8px; display:none; }
+
+  #app{ display:none; }
+
+  .add-btn{
+    display:block; width:100%; padding:14px; margin-bottom:20px;
+    border:1.5px dashed var(--card-border); border-radius:14px; background:none;
+    color:var(--text-secondary); font-size:14px; font-weight:600; cursor:pointer;
+  }
+  .add-btn:hover{ border-color:var(--accent); color:var(--accent-text); }
+
+  .tutor-card{
+    background:var(--card); border:1px solid var(--card-border); border-radius:16px;
+    padding:18px; margin-bottom:16px;
+  }
+  .row{ display:flex; gap:10px; margin-bottom:10px; }
+  .row > div{ flex:1; }
+  label{ font-size:11px; color:var(--text-muted); display:block; margin-bottom:4px; }
+  input[type=text], input[type=number], textarea{
+    width:100%; padding:9px 10px; border:1px solid var(--card-border); border-radius:8px;
+    font-size:13px; color:var(--text); font-family:inherit; box-sizing:border-box;
+  }
+  textarea{ resize:vertical; min-height:50px; }
+  .color-row{ display:flex; gap:6px; align-items:center; }
+  .color-row input[type=color]{ width:36px; height:36px; padding:0; border:none; border-radius:8px; cursor:pointer; }
+
+  .photo-row{ display:flex; align-items:center; gap:10px; }
+  .photo-preview{ width:48px; height:48px; border-radius:50%; flex-shrink:0; background-size:cover; background-position:center; border:1px solid var(--card-border); }
+  .photo-upload-btn{
+    border:1px solid var(--card-border); background:#fff; color:var(--text-secondary);
+    font-size:12px; padding:8px 12px; border-radius:8px; cursor:pointer;
+  }
+  .photo-upload-btn:hover{ border-color:var(--accent); color:var(--accent-text); }
+  .photo-status{ font-size:11px; color:var(--text-muted); }
+
+  .section-label{ font-size:12px; font-weight:600; color:var(--text-secondary); margin:16px 0 8px; }
+
+  .avail-grid{ display:flex; flex-direction:column; gap:6px; }
+  .avail-day{ display:flex; align-items:center; gap:8px; }
+  .avail-day .dname{ width:28px; font-size:12px; color:var(--text-secondary); flex-shrink:0; }
+  .avail-times{ display:flex; gap:6px; flex-wrap:wrap; }
+  .avail-toggle{
+    border:1px solid var(--card-border); background:#fff; color:var(--text-secondary);
+    font-size:12px; padding:6px 10px; border-radius:8px; cursor:pointer;
+  }
+  .avail-toggle.on{ background:var(--accent); color:var(--accent-text); border-color:var(--accent); font-weight:600; }
+
+  .booked-note{ font-size:11px; color:var(--text-muted); margin-top:8px; }
+
+  .card-actions{ display:flex; justify-content:space-between; align-items:center; margin-top:16px; flex-wrap:wrap; gap:10px; }
+  .view-links{ display:flex; gap:6px; flex-wrap:wrap; }
+  .view-link{
+    font-size:11px; padding:7px 10px; border-radius:8px; border:1px solid var(--card-border);
+    color:var(--text-secondary); background:#fff; cursor:pointer;
+  }
+  .view-link:hover{ border-color:var(--accent); color:var(--accent-text); }
+  .save-btn{
+    padding:10px 18px; border:none; border-radius:10px; background:var(--accent);
+    color:var(--accent-text); font-weight:600; font-size:13px; cursor:pointer;
+    transition:background 0.2s, transform 0.15s;
+  }
+  .save-btn.saving{ background:#d8d4c8; color:#5F5E5A; cursor:wait; }
+  .save-btn.saved{ background:#3FA34D; color:#fff; }
+  .save-btn.save-error{ background:var(--danger); color:#fff; }
+  .delete-btn{
+    padding:10px 14px; border:none; border-radius:10px; background:none;
+    color:var(--danger); font-weight:600; font-size:13px; cursor:pointer;
+  }
+  .status{ font-size:12px; color:var(--text-muted); margin-left:10px; }
+  .empty{ text-align:center; color:var(--text-muted); font-size:13px; padding:40px 0; }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1 style="text-align:center;">튜터 관리 admin</h1>
+  <input type="hidden" id="pwInput">
+  <button id="pwBtn">구글로 로그인 (PJ 계정)</button>
+  <p id="gateError"></p>
+</div>
+
+<div id="app">
+  <div class="wrap">
+    <p style="margin:0 0 10px;"><a href="admin.html" style="font-size:12px; color:var(--text-muted);">← 관리자 홈</a> &nbsp;·&nbsp; <a href="tutors.html" target="_blank" style="font-size:12px; color:var(--accent-text); font-weight:600;">튜터 목록 미리보기 →</a></p>
+    <h1>튜터 관리</h1>
+    <p class="sub">카드를 추가하고, 각 튜터의 요일·시간별 가능 시간을 설정하세요. 예약이 들어오면 해당 요일·시간은 자동으로 잠깁니다.</p>
+
+    <button class="add-btn" id="addBtn">+ 튜터 카드 추가</button>
+    <div id="cardList"></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyD10IdHCDkCybMrkO5fewo0ksYFBmqwWro",
+  authDomain: "malmun-bca03.firebaseapp.com",
+  projectId: "malmun-bca03",
+  storageBucket: "malmun-bca03.firebasestorage.app",
+  messagingSenderId: "831462084669",
+  appId: "1:831462084669:web:003a844918b165d5b65a54"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+// 필리핀 통신망·카카오톡 등 인앱브라우저에서 Firestore 연결 실패 방지 (롱폴링 강제)
+try{ db.settings({ experimentalForceLongPolling: true, experimentalAutoDetectLongPolling: false, merge: true }); }catch(e){ console.warn('firestore settings', e); }
+const storage = firebase.storage();
+
+// 2026-11-07: 비밀번호 방식 폐지 — 아래 "관리자 입장" 스크립트에서 PJ 구글 계정으로 확인
+const DAYS = [
+  { id: 'mon', label: '월' }, { id: 'tue', label: '화' }, { id: 'wed', label: '수' },
+  { id: 'thu', label: '목' }, { id: 'fri', label: '금' }, { id: 'sat', label: '토' }
+];
+const TIMES = ['10:00', '14:00', '17:00', '19:00', '21:00'];
+
+document.getElementById('pwBtn').addEventListener('click', tryUnlock);
+document.getElementById('pwInput').addEventListener('keydown', e => { if(e.key === 'Enter') tryUnlock(); });
+
+function tryUnlock(){
+  if(window.__malmunAdminOk !== true){ adminGoogleLogin(); return; }
+  const val = document.getElementById('pwInput').value;
+  if(window.__malmunAdminOk === true){
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    sessionStorage.setItem('malmun_admin_ok', '1');
+    loadCards();
+  }else{
+    document.getElementById('gateError').style.display = 'block';
+  }
+}
+
+// 관리자 홈(admin.html)에서 이미 잠금해제한 세션이면 다시 묻지 않음
+if(false /* 2026-11-07: 구글 로그인 확인 후 자동 입장 */){
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadCards();
+}
+
+function emptyAvailability(){
+  const a = {};
+  DAYS.forEach(d => a[d.id] = []);
+  return a;
+}
+
+function blankTutor(order){
+  return {
+    order: order,
+    avatarColor: '#3b5f8f',
+    avatarImage: '',
+    price: 30000,
+    ko: {
+      name: '', role: '',
+      intro: '', tags: ['', '', ''],
+      rating: '5.0', reviewCount: '0', lessonCount: '0',
+      reviewAuthor: '', reviewLoc: '', reviewBody: ''
+    },
+    en: {
+      name: '', role: '', intro: '', tags: ['', '', ''],
+      rating: '5.0', reviewCount: '0', lessonCount: '0',
+      reviewAuthor: '', reviewLoc: '', reviewBody: ''
+    },
+    ja: {
+      name: '', role: '', intro: '', tags: ['', '', '']
+    },
+    availability: emptyAvailability(),
+    bookedSlots: emptyAvailability()
+  };
+}
+
+let tutorsCache = {}; // id -> data (working copy while editing)
+
+async function loadCards(){
+  const listEl = document.getElementById('cardList');
+  listEl.innerHTML = '<p class="empty">불러오는 중...</p>';
+  try{
+    const snap = await db.collection('tutors').orderBy('order', 'asc').get();
+    if(snap.empty){
+      listEl.innerHTML = '<p class="empty">아직 등록된 튜터가 없습니다. 위 버튼으로 첫 카드를 추가하세요.</p>';
+      return;
+    }
+    listEl.innerHTML = '';
+    snap.forEach(doc => {
+      tutorsCache[doc.id] = doc.data();
+      listEl.appendChild(renderCard(doc.id, tutorsCache[doc.id]));
+    });
+  }catch(err){
+    console.error('튜터 목록 로드 실패:', err);
+    listEl.innerHTML = `<p class="empty" style="color:#D85A30;">불러오기 실패: ${escapeHtml(err.message)}<br>(이 메시지를 그대로 캡처해서 보내주세요)</p>`;
+  }
+}
+
+document.getElementById('addBtn').addEventListener('click', async () => {
+  const order = Object.keys(tutorsCache).length;
+  const data = blankTutor(order);
+  try{
+    const ref = await db.collection('tutors').add(data);
+    tutorsCache[ref.id] = data;
+    const listEl = document.getElementById('cardList');
+    if(listEl.querySelector('.empty')) listEl.innerHTML = '';
+    listEl.appendChild(renderCard(ref.id, data));
+  }catch(err){
+    console.error('카드 추가 실패:', err);
+    alert('카드 추가 실패: ' + err.message + '\n(이 메시지를 그대로 캡처해서 보내주세요)');
+  }
+});
+
+function renderCard(id, data){
+  const el = document.createElement('div');
+  el.className = 'tutor-card';
+  el.dataset.id = id;
+
+  el.innerHTML = `
+    <div class="row">
+      <div>
+        <label>이름 (한글)</label>
+        <input type="text" class="f-name-ko" placeholder="예: 지은" value="${escapeHtml(data.ko.name)}">
+      </div>
+      <div>
+        <label>이름 (영문, 선택)</label>
+        <input type="text" class="f-name-en" placeholder="e.g. Jieun" value="${escapeHtml(data.en.name || '')}">
+      </div>
+      <div>
+        <label>이름 (일본어, 선택)</label>
+        <input type="text" class="f-name-ja" placeholder="例: PJ先生" value="${escapeHtml((data.ja || {}).name || '')}">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>소개 한 줄 (한글)</label>
+        <input type="text" class="f-role-ko" placeholder="예: 전 항공사 승무원 · 비즈니스 한국어" value="${escapeHtml(data.ko.role)}">
+      </div>
+      <div>
+        <label>소개 한 줄 (영문, 선택)</label>
+        <input type="text" class="f-role-en" placeholder="e.g. Former flight attendant" value="${escapeHtml(data.en.role || '')}">
+      </div>
+      <div>
+        <label>소개 한 줄 (일본어, 선택)</label>
+        <input type="text" class="f-role-ja" placeholder="例: 旅行業30年・ゴルフ講師20年" value="${escapeHtml((data.ja || {}).role || '')}">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>가격 (원/회)</label>
+        <input type="number" class="f-price" value="${data.price}">
+      </div>
+      <div>
+        <label>사진 (없으면 색상 원으로 표시)</label>
+        <div class="photo-row">
+          <div class="photo-preview f-photo-preview" style="${data.avatarImage ? `background-image:url('${data.avatarImage}');` : `background:${data.avatarColor};`}"></div>
+          <button type="button" class="photo-upload-btn f-photo-btn">사진 선택</button>
+          <input type="file" accept="image/*" class="f-photo-file" style="display:none;">
+          <input type="hidden" class="f-avatar-image" value="${escapeHtml(data.avatarImage || '')}">
+          <span class="photo-status f-photo-status"></span>
+        </div>
+        <div class="color-row" style="margin-top:8px;">
+          <input type="color" class="f-color" value="${data.avatarColor}">
+          <span style="font-size:11px; color:var(--text-muted);">사진 없을 때 색상</span>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>상세 소개 (한글)</label>
+        <textarea class="f-intro-ko">${escapeHtml(data.ko.intro || '')}</textarea>
+      </div>
+      <div>
+        <label>상세 소개 (영문, 선택)</label>
+        <textarea class="f-intro-en">${escapeHtml(data.en.intro || '')}</textarea>
+      </div>
+      <div>
+        <label>상세 소개 (일본어, 선택)</label>
+        <textarea class="f-intro-ja">${escapeHtml((data.ja || {}).intro || '')}</textarea>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>태그 3개 (쉼표로 구분, 한글)</label>
+        <input type="text" class="f-tags-ko" value="${escapeHtml((data.ko.tags || []).join(', '))}">
+      </div>
+      <div>
+        <label>태그 3개 (쉼표로 구분, 영문 선택)</label>
+        <input type="text" class="f-tags-en" value="${escapeHtml((data.en.tags || []).join(', '))}">
+      </div>
+      <div>
+        <label>태그 3개 (쉼표로 구분, 일본어 선택)</label>
+        <input type="text" class="f-tags-ja" value="${escapeHtml(((data.ja || {}).tags || []).join(', '))}">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>평점</label>
+        <input type="text" class="f-rating" value="${escapeHtml(data.ko.rating || '5.0')}">
+      </div>
+      <div>
+        <label>후기 개수</label>
+        <input type="text" class="f-reviewcount" value="${escapeHtml(data.ko.reviewCount || '0')}">
+      </div>
+      <div>
+        <label>수업 횟수</label>
+        <input type="text" class="f-lessoncount" value="${escapeHtml(data.ko.lessonCount || '0')}">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>대표 후기 작성자 · 지역</label>
+        <input type="text" class="f-reviewauthor" value="${escapeHtml(data.ko.reviewAuthor || '')}" placeholder="예: M.T. · 홍콩">
+      </div>
+      <div>
+        <label>대표 후기 내용</label>
+        <input type="text" class="f-reviewbody" value="${escapeHtml(data.ko.reviewBody || '')}">
+      </div>
+    </div>
+
+    <p class="section-label">가능 요일 · 시간 (클릭해서 켜고 끄기)</p>
+    <div class="avail-grid">
+      ${DAYS.map(d => `
+        <div class="avail-day">
+          <span class="dname">${d.label}</span>
+          <div class="avail-times" data-day="${d.id}">
+            ${TIMES.map(t => {
+              const isOn = (data.availability && data.availability[d.id] || []).includes(t);
+              const isBooked = (data.bookedSlots && data.bookedSlots[d.id] || []).includes(t);
+              return `<button type="button" class="avail-toggle${isOn ? ' on' : ''}" data-time="${t}" ${isBooked ? 'title="이미 예약된 슬롯"' : ''}>${t}${isBooked ? ' 🔒' : ''}</button>`;
+            }).join('')}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <p class="booked-note">🔒 표시는 이미 학생이 예약한 슬롯입니다. 꺼도 예약 기록 자체는 지워지지 않습니다.</p>
+
+    <div class="card-actions">
+      <div>
+        <button class="save-btn">저장</button>
+        <span class="status"></span>
+      </div>
+      <div class="view-links">
+        <a class="view-link" href="tutors.html" target="_blank">목록 보기</a>
+        <a class="view-link" href="tutor-profile.html?id=${id}" target="_blank">프로필 보기</a>
+        <a class="view-link" href="booking.html?tutor=${id}" target="_blank">예약 페이지 보기</a>
+      </div>
+      <button class="delete-btn">카드 삭제</button>
+    </div>
+  `;
+
+  el.querySelectorAll('.avail-toggle').forEach(btn => {
+    btn.addEventListener('click', () => btn.classList.toggle('on'));
+  });
+
+  el.querySelector('.f-color').addEventListener('input', (e) => {
+    const hasImage = el.querySelector('.f-avatar-image').value;
+    if(!hasImage){
+      el.querySelector('.f-photo-preview').style.background = e.target.value;
+    }
+  });
+
+  el.querySelector('.f-photo-btn').addEventListener('click', () => {
+    el.querySelector('.f-photo-file').click();
+  });
+
+  el.querySelector('.f-photo-file').addEventListener('change', (e) => uploadAvatarPhoto(id, e.target.files[0], el));
+
+  el.querySelector('.save-btn').addEventListener('click', () => saveCard(id, el));
+  el.querySelector('.delete-btn').addEventListener('click', () => deleteCard(id, el));
+
+  return el;
+}
+
+async function uploadAvatarPhoto(id, file, el){
+  if(!file) return;
+  const statusEl = el.querySelector('.f-photo-status');
+  statusEl.textContent = '업로드 중...';
+  try{
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const path = `tutors/${id}/avatar_${Date.now()}.${ext}`;
+    const ref = storage.ref().child(path);
+    await ref.put(file);
+    const url = await ref.getDownloadURL();
+    el.querySelector('.f-avatar-image').value = url;
+    el.querySelector('.f-photo-preview').style.backgroundImage = `url('${url}')`;
+    el.querySelector('.f-photo-preview').style.background = `url('${url}') center/cover`;
+    statusEl.textContent = '업로드 완료 (저장 버튼을 눌러 반영하세요)';
+    setTimeout(() => statusEl.textContent = '', 4000);
+  }catch(err){
+    console.error('사진 업로드 실패:', err);
+    statusEl.textContent = '업로드 실패: ' + err.message;
+  }
+}
+
+function escapeHtml(s){
+  return (s || '').toString()
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function saveCard(id, el){
+  const statusEl = el.querySelector('.status');
+  const btnEl = el.querySelector('.save-btn');
+  const originalLabel = '저장';
+  btnEl.disabled = true;
+  btnEl.classList.remove('saved', 'save-error');
+  btnEl.classList.add('saving');
+  btnEl.textContent = '저장 중...';
+  statusEl.textContent = '';
+
+  const availability = {};
+  DAYS.forEach(d => {
+    const times = [];
+    el.querySelectorAll(`.avail-times[data-day="${d.id}"] .avail-toggle.on`).forEach(b => times.push(b.dataset.time));
+    availability[d.id] = times;
+  });
+
+  const tagsKo = el.querySelector('.f-tags-ko').value.split(',').map(s => s.trim()).filter(Boolean);
+  const tagsEn = el.querySelector('.f-tags-en').value.split(',').map(s => s.trim()).filter(Boolean);
+  const tagsJa = el.querySelector('.f-tags-ja').value.split(',').map(s => s.trim()).filter(Boolean);
+
+  const data = {
+    order: tutorsCache[id] ? tutorsCache[id].order : 0,
+    avatarColor: el.querySelector('.f-color').value,
+    avatarImage: el.querySelector('.f-avatar-image').value || '',
+    price: Number(el.querySelector('.f-price').value) || 0,
+    ko: {
+      name: el.querySelector('.f-name-ko').value,
+      role: el.querySelector('.f-role-ko').value,
+      intro: el.querySelector('.f-intro-ko').value,
+      tags: tagsKo,
+      rating: el.querySelector('.f-rating').value,
+      reviewCount: el.querySelector('.f-reviewcount').value,
+      lessonCount: el.querySelector('.f-lessoncount').value,
+      reviewAuthor: el.querySelector('.f-reviewauthor').value,
+      reviewLoc: '',
+      reviewBody: el.querySelector('.f-reviewbody').value
+    },
+    en: {
+      name: el.querySelector('.f-name-en').value,
+      role: el.querySelector('.f-role-en').value,
+      intro: el.querySelector('.f-intro-en').value,
+      tags: tagsEn,
+      rating: el.querySelector('.f-rating').value,
+      reviewCount: el.querySelector('.f-reviewcount').value,
+      lessonCount: el.querySelector('.f-lessoncount').value,
+      reviewAuthor: '',
+      reviewLoc: '',
+      reviewBody: ''
+    },
+    ja: {
+      name: el.querySelector('.f-name-ja').value,
+      role: el.querySelector('.f-role-ja').value,
+      intro: el.querySelector('.f-intro-ja').value,
+      tags: tagsJa
+    },
+    availability: availability,
+    bookedSlots: (tutorsCache[id] && tutorsCache[id].bookedSlots) || emptyAvailability()
+  };
+
+  try{
+    await db.collection('tutors').doc(id).set(data, { merge: true });
+    tutorsCache[id] = data;
+    btnEl.classList.remove('saving');
+    btnEl.classList.add('saved');
+    btnEl.textContent = '✓ 저장 완료';
+    btnEl.style.transform = 'scale(1.06)';
+    setTimeout(() => { btnEl.style.transform = 'scale(1)'; }, 150);
+    setTimeout(() => {
+      btnEl.classList.remove('saved');
+      btnEl.textContent = originalLabel;
+      btnEl.disabled = false;
+    }, 2200);
+  }catch(err){
+    console.error(err);
+    btnEl.classList.remove('saving');
+    btnEl.classList.add('save-error');
+    btnEl.textContent = '저장 실패';
+    btnEl.disabled = false;
+    statusEl.textContent = err.message + ' (이 메시지를 그대로 캡처해서 보내주세요)';
+  }
+}
+
+async function deleteCard(id, el){
+  if(!confirm('이 튜터 카드를 삭제할까요? 되돌릴 수 없습니다.')) return;
+  try{
+    await db.collection('tutors').doc(id).delete();
+    delete tutorsCache[id];
+    el.remove();
+    if(Object.keys(tutorsCache).length === 0){
+      document.getElementById('cardList').innerHTML = '<p class="empty">아직 등록된 튜터가 없습니다. 위 버튼으로 첫 카드를 추가하세요.</p>';
+    }
+  }catch(err){
+    alert('삭제 실패: ' + err.message);
+  }
+}
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script>
+/* ───── 관리자 입장: 비밀번호 대신 PJ 구글 계정(tourjang@gmail.com)으로만 열림 (2026-11-07) ───── */
+(function(){
+  const ADMIN_EMAILS = ['tourjang@gmail.com'];
+  if(!firebase.apps.length) firebase.initializeApp({
+    apiKey: "AIzaSyD10IdHCDkCybMrkO5fewo0ksYFBmqwWro",
+    authDomain: "malmun-bca03.firebaseapp.com",
+    projectId: "malmun-bca03",
+    storageBucket: "malmun-bca03.firebasestorage.app",
+    messagingSenderId: "831462084669",
+    appId: "1:831462084669:web:003a844918b165d5b65a54"
+  });
+  const a = firebase.auth();
+  window.adminGoogleLogin = function(){
+    const p = new firebase.auth.GoogleAuthProvider();
+    p.setCustomParameters({ prompt: 'select_account' });
+    a.signInWithPopup(p).catch(() => a.signInWithRedirect(p));
+  };
+  window.adminSignOut = function(){ a.signOut(); };
+  let opened = false;
+  a.onAuthStateChanged(u => {
+    const ok = !!u && ADMIN_EMAILS.includes((u.email || '').toLowerCase());
+    window.__malmunAdminOk = ok;
+    const err = document.getElementById('gateError');
+    if(ok){
+      if(!opened){ opened = true; tryUnlock(); }
+    }else if(u && err){
+      err.innerHTML = '관리자 계정이 아니에요 (' + (u.email || '') + ')<br><a href="#" onclick="adminSignOut();return false;" style="text-decoration:underline;">다른 계정으로 로그인</a>';
+      err.style.display = 'block';
+    }
+  });
+})();
+</script>
+</body>
+</html>

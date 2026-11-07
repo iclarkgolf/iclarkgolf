@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>튜터 마이페이지 | 말문</title>
+<style>
+  :root{
+    --bg:#FFF9F0; --card:#FFFFFF; --card-border:#E8E4D8;
+    --text:#2C2C2A; --text-secondary:#5F5E5A; --text-muted:#8A8880;
+    --accent:#EF9F27; --accent-text:#412402; --accent-soft:#FFF3E0;
+    --success:#3FA34D; --danger:#C0492B;
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR",sans-serif;
+    -webkit-font-smoothing:antialiased; padding-bottom:76px; }
+  a{ color:inherit; text-decoration:none; }
+  .wrap{ max-width:480px; margin:0 auto; padding:24px 20px 40px; }
+  .loading{ text-align:center; color:var(--text-muted); font-size:14px; padding:80px 0; }
+
+  .profile-row{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+  .photo{ width:56px; height:56px; border-radius:50%; background:var(--accent-soft) center/cover; flex-shrink:0; }
+  .p-name{ font-size:17px; font-weight:700; margin:0; }
+  .p-sub{ font-size:12px; color:var(--text-muted); margin:3px 0 0; }
+  .badge{ display:inline-block; font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; margin-left:6px; vertical-align:middle; }
+  .badge.approved{ background:#E4F4E7; color:var(--success); }
+  .badge.pending{ background:var(--accent-soft); color:var(--accent-text); }
+  .badge.rejected{ background:#FBE7E1; color:var(--danger); }
+
+  .card{ background:var(--card); border:1px solid var(--card-border); border-radius:14px; padding:16px; margin-bottom:14px; }
+  .card h2{ font-size:14px; margin:0 0 10px; }
+  .card p.desc{ font-size:12px; color:var(--text-secondary); line-height:1.6; margin:0 0 10px; }
+
+  .btn-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .btn{ flex:1; min-width:130px; padding:12px 10px; border-radius:12px; border:1.5px solid var(--text); background:#fff; color:var(--text);
+    font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; text-align:center; }
+  .btn.primary{ background:var(--text); color:#fff; }
+  .btn:disabled{ opacity:.5; cursor:default; }
+
+  .tabs{ display:flex; gap:6px; margin-bottom:10px; }
+  .tab{ padding:7px 12px; border-radius:20px; border:1px solid var(--card-border); background:#fff; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit; color:var(--text-secondary); }
+  .tab.active{ background:var(--text); color:#fff; border-color:var(--text); }
+
+  .bk{ border-top:1px solid var(--card-border); padding:12px 0; }
+  .bk:first-child{ border-top:none; padding-top:0; }
+  .bk-name{ font-size:14px; font-weight:700; margin:0; }
+  .bk-meta{ font-size:12px; color:var(--text-muted); margin:3px 0 8px; }
+  .bk-tag{ display:inline-block; font-size:11px; background:var(--accent-soft); color:var(--accent-text); padding:2px 8px; border-radius:8px; margin-left:4px; }
+  .bk .btn-row .btn{ min-width:0; padding:10px 6px; font-size:12px; }
+  .bk .btn.done{ border-color:var(--success); color:var(--success); }
+  .bk .btn.cancel{ border-color:var(--card-border); color:var(--text-muted); }
+  .bk .btn.noshow{ border-color:#E8B04A; color:#B7791F; }
+  /* 정산 */
+  .earn-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px; }
+  .earn-box{ border:1px solid var(--card-border); border-radius:12px; padding:10px 12px; }
+  .earn-box small{ display:block; font-size:11px; color:var(--text-muted); }
+  .earn-box b{ font-size:16px; }
+  .st{ display:inline-block; font-size:11px; padding:2px 8px; border-radius:8px; margin-left:4px; font-weight:600; }
+  .st.ok{ background:#E4F4E7; color:var(--success); } .st.wait{ background:var(--accent-soft); color:var(--accent-text); }
+  .st.dispute,.st.void{ background:#FBE7E1; color:var(--danger); } .st.paid{ background:#E3ECFA; color:#2B5BA8; } .st.free{ background:#F1F0EC; color:var(--text-muted); }
+  .acct input{ width:100%; padding:11px 12px; border:1px solid var(--card-border); border-radius:10px; font-size:14px; font-family:inherit; margin-bottom:8px; }
+  .empty{ font-size:13px; color:var(--text-muted); margin:0; }
+  .chips{ display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
+  .chip{ font-size:11px; background:var(--accent-soft); color:var(--accent-text); padding:2px 8px; border-radius:8px; }
+
+  .notice-item{ padding:8px 0; border-top:1px solid var(--card-border); }
+  .notice-item:first-child{ border-top:none; padding-top:0; }
+  .n-title{ font-size:13px; font-weight:700; margin:0 0 3px; }
+  .n-body{ font-size:12px; color:var(--text-secondary); line-height:1.6; white-space:pre-wrap; margin:0; }
+  .n-date{ font-size:11px; color:var(--text-muted); margin-top:3px; }
+
+  .links{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .links a{ display:block; padding:12px; border:1px solid var(--card-border); border-radius:12px; font-size:13px; font-weight:600; background:#fff; }
+  .links a small{ display:block; font-size:11px; color:var(--text-muted); font-weight:400; margin-top:2px; }
+
+  #doneModal{ position:fixed; inset:0; background:rgba(0,0,0,.4); display:none; align-items:flex-end; justify-content:center; z-index:50; }
+  #doneModal.open{ display:flex; }
+  .modal-box{ background:#fff; width:100%; max-width:480px; border-radius:18px 18px 0 0; padding:20px; max-height:90vh; overflow:auto; }
+  .modal-box h3{ margin:0 0 4px; font-size:16px; }
+  .modal-box .m-sub{ font-size:12px; color:var(--text-muted); margin:0 0 12px; }
+  .modal-box label{ display:block; font-size:12px; font-weight:700; margin:12px 0 5px; }
+  .modal-box input{ width:100%; padding:11px 12px; border:1px solid var(--card-border); border-radius:10px; font-size:14px; font-family:inherit; }
+  .modal-box .hint{ font-size:11px; color:var(--text-muted); margin:4px 0 0; line-height:1.5; }
+  .modal-box .btn-row{ margin-top:16px; }
+
+  .bottom-nav{ position:fixed; bottom:0; left:0; right:0; z-index:20; background:rgba(255,255,255,.94); backdrop-filter:blur(10px);
+    border-top:1px solid var(--card-border); display:flex; padding:8px 8px calc(8px + env(safe-area-inset-bottom)); }
+  .nav-item{ flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 0; color:var(--text-muted); background:none; border:none; cursor:pointer; font-family:inherit; }
+  .nav-item .ic{ font-size:18px; }
+  .nav-item span{ font-size:11px; }
+  .nav-item.active{ color:var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="wrap" id="content">
+  <p class="loading">불러오는 중...</p>
+</div>
+
+<div id="doneModal">
+  <div class="modal-box">
+    <h3>✅ 수업 완료 처리</h3>
+    <p class="m-sub" id="doneModalSub"></p>
+    <label>📚 오늘 배운 단어 (선택)</label>
+    <input id="doneVocab" placeholder="예: 안녕하세요, 감사합니다, 괜찮아요">
+    <p class="hint">쉼표(,)로 구분 — 학생 마이페이지에 표시돼요</p>
+    <label>✏️ 오늘 배운 표현·문법 (선택)</label>
+    <input id="doneGrammar" placeholder="예: ~고 싶어요, ~(으)ㄹ 수 있어요">
+    <label>🎯 다음 목표 (선택)</label>
+    <input id="doneGoal" placeholder="예: 자기소개 30초 말하기">
+    <p class="hint" style="margin-top:12px;">완료하면 이 예약은 "완료된 수업"으로 옮겨지고, 학생 마이페이지에 오늘 수업 정리가 남아요.</p>
+    <div class="btn-row">
+      <button class="btn" onclick="closeDoneModal()">닫기</button>
+      <button class="btn primary" id="doneConfirmBtn" onclick="confirmDone()">완료 처리</button>
+    </div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <button class="nav-item" onclick="location.href='index.html'"><span class="ic">🏠</span><span>홈</span></button>
+  <button class="nav-item" onclick="location.href='tutors.html'"><span class="ic">👥</span><span>튜터 목록</span></button>
+  <button class="nav-item" onclick="location.href='mypage.html'"><span class="ic">🙂</span><span>마이페이지</span></button>
+  <button class="nav-item active" onclick="location.href='tutor-home.html'"><span class="ic">🎓</span><span>튜터 페이지</span></button>
+</nav>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyD10IdHCDkCybMrkO5fewo0ksYFBmqwWro",
+  authDomain: "malmun-bca03.firebaseapp.com",
+  projectId: "malmun-bca03",
+  storageBucket: "malmun-bca03.firebasestorage.app",
+  messagingSenderId: "831462084669",
+  appId: "1:831462084669:web:003a844918b165d5b65a54"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+try{ db.settings({ experimentalForceLongPolling: true, experimentalAutoDetectLongPolling: false, merge: true }); }catch(e){ console.warn('firestore settings', e); }
+
+const DAY_ORDER = { mon:0, tue:1, wed:2, thu:3, fri:4, sat:5, sun:6 };
+const DAY_LABEL = { mon:'월', tue:'화', wed:'수', thu:'목', fri:'금', sat:'토', sun:'일' };
+
+let me = null;          // 로그인 사용자
+let app = null;         // 내 지원서 (tutorApplications)
+let appId = null;
+let card = null;        // 내 튜터 카드 (tutors)
+let myBookings = [];
+let myDone = [];
+let bookingTab = 'upcoming';
+let doneTarget = null;
+
+function esc(str){
+  const d = document.createElement('div');
+  d.textContent = str == null ? '' : String(str);
+  return d.innerHTML;
+}
+
+auth.onAuthStateChanged(async (user) => {
+  if(!user){
+    location.href = 'login.html?next=tutor-home';
+    return;
+  }
+  me = user;
+  try{
+    let snap = await db.collection('tutorApplications').where('uid', '==', user.uid).limit(1).get();
+    if(snap.empty && user.email){
+      snap = await db.collection('tutorApplications').where('email', '==', user.email).limit(1).get();
+    }
+    if(snap.empty){
+      renderNotTutor();
+      return;
+    }
+    appId = snap.docs[0].id;
+    app = snap.docs[0].data();
+    if(app.tutorId){
+      try{
+        const c = await db.collection('tutors').doc(app.tutorId).get();
+        if(c.exists) card = c.data();
+      }catch(e){ console.error('튜터 카드 불러오기 실패', e); }
+    }
+    renderHome();
+  }catch(err){
+    console.error(err);
+    document.getElementById('content').innerHTML = `
+      <p class="loading">정보를 불러오지 못했어요.<br>인터넷 연결을 확인하고 다시 시도해주세요.<br><br>
+      <button class="btn primary" style="max-width:200px;" onclick="location.reload()">다시 시도</button></p>`;
+  }
+});
+
+function renderNotTutor(){
+  document.getElementById('content').innerHTML = `
+    <div class="card" style="text-align:center; padding:30px 18px;">
+      <h2 style="font-size:16px;">아직 튜터 지원 내역이 없어요</h2>
+      <p class="desc">지금 로그인한 계정(${esc(me.email || '')})으로는 지원서가 확인되지 않아요.<br>
+      지원할 때 다른 계정(구글/이메일)으로 로그인하셨다면, 그 계정으로 다시 로그인해주세요.</p>
+      <div class="btn-row">
+        <button class="btn" onclick="auth.signOut().then(()=>location.href='login.html?next=tutor-home')">다른 계정으로 로그인</button>
+        <button class="btn primary" onclick="location.href='tutor-apply.html'">튜터 지원하기</button>
+      </div>
+    </div>`;
+}
+
+function renderHome(){
+  const status = app.status || 'pending';
+  const statusLabel = { pending:'검토 중', approved:'승인됨', rejected:'반려됨' }[status] || '검토 중';
+  const photo = (card && card.avatarImage) || app.photoURL || '';
+  const name = (card && card.ko && card.ko.name) || app.name || '튜터';
+  const isApproved = status === 'approved' && app.tutorId;
+  const days = (app.availableDays || []).map(d => DAY_LABEL[d] || d).join(' · ');
+
+  let html = `
+    <div class="profile-row">
+      <div class="photo" style="${photo ? `background-image:url('${esc(photo)}')` : ''}"></div>
+      <div>
+        <p class="p-name">${esc(name)} <span class="badge ${status}">${statusLabel}</span></p>
+        <p class="p-sub">${esc(me.email || '')}${days ? ' · ' + esc(days) : ''}</p>
+      </div>
+    </div>`;
+
+  if(!isApproved){
+    html += `
+      <div class="card">
+        <h2>${status === 'rejected' ? '이번에는 함께하기 어렵게 됐어요' : '지원서를 검토하고 있어요'}</h2>
+        <p class="desc">${status === 'rejected' ? '궁금한 점은 카카오톡(tourjang2)으로 편하게 물어봐주세요.' : '승인되면 이 페이지에서 내 수업 예약·화상수업·공지를 바로 볼 수 있어요. 그 사이 지원서 내용을 고치고 싶으면 아래 버튼을 눌러주세요.'}</p>
+        <div class="btn-row"><button class="btn" onclick="location.href='tutor-apply.html?edit=1'">✏️ 내 지원서 수정하기</button></div>
+      </div>`;
+  }else{
+    html += `
+      ${!app.phone ? `<div class="card" style="border-color:#E8B04A; background:#FFF3E0;">
+        <h2>📱 휴대폰 번호를 등록해주세요</h2>
+        <p class="desc">급한 공지는 문자나 카톡으로 보내드려요. "프로필 수정"에서 휴대폰 번호를 넣고 저장해주세요.</p>
+        <div class="btn-row"><button class="btn primary" onclick="location.href='tutor-apply.html?edit=1'">번호 등록하러 가기</button></div>
+      </div>` : ''}
+
+      <div class="card" id="chatCard" style="display:none;">
+        <h2>💬 튜터 단톡방</h2>
+        <p class="desc">PJ와 튜터들이 바로바로 소식을 주고받는 카카오톡 방이에요.</p>
+        <div class="btn-row"><button class="btn primary" id="chatBtn" style="background:#FEE500; color:#3A1D1D; border-color:#FEE500;">카카오톡 단톡방 들어가기</button></div>
+      </div>
+
+      <div class="card">
+        <h2>내 프로필</h2>
+        <p class="desc">학생들이 보는 내 소개 카드예요. 사진·이름·소개글은 직접 고칠 수 있고, 수업료·가능 시간은 PJ에게 말씀해주세요.</p>
+        <div class="btn-row">
+          <button class="btn" onclick="location.href='tutor-profile.html?id=${esc(app.tutorId)}'">👀 학생에게 보이는 모습</button>
+          <button class="btn primary" onclick="location.href='tutor-apply.html?edit=1'">✏️ 프로필 수정</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>📅 내 수업 예약</h2>
+        <div class="tabs">
+          <button class="tab active" data-tab="upcoming" onclick="setTab('upcoming')">예정된 수업</button>
+          <button class="tab" data-tab="done" onclick="setTab('done')">완료된 수업</button>
+        </div>
+        <div id="bookingList"><p class="empty">불러오는 중...</p></div>
+        <p class="desc" style="margin:12px 0 0;">수업 시간이 되면 "화상룸 입장"을 누르세요. 수업이 끝나면 꼭 "✅ 수업 완료"를 눌러주세요.<br>
+        학생이 수업 시간이 다 지나도록 안 왔으면 "😶 학생 노쇼"를 누르세요 — 수업료가 정산돼요.<br>
+        서로 합의해서 수업을 안 하기로 했으면 "🚫 취소"를 누르세요 — 기록 없이 사라져요.</p>
+      </div>
+
+      <div class="card">
+        <h2>💰 내 정산</h2>
+        <div id="earnBox"><p class="empty">불러오는 중...</p></div>
+        <p class="desc" style="margin:8px 0 0;">수업료의 85%가 튜터 몫이에요. 수업 완료 후 학생이 72시간 안에 이의를 하지 않으면 "확정"되고,
+        매달 말일에 마감해서 다음 달 10일에 아래 계좌로 보내드려요. 무료 오리엔테이션·무료 대화는 정산되지 않아요.</p>
+      </div>
+
+      <div class="card acct">
+        <h2>🏦 정산 받을 계좌</h2>
+        <div id="acctBox"></div>
+      </div>
+
+      <div class="card">
+        <h2>🎥 지금 바로 화상방 열기</h2>
+        <p class="desc">예약 없이 학생과 바로 만나고 싶을 때 쓰세요. 학생에게 보낼 링크가 복사돼요.</p>
+        <div class="btn-row">
+          <button class="btn" onclick="copyMyRoom()">링크만 복사</button>
+          <button class="btn primary" onclick="openMyRoom()">입장 + 링크 복사</button>
+        </div>
+      </div>`;
+  }
+
+  html += `
+    <div class="card">
+      <h2>📢 튜터 공지사항</h2>
+      <div id="noticeList"><p class="empty">불러오는 중...</p></div>
+    </div>
+
+    <div class="card">
+      <h2>🧭 말문 둘러보기</h2>
+      <p class="desc">학생들이 보는 화면이에요. 어떻게 배우는지 알아두시면 수업이 훨씬 편해요.</p>
+      <div class="links">
+        <a href="index.html">🏠 홈<small>말문 첫 화면</small></a>
+        <a href="curriculum.html">📘 커리큘럼<small>목적별 배우는 길</small></a>
+        <a href="tutors.html">👥 튜터 목록<small>함께하는 튜터들</small></a>
+        <a href="pricing.html">💳 요금 안내<small>수강권·결제 방식</small></a>
+        <a href="level-test.html">📝 레벨테스트<small>학생이 처음 보는 시험</small></a>
+        <a href="blog.html">💬 커뮤니티<small>말문 블로그</small></a>
+      </div>
+    </div>
+
+    <p style="text-align:center; margin-top:18px;">
+      <a href="#" onclick="auth.signOut().then(()=>location.href='index.html'); return false;" style="font-size:12px; color:var(--text-muted); text-decoration:underline;">로그아웃</a>
+    </p>`;
+
+  document.getElementById('content').innerHTML = html;
+  loadNotices();
+  if(isApproved){
+    renderAccount();
+    loadChatLink();
+    loadMyBookings();
+    loadMyDone();
+  }
+}
+
+/* ───── 튜터 단톡방 링크 (튜터 즉석 연락 화면에서 PJ가 저장) ───── */
+async function loadChatLink(){
+  try{
+    const d = await db.collection('notices').doc('tutorChatLink').get();
+    const url = d.exists ? (d.data().url || '') : '';
+    if(url && /^https:\/\/(open|qr)\.kakao\.com\//.test(url)){
+      document.getElementById('chatCard').style.display = 'block';
+      document.getElementById('chatBtn').onclick = () => { location.href = url; };
+    }
+  }catch(e){ console.error('단톡방 링크 불러오기 실패', e); }
+}
+
+/* ───── 공지 (튜터 대상) ───── */
+async function loadNotices(){
+  const el = document.getElementById('noticeList');
+  try{
+    const snap = await db.collection('notices').where('audience', '==', 'tutor').orderBy('createdAt', 'desc').limit(5).get();
+    if(snap.empty){ el.innerHTML = '<p class="empty">등록된 공지가 없어요.</p>'; return; }
+    el.innerHTML = snap.docs.map(d => {
+      const n = d.data();
+      const date = n.createdAt && n.createdAt.toDate ? n.createdAt.toDate().toLocaleDateString('ko-KR') : '';
+      return `<div class="notice-item"><p class="n-title">${esc(n.title || '')}</p><p class="n-body">${esc(n.body || '')}</p><p class="n-date">${date}</p></div>`;
+    }).join('');
+  }catch(err){
+    console.error('공지 불러오기 실패', err);
+    el.innerHTML = '<p class="empty">공지를 불러오지 못했어요.</p>';
+  }
+}
+
+/* ───── 내 예약 (내 tutorId 것만) ───── */
+function loadMyBookings(){
+  db.collection('bookings').where('tutorId', '==', app.tutorId).onSnapshot(snap => {
+    myBookings = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    myBookings.sort((a, b) => daysUntil(a) - daysUntil(b));
+    if(bookingTab === 'upcoming') renderBookings();
+  }, err => {
+    console.error('예약 불러오기 실패', err);
+    const el = document.getElementById('bookingList');
+    if(el) el.innerHTML = '<p class="empty">예약을 불러오지 못했어요. 새로고침 해주세요.</p>';
+  });
+}
+function loadMyDone(){
+  db.collection('completedLessons').where('tutorId', '==', app.tutorId).onSnapshot(snap => {
+    myDone = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    myDone.sort((a, b) => ((b.completedAt && b.completedAt.toMillis ? b.completedAt.toMillis() : 0) - (a.completedAt && a.completedAt.toMillis ? a.completedAt.toMillis() : 0)));
+    if(bookingTab === 'done') renderBookings();
+    renderEarnings();
+  }, err => console.error('완료 수업 불러오기 실패', err));
+}
+
+// 예약은 요일·시간 기준(매주 반복) → 다음 번 그 요일까지 남은 분
+function daysUntil(b){
+  const now = new Date();
+  const todayIdx = (now.getDay() + 6) % 7;
+  const bIdx = DAY_ORDER[b.day] ?? 0;
+  let dd = (bIdx - todayIdx + 7) % 7;
+  const [h, m] = (b.time || '00:00').split(':').map(Number);
+  const mins = dd * 1440 + (h * 60 + m) - (now.getHours() * 60 + now.getMinutes());
+  return mins < -90 ? mins + 7 * 1440 : mins; // 수업 시작 후 90분까지는 "지금 수업 중"으로 맨 위에
+}
+
+function setTab(t){
+  bookingTab = t;
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
+  renderBookings();
+}
+
+function renderBookings(){
+  const el = document.getElementById('bookingList');
+  if(!el) return;
+  if(bookingTab === 'done'){
+    if(!myDone.length){ el.innerHTML = '<p class="empty">아직 완료한 수업이 없어요.</p>'; return; }
+    el.innerHTML = myDone.map(l => {
+      const d = l.completedAt && l.completedAt.toDate ? l.completedAt.toDate() : null;
+      const date = d ? `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}` : '';
+      const chips = [...(l.vocab || []), ...(l.grammar || [])].map(v => `<span class="chip">${esc(v)}</span>`).join('');
+      const ps = payoutState(l);
+      return `<div class="bk"><p class="bk-name">${esc(l.studentName || '학생')}${l.kind === 'noshow' ? '<span class="bk-tag">학생 노쇼</span>' : ''}<span class="st ${ps.key}">${ps.label}</span></p>
+        <p class="bk-meta">${date} · ${esc(l.dayLabel || l.day || '')} ${esc(l.time || '')}${isFreeLesson(l) ? '' : ' · 내 몫 ' + won(payOf(l))}</p>
+        ${chips ? `<div class="chips">${chips}</div>` : ''}
+        ${l.nextGoal ? `<p class="bk-meta" style="margin-top:6px;">🎯 ${esc(l.nextGoal)}</p>` : ''}</div>`;
+    }).join('');
+    return;
+  }
+  if(!myBookings.length){ el.innerHTML = '<p class="empty">아직 들어온 예약이 없어요. 예약이 들어오면 여기 바로 떠요.</p>'; return; }
+  el.innerHTML = myBookings.map(b => {
+    const params = new URLSearchParams({ room: b.roomId || '', tutor: b.tutorName || '', time: `${b.dayLabel || ''} ${b.time || ''}` });
+    const kind = b.isFreeTalk ? '무료 대화' : (b.isFreeOrientation ? '무료 오리엔테이션' : '정식 수업');
+    return `<div class="bk">
+      <p class="bk-name">${esc(b.studentName || '학생')}<span class="bk-tag">${kind}</span></p>
+      <p class="bk-meta">매주 ${esc(b.dayLabel || DAY_LABEL[b.day] || b.day || '')} ${esc(b.time || '')}</p>
+      <div class="btn-row">
+        ${b.roomId ? `<button class="btn primary" onclick="location.href='classroom.html?${params.toString()}'">🎥 화상룸 입장</button>` : `<button class="btn" disabled>룸 정보 없음</button>`}
+        <button class="btn done" onclick="openDoneModal('${b.id}')">✅ 수업 완료</button>
+        <button class="btn noshow" onclick="markNoShow('${b.id}', this)">😶 학생 노쇼</button>
+        <button class="btn cancel" onclick="cancelBooking('${b.id}', this)">🚫 취소</button>
+      </div></div>`;
+  }).join('');
+}
+
+/* ───── 수업 완료 / 취소 (예약 관리 화면과 같은 방식, 내 예약에만) ───── */
+function splitList(v){ return String(v || '').split(/[,，、\n]/).map(x => x.trim()).filter(Boolean); }
+function openDoneModal(id){
+  doneTarget = myBookings.find(b => b.id === id);
+  if(!doneTarget) return;
+  document.getElementById('doneModalSub').textContent = `${doneTarget.studentName || '학생'} · ${doneTarget.dayLabel || doneTarget.day || ''} ${doneTarget.time || ''}`;
+  ['doneVocab','doneGrammar','doneGoal'].forEach(i => document.getElementById(i).value = '');
+  const btn = document.getElementById('doneConfirmBtn');
+  btn.disabled = false; btn.textContent = '완료 처리';
+  document.getElementById('doneModal').classList.add('open');
+}
+function closeDoneModal(){ document.getElementById('doneModal').classList.remove('open'); doneTarget = null; }
+async function confirmDone(){
+  if(!doneTarget) return;
+  const b = doneTarget;
+  if(b.tutorId !== app.tutorId) return;
+  const btn = document.getElementById('doneConfirmBtn');
+  btn.disabled = true; btn.textContent = '처리 중...';
+  try{
+    const { id: _omit, ...bookingData } = b;
+    // 학생 마이페이지는 completedLessons(studentUid)를 읽어 수업 정리를 보여줌
+    await db.collection('completedLessons').doc(b.id).set({
+      ...bookingData,
+      ...payoutFields(b, 'lesson'),
+      vocab: splitList(document.getElementById('doneVocab').value),
+      grammar: splitList(document.getElementById('doneGrammar').value),
+      nextGoal: document.getElementById('doneGoal').value.trim(),
+      completedBy: me.email || me.uid,
+      completedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await db.collection('bookings').doc(b.id).delete();
+    closeDoneModal();
+  }catch(e){
+    console.error('수업 완료 처리 실패', e);
+    alert('완료 처리에 실패했어요. 잠시 후 다시 시도해 주세요.\n' + (e.message || e));
+    btn.disabled = false; btn.textContent = '완료 처리';
+  }
+}
+async function cancelBooking(id, btnEl){
+  const b = myBookings.find(x => x.id === id);
+  if(!b || b.tutorId !== app.tutorId) return;
+  if(!confirm(`${b.studentName || '학생'} · ${b.dayLabel || b.day || ''} ${b.time || ''} 예약을 취소할까요?\n\n학생 수업 기록에는 아무것도 안 남아요.\n실제로 수업을 했다면 "✅ 수업 완료"를 눌러주세요.`)) return;
+  if(btnEl){ btnEl.disabled = true; btnEl.textContent = '취소 중...'; }
+  try{
+    await db.collection('bookings').doc(id).delete();
+  }catch(e){
+    alert('취소에 실패했어요. 잠시 후 다시 시도해 주세요.\n' + (e.message || e));
+    if(btnEl){ btnEl.disabled = false; btnEl.textContent = '🚫 취소'; }
+  }
+}
+
+
+/* ───── 정산 (B안: 실제 결제액의 85%가 튜터 몫 · 2026-11-07) ─────
+   - 수업 완료/학생 노쇼 처리 시 completedLessons 문서에 정산 정보를 함께 저장
+   - 무료 오리엔테이션·무료 대화는 지급 0원
+   - 학생이 72시간 안에 이의를 안 하면 자동 확정 → 매달 말일 마감, 다음 달 10일 지급 */
+const TUTOR_SHARE = 0.85;
+const CONFIRM_HOURS = 72;
+function kstMonth(d){ const k = new Date(d.getTime() + 9*3600e3); return k.getUTCFullYear() + '-' + String(k.getUTCMonth()+1).padStart(2,'0'); }
+function isFreeLesson(b){ return !!(b.isFreeOrientation || b.isFreeTalk); }
+function payoutFields(b, kind){
+  const free = isFreeLesson(b);
+  const hasUnit = typeof b.unitPrice === 'number';
+  const gross = free ? 0 : (hasUnit ? b.unitPrice : 30000);
+  const tutorPay = Math.round(gross * TUTOR_SHARE);
+  return { kind: kind, grossAmount: gross, tutorPay: tutorPay, platformFee: gross - tutorPay,
+           unitPriceEstimated: !free && !hasUnit, settleMonth: kstMonth(new Date()), payoutStatus: 'pending' };
+}
+function payOf(l){
+  if(l.dispute && l.dispute.resolved === 'void') return 0;
+  if(typeof l.tutorPay === 'number') return l.tutorPay;
+  return isFreeLesson(l) ? 0 : Math.round((typeof l.unitPrice === 'number' ? l.unitPrice : 30000) * TUTOR_SHARE);
+}
+function monthOf(l){ return l.settleMonth || (l.completedAt && l.completedAt.toDate ? kstMonth(l.completedAt.toDate()) : ''); }
+function payoutState(l){
+  if(l.payoutStatus === 'paid') return { key:'paid', label:'지급 완료' };
+  if(l.dispute && !l.dispute.resolved) return { key:'dispute', label:'학생 이의 접수' };
+  if(l.dispute && l.dispute.resolved === 'void') return { key:'void', label:'지급 제외' };
+  if(isFreeLesson(l)) return { key:'free', label:'무료 수업' };
+  const t = l.completedAt && l.completedAt.toMillis ? l.completedAt.toMillis() : 0;
+  if(!t || (Date.now() - t < CONFIRM_HOURS*3600e3 && !(l.dispute && l.dispute.resolved === 'pay'))) return { key:'wait', label:'확인 대기(72시간)' };
+  return { key:'ok', label:'확정' };
+}
+function won(n){ return (Number(n)||0).toLocaleString('ko-KR') + '원'; }
+
+/* ───── 학생 노쇼 (수업료 정산됨, 학생 크레딧은 이미 차감된 상태 그대로) ───── */
+async function markNoShow(id, btnEl){
+  const b = myBookings.find(x => x.id === id);
+  if(!b || b.tutorId !== app.tutorId) return;
+  const free = isFreeLesson(b);
+  if(!confirm(`${b.studentName || '학생'} · ${b.dayLabel || b.day || ''} ${b.time || ''}\n\n학생이 수업 시간이 다 지나도록 오지 않았나요?\n(수업 시간이 끝날 때까지 기다린 뒤에 눌러주세요)\n\n` +
+    (free ? '무료 수업이라 정산 금액은 없어요.' : '학생 크레딧은 돌려주지 않고, 수업료가 정산돼요.'))) return;
+  if(btnEl){ btnEl.disabled = true; btnEl.textContent = '처리 중...'; }
+  try{
+    const { id: _omit, ...bookingData } = b;
+    await db.collection('completedLessons').doc(b.id).set({
+      ...bookingData,
+      ...payoutFields(b, 'noshow'),
+      noShow: true, vocab: [], grammar: [], nextGoal: '',
+      completedBy: me.email || me.uid,
+      completedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await db.collection('bookings').doc(b.id).delete();
+  }catch(e){
+    alert('노쇼 처리에 실패했어요. 잠시 후 다시 시도해 주세요.\n' + (e.message || e));
+    if(btnEl){ btnEl.disabled = false; btnEl.textContent = '😶 학생 노쇼'; }
+  }
+}
+
+/* ───── 내 정산 요약 ───── */
+function renderEarnings(){
+  const el = document.getElementById('earnBox');
+  if(!el) return;
+  const thisM = kstMonth(new Date());
+  const lastD = new Date(); lastD.setDate(1); lastD.setMonth(lastD.getMonth() - 1);
+  const lastM = kstMonth(lastD);
+  const sum = (m, keys) => myDone.filter(l => monthOf(l) === m && keys.includes(payoutState(l).key)).reduce((a, l) => a + payOf(l), 0);
+  const cnt = m => myDone.filter(l => monthOf(l) === m && !isFreeLesson(l)).length;
+  el.innerHTML = `
+    <div class="earn-grid">
+      <div class="earn-box"><small>이번 달(${thisM}) 확정</small><b>${won(sum(thisM, ['ok','paid']))}</b></div>
+      <div class="earn-box"><small>이번 달 확인 대기</small><b>${won(sum(thisM, ['wait','dispute']))}</b></div>
+      <div class="earn-box"><small>지난달(${lastM}) 정산 수업</small><b>${cnt(lastM)}회</b></div>
+      <div class="earn-box"><small>지난달 지급액</small><b>${won(sum(lastM, ['ok','paid']))}</b></div>
+    </div>`;
+}
+
+/* ───── 정산 받을 계좌 (tutorApplications 문서에 저장) ───── */
+function renderAccount(){
+  const el = document.getElementById('acctBox');
+  if(!el) return;
+  const a = app.payoutAccount || {};
+  el.innerHTML = `
+    <input id="acBank" placeholder="은행 (예: 국민은행)" value="${esc(a.bank || '')}">
+    <input id="acNum" placeholder="계좌번호" inputmode="numeric" value="${esc(a.number || '')}">
+    <input id="acHolder" placeholder="예금주" value="${esc(a.holder || '')}">
+    <div class="btn-row"><button class="btn primary" id="acSave" onclick="saveAccount()">${a.number ? '계좌 수정 저장' : '계좌 저장'}</button></div>`;
+}
+async function saveAccount(){
+  const bank = document.getElementById('acBank').value.trim();
+  const number = document.getElementById('acNum').value.trim();
+  const holder = document.getElementById('acHolder').value.trim();
+  if(!bank || !number || !holder){ alert('은행, 계좌번호, 예금주를 모두 넣어주세요.'); return; }
+  const btn = document.getElementById('acSave');
+  btn.disabled = true; btn.textContent = '저장 중...';
+  try{
+    const payoutAccount = { bank, number, holder, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+    await db.collection('tutorApplications').doc(appId).update({ payoutAccount });
+    app.payoutAccount = { bank, number, holder };
+    alert('계좌를 저장했어요.');
+    renderAccount();
+  }catch(e){
+    alert('저장에 실패했어요. 잠시 후 다시 시도해 주세요.\n' + (e.message || e));
+    btn.disabled = false; btn.textContent = '계좌 저장';
+  }
+}
+
+/* ───── 즉석 화상방 (튜터마다 고유 방) ───── */
+function myRoomUrl(){
+  const name = (card && card.ko && card.ko.name) || app.name || '튜터';
+  return `https://malmunkorean.com/classroom.html?room=${encodeURIComponent(app.tutorId + '-live')}&tutor=${encodeURIComponent(name)}`;
+}
+function copyMyRoom(){
+  const url = myRoomUrl();
+  navigator.clipboard.writeText(url).then(() => alert('링크가 복사됐어요. 카톡 등으로 학생에게 붙여넣기 해주세요.\n\n' + url))
+    .catch(() => prompt('아래 링크를 복사해서 학생에게 보내주세요:', url));
+}
+function openMyRoom(){
+  const url = myRoomUrl();
+  try{ navigator.clipboard.writeText(url); }catch(e){}
+  location.href = url;
+}
+</script>
+</body>
+</html>

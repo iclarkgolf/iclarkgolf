@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>튜터 지원서 관리 | 말문 Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root{
+    --bg: #FFF9F0;
+    --card: #FFFFFF;
+    --card-border: #E8E4D8;
+    --text: #2C2C2A;
+    --text-secondary: #5F5E5A;
+    --text-muted: #8A8880;
+    --accent: #EF9F27;
+    --accent-text: #412402;
+    --accent-soft: #FFF3E0;
+    --danger: #D85A30;
+    --success: #3FA34D;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; text-decoration:none; }
+  .wrap{ max-width:720px; margin:0 auto; padding:24px 20px 60px; }
+  h1{ font-size:18px; margin:0 0 4px; }
+  .sub{ font-size:13px; color:var(--text-muted); margin:0 0 24px; }
+
+  #gate{ max-width:320px; margin:80px auto; text-align:center; }
+  #gate input{
+    width:100%; padding:12px; border:1px solid var(--card-border); border-radius:10px;
+    font-size:14px; margin-bottom:10px; box-sizing:border-box;
+  }
+  #gate button{
+    width:100%; padding:12px; border:none; border-radius:10px; background:var(--accent);
+    color:var(--accent-text); font-weight:600; font-size:14px; cursor:pointer;
+  }
+  #gateError{ color:var(--danger); font-size:12px; margin-top:8px; display:none; }
+
+  #app{ display:none; }
+
+  .filter-row{ display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
+  .filter-btn{
+    border:1px solid var(--card-border); background:#fff; color:var(--text-secondary);
+    font-size:13px; padding:8px 14px; border-radius:20px; cursor:pointer; font-weight:600;
+  }
+  .filter-btn.active{ background:var(--accent); color:var(--accent-text); border-color:var(--accent); }
+
+  .app-card{
+    background:var(--card); border:1px solid var(--card-border); border-radius:16px;
+    padding:18px; margin-bottom:14px;
+  }
+  .app-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:10px; }
+  .app-photo{
+    width:52px; height:52px; border-radius:50%; flex-shrink:0; background:#F3F1EA;
+    background-size:cover; background-position:center; border:1px solid var(--card-border); margin-right:10px;
+  }
+  .app-top-left{ display:flex; align-items:center; }
+  .app-name{ font-size:15px; font-weight:700; margin:0 0 3px; }
+  .app-meta{ font-size:12px; color:var(--text-muted); margin:0; }
+  .status-badge{ font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; white-space:nowrap; flex-shrink:0; }
+  .status-badge.pending{ background:var(--accent-soft); color:var(--accent-text); }
+  .status-badge.approved{ background:#E4F4E7; color:var(--success); }
+  .status-badge.rejected{ background:#FBE7E1; color:var(--danger); }
+
+  .app-row{ font-size:13px; color:var(--text-secondary); margin-bottom:6px; line-height:1.6; }
+  .app-row b{ color:var(--text); font-weight:600; }
+  .app-intro{
+    font-size:13px; color:var(--text-secondary); line-height:1.7; background:#FBF8F0;
+    border-radius:10px; padding:12px 14px; margin:10px 0;
+  }
+  .day-tags{ display:flex; gap:5px; flex-wrap:wrap; margin:6px 0; }
+  .day-tag{ font-size:11px; font-weight:700; background:#F3F1EA; color:var(--text-secondary); padding:3px 8px; border-radius:6px; }
+
+  .action-row{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .action-btn{
+    flex:1; min-width:100px; padding:9px 12px; border:1px solid var(--card-border); border-radius:10px;
+    background:#fff; color:var(--text-secondary); font-size:12px; font-weight:700; cursor:pointer;
+  }
+  .action-btn.approve{ border-color:var(--success); color:var(--success); }
+  .action-btn.reject{ border-color:var(--danger); color:var(--danger); }
+  .action-btn.reset{ color:var(--text-muted); }
+  .action-btn:hover{ opacity:0.8; }
+
+  .empty{ text-align:center; color:var(--text-muted); font-size:13px; padding:60px 0; }
+  .loading{ text-align:center; color:var(--text-muted); font-size:13px; padding:60px 0; }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1 style="text-align:center;">튜터 지원서 admin</h1>
+  <input type="hidden" id="pwInput">
+  <button id="pwBtn">구글로 로그인 (PJ 계정)</button>
+  <p id="gateError"></p>
+</div>
+
+<div id="app">
+  <div class="wrap">
+    <p style="margin:0 0 10px;"><a href="admin.html" style="font-size:12px; color:var(--text-muted);">← 관리자 홈</a></p>
+    <h1>튜터 지원서 관리</h1>
+    <p class="sub">지원서를 확인하고 "승인" 누르면 튜터 카드가 자동으로 만들어져요. 시급이나 가능 시간은 나중에 tutor-admin.html에서 조정하면 됩니다.</p>
+
+    <div class="filter-row">
+      <button class="filter-btn active" data-filter="pending">검토 대기</button>
+      <button class="filter-btn" data-filter="all">전체 보기</button>
+    </div>
+
+    <div id="list"><p class="loading">불러오는 중...</p></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyD10IdHCDkCybMrkO5fewo0ksYFBmqwWro",
+  authDomain: "malmun-bca03.firebaseapp.com",
+  projectId: "malmun-bca03",
+  storageBucket: "malmun-bca03.firebasestorage.app",
+  messagingSenderId: "831462084669",
+  appId: "1:831462084669:web:003a844918b165d5b65a54"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+// 필리핀 통신망·카카오톡 등 인앱브라우저에서 Firestore 연결 실패 방지 (롱폴링 강제)
+try{ db.settings({ experimentalForceLongPolling: true, experimentalAutoDetectLongPolling: false, merge: true }); }catch(e){ console.warn('firestore settings', e); }
+
+// 2026-11-07: 비밀번호 방식 폐지 — 아래 "관리자 입장" 스크립트에서 PJ 구글 계정으로 확인
+const DAY_LABEL = { mon:'월', tue:'화', wed:'수', thu:'목', fri:'금', sat:'토', sun:'일' };
+const NATIVE_LABEL = { native:'원어민', fluent:'원어민 수준' };
+
+document.getElementById('pwBtn').addEventListener('click', tryUnlock);
+document.getElementById('pwInput').addEventListener('keydown', e => { if(e.key === 'Enter') tryUnlock(); });
+
+function tryUnlock(){
+  if(window.__malmunAdminOk !== true){ adminGoogleLogin(); return; }
+  const val = document.getElementById('pwInput').value;
+  if(window.__malmunAdminOk === true){
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    sessionStorage.setItem('malmun_admin_ok', '1');
+    loadApps();
+  }else{
+    document.getElementById('gateError').style.display = 'block';
+  }
+}
+
+if(false /* 2026-11-07: 구글 로그인 확인 후 자동 입장 */){
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadApps();
+}
+
+let allApps = [];
+let currentFilter = 'pending';
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    render();
+  });
+});
+
+async function loadApps(){
+  try{
+    const snap = await db.collection('tutorApplications').orderBy('createdAt', 'desc').limit(100).get();
+    allApps = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    render();
+  }catch(err){
+    console.error('지원서 목록 불러오기 실패:', err);
+    document.getElementById('list').innerHTML = `<p class="empty">지원서를 불러오지 못했어요.<br>${err.message}</p>`;
+  }
+}
+
+const DAY_IDS = ['mon','tue','wed','thu','fri','sat','sun'];
+const AVATAR_COLORS = ['#3b5f8f','#c07a3f','#4f7d5c','#8a5a8f','#3f8a94','#a4593e'];
+
+function emptyAvailability(){
+  const a = {};
+  DAY_IDS.forEach(d => a[d] = []);
+  return a;
+}
+
+// 지원서 정보로 실제 튜터 카드 데이터를 만듦 (tutor-admin.html과 동일한 스키마)
+async function buildTutorDataFromApp(a){
+  const countSnap = await db.collection('tutors').get();
+  const order = countSnap.size;
+  const color = AVATAR_COLORS[order % AVATAR_COLORS.length];
+
+  const availability = emptyAvailability();
+  (a.availableDays || []).forEach(d => {
+    if(availability[d] !== undefined) availability[d] = ['19:00','21:00']; // 기본 시간대, 나중에 tutor-admin.html에서 조정 가능
+  });
+
+  const tags = [
+    NATIVE_LABEL[a.nativeLevel] || '',
+    a.credential ? a.credential : '',
+    '왕초보 환영'
+  ].filter(Boolean).slice(0, 3);
+  while(tags.length < 3) tags.push('');
+
+  return {
+    order: order,
+    avatarColor: color,
+    avatarImage: a.photoURL || '',
+    price: 30000,
+    ko: {
+      name: a.name || '',
+      role: a.credential || '한국어 튜터',
+      intro: a.intro || '',
+      tags: tags,
+      rating: '5.0', reviewCount: '0', lessonCount: '0',
+      reviewAuthor: '', reviewLoc: '', reviewBody: ''
+    },
+    en: {
+      name: '', role: '', intro: '', tags: ['', '', ''],
+      rating: '5.0', reviewCount: '0', lessonCount: '0',
+      reviewAuthor: '', reviewLoc: '', reviewBody: ''
+    },
+    availability: availability,
+    bookedSlots: emptyAvailability()
+  };
+}
+
+async function setStatus(id, status){
+  try{
+    const item = allApps.find(a => a.id === id);
+    const updates = { status };
+
+    // 승인 + 아직 튜터 카드가 없으면 자동으로 tutors 컬렉션에 카드 생성
+    if(status === 'approved' && item && !item.tutorId){
+      const tutorData = await buildTutorDataFromApp(item);
+      const ref = await db.collection('tutors').add(tutorData);
+      updates.tutorId = ref.id;
+    }
+
+    await db.collection('tutorApplications').doc(id).update(updates);
+    if(item) Object.assign(item, updates);
+    render();
+  }catch(err){
+    alert('상태 변경 실패: ' + err.message);
+  }
+}
+
+function render(){
+  const list = document.getElementById('list');
+  let items = allApps;
+  if(currentFilter === 'pending'){
+    items = items.filter(a => (a.status || 'pending') === 'pending');
+  }
+  if(items.length === 0){
+    list.innerHTML = `<p class="empty">${currentFilter === 'pending' ? '검토 대기 중인 지원서가 없어요.' : '아직 지원서가 없어요.'}</p>`;
+    return;
+  }
+  list.innerHTML = items.map(a => {
+    const status = a.status || 'pending';
+    const statusLabel = { pending:'검토 대기', approved:'승인됨', rejected:'반려됨' }[status];
+    const days = (a.availableDays || []).map(d => `<span class="day-tag">${DAY_LABEL[d] || d}</span>`).join('');
+    return `
+      <div class="app-card">
+        <div class="app-top">
+          <div class="app-top-left">
+            <div class="app-photo" style="${a.photoURL ? `background-image:url('${a.photoURL}')` : ''}"></div>
+            <div>
+              <p class="app-name">${escapeHtml(a.name || '이름 없음')}</p>
+              <p class="app-meta">${NATIVE_LABEL[a.nativeLevel] || ''}</p>
+            </div>
+          </div>
+          <span class="status-badge ${status}">${statusLabel}</span>
+        </div>
+        <div class="app-row"><b>이메일</b> ${escapeHtml(a.email || '-')}</div>
+        ${a.phone ? `<div class="app-row"><b>휴대폰</b> ${escapeHtml(a.phone)}</div>` : ''}
+        ${a.kakaoId ? `<div class="app-row"><b>카카오톡</b> ${escapeHtml(a.kakaoId)}</div>` : ''}
+        ${a.credential ? `<div class="app-row"><b>자격증·경력</b> ${escapeHtml(a.credential)}</div>` : ''}
+        ${days ? `<div class="day-tags">${days}</div>` : ''}
+        ${a.intro ? `<div class="app-intro">${escapeHtml(a.intro)}</div>` : ''}
+        ${a.tutorId ? `<div class="app-row" style="color:#3FA34D;font-weight:700;">✓ 튜터 카드 자동 생성됨 — <a href="tutor-admin.html" style="text-decoration:underline;">tutor-admin.html에서 시급·시간 조정하기</a></div>` : ''}
+        <div class="action-row">
+          ${status !== 'approved' ? `<button class="action-btn approve" onclick="setStatus('${a.id}','approved')">✓ 승인 (튜터 카드 자동 생성)</button>` : ''}
+          ${status !== 'rejected' ? `<button class="action-btn reject" onclick="setStatus('${a.id}','rejected')">✕ 반려</button>` : ''}
+          ${status !== 'pending' ? `<button class="action-btn reset" onclick="setStatus('${a.id}','pending')">되돌리기</button>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script>
+/* ───── 관리자 입장: 비밀번호 대신 PJ 구글 계정(tourjang@gmail.com)으로만 열림 (2026-11-07) ───── */
+(function(){
+  const ADMIN_EMAILS = ['tourjang@gmail.com'];
+  if(!firebase.apps.length) firebase.initializeApp({
+    apiKey: "AIzaSyD10IdHCDkCybMrkO5fewo0ksYFBmqwWro",
+    authDomain: "malmun-bca03.firebaseapp.com",
+    projectId: "malmun-bca03",
+    storageBucket: "malmun-bca03.firebasestorage.app",
+    messagingSenderId: "831462084669",
+    appId: "1:831462084669:web:003a844918b165d5b65a54"
+  });
+  const a = firebase.auth();
+  window.adminGoogleLogin = function(){
+    const p = new firebase.auth.GoogleAuthProvider();
+    p.setCustomParameters({ prompt: 'select_account' });
+    a.signInWithPopup(p).catch(() => a.signInWithRedirect(p));
+  };
+  window.adminSignOut = function(){ a.signOut(); };
+  let opened = false;
+  a.onAuthStateChanged(u => {
+    const ok = !!u && ADMIN_EMAILS.includes((u.email || '').toLowerCase());
+    window.__malmunAdminOk = ok;
+    const err = document.getElementById('gateError');
+    if(ok){
+      if(!opened){ opened = true; tryUnlock(); }
+    }else if(u && err){
+      err.innerHTML = '관리자 계정이 아니에요 (' + (u.email || '') + ')<br><a href="#" onclick="adminSignOut();return false;" style="text-decoration:underline;">다른 계정으로 로그인</a>';
+      err.style.display = 'block';
+    }
+  });
+})();
+</script>
+</body>
+</html>

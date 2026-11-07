@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>후기 관리 | 말문 Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root{
+    --bg: #FFF9F0; --card: #FFFFFF; --card-border: #E8E4D8;
+    --text: #2C2C2A; --text-secondary: #5F5E5A; --text-muted: #8A8880;
+    --accent: #EF9F27; --accent-text: #412402; --danger: #D85A30;
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR",sans-serif; -webkit-font-smoothing:antialiased; }
+  a{ color:inherit; text-decoration:none; }
+  .wrap{ max-width:720px; margin:0 auto; padding:24px 20px 60px; }
+  h1{ font-size:18px; margin:0 0 4px; }
+  .sub{ font-size:13px; color:var(--text-muted); margin:0 0 20px; }
+
+  #gate{ max-width:320px; margin:80px auto; text-align:center; }
+  #gate input{ width:100%; padding:12px; border:1px solid var(--card-border); border-radius:10px; font-size:14px; margin-bottom:10px; box-sizing:border-box; }
+  #gate button{ width:100%; padding:12px; border:none; border-radius:10px; background:var(--accent); color:var(--accent-text); font-weight:600; font-size:14px; cursor:pointer; }
+  #gateError{ color:var(--danger); font-size:12px; margin-top:8px; display:none; }
+  #app{ display:none; }
+
+  .tabs{ display:flex; gap:8px; margin-bottom:16px; }
+  .tabs button{ flex:1; padding:10px; border-radius:10px; border:1px solid var(--card-border); background:#fff; font-size:13px; font-weight:600; color:var(--text-secondary); cursor:pointer; }
+  .tabs button.active{ background:var(--accent); color:var(--accent-text); border-color:var(--accent); }
+
+  .review-card{ background:var(--card); border:1px solid var(--card-border); border-radius:14px; padding:16px; margin-bottom:14px; }
+  .review-card .top{ display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:8px; }
+  .review-card .who{ font-size:13px; font-weight:700; }
+  .review-card .who span{ font-weight:400; color:var(--text-muted); }
+  .review-card .date{ font-size:11px; color:var(--text-muted); white-space:nowrap; }
+  .review-card .body{ font-size:14px; line-height:1.6; color:var(--text-secondary); white-space:pre-wrap; }
+  .badge{ display:inline-block; font-size:11px; font-weight:700; padding:2px 8px; border-radius:8px; margin-left:6px; }
+  .badge.pub{ background:#E4F3E6; color:#1E7B34; }
+  .badge.pending{ background:#FFF3E0; color:var(--accent-text); }
+  .review-card .actions{ display:flex; gap:8px; margin-top:12px; }
+  .review-card .actions button{ flex:1; padding:9px; border-radius:8px; border:1px solid var(--card-border); background:var(--bg); font-size:12px; font-weight:600; cursor:pointer; color:var(--text); }
+  .review-card .actions .del{ color:var(--danger); border-color:var(--danger); background:none; }
+  .review-card .actions .approve{ background:var(--accent); color:var(--accent-text); border-color:var(--accent); }
+
+  .toast{ position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--text); color:#fff; padding:10px 20px; border-radius:20px; font-size:13px; z-index:100; opacity:0; transition:opacity .3s; }
+  .toast.on{ opacity:1; }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1>🔒 후기 관리자</h1>
+  <input type="hidden" id="gatePw">
+  <button onclick="tryLogin()">구글로 로그인 (PJ 계정)</button>
+  <p id="gateError"></p>
+</div>
+
+<div id="app">
+  <div class="wrap">
+    <p style="margin:0 0 10px;"><a href="admin.html" style="font-size:12px; color:var(--text-muted);">← 관리자 홈</a> &nbsp;·&nbsp; <a href="index.html" target="_blank" style="font-size:12px; color:var(--accent-text); font-weight:600;">홈페이지 미리보기 →</a></p>
+    <h1>후기 관리</h1>
+    <p class="sub">승인한 후기만 홈페이지 "먼저 경험한 사람들"에 최신순으로 표시됩니다. 제출 링크: <b>review-submit.html</b></p>
+
+    <div class="tabs">
+      <button id="tabPending" class="active" onclick="switchTab('pending')">대기중 (<span id="pendingCount">0</span>)</button>
+      <button id="tabPub" onclick="switchTab('pub')">게시됨</button>
+    </div>
+
+    <div id="list"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyD10IdHCDkCybMrkO5fewo0ksYFBmqwWro",
+  authDomain: "malmun-bca03.firebaseapp.com",
+  projectId: "malmun-bca03",
+  storageBucket: "malmun-bca03.firebasestorage.app",
+  messagingSenderId: "831462084669",
+  appId: "1:831462084669:web:003a844918b165d5b65a54"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+// 필리핀 통신망·카카오톡 등 인앱브라우저에서 Firestore 연결 실패 방지 (롱폴링 강제)
+try{ db.settings({ experimentalForceLongPolling: true, experimentalAutoDetectLongPolling: false, merge: true }); }catch(e){ console.warn('firestore settings', e); }
+// 2026-11-07: 비밀번호 방식 폐지 — 아래 "관리자 입장" 스크립트에서 PJ 구글 계정으로 확인
+
+function tryLogin(){
+  if(window.__malmunAdminOk !== true){ adminGoogleLogin(); return; }
+  if(window.__malmunAdminOk === true){
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadReviews();
+  } else {
+    document.getElementById('gateError').style.display = 'block';
+  }
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'), 2200);
+}
+
+let reviews = [];
+let currentTab = 'pending';
+
+async function loadReviews(){
+  try{
+    const snap = await db.collection('reviews').orderBy('createdAt','desc').get();
+    reviews = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+    document.getElementById('pendingCount').textContent = reviews.filter(r => !r.published).length;
+    renderList();
+  }catch(e){
+    console.error(e);
+    showToast('❌ 불러오기 실패: ' + e.message);
+  }
+}
+
+function switchTab(tab){
+  currentTab = tab;
+  document.getElementById('tabPending').classList.toggle('active', tab==='pending');
+  document.getElementById('tabPub').classList.toggle('active', tab==='pub');
+  renderList();
+}
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderList(){
+  const list = document.getElementById('list');
+  const filtered = reviews.filter(r => currentTab==='pending' ? !r.published : r.published);
+  if(!filtered.length){
+    list.innerHTML = `<p style="color:var(--text-muted); font-size:13px; text-align:center; padding:30px 0;">${currentTab==='pending' ? '대기중인 후기가 없어요' : '게시된 후기가 없어요'}</p>`;
+    return;
+  }
+  list.innerHTML = filtered.map(r => `
+    <div class="review-card">
+      <div class="top">
+        <p class="who">${esc(r.name)}${r.country ? ' <span>· '+esc(r.country)+'</span>' : ''}<span class="badge ${r.published?'pub':'pending'}">${r.published?'게시됨':'대기중'}</span></p>
+        <p class="date">${r.createdAt ? new Date(r.createdAt.seconds*1000).toLocaleDateString('ko-KR') : ''}</p>
+      </div>
+      <p class="body">${esc(r.body)}</p>
+      <div class="actions">
+        ${r.published
+          ? `<button onclick="togglePublish('${r.id}', false)">비공개로 전환</button>`
+          : `<button class="approve" onclick="togglePublish('${r.id}', true)">✅ 승인하고 게시</button>`
+        }
+        <button class="del" onclick="deleteReview('${r.id}')">삭제</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function togglePublish(id, val){
+  try{
+    await db.collection('reviews').doc(id).update({ published: val });
+    showToast(val ? '✅ 게시했습니다' : '비공개로 전환했습니다');
+    loadReviews();
+  }catch(e){
+    showToast('❌ 실패: ' + e.message);
+  }
+}
+
+async function deleteReview(id){
+  if(!confirm('이 후기를 완전히 삭제할까요?')) return;
+  try{
+    await db.collection('reviews').doc(id).delete();
+    showToast('삭제했습니다');
+    loadReviews();
+  }catch(e){
+    showToast('❌ 실패: ' + e.message);
+  }
+}
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script>
+/* ───── 관리자 입장: 비밀번호 대신 PJ 구글 계정(tourjang@gmail.com)으로만 열림 (2026-11-07) ───── */
+(function(){
+  const ADMIN_EMAILS = ['tourjang@gmail.com'];
+  if(!firebase.apps.length) firebase.initializeApp({
+    apiKey: "AIzaSyD10IdHCDkCybMrkO5fewo0ksYFBmqwWro",
+    authDomain: "malmun-bca03.firebaseapp.com",
+    projectId: "malmun-bca03",
+    storageBucket: "malmun-bca03.firebasestorage.app",
+    messagingSenderId: "831462084669",
+    appId: "1:831462084669:web:003a844918b165d5b65a54"
+  });
+  const a = firebase.auth();
+  window.adminGoogleLogin = function(){
+    const p = new firebase.auth.GoogleAuthProvider();
+    p.setCustomParameters({ prompt: 'select_account' });
+    a.signInWithPopup(p).catch(() => a.signInWithRedirect(p));
+  };
+  window.adminSignOut = function(){ a.signOut(); };
+  let opened = false;
+  a.onAuthStateChanged(u => {
+    const ok = !!u && ADMIN_EMAILS.includes((u.email || '').toLowerCase());
+    window.__malmunAdminOk = ok;
+    const err = document.getElementById('gateError');
+    if(ok){
+      if(!opened){ opened = true; tryLogin(); }
+    }else if(u && err){
+      err.innerHTML = '관리자 계정이 아니에요 (' + (u.email || '') + ')<br><a href="#" onclick="adminSignOut();return false;" style="text-decoration:underline;">다른 계정으로 로그인</a>';
+      err.style.display = 'block';
+    }
+  });
+})();
+</script>
+</body>
+</html>
