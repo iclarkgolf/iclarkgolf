@@ -11,6 +11,7 @@
  */
 const { chromium } = require('playwright');
 const tls = require('tls');
+const fs = require('fs');
 
 const REPO = process.env.GITHUB_REPOSITORY || 'iclarkgolf/iclarkgolf';
 const GH_TOKEN = process.env.GITHUB_TOKEN || '';
@@ -111,6 +112,7 @@ async function checkUrls(site){
 
 // 2) 핵심 화면을 실제 브라우저로 열어 보기
 async function checkPages(browser, site){
+  let okCount = 0;
   for(const pg of site.pages){
     const ctx = await browser.newContext({ userAgent: UA + ' Chrome/120', viewport: { width: 390, height: 844 }, locale: 'ko-KR' });
     const page = await ctx.newPage();
@@ -135,11 +137,13 @@ async function checkPages(browser, site){
       }
       if(!ok) add(site.name, `${pg.name}: ${c.what}이(가) 안 나옴`, `${url}\n${detail}\n${errs.slice(0, 5).join('\n')}`);
       else if(errs.length) add(site.name, `${pg.name}: 화면은 나오지만 오류 발생`, `${url}\n${errs.slice(0, 5).join('\n')}`);
+      else okCount++;
     }catch(e){
       add(site.name, `${pg.name} 화면 점검 실패`, `${url}\n${e.message}`);
     }
     await ctx.close();
   }
+  notes.push(`${site.name}: 핵심 화면 ${okCount}/${site.pages.length}개 정상`);
 }
 
 // 3) 자동 작업이 살아 있는지
@@ -178,6 +182,7 @@ async function checkMalmunSecurity(){
       if(r.status !== 403) add('말문', `🔓 보안 문이 열려 있음: 로그인 없이 "${t.name}" 가능`, `응답 ${r.status} — Firebase 규칙이 바뀌었는지 즉시 확인 필요`);
     }catch(e){ notes.push(`보안 점검 연결 실패(${t.name}): ${e.message}`); }
   }
+  if(!problems.some(p => p.what.includes('보안 문'))) notes.push(`말문: 보안 문 ${tests.length}개 잠김 확인`);
   const pub = await fetchStatus(`${B}/tutors?pageSize=1&${k}`);
   if(pub.status !== 200) add('말문', '튜터 정보를 읽지 못함(데이터베이스 연결 문제)', `상태 ${pub.status}`);
 }
@@ -187,8 +192,28 @@ async function gh(path, opts = {}){
   const r = await fetch('https://api.github.com' + path, { ...opts, headers: { Authorization: `Bearer ${GH_TOKEN}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json', ...(opts.headers || {}) } });
   return r.json();
 }
+// 점검 결과를 저장소의 monitor/status.json 에 남김 (매일 아침 Claude가 읽어 노션 "사이트 점검 기록"에 정리)
+function saveStatus(now){
+  const file = 'monitor/status.json';
+  let prev = { history: [] };
+  try{ prev = JSON.parse(fs.readFileSync(file, 'utf8')); }catch(e){}
+  const site = n => problems.some(p => p.site === n) ? '문제' : '정상';
+  const entry = { at: new Date().toISOString(), atKST: now, ok: problems.length === 0,
+    iclarkgolf: site('아이클락골프'), malmun: site('말문'), problems, notes };
+  const history = [entry, ...(prev.history || [])].slice(0, 72);   // 최근 72번(약 3일)
+  fs.mkdirSync('monitor', { recursive: true });
+  fs.writeFileSync(file, JSON.stringify({ latest: entry, history }, null, 1));
+  const changed = !prev.latest || prev.latest.ok !== entry.ok || JSON.stringify((prev.latest.problems || []).map(p => p.what)) !== JSON.stringify(problems.map(p => p.what));
+  const dailyHour = new Date().getUTCHours() === 21;   // 한국시간 아침 6시대에는 하루 한 번 꼭 기록
+  fs.writeFileSync('monitor/.should_commit', (changed || dailyHour) ? '1' : '0');
+}
 async function report(){
   const now = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+  saveStatus(now);
+  if(process.env.GITHUB_STEP_SUMMARY){
+    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## 사이트 점검 ${now}\n\n**문제 ${problems.length}개**\n\n` +
+      problems.map(p => `- [${p.site}] ${p.what}`).join('\n') + `\n\n정상 항목: ${notes.join(' · ')}\n`);
+  }
   const finger = problems.map(p => p.site + '|' + p.what).sort().join('\n');
   console.log(`점검 시각 ${now}\n문제 ${problems.length}개\n` + problems.map(p => `- [${p.site}] ${p.what}\n  ${p.detail.replace(/\n/g, '\n  ')}`).join('\n') + '\n---\n' + notes.join('\n'));
   if(!GH_TOKEN) return;
@@ -221,4 +246,5 @@ async function report(){
   await checkAutomation();
   await checkMalmunSecurity();
   await report();
-})().catch(async e => { add('점검 장치', '점검 스크립트 자체 오류', e.stack || e.message); await report(); });
+  if(problems.length) process.exitCode = 1;   // 문제 있으면 Actions 화면에 빨간 X 표시
+})().catch(async e => { add('점검 장치', '점검 스크립트 자체 오류', e.stack || e.message); await report(); process.exitCode = 1; });
