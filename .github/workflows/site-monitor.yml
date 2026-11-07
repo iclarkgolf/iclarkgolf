@@ -1,0 +1,41 @@
+name: Site monitor
+
+# 아이클락골프 · 말문 두 사이트를 매시간 자동 점검합니다.
+# 문제가 생기면 "site-monitor" 이슈가 열리고 PJ님 이메일로 알림이 갑니다.
+# 고쳐지면 자동으로 "복구됨" 댓글을 남기고 이슈를 닫습니다.
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+  actions: read
+
+concurrency:
+  group: site-monitor
+  cancel-in-progress: true
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: install playwright (브라우저)
+        run: |
+          npm install --no-save playwright@1.47.2
+          npx playwright install --with-deps chromium
+
+      - name: 두 사이트 점검
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node .github/scripts/site-monitor.js
