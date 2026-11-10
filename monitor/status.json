@@ -1,24 +1,55 @@
 {
  "latest": {
-  "at": "2026-11-07T14:35:27.735Z",
-  "atKST": "2026. 11. 7. PM 11:35:27",
-  "ok": true,
+  "at": "2026-11-10T04:40:22.310Z",
+  "atKST": "2026. 11. 10. PM 1:40:22",
+  "ok": false,
   "iclarkgolf": "정상",
-  "malmun": "정상",
-  "problems": [],
+  "malmun": "문제",
+  "problems": [
+   {
+    "site": "말문",
+    "what": "홈: 화면은 나오지만 오류 발생",
+    "detail": "https://malmunkorean.com/\n콘솔: [Report Only] Refused to frame 'https://www.google.com/' because an ancestor violates the following Content Security Policy directive: \"frame-ancestors 'self'\".\n"
+   }
+  ],
   "notes": [
    "아이클락골프: 주소 47개 확인",
-   "아이클락골프: 인증서 73일 남음",
-   "말문: 주소 26개 확인",
-   "말문: 인증서 46일 남음",
+   "아이클락골프: 인증서 70일 남음",
+   "말문: 주소 27개 확인",
+   "말문: 인증서 44일 남음",
    "아이클락골프: 핵심 화면 8/8개 정상",
-   "말문: 핵심 화면 8/8개 정상",
-   "아고다 데이터 3시간 전 갱신, 호텔 166개",
+   "말문: 핵심 화면 7/8개 정상",
+   "아고다 데이터 4시간 전 갱신, 호텔 166개",
    "자동 작업 3개 확인",
    "말문: 보안 문 4개 잠김 확인"
   ]
  },
  "history": [
+  {
+   "at": "2026-11-10T04:40:22.310Z",
+   "atKST": "2026. 11. 10. PM 1:40:22",
+   "ok": false,
+   "iclarkgolf": "정상",
+   "malmun": "문제",
+   "problems": [
+    {
+     "site": "말문",
+     "what": "홈: 화면은 나오지만 오류 발생",
+     "detail": "https://malmunkorean.com/\n콘솔: [Report Only] Refused to frame 'https://www.google.com/' because an ancestor violates the following Content Security Policy directive: \"frame-ancestors 'self'\".\n"
+    }
+   ],
+   "notes": [
+    "아이클락골프: 주소 47개 확인",
+    "아이클락골프: 인증서 70일 남음",
+    "말문: 주소 27개 확인",
+    "말문: 인증서 44일 남음",
+    "아이클락골프: 핵심 화면 8/8개 정상",
+    "말문: 핵심 화면 7/8개 정상",
+    "아고다 데이터 4시간 전 갱신, 호텔 166개",
+    "자동 작업 3개 확인",
+    "말문: 보안 문 4개 잠김 확인"
+   ]
+  },
   {
    "at": "2026-11-07T14:35:27.735Z",
    "atKST": "2026. 11. 7. PM 11:35:27",
