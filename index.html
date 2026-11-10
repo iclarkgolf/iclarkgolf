@@ -1005,6 +1005,43 @@ footer {
 @media (min-width: 768px) {
   .lodging-thumb { height: 160px; }
 }
+
+/* ───── 2026-11-10 LIVE 창: 실시간 문의·견적·바우처 현황 (말문 LIVE 창과 같은 AI 안경 화면) ───── */
+.ic-live{ position:relative; overflow:hidden; background:radial-gradient(120% 140% at 15% 0%, #1b2d4a 0%, #0b1222 55%, #070b16 100%); padding:20px 14px 22px; }
+.ic-live::before{ content:""; position:absolute; inset:0; background-image:linear-gradient(rgba(120,220,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(120,220,255,.06) 1px, transparent 1px); background-size:28px 28px; pointer-events:none; }
+.ic-live::after{ content:""; position:absolute; left:0; right:0; height:120px; top:-120px; background:linear-gradient(180deg, transparent, rgba(120,220,255,.08), transparent); animation:icScan 6s linear infinite; pointer-events:none; }
+@keyframes icScan{ to{ top:110%; } }
+.ic-bg{ position:absolute; inset:0; pointer-events:none; }
+.ic-bg span{ position:absolute; font-weight:800; color:rgba(111,227,255,.07); white-space:nowrap; animation:icFloat 18s ease-in-out infinite alternate; }
+.ic-bg span:nth-child(1){ top:6%; left:3%; font-size:40px; }
+.ic-bg span:nth-child(2){ bottom:5%; right:3%; font-size:46px; animation-delay:-6s; }
+.ic-bg span:nth-child(3){ top:12%; right:8%; font-size:26px; animation-delay:-3s; }
+.ic-bg span:nth-child(4){ bottom:10%; left:6%; font-size:56px; color:rgba(255,197,107,.07); animation-delay:-9s; }
+@keyframes icFloat{ to{ transform:translate(16px,-10px); } }
+.ic-lens{ position:relative; z-index:1; max-width:880px; margin:0 auto; padding:16px 18px 14px; border-radius:18px; background:linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.03)); border:1px solid rgba(120,220,255,.35); box-shadow:0 0 0 1px rgba(255,255,255,.04) inset, 0 20px 50px rgba(0,0,0,.45), 0 0 40px rgba(80,200,255,.12); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); color:#E6F6FF; }
+.ic-lens .cn{ position:absolute; width:16px; height:16px; border:2px solid #6FE3FF; opacity:.9; }
+.ic-lens .cn.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; border-radius:14px 0 0 0; }
+.ic-lens .cn.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; border-radius:0 14px 0 0; }
+.ic-lens .cn.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; border-radius:0 0 0 14px; }
+.ic-lens .cn.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; border-radius:0 0 14px 0; }
+.ic-top{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; font:600 11px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing:.12em; text-transform:uppercase; color:#8FDFFF; margin-bottom:10px; }
+.ic-dot{ display:inline-flex; align-items:center; gap:6px; color:#FF6B6B; }
+.ic-dot i{ width:8px; height:8px; border-radius:50%; background:#FF4D4D; box-shadow:0 0 10px #FF4D4D; animation:icBlink 1.2s ease-in-out infinite; }
+@keyframes icBlink{ 50%{ opacity:.25; } }
+.ic-count{ margin-left:auto; color:#FFD27A; letter-spacing:.04em; text-transform:none; font-size:12px; }
+.ic-body{ min-height:96px; font:15px/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, "Apple SD Gothic Neo", "Noto Sans KR", monospace; }
+.ic-kind{ font-size:12px; letter-spacing:.04em; margin:0 0 4px; color:#6FE3FF; }
+.ic-kind.v{ color:#7CFFB2; } .ic-kind.q{ color:#FFC56B; }
+.ic-txt{ margin:0; color:#F2FBFF; text-shadow:0 0 12px rgba(111,227,255,.25); word-break:keep-all; overflow-wrap:anywhere; }
+.ic-caret{ display:inline-block; width:8px; height:1.05em; vertical-align:-2px; background:#6FE3FF; margin-left:2px; animation:icBlink .9s steps(1) infinite; }
+.ic-foot{ display:flex; align-items:center; gap:10px; margin-top:12px; padding-top:10px; border-top:1px dashed rgba(120,220,255,.25); }
+.ic-dots{ display:flex; gap:6px; flex-wrap:wrap; }
+.ic-dots b{ width:6px; height:6px; border-radius:50%; background:rgba(143,223,255,.3); }
+.ic-dots b.on{ background:#6FE3FF; box-shadow:0 0 8px #6FE3FF; }
+.ic-go{ margin-left:auto; font:700 12px/1 ui-monospace, Menlo, Consolas, monospace; letter-spacing:.06em; color:#0B1222; background:#6FE3FF; padding:9px 14px; border-radius:999px; text-decoration:none; white-space:nowrap; }
+.ic-go:hover{ background:#9BEEFF; }
+@media (min-width:900px){ .ic-live{ padding:26px 24px 28px; } .ic-body{ font-size:16px; } }
+@media (prefers-reduced-motion: reduce){ .ic-bg span, .ic-live::after, .ic-dot i, .ic-caret{ animation:none; } }
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6049416941276065"
      crossorigin="anonymous"></script>
@@ -1065,6 +1102,17 @@ footer {
       <button type="submit" data-i18n="hero.search.btn">검색</button>
     </form>
     <div id="heroSearchResults" class="hero-search-results"></div>
+  </div>
+</div>
+
+<!-- 2026-11-10 LIVE 창: 손님 문의·맞춤 견적·바우처 발급이 들어오는 대로 보여 줌 (이름·연락처는 절대 안 보임, live_feed 컬렉션) -->
+<div class="ic-live" id="icLive" role="region" aria-label="Live inquiries" style="display:none;">
+  <div class="ic-bg" aria-hidden="true"><span>PRADERA</span><span>MIMOSA</span><span>BEVERLY</span><span>CLARK</span></div>
+  <div class="ic-lens">
+    <span class="cn tl"></span><span class="cn tr"></span><span class="cn bl"></span><span class="cn br"></span>
+    <div class="ic-top"><span class="ic-dot"><i></i>LIVE</span><span id="icLabel">iCLARKGOLF 실시간 현황</span><span class="ic-count" id="icCount"></span></div>
+    <div class="ic-body" id="icBody"></div>
+    <div class="ic-foot"><div class="ic-dots" id="icDots"></div><a class="ic-go" id="icGo" href="quote.html">나도 견적 받기 →</a></div>
   </div>
 </div>
 
@@ -2964,6 +3012,67 @@ try {
   else show();
 })();
 
+</script>
+<script type="module">
+// ───── 2026-11-10 LIVE 창 ─────
+// live_feed 컬렉션(공개용, 이름·연락처 없음)에서 최근 문의·견적·바우처를 불러와 타자 치듯 번갈아 보여 줌
+// k: 'inq'(30초 문의) | 'quote'(맞춤 견적) | 'voucher'(바우처 발급)
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg = { apiKey:"AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU", authDomain:"iclarkgolf.firebaseapp.com", projectId:"iclarkgolf" };
+const app = getApps().find(a=>a.name==='live') || initializeApp(cfg,'live');
+const db = getFirestore(app);
+const isEn = () => { try { return (typeof currentLang !== 'undefined' ? currentLang : localStorage.getItem('clarkgo_lang')) === 'en'; } catch(e){ return false; } };
+const EN = { '혼자':'solo', '2명':'2 people', '3명 이상':'3+ people', '봄':'spring', '여름':'summer', '가을':'fall', '겨울':'winter', '미정':'dates TBD' };
+const en = v => EN[v] || String(v || '').replace(/^(\d+)일$/, '$1 days').replace(/^(\d+)월$/, (m, n) => ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][n-1] || m);
+function ago(ms){
+  const m = Math.max(0, Math.round((Date.now() - ms) / 60000)), E = isEn();
+  if(m < 2) return E ? 'just now' : '방금 전';
+  if(m < 60) return E ? m + ' min ago' : m + '분 전';
+  const h = Math.round(m / 60); if(h < 24) return E ? h + 'h ago' : h + '시간 전';
+  const d = Math.round(h / 24); return E ? d + (d === 1 ? ' day ago' : ' days ago') : d + '일 전';
+}
+function line(it){
+  const E = isEn(), g = it.golfers ? (E ? it.golfers + ' golfer' + (it.golfers > 1 ? 's' : '') : '골퍼 ' + it.golfers + '명') : '';
+  if(it.k === 'voucher') return { kind: E ? 'BOOKING CONFIRMED' : '부킹 확정', cls:'v',
+    txt: E ? [it.date, it.courses, g].filter(Boolean).join(' · ') + ' — tee times booked, vouchers issued' : [it.date, it.courses, g].filter(Boolean).join(' · ') + ' 부킹 확정, 바우처 발급 완료' };
+  if(it.k === 'quote') return { kind: E ? 'CUSTOM QUOTE' : '맞춤 견적 신청', cls:'q',
+    txt: E ? [g, it.nights ? it.nights + ' nights' : '', it.courses].filter(Boolean).join(' · ') + ' — quote requested' : [g, it.nights ? it.nights + '박' : '', it.courses].filter(Boolean).join(' · ') + ' 맞춤 견적이 들어왔어요' };
+  return { kind: E ? 'NEW INQUIRY' : '새 문의', cls:'',
+    txt: E ? [en(it.party), en(it.days), en(it.when)].filter(Boolean).join(' · ') + (it.pkg ? ' — ' + it.pkg : '') + ' inquiry' : [it.party, it.days, it.when].filter(Boolean).join(' · ') + (it.pkg ? ' · ' + it.pkg : '') + ' 문의가 들어왔어요' };
+}
+let items = [], cur = 0, tTimer = null, nTimer = null;
+const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+function type(el, text, done){
+  if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches){ el.textContent = text; done(); return; }
+  let i = 0; el.textContent = ''; const c = document.createElement('span'); c.className = 'ic-caret'; el.appendChild(c);
+  (function step(){ if(i >= text.length){ c.remove(); done(); return; } c.before(document.createTextNode(text.slice(i, i + 1))); i++; tTimer = setTimeout(step, 28); })();
+}
+function show(k){
+  clearTimeout(tTimer); clearTimeout(nTimer); if(!items.length) return;
+  cur = (k + items.length) % items.length; const it = items[cur], L = line(it), E = isEn();
+  document.getElementById('icLabel').textContent = E ? 'iCLARKGOLF live board' : 'iCLARKGOLF 실시간 현황';
+  const n30 = items.filter(x => x.k !== 'voucher' && Date.now() - x.ms < 30 * 864e5).length;
+  document.getElementById('icCount').textContent = n30 ? (E ? n30 + ' inquiries in 30 days' : '최근 30일 문의 ' + n30 + '건') : '';
+  const go = document.getElementById('icGo'); go.textContent = E ? 'Get my quote →' : '나도 견적 받기 →';
+  document.getElementById('icDots').innerHTML = items.map((_, j) => `<b class="${j === cur ? 'on' : ''}"></b>`).join('');
+  document.getElementById('icBody').innerHTML = `<p class="ic-kind ${L.cls}">&gt; ${esc(L.kind)} · ${esc(ago(it.ms))}</p><p class="ic-txt" id="icTxt"></p>`;
+  type(document.getElementById('icTxt'), L.txt, () => { nTimer = setTimeout(() => show(cur + 1), 4200); });
+}
+(async () => {
+  try {
+    const snap = await getDocs(query(collection(db, 'live_feed'), orderBy('at', 'desc'), limit(30)));
+    const all = snap.docs.map(d => { const x = d.data(); return Object.assign({}, x, { ms: x.at && x.at.toMillis ? x.at.toMillis() : 0 }); }).filter(x => x.ms);
+    // 최근 30일 것만, 너무 적으면 60일까지
+    items = all.filter(x => Date.now() - x.ms < 30 * 864e5);
+    if(items.length < 3) items = all.filter(x => Date.now() - x.ms < 60 * 864e5);
+    items = items.slice(0, 12);
+    if(!items.length) return;
+    document.getElementById('icLive').style.display = '';
+    show(0);
+    document.querySelectorAll('.lang-btn').forEach(b => b.addEventListener('click', () => setTimeout(() => show(cur), 50)));
+  } catch(e) { console.warn('live feed', e); }
+})();
 </script>
 </body>
 </html>

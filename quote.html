@@ -805,6 +805,8 @@ async function submitApply(){
     const { getFirestore, collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
     const app = getApps().length ? getApps()[0] : initializeApp({ apiKey:'AIzaSyCWoLpUqJ0qhVi3pFlfeB_aSIY4wtmy4qU', authDomain:'iclarkgolf.firebaseapp.com', projectId:'iclarkgolf' });
     await addDoc(collection(getFirestore(app), 'inquiries'), { ...data, createdAt: serverTimestamp() });
+    // 2026-11-10: 홈페이지 LIVE 창용 공개 기록 (이름·연락처·금액 없이 인원·박수·골프장만)
+    try { await addDoc(collection(getFirestore(app), 'live_feed'), { k:'quote', golfers: Math.min(99, Number(pax.g) || 0), nights: Math.min(99, Number(c.n) || 0), courses: c.golf.map(x => x.g.name).join(' · ').slice(0, 80), at: serverTimestamp() }); } catch(e2) { console.warn('live_feed', e2); }
     window.iclarkNotifyNewLead && window.iclarkNotifyNewLead({
       '여행목적': PURPOSE_KO[purpose] || '미선택', '문의종류': FROM.id ? '맞춤 견적 신청(30초 문의→' + (FROM.pkg || FROM.id) + ')' : '맞춤 견적 신청(quote.html)', '희망시기': FROM.timing || '-', '이름': name, '연락처': contact,
       '날짜': (data.arrDate || '-') + ' ~ ' + (data.depDate || '-') + ' (' + c.n + '박)',

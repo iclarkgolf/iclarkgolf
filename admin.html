@@ -6592,6 +6592,14 @@ async function bkUpdate(id, data, msg){
   const b = _bkDocs.find(x => x.id === id) || {};
   const { db, fs } = await bkFs();
   await fs.updateDoc(fs.doc(db, 'bookings', id), { ...data, updatedAt: new Date().toISOString(), history: [...(b.history || []), bkHist(msg)] });
+  // 2026-11-10: 바우처가 손님에게 전달되면 홈페이지 LIVE 창에 "부킹 확정, 바우처 발급" 한 줄 (이름 없이 날짜·골프장·인원만)
+  if (data.status === 'done' && b.status !== 'done') { try { await bkLiveVoucher(Object.assign({}, b, data)); } catch(e) { console.warn('live_feed', e); } }
+}
+async function bkLiveVoucher(b){
+  const { db, fs } = await bkFs();
+  const r = (b.rounds || []).filter(x => x && x.date).sort((x, y) => String(x.date).localeCompare(String(y.date)));
+  const d = r.length ? r[0].date.slice(5).replace('-', '/') : '';
+  await fs.addDoc(fs.collection(db, 'live_feed'), { k:'voucher', date:d, golfers:Math.min(99, Number(b.golfers) || 0), courses:[...new Set(r.map(x => x.courseKo || x.courseEn).filter(Boolean))].join(' · ').slice(0, 80), at: fs.serverTimestamp() });
 }
 async function bkSend(id){
   const b = _bkDocs.find(x => x.id === id); if (!b) return;
