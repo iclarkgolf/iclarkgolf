@@ -757,6 +757,11 @@ const db  = getFirestore(app);
         기간:curDuration(), 인원:sel.party, 시기:sel.timing, 페이지:cardId,
         상태:'선택완료', 연락처:'', 이름:'', created:serverTimestamp()
       });
+      // 2026-11-10: 홈페이지 LIVE 창용 공개 기록 (이름·연락처 없이 고른 칩과 패키지 이름만)
+      try {
+        const pkgName = (PKG && [PKG.titleEn, PKG.sub1].filter(Boolean).join(' ')) || '';
+        await addDoc(collection(db,'live_feed'), { k:'inq', party:String(sel.party||'').slice(0,20), days:String(curDuration()||'').slice(0,20), when:String(sel.timing||'').slice(0,20), pkg:pkgName.slice(0,60), at:serverTimestamp() });
+      } catch(e2) { console.warn('live_feed', e2); }
     } catch(err) {
       console.error('선택완료 흔적 저장 실패:', err);
     }
