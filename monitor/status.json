@@ -1,24 +1,55 @@
 {
  "latest": {
-  "at": "2026-11-10T13:32:57.479Z",
-  "atKST": "2026. 11. 10. PM 10:32:57",
-  "ok": true,
+  "at": "2026-11-15T11:04:25.622Z",
+  "atKST": "2026. 11. 15. PM 8:04:25",
+  "ok": false,
   "iclarkgolf": "정상",
-  "malmun": "정상",
-  "problems": [],
+  "malmun": "문제",
+  "problems": [
+   {
+    "site": "말문",
+    "what": "홈: 튜터 카드이(가) 안 나옴",
+    "detail": "https://malmunkorean.com/\n튜터 카드 0개 (최소 1)\n콘솔: [2026-11-15T11:03:58.299Z]  @firebase/firestore: Firestore (10.7.1): Could not reach Cloud Firestore backend. Backend didn't respond within 10 seconds.\nThis typically indicates that your device does not have a healthy Internet connection at the moment. The client will operate in offline mode until it is able to successfully connect to the backend."
+   }
+  ],
   "notes": [
    "아이클락골프: 주소 47개 확인",
-   "아이클락골프: 인증서 70일 남음",
-   "말문: 주소 27개 확인",
-   "말문: 인증서 43일 남음",
+   "아이클락골프: 인증서 65일 남음",
+   "말문: 주소 33개 확인",
+   "말문: 인증서 38일 남음",
    "아이클락골프: 핵심 화면 8/8개 정상",
-   "말문: 핵심 화면 8/8개 정상",
-   "아고다 데이터 13시간 전 갱신, 호텔 166개",
+   "말문: 핵심 화면 7/8개 정상",
+   "아고다 데이터 8시간 전 갱신, 호텔 161개",
    "자동 작업 3개 확인",
    "말문: 보안 문 4개 잠김 확인"
   ]
  },
  "history": [
+  {
+   "at": "2026-11-15T11:04:25.622Z",
+   "atKST": "2026. 11. 15. PM 8:04:25",
+   "ok": false,
+   "iclarkgolf": "정상",
+   "malmun": "문제",
+   "problems": [
+    {
+     "site": "말문",
+     "what": "홈: 튜터 카드이(가) 안 나옴",
+     "detail": "https://malmunkorean.com/\n튜터 카드 0개 (최소 1)\n콘솔: [2026-11-15T11:03:58.299Z]  @firebase/firestore: Firestore (10.7.1): Could not reach Cloud Firestore backend. Backend didn't respond within 10 seconds.\nThis typically indicates that your device does not have a healthy Internet connection at the moment. The client will operate in offline mode until it is able to successfully connect to the backend."
+    }
+   ],
+   "notes": [
+    "아이클락골프: 주소 47개 확인",
+    "아이클락골프: 인증서 65일 남음",
+    "말문: 주소 33개 확인",
+    "말문: 인증서 38일 남음",
+    "아이클락골프: 핵심 화면 8/8개 정상",
+    "말문: 핵심 화면 7/8개 정상",
+    "아고다 데이터 8시간 전 갱신, 호텔 161개",
+    "자동 작업 3개 확인",
+    "말문: 보안 문 4개 잠김 확인"
+   ]
+  },
   {
    "at": "2026-11-10T13:32:57.479Z",
    "atKST": "2026. 11. 10. PM 10:32:57",
