@@ -1,30 +1,43 @@
 {
  "latest": {
-  "at": "2026-11-16T11:33:11.923Z",
-  "atKST": "2026. 11. 16. PM 8:33:11",
-  "ok": false,
+  "at": "2026-11-16T22:12:41.469Z",
+  "atKST": "2026. 11. 17. AM 7:12:41",
+  "ok": true,
   "iclarkgolf": "정상",
-  "malmun": "문제",
-  "problems": [
-   {
-    "site": "말문",
-    "what": "홈: 튜터 카드이(가) 안 나옴",
-    "detail": "https://malmunkorean.com/\n튜터 카드 0개 (최소 1)\n콘솔: [2026-11-16T11:32:41.737Z]  @firebase/firestore: Firestore (10.7.1): Could not reach Cloud Firestore backend. Backend didn't respond within 10 seconds.\nThis typically indicates that your device does not have a healthy Internet connection at the moment. The client will operate in offline mode until it is able to successfully connect to the backend."
-   }
-  ],
+  "malmun": "정상",
+  "problems": [],
   "notes": [
    "아이클락골프: 주소 47개 확인",
    "아이클락골프: 인증서 64일 남음",
    "말문: 주소 33개 확인",
    "말문: 인증서 37일 남음",
    "아이클락골프: 핵심 화면 8/8개 정상",
-   "말문: 핵심 화면 7/8개 정상",
+   "말문: 핵심 화면 8/8개 정상",
    "아고다 데이터 8시간 전 갱신, 호텔 161개",
    "자동 작업 3개 확인",
    "말문: 보안 문 4개 잠김 확인"
   ]
  },
  "history": [
+  {
+   "at": "2026-11-16T22:12:41.469Z",
+   "atKST": "2026. 11. 17. AM 7:12:41",
+   "ok": true,
+   "iclarkgolf": "정상",
+   "malmun": "정상",
+   "problems": [],
+   "notes": [
+    "아이클락골프: 주소 47개 확인",
+    "아이클락골프: 인증서 64일 남음",
+    "말문: 주소 33개 확인",
+    "말문: 인증서 37일 남음",
+    "아이클락골프: 핵심 화면 8/8개 정상",
+    "말문: 핵심 화면 8/8개 정상",
+    "아고다 데이터 8시간 전 갱신, 호텔 161개",
+    "자동 작업 3개 확인",
+    "말문: 보안 문 4개 잠김 확인"
+   ]
+  },
   {
    "at": "2026-11-16T11:33:11.923Z",
    "atKST": "2026. 11. 16. PM 8:33:11",
