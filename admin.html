@@ -7009,6 +7009,15 @@ function bkCopy(text, toast){
     setDays(days); return true;
   }
 
+  // 견적서를 불러오면(Remarks 값이 바뀌면) 도구가 열려 있을 때 그 표를 바로 칸으로 다시 불러온다 — 다시 쓸 일이 없게
+  (function(){
+    var ta=document.getElementById('q2Remarks'); if(!ta) return;
+    var d=Object.getOwnPropertyDescriptor(ta,'value'); if(!d||!d.set) return;
+    Object.defineProperty(ta,'value',{ configurable:true, get:d.get, set:function(v){
+      d.set.call(ta,v);
+      try { var b=box(); if(b&&b.style.display!=='none'){ if(!loadFromRemarks()) setDays([{ label:'제1일', date:'', segments:[emptySeg()] }]); redraw(); } } catch(e){}
+    }});
+  })();
   window.q2ItToggle=function(){
     var b=box(), btn=document.getElementById('q2ItToggleBtn'), opening=b.style.display==='none';
     b.style.display=opening?'block':'none'; btn.textContent=opening?'접기':'열기';
