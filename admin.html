@@ -777,16 +777,16 @@ body { background:#f4faf7; padding-bottom:40px; }
    #ce-schedule-editor에도 똑같이 적용 — 표를 만들어 삽입한 뒤 본문 에디터 안에서 볼 때도
    실제 웹사이트(package-detail.html/my-quote.html)와 똑같은 색상·스타일로 보이도록 함
    (이전엔 미리보기 박스에만 스타일이 있어서, 삽입 후 에디터 안에서는 색 없는 기본 표로 보여 혼란을 줬음) */
-/* 2026-11-21: 견적서 Remarks 일정표 (견적서 전용) — my-quote.html과 같은 모양 */
-#q2RemarksEditor .itin-table,#q2ItPreview .itin-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0;}
-#q2RemarksEditor .itin-table th,#q2ItPreview .itin-table th{background:#1b4332;color:#fff;padding:8px 10px;font-weight:700;border:1px solid #1b4332;}
-#q2RemarksEditor .itin-table td,#q2ItPreview .itin-table td{padding:8px 10px;border:1px solid #d8ece2;vertical-align:top;line-height:1.7;}
-#q2RemarksEditor .itin-day,#q2ItPreview .itin-day{background:#f0f7f4;font-weight:800;color:#1b4332;text-align:center;white-space:nowrap;}
-#q2RemarksEditor .itin-day .itin-date,#q2ItPreview .itin-day .itin-date{display:block;font-size:10px;font-weight:500;color:#6b8f7f;margin-top:2px;}
-#q2RemarksEditor .itin-place,#q2ItPreview .itin-place{background:#faf8f4;font-weight:700;color:#2d6a4f;text-align:center;white-space:nowrap;}
-#q2RemarksEditor .itin-time,#q2ItPreview .itin-time{font-weight:700;color:#085041;white-space:nowrap;width:56px;}
-#q2RemarksEditor .itin-detail,#q2ItPreview .itin-detail{color:#2c2c2c;}
-#q2RemarksEditor .itin-optional,#q2ItPreview .itin-optional{color:#1b4332;text-decoration:underline;}
+/* 2026-11-21: 견적서 Remarks 안의 일정표 — 패키지 2번 카드와 같은 모양 */
+#q2RemarksEditor .itin-table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0;}
+#q2RemarksEditor .itin-table th{background:#1b4332;color:#fff;padding:9px 11px;font-weight:700;border:1px solid #1b4332;text-align:center;}
+#q2RemarksEditor .itin-table td{padding:9px 11px;border:1px solid #d8ece2;vertical-align:top;line-height:1.7;}
+#q2RemarksEditor .itin-day{background:#f0f7f4;font-weight:800;color:#1b4332;text-align:center;white-space:nowrap;}
+#q2RemarksEditor .itin-day .itin-date{display:block;font-size:10.5px;font-weight:500;color:#6b8f7f;margin-top:2px;}
+#q2RemarksEditor .itin-place{background:#faf8f4;font-weight:700;color:#2d6a4f;text-align:center;white-space:nowrap;}
+#q2RemarksEditor .itin-time{font-weight:700;color:#085041;white-space:nowrap;width:56px;}
+#q2RemarksEditor .itin-detail{color:#2c2c2c;}
+#q2RemarksEditor .itin-optional{color:#1b4332;text-decoration:underline;}
 #ce-itin-preview .itin-table, #ce-schedule-editor .itin-table{width:100%;border-collapse:collapse;font-size:12.5px;}
 #ce-itin-preview .itin-table th, #ce-schedule-editor .itin-table th{background:#1b4332;color:#fff;padding:8px 10px;font-weight:700;border:1px solid #1b4332;}
 #ce-itin-preview .itin-table td, #ce-schedule-editor .itin-table td{padding:8px 10px;border:1px solid #d8ece2;vertical-align:top;line-height:1.7;}
@@ -5579,24 +5579,10 @@ async function loadVisitorStats() {
         <button type="button" onclick="q2RmHtmlToggle()" style="padding:10px 16px;background:#f4f4f5;border:1px solid #e5e7eb;border-radius:8px;cursor:pointer;">닫기</button>
       </div>
     </div>
-    <!-- 2026-11-21: 견적서 전용 일정표 만들기 (패키지와 별개). 손님 글은 그대로 두고 그 밑에 일정표를 붙임 -->
-    <div style="margin-top:14px;border:1.5px solid #c8edd9;border-radius:10px;background:#f7fbf9;padding:12px;">
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-        <b style="font-size:14px;color:#1b4332;">🗓️ 손님 일정표 만들기</b>
-        <span style="font-size:11.5px;color:#6b7280;">손님 글 밑에 표로 붙습니다</span>
-        <button type="button" id="q2ItToggleBtn" onclick="q2ItToggle()" style="margin-left:auto;padding:6px 14px;background:#1b4332;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">열기</button>
-      </div>
-      <div id="q2ItBox" data-days="[]" style="display:none;margin-top:10px;">
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
-          <button type="button" onclick="q2ItAutoFill()" style="padding:7px 12px;background:#EEEDFE;color:#3C3489;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">📋 손님 선택으로 날짜·골프장 채우기</button>
-          <button type="button" onclick="q2ItAddDay()" style="padding:7px 12px;background:#f0f7f4;border:1px dashed #1D9E75;color:#1D9E75;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">+ 일차 추가</button>
-          <button type="button" onclick="q2ItClear()" style="padding:7px 12px;background:#fff;border:1px solid #fecaca;color:#dc2626;border-radius:6px;font-size:12px;cursor:pointer;">모두 비우기</button>
-        </div>
-        <div id="q2ItDays"></div>
-        <div style="font-size:12px;font-weight:700;color:#6b7280;margin:10px 0 6px;">미리보기</div>
-        <div id="q2ItPreview" style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px;overflow-x:auto;"></div>
-        <button type="button" onclick="q2ItInsert()" style="width:100%;margin-top:10px;padding:11px;background:#1b4332;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer;">표 삽입 (손님 글 밑에 붙이기)</button>
-      </div>
+    <!-- 2026-11-21: 패키지 2번 카드(PRADERA All in 매일필드레슨) 상세페이지의 일정표를 그대로 손님 글 밑에 붙임. 붙인 뒤 표 칸을 눌러 직접 고침 -->
+    <div style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <button type="button" onclick="q2PutCard2Itin()" style="padding:9px 16px;background:#1b4332;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;">🗓️ 2번 카드 일정표 넣기</button>
+      <span style="font-size:12px;color:#6b7280;">손님 글 밑에 일정표가 붙습니다. 표 칸을 눌러 이 손님에 맞게 고치세요.</span>
     </div>
   </div>
 
@@ -6969,170 +6955,30 @@ function bkCopy(text, toast){
 })();
 </script>
 <script>
-/* ── 2026-11-21: 견적서 전용 손님 일정표 만들기 ──
-   패키지 일정표 도구(ceItin*)와는 별개. 표 모양(itin-table)만 같다.
-   · "표 삽입"은 Remarks 안의 손님 글은 그대로 두고, 그 밑의 일정표(.q2-itin-wrap)만 새것으로 바꾼다 — 몇 번 눌러도 표가 하나만 남음
-   · 견적서를 불러왔을 때 Remarks에 표가 있으면, 도구를 열면 그 표를 칸으로 불러온다 */
-(function(){
-  function E(s){ return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-  function box(){ return document.getElementById('q2ItBox'); }
-  function getDays(){ try { return JSON.parse(box().dataset.days || '[]'); } catch(e){ return []; } }
-  function setDays(d){ box().dataset.days = JSON.stringify(d); }
-  function emptyRow(){ return { time:'', text:'', emphasis:false }; }
-  function emptySeg(p){ return { place:p||'', rows:[emptyRow()] }; }
-  function redraw(){ render(); preview(); }
-  var WD=['일','월','화','수','목','금','토'];
-  function fmtDate(d){ return (d.getMonth()+1)+'/'+d.getDate()+'('+WD[d.getDay()]+')'; }
-
-  function editor(){ return document.getElementById('q2RemarksEditor'); }
-  function loadFromRemarks(){
-    var ed=editor(); if(!ed) return false;
-    var t=ed.querySelector('table.itin-table'); if(!t) return false;
-    var days=[];
-    try {
-      var curDay=null, dayLeft=0, curSeg=null, segLeft=0;
-      t.querySelectorAll('tbody tr').forEach(function(tr){
-        var tds=Array.prototype.slice.call(tr.children), i=0;
-        if(dayLeft<=0){
-          var td=tds[i++], ds=td.querySelector('.itin-date'), c=td.cloneNode(true), sc=c.querySelector('.itin-date'); if(sc) sc.remove();
-          curDay={ label:c.textContent.trim(), date:ds?ds.textContent.trim():'', segments:[] }; days.push(curDay);
-          dayLeft=parseInt(td.getAttribute('rowspan')||'1',10); segLeft=0;
-        }
-        dayLeft--;
-        if(segLeft<=0){ var pt=tds[i++]; curSeg={ place:pt?pt.textContent.trim():'', rows:[] }; curDay.segments.push(curSeg); segLeft=parseInt((pt&&pt.getAttribute('rowspan'))||'1',10); }
-        segLeft--;
-        var tt=tds[i++], dt=tds[i], st=dt?dt.querySelector('strong.itin-optional'):null;
-        curSeg.rows.push({ time:tt?tt.textContent.trim():'', text:st?st.textContent.trim():(dt?dt.textContent.trim():''), emphasis:!!st });
-      });
-    } catch(e){ return false; }
-    if(!days.length) return false;
-    setDays(days); return true;
-  }
-
-  // 견적서를 불러오면(Remarks 값이 바뀌면) 도구가 열려 있을 때 그 표를 바로 칸으로 다시 불러온다 — 다시 쓸 일이 없게
-  (function(){
-    var ta=document.getElementById('q2Remarks'); if(!ta) return;
-    var d=Object.getOwnPropertyDescriptor(ta,'value'); if(!d||!d.set) return;
-    Object.defineProperty(ta,'value',{ configurable:true, get:d.get, set:function(v){
-      d.set.call(ta,v);
-      try { var b=box(); if(b&&b.style.display!=='none'){ if(!loadFromRemarks()) setDays([{ label:'제1일', date:'', segments:[emptySeg()] }]); redraw(); } } catch(e){}
-    }});
-  })();
-  window.q2ItToggle=function(){
-    var b=box(), btn=document.getElementById('q2ItToggleBtn'), opening=b.style.display==='none';
-    b.style.display=opening?'block':'none'; btn.textContent=opening?'접기':'열기';
-    if(opening){
-      if(!loadFromRemarks() && getDays().length===0) setDays([{ label:'제1일', date:'', segments:[emptySeg()] }]);
-      redraw();
-    }
-  };
-  // 손님이 고른 도착·출발일, 숙소, 골프장(라운드 수)로 일차별 뼈대를 깐다. 시간·세부일정은 PJ가 채움
-  window.q2ItAutoFill=function(){
-    var ci=(document.getElementById('q2Checkin')||{}).value, co=(document.getElementById('q2Checkout')||{}).value;
-    if(!ci||!co){ showToast('견적서 위쪽의 도착일·출발일을 먼저 넣어 주세요','error'); return; }
-    var d0=new Date(ci+'T00:00:00'), d1=new Date(co+'T00:00:00');
-    var n=Math.round((d1-d0)/86400000)+1;
-    if(!(n>=1&&n<=30)){ showToast('날짜를 확인해 주세요','error'); return; }
-    if(getDays().some(function(d){ return d.segments.some(function(s){ return s.place||s.rows.some(function(r){ return r.time||r.text; }); }); })
-       && !confirm('지금 칸에 적힌 내용을 지우고 손님 선택으로 새로 채울까요?')) return;
-    var hotel=(window.Q2&&Q2.hotel&&Q2.hotel.name)||'숙소';
-    var gf=(typeof getGreenfee==='function'?getGreenfee():[])||[];
-    var queues=[];
-    Object.keys((window.Q2&&Q2.golf)||{}).forEach(function(id){
-      var g=gf.find(function(x){ return x.id===id; }); var r=Math.max(1,parseInt(Q2.golf[id].rounds||1,10));
-      var name=g?String(g.name).split(/[(\s]/)[0]:id; queues.push({ name:name, left:r });
-    });
-    var rounds=[]; // 골프장 번갈아 배치
-    var more=true; while(more){ more=false; queues.forEach(function(q){ if(q.left>0){ rounds.push(q.name); q.left--; more=true; } }); }
-    var days=[];
-    for(var i=0;i<n;i++){
-      var dt=new Date(d0.getTime()+i*86400000), segs=[];
-      if(i===0) segs.push({ place:'클락', rows:[{ time:'', text:'클락공항 도착', emphasis:false }] });
-      segs.push({ place:hotel, rows:[emptyRow()] });
-      if(rounds[i]) segs.push({ place:rounds[i], rows:[{ time:'', text:'18홀 라운딩', emphasis:true }] });
-      if(i===n-1) segs.push({ place:'클락', rows:[{ time:'', text:'클락공항 출발', emphasis:false }] });
-      days.push({ label:'제'+(i+1)+'일', date:fmtDate(dt), segments:segs });
-    }
-    setDays(days); redraw();
-    showToast('📋 날짜·숙소·골프장을 채웠어요. 시간과 세부일정을 넣어 주세요');
-  };
-  window.q2ItAddDay=function(){ var d=getDays(); d.push({ label:'제'+(d.length+1)+'일', date:'', segments:[emptySeg()] }); setDays(d); redraw(); };
-  window.q2ItClear=function(){ if(!confirm('일정표 칸을 모두 비울까요? (Remarks에 이미 붙인 표는 그대로 있습니다)')) return; setDays([{ label:'제1일', date:'', segments:[emptySeg()] }]); redraw(); };
-  window.q2ItDelDay=function(di){ var d=getDays(); d.splice(di,1); setDays(d); redraw(); };
-  window.q2ItAddSeg=function(di){ var d=getDays(); d[di].segments.push(emptySeg()); setDays(d); redraw(); };
-  window.q2ItDelSeg=function(di,si){ var d=getDays(); if(d[di].segments.length<=1) return; d[di].segments.splice(si,1); setDays(d); redraw(); };
-  window.q2ItAddRow=function(di,si,ri){ var d=getDays(); d[di].segments[si].rows.splice(ri+1,0,emptyRow()); setDays(d); redraw(); };
-  window.q2ItDelRow=function(di,si,ri){ var d=getDays(), rows=d[di].segments[si].rows; if(rows.length<=1){ rows[0]=emptyRow(); } else rows.splice(ri,1); setDays(d); redraw(); };
-  window.q2ItSet=function(di,si,ri,field,val){
-    var d=getDays();
-    if(si<0) d[di][field]=val; else if(ri<0) d[di].segments[si][field]=val; else d[di].segments[si].rows[ri][field]=val;
-    setDays(d); preview();
-  };
-  var IN='padding:6px 8px;border:1.5px solid #c8edd9;border-radius:6px;font-size:12.5px;font-family:\'Noto Sans KR\',sans-serif;box-sizing:border-box;';
-  var XB='background:none;border:none;color:#dc2626;cursor:pointer;';
-  function render(){
-    var el=document.getElementById('q2ItDays'); if(!el) return;
-    el.innerHTML=getDays().map(function(day,di){
-      return '<div style="background:#fff;border:1.5px solid #d8ece2;border-radius:10px;padding:10px;margin-bottom:8px;">'
-        +'<div style="display:flex;gap:6px;align-items:center;margin-bottom:8px;">'
-        +'<input value="'+E(day.label)+'" oninput="q2ItSet('+di+',-1,-1,\'label\',this.value)" placeholder="제1일" style="'+IN+'width:70px;font-weight:700;">'
-        +'<input value="'+E(day.date)+'" oninput="q2ItSet('+di+',-1,-1,\'date\',this.value)" placeholder="1/11(월)" style="'+IN+'width:90px;">'
-        +'<button type="button" onclick="q2ItDelDay('+di+')" style="'+XB+'margin-left:auto;font-size:12px;font-weight:700;">일차 삭제</button></div>'
-        +day.segments.map(function(seg,si){
-          return '<div style="border-left:3px solid #e8f4ec;padding-left:8px;margin-bottom:8px;">'
-            +'<div style="display:flex;gap:6px;align-items:center;margin-bottom:5px;">'
-            +'<input value="'+E(seg.place)+'" oninput="q2ItSet('+di+','+si+',-1,\'place\',this.value)" placeholder="장소 (예: 프라데라)" style="'+IN+'width:150px;font-weight:700;color:#2d6a4f;">'
-            +'<button type="button" onclick="q2ItDelSeg('+di+','+si+')" style="'+XB+'font-size:11px;">장소 삭제</button></div>'
-            +seg.rows.map(function(row,ri){
-              return '<div style="display:flex;gap:5px;align-items:center;margin-bottom:4px;">'
-                +'<input value="'+E(row.time)+'" oninput="q2ItSet('+di+','+si+','+ri+',\'time\',this.value)" placeholder="07:00" style="'+IN+'width:64px;">'
-                +'<input value="'+E(row.text)+'" oninput="q2ItSet('+di+','+si+','+ri+',\'text\',this.value)" placeholder="세부일정" style="'+IN+'flex:1;min-width:0;">'
-                +'<label style="font-size:10.5px;color:#6b7280;white-space:nowrap;"><input type="checkbox" '+(row.emphasis?'checked':'')+' onchange="q2ItSet('+di+','+si+','+ri+',\'emphasis\',this.checked)">강조</label>'
-                +'<button type="button" title="아래에 줄 추가" onclick="q2ItAddRow('+di+','+si+','+ri+')" style="background:none;border:none;color:#1D9E75;font-size:16px;font-weight:800;cursor:pointer;">+</button>'
-                +'<button type="button" title="줄 삭제" onclick="q2ItDelRow('+di+','+si+','+ri+')" style="'+XB+'font-size:14px;">✕</button></div>';
-            }).join('')+'</div>';
-        }).join('')
-        +'<button type="button" onclick="q2ItAddSeg('+di+')" style="padding:4px 10px;background:none;border:1px dashed #9ca3af;color:#6b7280;border-radius:6px;font-size:11px;cursor:pointer;">+ 장소 추가 (하루 중 장소가 바뀔 때)</button>'
-        +'</div>';
-    }).join('');
-  }
-  function buildTable(){
-    var days=getDays().map(function(day){
-      return { label:day.label, date:day.date, segments:day.segments.map(function(s){
-        return { place:s.place, rows:s.rows.filter(function(r){ return (r.time&&r.time.trim())||(r.text&&r.text.trim()); }) };
-      }).filter(function(s){ return s.rows.length; }) };
-    }).filter(function(d){ return d.segments.length; });
-    if(!days.length) return '';
-    var h='';
-    days.forEach(function(day){
-      var cnt=day.segments.reduce(function(a,s){ return a+s.rows.length; },0), fd=true;
-      day.segments.forEach(function(seg){
-        var fs=true;
-        seg.rows.forEach(function(r){
-          h+='<tr>';
-          if(fd){ h+='<td class="itin-day" rowspan="'+cnt+'">'+E(day.label)+(day.date?'<span class="itin-date">'+E(day.date)+'</span>':'')+'</td>'; fd=false; }
-          if(fs){ h+='<td class="itin-place" rowspan="'+seg.rows.length+'">'+E(seg.place)+'</td>'; fs=false; }
-          h+='<td class="itin-time">'+E(r.time)+'</td><td class="itin-detail">'+(r.emphasis?'<strong class="itin-optional">'+E(r.text)+'</strong>':E(r.text))+'</td></tr>';
-        });
-      });
-    });
-    return '<table class="itin-table"><thead><tr><th>날짜</th><th>장소</th><th>시간</th><th>세부일정</th></tr></thead><tbody>'+h+'</tbody></table>';
-  }
-  function preview(){ var p=document.getElementById('q2ItPreview'); if(p) p.innerHTML=buildTable()||'<div style="font-size:12px;color:#9ca3af;">칸을 채우면 여기에 표가 보입니다.</div>'; }
-  window.q2ItInsert=function(){
-    var t=buildTable(); if(!t){ showToast('표에 넣을 내용이 없습니다','error'); return; }
-    var ed=editor(); if(!ed) return;
-    // 예전에 붙인 일정표만 지우고 손님 글은 그대로 둔다
+/* 2026-11-21: 패키지 2번 카드 상세페이지 일정표를 견적서 Remarks로 옮기는 버튼.
+   카드 문서(package_cards/NBGpljh8GjzKoz4fMQEg)의 일정표(trainingSchedule)에서 표만 꺼내 손님 글 밑에 붙인다.
+   예전에 붙인 일정표는 지우고 새로 붙이므로 몇 번 눌러도 표는 하나만 남는다. 손님 글은 건드리지 않음 */
+async function q2PutCard2Itin(){
+  var ed=document.getElementById('q2RemarksEditor'); if(!ed) return;
+  if(ed.querySelector('table.itin-table') && !confirm('이미 들어 있는 일정표를 지우고 2번 카드 일정표로 새로 넣을까요?')) return;
+  try {
+    var db=await initCardDB();
+    var fs=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    var snap=await fs.getDoc(fs.doc(db,'package_cards','NBGpljh8GjzKoz4fMQEg'));
+    var html=snap.exists()?(snap.data().trainingSchedule||''):'';
+    var tmp=document.createElement('div'); tmp.innerHTML=html;
+    var t=tmp.querySelector('table.itin-table');
+    if(!t){ showToast('2번 카드에 일정표가 없습니다','error'); return; }
     ed.querySelectorAll('.q2-itin-wrap').forEach(function(n){ n.remove(); });
     ed.querySelectorAll('table.itin-table').forEach(function(n){ n.remove(); });
-    var wrap=document.createElement('div'); wrap.className='q2-itin-wrap';
-    wrap.innerHTML='<hr><h3>여행 일정표</h3>'+t;
-    ed.appendChild(wrap);
+    var w=document.createElement('div'); w.className='q2-itin-wrap';
+    w.innerHTML='<hr><h3>여행 일정표</h3>'+t.outerHTML+'<p><br></p>';
+    ed.appendChild(w);
     ed.dispatchEvent(new Event('input',{bubbles:true}));
-    showToast('✅ 손님 글 밑에 일정표를 붙였어요. "견적서 저장"을 눌러야 저장됩니다');
-    ed.scrollIntoView({behavior:'smooth',block:'end'});
-  };
-})();
+    showToast('✅ 일정표를 넣었어요. 표 칸을 눌러 고친 뒤 "견적서 저장"을 누르세요');
+    w.scrollIntoView({behavior:'smooth',block:'start'});
+  } catch(e){ console.error(e); showToast('일정표를 불러오지 못했어요','error'); }
+}
 </script>
 <script>
 /* ── 📒 노션 예약 장부 자동 연동 (2026-10-13) ──────────────────────────────
