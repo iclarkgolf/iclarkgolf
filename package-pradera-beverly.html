@@ -626,8 +626,9 @@ window.render = function render(D) {
 
   // 전지훈련 사진
   renderPhotoGrid('trainingGrid', D.trainingImgs || []);
-  document.getElementById('trainingName').textContent = D.trainingName || '';
-  document.getElementById('trainingDesc').innerHTML   = (D.trainingDesc||'').replace(/\n/g,'<br>');
+  // 2026-11-22 전지훈련 이름·설명 글은 쓰지 않음 — 사진만 보여줌
+  document.getElementById('trainingName').textContent = '';
+  document.getElementById('trainingDesc').innerHTML   = '';
 
   // 가격표
   const pList = document.getElementById('priceList');
@@ -659,7 +660,16 @@ window.render = function render(D) {
   });
   // 사진 없는 섹션은 숨기기
   if (!D.accomImgs || D.accomImgs.length === 0) document.getElementById('accomSection').style.display = (D.accomName || D.accomLinkUrl || window.AGODA_PICK_ON) ? 'block' : 'none';
-  if (!D.trainingImgs || D.trainingImgs.length === 0) document.getElementById('trainingSection').style.display = (D.trainingName || D.trainingDesc || D.trainingSchedule) ? 'block' : 'none';
+  if (!D.trainingImgs || D.trainingImgs.length === 0) document.getElementById('trainingSection').style.display = 'none';
+
+  // 2026-11-22 상세 페이지 간결화 — 모든 카드에서 주요 일정 칸 숨김 (일정은 상세 안내 칸 하나로). 포함·불포함은 그대로 보임
+  document.getElementById('scheduleSection').style.display = 'none';
+  // 가격표가 비어 있으면 빈 칸 숨김
+  if (!D.prices || D.prices.length === 0) document.getElementById('priceSection').style.display = 'none';
+  // 아고다 호텔 목록이 보이는 카드는 위의 "프로 추천 호텔" 글 칸을 숨기고 숙소 사진 + 아고다 목록만 남김
+  if (window.AGODA_PICK_ON) {
+    ['accomName','accomDesc','accomLinkBtn','accomRecBadge'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+  }
 
   applyTranslations();
 }
