@@ -5198,7 +5198,7 @@ async function testNotify() {
 /* ── 30초 문의 → 손님에게 문자 보내기 ── */
 const WI_SMS_DEFAULT_TPL = `안녕하세요, iCLARKGOLF 장수남 프로입니다.
 {이름}홈페이지에서 클락 골프 전지훈련({패키지} · {기간} · {인원} · {시기}) 문의를 남겨주셔서 연락드립니다.
-원하시는 출발 시기와 인원을 알려주시면 맞춤 견적을 카톡으로 보내드리겠습니다.
+출발 날짜와 원하시는 호텔·골프장이 있으면 이 번호로 답장 주세요. 맞춤 견적서를 문자로 보내드리겠습니다.
 카카오톡 상담: https://pf.kakao.com/_nbHKX/chat`;
 let _wiSmsCur = null; // 현재 모달에 띄운 문의 {phone, ...}
 
@@ -7223,6 +7223,31 @@ async function q2PutCard2Itin(){
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
   var t=null;
   new MutationObserver(function(){if(busy)return;clearTimeout(t);t=setTimeout(run,60);}).observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+})();
+</script>
+<script>
+/* 2026-11-23: 새 문의 메일의 "손님에게 첫 문자 보내기" 링크(admin.html#wisms=문서ID)
+   → 로그인 뒤 문의 내역 탭을 열고, 그 손님에게 보낼 문자 창(미리 짜 둔 문안)을 바로 띄움 */
+(function(){
+  const m = location.hash.match(/^#wisms=([A-Za-z0-9_-]+)/);
+  if (!m) return;
+  const id = m[1]; let opened = false, tries = 0;
+  const t = setInterval(() => {
+    const ov = document.getElementById('admin-login-overlay');
+    if (ov && ov.style.display !== 'none') return;          // 로그인 기다리는 중
+    if (++tries > 80) { clearInterval(t); return; }
+    if (!opened) {
+      const b = document.querySelector(".tab-btn[onclick*=\"showTab('inquiry'\"]");
+      if (typeof showTab === 'function') { showTab('inquiry', b); opened = true; }
+      return;
+    }
+    const docs = window._webInquiryDocs || [];
+    if (docs.find(d => d.id === id) && typeof openWiSms === 'function') {
+      clearInterval(t);
+      openWiSms(id);
+      try { history.replaceState(null, '', location.pathname); } catch(e) {}
+    }
+  }, 500);
 })();
 </script>
 </body>

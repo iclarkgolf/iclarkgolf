@@ -850,15 +850,17 @@ const db  = getFirestore(app);
       const phone = smsPhone.value.trim();
       if (phone.replace(/[^0-9]/g,'').length < 10) { smsPhone.style.borderColor = '#e74c3c'; smsPhone.focus(); return; }
       smsBtn.disabled = true;
-      let saveFailed = false;
+      let saveFailed = false, docId = '';
       try {
-        await addDoc(collection(db,'web_inquiries'), {
+        const ref = await addDoc(collection(db,'web_inquiries'), {
           기간:curDuration(), 인원:sel.party, 시기:sel.timing, 페이지:cardId,
           상태:'문자요청', 연락처:phone, 이름:'', created:serverTimestamp()
         });
+        docId = ref.id;
       } catch(err) { saveFailed = true; console.error('문자요청 저장 실패:', err); }
       if (typeof window.iclarkNotifyNewLead === 'function') {
-        window.iclarkNotifyNewLead({ '문의종류':'견적서 문자로 받기(패키지 페이지)', '이름':'', '연락처':phone, '패키지':pkgLabel()+' ('+cardId+')', '기간':curDuration()||'', '인원':sel.party||'', '시기':sel.timing||'', 'Firestore 저장': saveFailed ? '실패(이 메일이 유일한 기록)' : '정상' });
+        // 메일 맨 위 링크를 누르면 관리자 화면에서 이 손님에게 보낼 첫 문자 창이 바로 열림
+        window.iclarkNotifyNewLead({ '손님에게 첫 문자 보내기': docId ? 'https://iclarkgolf.com/admin.html#wisms=' + docId : '관리자 화면 > 문의 내역에서 보내세요', '문의종류':'견적서 문자로 받기(패키지 페이지)', '이름':'', '연락처':phone, '패키지':pkgLabel()+' ('+cardId+')', '기간':curDuration()||'', '인원':sel.party||'', '시기':sel.timing||'', 'Firestore 저장': saveFailed ? '실패(이 메일이 유일한 기록)' : '정상' });
       }
       try { if (window.gtag) gtag('event', 'pkg_sms_request', { 페이지: cardId }); } catch(e) {}
       // 아래 "견적 이어가기"로 넘어가도 번호가 따라가게 함
