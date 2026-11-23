@@ -167,6 +167,15 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
 .mi-estimate-amount{font-size:26px;font-weight:800;color:#0d3b2e;}
 .mi-estimate-basis{font-size:12px;color:#4a6b5e;margin-top:4px;}
 .mi-estimate-note{font-size:11.5px;color:#7a8f85;margin-top:8px;line-height:1.5;}
+.mi-sms{display:none;margin:16px 0 4px;padding:16px 16px 14px;background:#f5f3ff;border:1.5px solid #c4b5fd;border-radius:12px;}
+.mi-sms-title{font-size:15px;font-weight:800;color:#3b2f8f;margin-bottom:10px;}
+.mi-sms-row{display:flex;gap:8px;}
+.mi-sms-row input{flex:1;min-width:0;padding:12px 12px;border:1.5px solid #c4b5fd;border-radius:10px;font-size:16px;font-family:'Noto Sans KR',sans-serif;background:#fff;}
+.mi-sms-btn{flex:none;padding:0 16px;background:#534AB7;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;}
+.mi-sms-btn:disabled{opacity:.5;cursor:default;}
+.mi-sms-note{font-size:12px;color:#6b6396;margin-top:8px;line-height:1.5;}
+.mi-sms-done{display:none;margin-top:10px;background:#eaf3ee;border-left:4px solid #1D9E75;border-radius:8px;padding:10px 12px;font-size:13px;font-weight:700;color:#1b4332;line-height:1.5;}
+.mi-sms-direct{display:block;margin-top:12px;padding:11px;text-align:center;background:#fff;border:1.5px solid #534AB7;border-radius:10px;color:#534AB7;font-size:14px;font-weight:800;text-decoration:none;}
 
 /* 로딩 */
 #loading{text-align:center;padding:80px 20px;color:#9ca3af;font-size:14px;}
@@ -375,6 +384,18 @@ nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between
     <div class="mi-estimate-note" data-i18n="mi.est.note">호텔과 골프장을 고르시면 정확한 견적이 바로 나와요.</div>
   </div>
 
+  <!-- 2026-11-23: 견적서 문자로 받기 (가: 번호 남기기 / 나: 손님 휴대폰 문자로 바로 문의) -->
+  <div class="mi-sms" id="miSms">
+    <div class="mi-sms-title" data-i18n="mi.sms.title">📱 견적서를 문자로 받아 보세요</div>
+    <div class="mi-sms-row">
+      <input type="tel" id="miSmsPhone" inputmode="numeric" placeholder="010-0000-0000">
+      <button type="button" id="miSmsBtn" class="mi-sms-btn" data-i18n="mi.sms.btn">견적서 받기</button>
+    </div>
+    <div class="mi-sms-note" data-i18n="mi.sms.note">연락처를 남기시면 견적서를 문자로 보내 드립니다. 광고 문자는 보내지 않습니다.</div>
+    <div class="mi-sms-done" id="miSmsDone" data-i18n="mi.sms.done">✅ 접수되었습니다. 견적서를 문자로 보내 드리겠습니다.</div>
+    <a id="miSmsDirect" class="mi-sms-direct" href="#" data-i18n="mi.sms.direct">✉️ 내 휴대폰 문자로 바로 문의하기</a>
+  </div>
+
   <div class="mi-phone" style="display:none;">
     <label data-i18n="mi.name">성함 또는 닉네임을 입력하면 홈페이지에서 내 견적서를 볼 수 있어요</label>
     <input type="text" id="miName" placeholder="홍길동">
@@ -450,6 +471,10 @@ const TRANS = {
     'mi.btn.soft':'🏨 호텔·골프 견적 이어가기 →',
     'mi.est.label':'💡 예상 견적 (참고용)',
     'mi.est.note':'호텔과 골프장을 고르시면 정확한 견적이 바로 나와요.',
+    'mi.sms.title':'📱 견적서를 문자로 받아 보세요','mi.sms.btn':'견적서 받기',
+    'mi.sms.note':'연락처를 남기시면 견적서를 문자로 보내 드립니다. 광고 문자는 보내지 않습니다.',
+    'mi.sms.done':'✅ 접수되었습니다. 견적서를 문자로 보내 드리겠습니다.',
+    'mi.sms.direct':'✉️ 내 휴대폰 문자로 바로 문의하기',
     'seo.h2':'iCLARKGOLF 골프 패키지 안내',
     'seo.intro1':'iCLARKGOLF의 모든 골프 패키지는 필리핀 클락에서 <b>25년째</b> 골프를 가르치고 안내해온 <b>전문가가 직접 설계하고 운영</b>합니다. <b>PRADERA C.C</b>와 <b>BEVERLY C.C</b> 두 골프장을 중심으로, 라운드와 연습장 훈련, 숙소, 캐디, 경비까지 하나로 묶어 안내합니다.',
     'seo.intro2':'아래에서 이 패키지의 <b>기간별 가격</b>, <b>포함·불포함 항목</b>, 숙소 정보와 주요 일정을 확인하실 수 있고, 궁금한 점은 <b>30초 간편 문의</b>로 바로 여쭤보실 수 있습니다. 처음 혼자 떠나는 골프 여행도, 여러 명이 함께하는 전지훈련도 이 페이지 하나로 준비할 수 있도록 만들었습니다.',
@@ -469,6 +494,10 @@ const TRANS = {
     'mi.btn.soft':'🏨 Continue to Hotel & Golf Quote →',
     'mi.est.label':'💡 Estimated Price (reference only)',
     'mi.est.note':'Pick your hotel and golf courses next to see the exact quote.',
+    'mi.sms.title':'📱 Get your quote by text','mi.sms.btn':'Get quote',
+    'mi.sms.note':'Leave your number and we will text you the quote. No ads.',
+    'mi.sms.done':'✅ Thank you. We will text you the quote soon.',
+    'mi.sms.direct':'✉️ Text us from your phone',
     'seo.h2':'iCLARKGOLF Golf Packages',
     'seo.intro1':'Every iCLARKGOLF package is designed and run directly by <b>a golf professional</b> who has lived and taught in Clark, Philippines for <b>25 years</b>. Centered on <b>PRADERA C.C</b> and <b>BEVERLY C.C</b>, each package bundles rounds, practice-range training, lodging, caddies, and cost into one plan.',
     'seo.intro2':'Below you can check <b>pricing by duration</b>, <b>what is included and excluded</b>, lodging details, and a key schedule — and send a quick <b>30-second inquiry</b> if you have questions. Whether this is a first solo golf trip or a group training camp, this page has everything needed to plan it.',
@@ -763,6 +792,73 @@ const db  = getFirestore(app);
   const nameInput  = document.getElementById('miName');
   const phoneInput = document.getElementById('miPhone');
   const miBtn      = document.getElementById('miBtn');
+
+  // ── 2026-11-23: 견적서 문자로 받기 ──────────────────────────────
+  // 가) 손님이 번호를 남기면 web_inquiries에 '문자요청'으로 저장 + PJ 메일 알림 → PJ가 나중에 견적서를 문자로 보냄
+  // 나) 손님 휴대폰 문자 앱을 열어 PJ 번호와 고른 내용을 미리 채움 → 손님이 보내기만 누름 ('문자이동' 기록)
+  (function(){
+    const smsBox    = document.getElementById('miSms');
+    const smsPhone  = document.getElementById('miSmsPhone');
+    const smsBtn    = document.getElementById('miSmsBtn');
+    const smsDirect = document.getElementById('miSmsDirect');
+    const smsDone   = document.getElementById('miSmsDone');
+    if (!smsBox || !smsPhone || !smsBtn) return;
+    const PJ_SMS = '01081972504';
+    const ua = navigator.userAgent || '';
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
+    const isIOS = /iPhone|iPad|iPod/i.test(ua);
+    if (!isMobile && smsDirect) smsDirect.style.display = 'none';   // PC에서는 문자 앱이 없으므로 숨김
+
+    // 칩을 다 고르면 문자 받기 칸을 보여 줌 (기존 칩 처리 다음에 실행)
+    document.querySelectorAll('.mi-chips').forEach(g => g.addEventListener('click', () => {
+      if (curDuration() && sel.party && sel.timing) smsBox.style.display = 'block';
+    }));
+
+    smsPhone.addEventListener('input', () => {
+      let d = smsPhone.value.replace(/[^0-9]/g,'').slice(0,11);
+      if (d.length > 7) d = d.slice(0,3) + '-' + d.slice(3,7) + '-' + d.slice(7);
+      else if (d.length > 3) d = d.slice(0,3) + '-' + d.slice(3);
+      smsPhone.value = d;
+      smsPhone.style.borderColor = '';
+    });
+
+    function pkgLabel(){ return (PKG && [PKG.titleEn, PKG.sub1].filter(Boolean).join(' ')) || cardId; }
+
+    smsBtn.addEventListener('click', async () => {
+      const phone = smsPhone.value.trim();
+      if (phone.replace(/[^0-9]/g,'').length < 10) { smsPhone.style.borderColor = '#e74c3c'; smsPhone.focus(); return; }
+      smsBtn.disabled = true;
+      let saveFailed = false;
+      try {
+        await addDoc(collection(db,'web_inquiries'), {
+          기간:curDuration(), 인원:sel.party, 시기:sel.timing, 페이지:cardId,
+          상태:'문자요청', 연락처:phone, 이름:'', created:serverTimestamp()
+        });
+      } catch(err) { saveFailed = true; console.error('문자요청 저장 실패:', err); }
+      if (typeof window.iclarkNotifyNewLead === 'function') {
+        window.iclarkNotifyNewLead({ '문의종류':'견적서 문자로 받기(패키지 페이지)', '이름':'', '연락처':phone, '패키지':pkgLabel()+' ('+cardId+')', '기간':curDuration()||'', '인원':sel.party||'', '시기':sel.timing||'', 'Firestore 저장': saveFailed ? '실패(이 메일이 유일한 기록)' : '정상' });
+      }
+      try { if (window.gtag) gtag('event', 'pkg_sms_request', { 페이지: cardId }); } catch(e) {}
+      // 아래 "견적 이어가기"로 넘어가도 번호가 따라가게 함
+      try { const mp = document.getElementById('miPhone'); if (mp && !mp.value) mp.value = phone; } catch(e) {}
+      smsPhone.disabled = true;
+      smsDone.style.display = 'block';
+    });
+
+    if (smsDirect) smsDirect.addEventListener('click', (e) => {
+      e.preventDefault();
+      const body = '[아이클락골프 견적 문의]\n상품: ' + pkgLabel() + '\n기간: ' + (curDuration()||'-') + ' / 인원: ' + (sel.party||'-') + ' / 시기: ' + (sel.timing||'-') + '\n견적서를 문자로 받고 싶습니다.';
+      try {
+        addDoc(collection(db,'web_inquiries'), {
+          기간:curDuration(), 인원:sel.party, 시기:sel.timing, 페이지:cardId,
+          상태:'문자이동', 연락처:'', 이름:'', created:serverTimestamp()
+        }).catch(err => console.warn('문자이동 기록 실패', err));
+      } catch(err) {}
+      try { if (window.gtag) gtag('event', 'pkg_sms_direct', { 페이지: cardId }); } catch(e) {}
+      const href = 'sms:' + PJ_SMS + (isIOS ? '&' : '?') + 'body=' + encodeURIComponent(body);
+      setTimeout(() => { location.href = href; }, 150);
+    });
+  })();
 
   // 2026-08-27: "즉석 예상 견적" — 방문자가 3개 칩을 다 고르면 카카오로 넘어가기 전에
   // 위젯 안에서 바로 대략적인 가격을 보여줌(호기심을 그 자리에서 풀어주기 위함).

@@ -5064,7 +5064,7 @@ async function loadWebInquiries() {
         const _dt = d.created?.toDate ? d.created.toDate() : null;
         const dateStr = _dt ? `${_dt.toLocaleDateString('ko-KR')}<br><small>${_dt.toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit' })}</small>` : '-';
         const status = d.상태 || '선택중';
-        const statusStyle = status === '카카오이동' ? 'background:#d1fae5;color:#065f46;' : (status === '선택완료' ? 'background:#FEF9C3;color:#92400e;' : 'background:#f4f4f5;color:#6b7280;');
+        const statusStyle = status === '문자요청' ? 'background:#534AB7;color:#fff;' : status === '문자이동' ? 'background:#ede9fe;color:#534AB7;' : status === '카카오이동' ? 'background:#d1fae5;color:#065f46;' : (status === '선택완료' ? 'background:#FEF9C3;color:#92400e;' : 'background:#f4f4f5;color:#6b7280;');   // 2026-11-23: 문자요청(번호 남김)·문자이동(손님 문자앱) 추가
         const cardName = d.페이지 && cardNames[d.페이지] ? `<div class="wi-card-name" style="font-size:10px;color:#9ca3af;">${cardNames[d.페이지]}</div>` : '';
         const phone = wiCleanPhone(d.연락처);
         const contactBtns = phone
