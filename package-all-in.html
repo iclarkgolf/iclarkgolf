@@ -864,7 +864,7 @@ const db  = getFirestore(app);
 
     // 칩을 다 고르면 문자 받기 칸을 보여 줌 (기존 칩 처리 다음에 실행)
     document.querySelectorAll('.mi-chips').forEach(g => g.addEventListener('click', () => {
-      if (curDuration() && sel.party && sel.timing) smsBox.style.display = 'block';
+      setTimeout(() => { if (curDuration() && sel.party && sel.timing) smsBox.style.display = 'block'; }, 0);   // 기존 칩 처리가 sel을 채운 다음에 확인
     }));
 
     smsPhone.addEventListener('input', () => {
